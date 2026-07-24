@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Photographer Dashboard</title>
+
+<meta name="theme-color" content="#111111">
+<meta name="description" content="Photographer Dashboard">
+
+<link rel="stylesheet" href="user.css">
+
+</head>
+<body>
+
+<!-- ==========================
+        NAVBAR
+=========================== -->
+
+<header class="navbar">
+
+    <div class="logo">
+        PhotoSaaS
+    </div>
+
+    <nav>
+
+        <a href="#dashboard">Dashboard</a>
+
+        <a href="#profile">Profile</a>
+
+        <a href="#services">Services</a>
+
+        <a href="#pricing">Pricing</a>
+
+        <a href="#gallery">Gallery</a>
+
+        <a href="#settings">Settings</a>
+
+    </nav>
+
+</header>
+
+
+<!-- ==========================
+        HERO
+=========================== -->
+
+<section class="hero" id="dashboard">
+
+    <div class="hero-content">
+
+        <h1>
+            Welcome, Rahul Photography
+        </h1>
+
+        <p>
+            Manage your portfolio, services, gallery and bookings from one place.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- ==========================
+      DASHBOARD OVERVIEW
+=========================== -->
+
+<section class="section">
+
+<h2>Dashboard</h2>
+
+<div class="stats-grid">
+
+<div class="stat-card">
+
+<h3>Today's Bookings</h3>
+
+<h1 class="counter" data-target="4">0</h1>
+
+<p>Upcoming sessions today</p>
+
+</div>
+
+
+<div class="stat-card">
+
+<h3>Portfolio Views</h3>
+
+<h1 class="counter" data-target="1268">0</h1>
+
+<p>Last 30 days</p>
+
+</div>
+
+
+<div class="stat-card">
+
+<h3>Gallery Photos</h3>
+
+<h1 class="counter" data-target="185">0</h1>
+
+<p>Total uploaded</p>
+
+</div>
+
+
+<div class="stat-card">
+
+<h3>Revenue</h3>
+
+<h1>₹82K</h1>
+
+<p>This Month</p>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ==========================
+        PROFILE
+=========================== -->
+
+<section class="section" id="profile">
+
+<h2>Profile</h2>
+
+<div class="form-card">
+
+<label>Studio Name</label>
+
+<input
+type="text"
+placeholder="Rahul Photography">
+
+<label>Photographer Name</label>
+
+<input
+type="text"
+placeholder="Rahul Sharma">
+
+<label>Experience</label>
+
+<input
+type="text"
+placeholder="5 Years">
+
+<label>Location</label>
+
+<input
+type="text"
+placeholder="Nagpur, Maharashtra">
+
+<label>Phone</label>
+
+<input
+type="tel"
+placeholder="+91 9876543210">
+
+<label>Email</label>
+
+<input
+type="email"
+placeholder="contact@email.com">
+
+<label>Instagram</label>
+
+<input
+type="text"
+placeholder="@rahulphotography">
+
+<label>About</label>
+
+<textarea
+rows="5"
+placeholder="Write a short introduction about yourself..."></textarea>
+
+<button>
+
+Save Profile
+
+</button>
+
+</div>
+
+</section>
+
+
+<!-- ==========================
+        SERVICES
+=========================== -->
+
+<section class="section" id="services">
+
+<h2>Services</h2>
+
+<div class="service-grid">
+
+<label class="service-card">
+
+<input type="checkbox" checked>
+
+Wedding Photography
+
+</label>
+
+
+<label class="service-card">
+
+<input type="checkbox" checked>
+
+Pre-Wedding Shoot
+
+</label>
+
+
+<label class="service-card">
+
+<input type="checkbox" checked>
+
+Portrait Photography
+
+</label>
+
+
+<label class="service-card">
+
+<input type="checkbox">
+
+Commercial Photography
+
+</label>
+
+
+<label class="service-card">
+
+<input type="checkbox">
+
+Corporate Events
+
+</label>
+
+
+<label class="service-card">
+
+<input type="checkbox">
+
+Drone Photography
+
+</label>
+
+</div>
+
+<br>
+
+<button>
+
+Save Services
+
+</button>
+
+</section>
+
+<!-- ==========================
+        PRICING
+=========================== -->
+
+<section class="section" id="pricing">
+
+<h2>Pricing</h2>
+
+<div class="pricing-grid">
+
+    <div class="pricing-card">
+
+        <h3>Wedding Photography</h3>
+
+        <label>Basic Package</label>
+        <input type="text" placeholder="₹25,000">
+
+        <label>Premium Package</label>
+        <input type="text" placeholder="₹45,000">
+
+        <label>Luxury Package</label>
+        <input type="text" placeholder="₹80,000">
+
+        <button>Save Pricing</button>
+
+    </div>
+
+
+    <div class="pricing-card">
+
+        <h3>Pre-Wedding Shoot</h3>
+
+        <label>Basic Package</label>
+        <input type="text" placeholder="₹15,000">
+
+        <label>Premium Package</label>
+        <input type="text" placeholder="₹30,000">
+
+        <label>Luxury Package</label>
+        <input type="text" placeholder="₹50,000">
+
+        <button>Save Pricing</button>
+
+    </div>
+
+</div>
+
+</section>
+
+
+<!-- ==========================
+        EQUIPMENT
+=========================== -->
+
+<section class="section" id="equipment">
+
+<h2>Equipment</h2>
+
+<div class="equipment-grid">
+
+<div class="equipment-card">
+
+<h3>Cameras</h3>
+
+<textarea rows="5"
+placeholder="Sony A7 IV&#10;Canon R6"></textarea>
+
+<button>Add Camera</button>
+
+</div>
+
+
+<div class="equipment-card">
+
+<h3>Lenses</h3>
+
+<textarea rows="5"
+placeholder="24-70mm&#10;70-200mm"></textarea>
+
+<button>Add Lens</button>
+
+</div>
+
+
+<div class="equipment-card">
+
+<h3>Lighting</h3>
+
+<textarea rows="5"
+placeholder="Godox V1&#10;Softbox"></textarea>
+
+<button>Add Lighting</button>
+
+</div>
+
+
+<div class="equipment-card">
+
+<h3>Drone / Accessories</h3>
+
+<textarea rows="5"
+placeholder="DJI Air 3&#10;Gimbal&#10;Tripod"></textarea>
+
+<button>Save Equipment</button>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ==========================
+        GALLERY
+=========================== -->
+
+<section class="section" id="gallery">
+
+<h2>Gallery Management</h2>
+
+<div class="gallery-manager">
+
+<label>Album Name</label>
+
+<input
+type="text"
+placeholder="Wedding at Taj Hotel">
+
+<label>Category</label>
+
+<select>
+
+<option>Wedding</option>
+
+<option>Pre-Wedding</option>
+
+<option>Portrait</option>
+
+<option>Events</option>
+
+<option>Commercial</option>
+
+</select>
+
+<label>Location</label>
+
+<input
+type="text"
+placeholder="Nagpur">
+
+<label>Story / Description</label>
+
+<textarea
+rows="5"
+placeholder="Write a short story about this shoot..."></textarea>
+
+<label>Upload Photos</label>
+
+<input
+type="file"
+multiple>
+
+<br><br>
+
+<button>
+
+Create Album
+
+</button>
+
+</div>
+
+</section>
+
+<!-- ==========================
+        BOOKINGS
+=========================== -->
+
+<section class="section" id="bookings">
+
+<h2>Bookings</h2>
+
+<div class="table-container">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Client</th>
+
+<th>Service</th>
+
+<th>Date</th>
+
+<th>Status</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<td>Rahul Patil</td>
+
+<td>Wedding</td>
+
+<td>15 Aug 2026</td>
+
+<td><span class="status active">Confirmed</span></td>
+
+</tr>
+
+<tr>
+
+<td>Neha Sharma</td>
+
+<td>Pre-Wedding</td>
+
+<td>22 Aug 2026</td>
+
+<td><span class="status pending">Pending</span></td>
+
+</tr>
+
+<tr>
+
+<td>Aryan Mehta</td>
+
+<td>Portrait</td>
+
+<td>30 Aug 2026</td>
+
+<td><span class="status completed">Completed</span></td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</section>
+
+
+<!-- ==========================
+        REVIEWS
+=========================== -->
+
+<section class="section" id="reviews">
+
+<h2>Customer Reviews</h2>
+
+<div class="review-grid">
+
+<div class="review-card">
+
+<h3>⭐⭐⭐⭐⭐</h3>
+
+<p>
+
+Amazing photography and very professional.
+
+</p>
+
+<h4>- Rahul Patil</h4>
+
+</div>
+
+<div class="review-card">
+
+<h3>⭐⭐⭐⭐⭐</h3>
+
+<p>
+
+Photos exceeded our expectations.
+
+</p>
+
+<h4>- Neha Sharma</h4>
+
+</div>
+
+<div class="review-card">
+
+<h3>⭐⭐⭐⭐☆</h3>
+
+<p>
+
+Great service and timely delivery.
+
+</p>
+
+<h4>- Aryan Mehta</h4>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ==========================
+        ANALYTICS
+=========================== -->
+
+<section class="section" id="analytics">
+
+<h2>Analytics</h2>
+
+<div class="stats-grid">
+
+<div class="stat-card">
+
+<h3>Portfolio Views</h3>
+
+<h1 class="counter" data-target="1245">0</h1>
+
+<p>Last 30 Days</p>
+
+</div>
+
+<div class="stat-card">
+
+<h3>Total Bookings</h3>
+
+<h1 class="counter" data-target="87">0</h1>
+
+<p>This Year</p>
+
+</div>
+
+<div class="stat-card">
+
+<h3>Total Revenue</h3>
+
+<h1>₹4.8L</h1>
+
+<p>Current Year</p>
+
+</div>
+
+<div class="stat-card">
+
+<h3>Albums</h3>
+
+<h1 class="counter" data-target="42">0</h1>
+
+<p>Published</p>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ==========================
+        SUBSCRIPTION
+=========================== -->
+
+<section class="section" id="subscription">
+
+<h2>Subscription</h2>
+
+<div class="subscription-card">
+
+<h3>Current Plan</h3>
+
+<h1>Professional</h1>
+
+<p>
+
+Renewal Date:
+<strong>12 January 2027</strong>
+
+</p>
+
+<button>
+
+Upgrade Plan
+
+</button>
+
+</div>
+
+</section>
+
+
+<!-- ==========================
+        SETTINGS
+=========================== -->
+
+<section class="section" id="settings">
+
+<h2>Settings</h2>
+
+<div class="settings-grid">
+
+<div class="setting-card">
+
+<h3>Change Password</h3>
+
+<p>
+
+Update your account password.
+
+</p>
+
+<button>
+
+Update
+
+</button>
+
+</div>
+
+<div class="setting-card">
+
+<h3>Notifications</h3>
+
+<p>
+
+Manage booking notifications.
+
+</p>
+
+<button>
+
+Manage
+
+</button>
+
+</div>
+
+<div class="setting-card">
+
+<h3>Delete Account</h3>
+
+<p>
+
+Remove your account permanently.
+
+</p>
+
+<button>
+
+Delete
+
+</button>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ==========================
+        FOOTER
+=========================== -->
+
+<footer>
+
+<p>
+
+© 2026 PhotoSaaS
+
+</p>
+
+<p>
+
+Photographer Dashboard
+
+</p>
+
+</footer>
+
+<script src="user.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,579 @@
+/* ===============================
+   GLOBAL
+=================================*/
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Helvetica Neue",Arial,sans-serif;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    background:#fff;
+    color:#111;
+    line-height:1.6;
+}
+
+/* ===============================
+   NAVBAR
+=================================*/
+
+.navbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:18px 8%;
+    position:sticky;
+    top:0;
+    background:#fff;
+    border-bottom:1px solid #eee;
+    z-index:1000;
+}
+.navbar nav a.active{
+    color:#111;
+    font-weight:700;
+    border-bottom:2px solid #111;
+    padding-bottom:4px;
+}
+.logo{
+    text-decoration:none;
+    color:black;
+    font-size:1.5rem;
+    font-weight:bold;
+}
+
+.navbar nav{
+    display:flex;
+    gap:25px;
+}
+
+.navbar nav a{
+    text-decoration:none;
+    color:#111;
+    font-weight:500;
+    transition:.3s;
+}
+
+.navbar nav a:hover{
+    color:#666;
+}
+
+/* ===============================
+   BUTTON
+=================================*/
+
+.book-btn{
+    display:inline-block;
+    margin-top:25px;
+    background:#111;
+    color:#fff;
+    padding:14px 30px;
+    text-decoration:none;
+    border-radius:40px;
+    transition:.3s;
+    font-weight:600;
+}
+
+.book-btn:hover{
+    background:#333;
+    transform:translateY(-3px);
+}
+
+.large{
+    font-size:1rem;
+}
+
+/* ===============================
+   HERO
+=================================*/
+
+.hero{
+    height:80vh;
+    background:url("hero.jpg") center center/cover no-repeat;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.hero-content{
+    background:rgba(0,0,0,.45);
+    color:white;
+    text-align:center;
+    padding:50px;
+    border-radius:15px;
+    max-width:700px;
+}
+
+.hero-content h1{
+    font-size:3rem;
+    margin-bottom:20px;
+}
+
+.hero-content p{
+    font-size:1.2rem;
+}
+
+/* ===============================
+   SECTION
+=================================*/
+
+.section{
+    padding:90px 8%;
+}
+
+.center{
+    text-align:center;
+    margin-bottom:50px;
+}
+
+.light{
+    background:#fafafa;
+}
+
+/* ===============================
+   EXPERIENCE
+=================================*/
+
+.experience{
+    display:flex;
+    justify-content:center;
+    gap:40px;
+    margin-bottom:80px;
+    flex-wrap:wrap;
+}
+
+.exp-box{
+    width:280px;
+}
+
+.exp-box h3{
+    margin-bottom:10px;
+}
+
+.meter{
+    height:8px;
+    background:#eee;
+    border-radius:20px;
+    overflow:hidden;
+    margin:15px 0;
+}
+
+.meter-fill{
+    width:0;
+    height:100%;
+    background:#111;
+    transition:width 1.5s ease;
+}
+
+/* ===============================
+   PORTFOLIO
+=================================*/
+
+.portfolio-block{
+    display:grid;
+    grid-template-columns:1.2fr 1fr;
+    align-items:center;
+    gap:60px;
+    margin-bottom:90px;
+}
+
+.portfolio-block.reverse{
+    grid-template-columns:1fr 1.2fr;
+}
+
+.portfolio-block img{
+    width:100%;
+    height:420px;
+    object-fit:cover;
+    border-radius:12px;
+    transition:.4s;
+}
+
+.portfolio-block img:hover{
+    transform:scale(1.03);
+}
+
+.portfolio-text h2{
+    margin-bottom:15px;
+    font-size:2rem;
+}
+
+.portfolio-text p{
+    color:#555;
+}
+
+/* ==========================
+   EQUIPMENT SECTION
+========================== */
+
+.equipment-section{
+
+    padding:80px 20px;
+
+    background:#fafafa;
+
+}
+
+.equipment-container{
+
+    max-width:1200px;
+
+    margin:auto;
+
+    text-align:center;
+
+}
+
+.equipment-container h2{
+
+    font-size:36px;
+
+    margin-bottom:15px;
+
+}
+
+.equipment-container p{
+
+    max-width:650px;
+
+    margin:auto;
+
+    color:#666;
+
+    line-height:1.7;
+
+    margin-bottom:50px;
+
+}
+
+.equipment-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+
+    gap:25px;
+
+}
+
+.equipment-card{
+
+    background:white;
+
+    padding:30px;
+
+    border-radius:18px;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+
+    transition:.35s;
+
+}
+
+.equipment-card:hover{
+
+    transform:translateY(-8px);
+
+}
+
+.equipment-card i{
+
+    font-size:42px;
+
+    color:#5d3eff;
+
+    margin-bottom:20px;
+
+}
+
+.equipment-card h3{
+
+    margin-bottom:10px;
+
+}
+
+.equipment-card span{
+
+    color:#777;
+
+    font-size:15px;
+
+}
+
+/*=============================
+PRICING
+=============================*/
+
+.pricing-subtitle{
+
+    text-align:center;
+    color:#666;
+    margin-bottom:35px;
+
+}
+
+.pricing-tabs{
+
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:12px;
+    margin-bottom:40px;
+
+}
+
+.tab-btn{
+
+    padding:12px 22px;
+    border:1px solid #ddd;
+    background:white;
+    cursor:pointer;
+    border-radius:30px;
+    transition:.3s;
+    font-weight:600;
+
+}
+
+.tab-btn:hover{
+
+    background:#111;
+    color:white;
+
+}
+
+.tab-btn.active{
+
+    background:#111;
+    color:white;
+
+}
+
+.pricing-grid{
+
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:25px;
+
+}
+
+.price-card{
+
+    border:1px solid #ddd;
+    border-radius:15px;
+    padding:30px;
+    text-align:center;
+    background:white;
+    position:relative;
+    transition:.3s;
+
+}
+
+.price-card:hover{
+
+    transform:translateY(-6px);
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+
+}
+
+.price-card.featured{
+
+    border:2px solid #111;
+
+}
+
+.featured-badge{
+
+    position:absolute;
+    top:-12px;
+    left:50%;
+    transform:translateX(-50%);
+    background:#111;
+    color:white;
+    padding:5px 14px;
+    border-radius:20px;
+    font-size:12px;
+
+}
+
+.price{
+
+    font-size:2rem;
+    font-weight:bold;
+    margin:20px 0;
+
+}
+
+.price-card ul{
+
+    list-style:none;
+    text-align:left;
+    margin:25px 0;
+
+}
+
+.price-card li{
+
+    margin-bottom:12px;
+
+}
+
+.price-card .book-btn{
+
+    display:block;
+}
+
+/* ===============================
+   PREVIOUS WORK
+=================================*/
+
+.work-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:25px;
+}
+
+.work-card{
+    background:#fff;
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 5px 18px rgba(0,0,0,.08);
+    transition:.35s;
+    text-align:center;
+}
+
+.work-card:hover{
+    transform:translateY(-8px);
+}
+
+.work-card img{
+    width:100%;
+    height:200px;
+    object-fit:cover;
+}
+
+.work-card h3{
+    margin:18px 0 8px;
+}
+
+.work-card p{
+    color:#666;
+    padding:0 15px 20px;
+}
+
+.cta-container{
+    text-align:center;
+    margin-top:45px;
+}
+
+/* ===============================
+   CONTACT
+=================================*/
+
+.contact-info{
+    max-width:600px;
+    margin:auto;
+    text-align:center;
+    line-height:2;
+}
+
+.contact-info strong{
+    color:#111;
+}
+
+/* ===============================
+   FOOTER
+=================================*/
+
+footer{
+    text-align:center;
+    padding:30px;
+    border-top:1px solid #eee;
+    color:#666;
+}
+
+/* ===============================
+   RESPONSIVE
+=================================*/
+
+@media(max-width:900px){
+
+    .portfolio-block,
+    .portfolio-block.reverse{
+        grid-template-columns:1fr;
+        gap:30px;
+        text-align:center;
+    }
+
+    .portfolio-block img{
+        height:320px;
+    }
+
+}
+
+@media(max-width:768px){
+
+    .navbar{
+        flex-direction:column;
+        gap:15px;
+        padding:18px;
+    }
+
+    .navbar nav{
+        flex-wrap:wrap;
+        justify-content:center;
+    }
+
+    .hero{
+        height:70vh;
+    }
+
+    .hero-content{
+        padding:35px 25px;
+    }
+
+    .hero-content h1{
+        font-size:2.2rem;
+    }
+
+    .hero-content p{
+        font-size:1rem;
+    }
+
+    .section{
+        padding:70px 6%;
+    }
+
+    .experience{
+        flex-direction:column;
+        align-items:center;
+    }
+
+    .exp-box{
+        width:100%;
+        max-width:350px;
+    }
+
+}
+
+@media(max-width:480px){
+
+    .hero-content h1{
+        font-size:1.8rem;
+    }
+
+    .portfolio-text h2{
+        font-size:1.5rem;
+    }
+
+    .book-btn{
+        width:100%;
+        max-width:250px;
+    }
+
+}

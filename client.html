@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photographer Portfolio</title>
+
+    <link rel="stylesheet" href="client.css">
+</head>
+
+<body>
+
+    <!-- ================= NAVBAR ================= -->
+    <header class="navbar">
+
+        <a href="#" class="logo">
+            Photographer
+        </a>
+
+        <nav aria-label="Main Navigation">
+            <a href="#portfolio">Portfolio</a>
+            <a href="#equipment">Equipment</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#works">Previous Work</a>
+            <a href="#contact">Contact</a>
+        </nav>
+
+    </header>
+
+    <main>
+
+        <!-- ================= HERO ================= -->
+
+        <section class="hero">
+
+            <div class="hero-content">
+
+                <h1>Capturing Real Stories</h1>
+
+                <p>
+                    Wedding • Portrait • Events • Commercial
+                </p>
+
+                <a href="booking.html" class="book-btn large">
+                    Book a Date
+                </a>
+
+            </div>
+
+        </section>
+
+        <!-- ================= PORTFOLIO ================= -->
+
+        <section id="portfolio" class="section">
+
+            <!-- Experience -->
+
+            <div class="experience">
+
+                <div class="exp-box">
+
+                    <h3>Sessions Completed</h3>
+
+                    <div class="meter">
+                        <div class="meter-fill" data-value="85"></div>
+                    </div>
+
+                    <p>250+ Sessions</p>
+
+                </div>
+
+                <div class="exp-box">
+
+                    <h3>Experience</h3>
+
+                    <div class="meter">
+                        <div class="meter-fill" data-value="70"></div>
+                    </div>
+
+                    <p>5 Years Experience</p>
+
+                </div>
+
+            </div>
+
+            <!-- Portfolio Block 1 -->
+
+            <div class="portfolio-block">
+
+                <img
+                    src="img1.png"
+                    alt="Wedding Photography"
+                    loading="lazy">
+
+                <div class="portfolio-text">
+
+                    <h2>Wedding Storytelling</h2>
+
+                    <p>
+                        Emotional and natural wedding photography focused on
+                        real moments and timeless memories.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <!-- Portfolio Block 2 -->
+
+            <div class="portfolio-block reverse">
+
+                <img
+                    src="img2.jpg"
+                    alt="Pre Wedding Shoot"
+                    loading="lazy">
+
+                <div class="portfolio-text">
+
+                    <h2>Pre-Wedding Shoots</h2>
+
+                    <p>
+                        Creative and cinematic shoots designed around
+                        personality, locations, and storytelling.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <!-- Portfolio Block 3 -->
+
+            <div class="portfolio-block">
+
+                <img
+                    src="img3.jpg"
+                    alt="Portrait Photography"
+                    loading="lazy">
+
+                <div class="portfolio-text">
+
+                    <h2>Portrait Photography</h2>
+
+                    <p>
+                        Minimal and expressive portraits using natural lighting
+                        and clean composition.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section> 
+ <!-- ================= EQUIPMENTS ================= -->
+
+<section id="equipment" class="equipment-section">
+
+    <div class="equipment-container">
+
+        <h2>Professional Equipment</h2>
+
+        <p>
+            We use professional cameras, lenses and accessories to
+            deliver exceptional quality for every shoot.
+        </p>
+
+        <div class="equipment-grid">
+
+            <div class="equipment-card">
+
+                <i class="fa-solid fa-camera"></i>
+
+                <h3>Canon EOS R6</h3>
+
+                <span>Mirrorless Camera</span>
+
+            </div>
+
+            <div class="equipment-card">
+
+                <i class="fa-solid fa-camera-retro"></i>
+
+                <h3>Sony A7 IV</h3>
+
+                <span>Full Frame Camera</span>
+
+            </div>
+
+            <div class="equipment-card">
+
+                <i class="fa-solid fa-circle-dot"></i>
+
+                <h3>24-70mm Lens</h3>
+
+                <span>Professional Zoom Lens</span>
+
+            </div>
+
+            <div class="equipment-card">
+
+                <i class="fa-solid fa-expand"></i>
+
+                <h3>70-200mm Lens</h3>
+
+                <span>Telephoto Lens</span>
+
+            </div>
+
+            <div class="equipment-card">
+
+                <i class="fa-solid fa-lightbulb"></i>
+
+                <h3>Studio Lights</h3>
+
+                <span>Lighting Kit</span>
+
+            </div>
+
+            <div class="equipment-card">
+
+                <i class="fa-solid fa-video"></i>
+
+                <h3>DJI Ronin</h3>
+
+                <span>Camera Gimbal</span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+          
+<!-- ================= PRICING ================= -->
+
+<section id="pricing" class="section">
+
+    <h2 class="center">Photography Packages</h2>
+
+    <p class="pricing-subtitle">
+        Select a photography service to view its available packages.
+    </p>
+
+    <!-- Service Tabs -->
+
+    <div class="pricing-tabs">
+
+        <button class="tab-btn active"
+                data-service="wedding">
+            Wedding
+        </button>
+
+        <button class="tab-btn"
+                data-service="prewedding">
+            Pre-Wedding
+        </button>
+
+        <button class="tab-btn"
+                data-service="portrait">
+            Portrait
+        </button>
+
+        <button class="tab-btn"
+                data-service="event">
+            Events
+        </button>
+
+        <button class="tab-btn"
+                data-service="commercial">
+            Commercial
+        </button>
+
+    </div>
+
+    <!-- Packages will be loaded here -->
+
+    <div id="pricingContainer"
+         class="pricing-grid">
+
+    </div>
+
+</section>
+
+        <!-- ================= PREVIOUS WORK ================= -->
+
+        <section id="works" class="section light">
+
+            <h2 class="center">Previous Work</h2>
+
+            <div class="work-grid">
+                 
+                <div class="work-card">
+                    <a href="gallery.html">
+                        <img 
+                            src="wedding.jpg"
+                            alt="Wedding Photography"
+                            loading="lazy">
+                    </a>
+
+                    <h3>Weddings</h3>
+
+                    <p>Traditional & Destination Weddings</p>
+
+                </div>
+                </a>
+
+                <div class="work-card">
+
+                    <a href="gallery.html">
+                        <img
+                            src="prewedding.jpg"
+                            alt="Pre Wedding Photography"
+                            loading="lazy">
+                    </a>
+
+                    <h3>Pre-Wedding</h3>
+
+                    <p>Outdoor & Cinematic Shoots</p>
+
+                </div>
+
+                <div class="work-card">
+
+                    <a href="gallery.html">
+                        <img
+                            src="event.jpg"
+                            alt="Event Photography"
+                            loading="lazy">
+                    </a>
+
+                    <h3>Events</h3>
+
+                    <p>Corporate & Private Events</p>
+
+                </div>
+
+                <div class="work-card">
+
+                    <a href="gallery.html">
+                        <img
+                            src="portrait.jpg"
+                            alt="Portrait Photography"
+                            loading="lazy">
+                    </a>
+
+                    <h3>Portraits</h3>
+
+                    <p>Personal & Professional Portraits</p>
+
+                </div>
+
+                <div class="work-card">
+
+                    <a href="gallery.html">
+                        <img
+                            src="commercial.jpg"
+                            alt="Commercial Photography"
+                            loading="lazy">
+                    </a>
+
+                    <h3>Commercial</h3>
+
+                    <p>Brand & Product Photography</p>
+
+                </div>
+
+            </div>
+
+            <div class="cta-container">
+
+                <a href="booking.html" class="book-btn large">
+                    Book a Date
+                </a>
+
+            </div>
+
+        </section>
+
+        <!-- ================= CONTACT ================= -->
+
+        <section id="contact" class="section">
+
+            <h2 class="center">
+                Contact
+            </h2>
+
+            <div class="contact-info">
+
+                <p>
+                    <strong>Photographer:</strong>
+                    GANESH Photography
+                </p>
+
+                <p>
+                    <strong>Phone:</strong>
+                    +91 98765 43210
+                </p>
+
+                <p>
+                    <strong>Email:</strong>
+                    contact@email.com
+                </p>
+
+                <p>
+                    <strong>Location:</strong>
+                    Nagpur, Maharashtra
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer>
+
+        <p>
+            © 2026 GANESH Photography
+        </p>
+
+        <p>
+            Powered by Your SaaS
+        </p>
+
+    </footer>
+
+    <script src="client.js"></script>
+
+</body>
+
+</html>

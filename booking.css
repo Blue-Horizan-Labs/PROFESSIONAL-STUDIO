@@ -1,0 +1,292 @@
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:white;
+    min-height:100vh;
+}
+
+/* SECTION */
+
+.booking-section{
+    padding:50px 20px;
+}
+
+.container{
+    max-width:750px;
+    margin:auto;
+    background:#fff;
+    padding:35px;
+    border-radius:20px;
+    box-shadow:0 10px 35px rgba(0,0,0,.2);
+}
+
+/* TEXT */
+
+h1{
+    text-align:center;
+    margin-bottom:10px;
+}
+
+p{
+    text-align:center;
+    color:#666;
+}
+
+h3{
+    margin-top:35px;
+}
+
+/* FORM */
+
+label{
+    display:block;
+    margin-top:18px;
+    font-weight:600;
+    color:#222;
+}
+
+input,
+select,
+textarea{
+    width:100%;
+    padding:12px;
+    margin-top:6px;
+    border:1px solid #d9d9d9;
+    border-radius:10px;
+    box-sizing:border-box;
+    transition:.3s;
+    font-size:14px;
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+    outline:none;
+    border-color:black;
+    box-shadow:0 0 0 3px rgba(108,44,255,.15);
+}
+
+/* SELECT */
+
+.custom-select{
+    position:relative;
+}
+
+/* DATE ROWS */
+
+.date-time-row{
+    margin-top:18px;
+    padding:18px;
+    border-radius:14px;
+    background:#f7f7ff;
+    border:1px solid #ececff;
+}
+
+.time-row{
+    display:flex;
+    gap:12px;
+    margin-top:10px;
+}
+
+.time-row input{
+    flex:1;
+}
+
+.hours-box{
+    margin-top:12px;
+    font-weight:bold;
+    color:black;
+}
+
+/* DURATION */
+
+.duration-box{
+    display:none;
+    margin-top:18px;
+    background:#efe8ff;
+    border-left:5px solid black;
+    padding:15px;
+    border-radius:10px;
+}
+
+/* PACKAGE */
+
+.package-section{
+    display:none;
+    margin-top:25px;
+}
+
+.package-options{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:15px;
+    margin-top:15px;
+}
+
+.package-card{
+    position:relative;
+    border:2px solid #ddd;
+    border-radius:15px;
+    padding:20px;
+    cursor:pointer;
+    transition:.3s;
+    background:white;
+}
+
+.package-card:hover{
+    background:#f9f9f9;
+    transform:translateY(-4px);
+    border-color:rgb(204, 52, 115);
+}
+
+.package-card.active{
+    border-color:rgb(100, 58, 58);
+    background:#f2ecff;
+}
+
+.package-card h4{
+    margin:0;
+}
+
+.package-card p{
+    text-align:left;
+    margin-top:8px;
+}
+
+.badge{
+    position:absolute;
+    top:-10px;
+    right:10px;
+    background:black;
+    color:white;
+    padding:5px 10px;
+    border-radius:20px;
+    font-size:12px;
+}
+
+.package-details{
+    margin-top:20px;
+    padding:15px;
+    background:#fafafa;
+    border-radius:12px;
+    border:1px solid #eee;
+}
+
+/* BUTTONS */
+
+.gps-btn,
+.submit-btn{
+    width:100%;
+    border:none;
+    border-radius:12px;
+    padding:14px;
+    cursor:pointer;
+    font-weight:bold;
+    transition:.3s;
+}
+
+.gps-btn{
+    margin-top:12px;
+    background:#ece8ff;
+    color:black;
+}
+
+.gps-btn:hover{
+    background:#ddd2ff;
+}
+
+.submit-btn{
+    margin-top:25px;
+    background:#111;
+    color:white;
+}
+
+.submit-btn:hover{
+    background:#333;
+}
+
+/* HELP SECTION */
+
+.help-section{
+    margin-top:35px;
+    padding-top:15px;
+    border-top:1px solid #eee;
+    text-align:center;
+}
+
+.help-section h3{
+    margin-bottom:10px;
+    color:#222;
+}
+
+.help-section p{
+    margin-bottom:20px;
+    color:#666;
+    line-height:1.6;
+}
+
+/* SUCCESS POPUP */
+
+.success-popup{
+    display:none;
+    position:fixed;
+    top:20px;
+    right:20px;
+    background:#15a34a;
+    color:white;
+    padding:15px 25px;
+    border-radius:10px;
+    z-index:999;
+}
+
+/* CHECKBOX */
+
+.checkbox{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    font-size:14px;
+}
+
+/* PROGRESS BAR */
+
+.progress-bar{
+    height:8px;
+    background:#eee;
+    border-radius:50px;
+    overflow:hidden;
+    margin-bottom:25px;
+}
+
+.progress-fill{
+    height:100%;
+    width:0%;
+    background:#6c2cff;
+    transition:.3s;
+}
+
+/* FOOTER */
+
+.booking-footer{
+    margin-top:30px;
+    text-align:center;
+    font-size:13px;
+    color:#777;
+}
+
+/* MOBILE */
+
+@media(max-width:650px){
+
+    .container{
+        padding:22px;
+    }
+
+    .time-row{
+        flex-direction:column;
+    }
+
+    .package-options{
+        grid-template-columns:1fr;
+    }
+}

@@ -1,0 +1,631 @@
+/* ===================================
+   GLOBAL
+=================================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Helvetica Neue",Arial,sans-serif;
+}
+
+body{
+    background:#f7f7f7;
+    color:#111;
+    line-height:1.6;
+}
+
+/* ===================================
+   NAVBAR
+=================================== */
+
+.navbar{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:18px 8%;
+
+    background:#fff;
+
+    border-bottom:1px solid #e5e5e5;
+
+    position:sticky;
+
+    top:0;
+
+    z-index:1000;
+
+}
+
+.logo{
+
+    font-size:1.5rem;
+
+    font-weight:700;
+
+}
+
+.navbar nav{
+
+    display:flex;
+
+    gap:30px;
+
+}
+
+.navbar nav a{
+
+    text-decoration:none;
+
+    color:#111;
+
+    font-weight:500;
+
+    transition:.3s;
+
+}
+
+.navbar nav a:hover{
+
+    color:#777;
+
+}
+
+/* ===================================
+   HERO
+=================================== */
+
+.gallery-hero{
+
+    height:55vh;
+
+    background:url(hero-gallery.jpg)
+    center/cover no-repeat;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    position:relative;
+
+}
+
+.overlay{
+
+    width:100%;
+
+    height:100%;
+
+    background:rgba(0,0,0,.45);
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    text-align:center;
+
+    color:#fff;
+
+}
+
+.overlay h1{
+
+    font-size:3.3rem;
+
+    margin-bottom:15px;
+
+}
+
+.overlay p{
+
+    font-size:1.1rem;
+
+    max-width:700px;
+
+}
+
+/* ===================================
+   PROJECT INFO
+=================================== */
+
+.project-info{
+
+    padding:70px 8%;
+
+}
+
+.info-card{
+
+    background:#fff;
+
+    border-radius:15px;
+
+    padding:35px;
+
+    box-shadow:0 5px 18px rgba(0,0,0,.08);
+
+}
+
+.info-card h2{
+
+    margin-bottom:35px;
+
+}
+
+.info-grid{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(220px,1fr));
+
+    gap:25px;
+
+}
+
+.info-grid h4{
+
+    margin-bottom:8px;
+
+}
+
+.info-grid p{
+
+    color:#666;
+
+}
+
+/* ===================================
+   GALLERY
+=================================== */
+
+.gallery-section{
+
+    padding:0 8% 80px;
+
+}
+
+.gallery-section h2{
+
+    text-align:center;
+
+    margin-bottom:40px;
+
+}
+
+.gallery-grid{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(280px,1fr));
+
+    gap:20px;
+
+}
+
+.gallery-grid img{
+
+    width:100%;
+
+    height:260px;
+
+    object-fit:cover;
+
+    border-radius:12px;
+
+    cursor:pointer;
+
+    transition:.35s;
+
+}
+
+.gallery-grid img:hover{
+
+    transform:scale(1.03);
+
+    box-shadow:0 10px 20px rgba(0,0,0,.12);
+
+}
+
+/* ===================================
+   CTA
+=================================== */
+
+.gallery-cta{
+
+    padding:70px 8%;
+
+    text-align:center;
+
+    background:#fff;
+
+}
+
+.gallery-cta h2{
+
+    margin-bottom:15px;
+
+}
+
+.gallery-cta p{
+
+    color:#666;
+
+    margin-bottom:30px;
+
+}
+
+.book-btn{
+
+    display:inline-block;
+
+    background:#111;
+
+    color:#fff;
+
+    padding:14px 32px;
+
+    text-decoration:none;
+
+    border-radius:30px;
+
+    transition:.3s;
+
+}
+
+.book-btn:hover{
+
+    background:#333;
+
+}
+/* ===================================
+   LIGHTBOX
+=================================== */
+
+.lightbox{
+
+    position:fixed;
+    inset:0;
+
+    background:rgba(0,0,0,.92);
+
+    display:none;
+
+    justify-content:center;
+    align-items:center;
+
+    z-index:9999;
+
+}
+
+.lightbox.active{
+
+    display:flex;
+
+}
+
+.lightbox img{
+
+    max-width:85%;
+    max-height:80vh;
+
+    border-radius:10px;
+
+    box-shadow:0 15px 35px rgba(0,0,0,.35);
+
+}
+
+/* ===================================
+   CLOSE BUTTON
+=================================== */
+
+.close-btn{
+
+    position:absolute;
+
+    top:30px;
+    right:40px;
+
+    color:white;
+
+    font-size:45px;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.close-btn:hover{
+
+    transform:scale(1.15);
+
+}
+
+/* ===================================
+   PREVIOUS / NEXT BUTTONS
+=================================== */
+
+.nav-btn{
+
+    position:absolute;
+
+    top:50%;
+
+    transform:translateY(-50%);
+
+    width:60px;
+    height:60px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:rgba(255,255,255,.12);
+
+    color:white;
+
+    font-size:28px;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.nav-btn:hover{
+
+    background:white;
+
+    color:black;
+
+}
+
+.prev{
+
+    left:35px;
+
+}
+
+.next{
+
+    right:35px;
+
+}
+
+/* ===================================
+   IMAGE COUNTER
+=================================== */
+
+.image-counter{
+
+    position:absolute;
+
+    bottom:30px;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    color:white;
+
+    font-size:18px;
+
+    font-weight:600;
+
+}
+
+/* ===================================
+   BACK BUTTON
+=================================== */
+
+.back-section{
+
+    padding:60px 8%;
+
+    text-align:center;
+
+}
+
+.back-btn{
+
+    display:inline-block;
+
+    padding:14px 28px;
+
+    background:#111;
+
+    color:white;
+
+    text-decoration:none;
+
+    border-radius:30px;
+
+    transition:.3s;
+
+}
+
+.back-btn:hover{
+
+    background:#333;
+
+}
+
+/* ===================================
+   FOOTER
+=================================== */
+
+footer{
+
+    background:#111;
+
+    color:white;
+
+    padding:60px 8%;
+
+    text-align:center;
+
+}
+
+.footer-content h3{
+
+    margin-bottom:15px;
+
+}
+
+.footer-content p{
+
+    color:#bbb;
+
+}
+
+.footer-links{
+
+    margin:30px 0;
+
+}
+
+.footer-links a{
+
+    color:white;
+
+    text-decoration:none;
+
+    margin:0 18px;
+
+}
+
+.footer-links a:hover{
+
+    color:#ccc;
+
+}
+
+.copyright{
+
+    margin-top:20px;
+
+    font-size:14px;
+
+}
+
+/* ===================================
+   RESPONSIVE
+=================================== */
+
+@media(max-width:992px){
+
+    .overlay h1{
+
+        font-size:2.6rem;
+
+    }
+
+    .lightbox img{
+
+        max-width:92%;
+
+    }
+
+}
+
+@media(max-width:768px){
+
+    .navbar{
+
+        flex-direction:column;
+
+        gap:15px;
+
+    }
+
+    .gallery-hero{
+
+        height:40vh;
+
+    }
+
+    .overlay h1{
+
+        font-size:2.1rem;
+
+    }
+
+    .overlay p{
+
+        width:90%;
+
+        font-size:15px;
+
+    }
+
+    .project-info{
+
+        padding:50px 20px;
+
+    }
+
+    .gallery-section{
+
+        padding:0 20px 60px;
+
+    }
+
+    .nav-btn{
+
+        width:45px;
+
+        height:45px;
+
+        font-size:20px;
+
+    }
+
+    .prev{
+
+        left:10px;
+
+    }
+
+    .next{
+
+        right:10px;
+
+    }
+
+}
+
+@media(max-width:500px){
+
+    .gallery-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .gallery-grid img{
+
+        height:220px;
+
+    }
+
+    .close-btn{
+
+        top:15px;
+
+        right:20px;
+
+        font-size:35px;
+
+    }
+
+}

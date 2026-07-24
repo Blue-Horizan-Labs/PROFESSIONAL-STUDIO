@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Admin Dashboard</title>
+
+<link rel="stylesheet"
+href="index.css">
+
+</head>
+
+<body>
+
+<!-- ================= NAVBAR ================= -->
+
+<header class="navbar">
+
+<div class="logo">
+
+PhotoSaaS Admin
+
+</div>
+
+<nav>
+
+<a href="#dashboard">Dashboard</a>
+
+<a href="#photographers">Photographers</a>
+
+<a href="#subscriptions">Subscriptions</a>
+
+<a href="#payments">Payments</a>
+
+<a href="#analytics">Analytics</a>
+
+<a href="#support">Support</a>
+
+<a href="#settings">Settings</a>
+
+</nav>
+
+</header>
+
+<!-- ================= HERO ================= -->
+
+<section class="hero">
+
+<div class="hero-content">
+
+<h1>
+
+Welcome Admin 👋
+
+</h1>
+
+<p>
+
+Manage photographers, subscriptions, payments and your entire platform.
+
+</p>
+
+</div>
+
+</section>
+
+<!-- ================= DASHBOARD ================= -->
+
+<section
+class="section"
+id="dashboard">
+
+<h2>
+
+Platform Overview
+
+</h2>
+
+<div class="stats-grid">
+
+<div class="stat-card">
+
+<h3>
+
+Total Photographers
+
+</h3>
+
+<h1
+class="counter"
+data-target="286">
+
+0
+
+</h1>
+
+<p>
+
++12 this month
+
+</p>
+
+</div>
+
+<div class="stat-card">
+
+<h3>
+
+Active Subscriptions
+
+</h3>
+
+<h1
+class="counter"
+data-target="214">
+
+0
+
+</h1>
+
+<p>
+
+74.8% Active
+
+</p>
+
+</div>
+
+<div class="stat-card">
+
+<h3>
+
+Bookings This Month
+
+</h3>
+
+<h1
+class="counter"
+data-target="1648">
+
+0
+
+</h1>
+
+<p>
+
+Across all photographers
+
+</p>
+
+</div>
+
+<div class="stat-card">
+
+<h3>
+
+Monthly Revenue
+
+</h3>
+
+<h1>
+
+₹4.82L
+
+</h1>
+
+<p>
+
+Estimated Revenue
+
+</p>
+
+</div>
+
+<div class="stat-card">
+
+<h3>
+
+Pending Support Tickets
+
+</h3>
+
+<h1
+class="counter"
+data-target="17">
+
+0
+
+</h1>
+
+<p>
+
+Needs Attention
+
+</p>
+
+</div>
+
+<div class="stat-card">
+
+<h3>
+
+Referral Signups
+
+</h3>
+
+<h1
+class="counter"
+data-target="89">
+
+0
+
+</h1>
+
+<p>
+
+This Month
+
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ================= PHOTOGRAPHERS ================= -->
+
+<section
+class="section"
+id="photographers">
+
+<h2>
+
+Photographer Management
+
+</h2>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Name</th>
+
+<th>City</th>
+
+<th>Plan</th>
+
+<th>Status</th>
+
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<td>Rahul Photography</td>
+
+<td>Nagpur</td>
+
+<td>Pro</td>
+
+<td>Active</td>
+
+<td>
+
+<button>
+
+View
+
+</button>
+
+</td>
+
+</tr>
+
+<tr>
+
+<td>Dream Studio</td>
+
+<td>Pune</td>
+
+<td>Studio</td>
+
+<td>Pending</td>
+
+<td>
+
+<button>
+
+Approve
+
+</button>
+
+</td>
+
+</tr>
+
+<tr>
+
+<td>Pixel Memories</td>
+
+<td>Mumbai</td>
+
+<td>Free</td>
+
+<td>Suspended</td>
+
+<td>
+
+<button>
+
+Review
+
+</button>
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</section>
+
+<!-- ================= SUBSCRIPTIONS ================= -->
+
+<section class="section" id="subscriptions">
+
+<h2>Subscription Management</h2>
+
+<div class="subscription-grid">
+
+<div class="subscription-card">
+
+<h3>Free Plan</h3>
+
+<p>Users : <strong>72</strong></p>
+
+<p>Limited Features</p>
+
+<button>View Details</button>
+
+</div>
+
+<div class="subscription-card">
+
+<h3>Pro Plan</h3>
+
+<p>Users : <strong>164</strong></p>
+
+<p>₹999 / Month</p>
+
+<button>Manage</button>
+
+</div>
+
+<div class="subscription-card">
+
+<h3>Studio Plan</h3>
+
+<p>Users : <strong>50</strong></p>
+
+<p>₹2499 / Month</p>
+
+<button>Manage</button>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ================= PAYMENTS ================= -->
+
+<section class="section" id="payments">
+
+<h2>Recent Payments</h2>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Photographer</th>
+
+<th>Plan</th>
+
+<th>Amount</th>
+
+<th>Status</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<td>Rahul Photography</td>
+
+<td>Pro</td>
+
+<td>₹999</td>
+
+<td>Paid</td>
+
+</tr>
+
+<tr>
+
+<td>Dream Studio</td>
+
+<td>Studio</td>
+
+<td>₹2499</td>
+
+<td>Paid</td>
+
+</tr>
+
+<tr>
+
+<td>Pixel Memories</td>
+
+<td>Pro</td>
+
+<td>₹999</td>
+
+<td>Pending</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</section>
+
+<!-- ================= ANALYTICS ================= -->
+
+<section class="section" id="analytics">
+
+<h2>Platform Analytics</h2>
+
+<div class="analytics-grid">
+
+<div class="analytics-card">
+
+<h3>Monthly Growth</h3>
+
+<div class="progress">
+
+<div class="progress-fill"
+
+data-width="82">
+
+</div>
+
+</div>
+
+<p>82%</p>
+
+</div>
+
+<div class="analytics-card">
+
+<h3>Conversion Rate</h3>
+
+<div class="progress">
+
+<div class="progress-fill"
+
+data-width="68">
+
+</div>
+
+</div>
+
+<p>68%</p>
+
+</div>
+
+<div class="analytics-card">
+
+<h3>User Retention</h3>
+
+<div class="progress">
+
+<div class="progress-fill"
+
+data-width="91">
+
+</div>
+
+</div>
+
+<p>91%</p>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ================= REFERRALS ================= -->
+
+<section class="section">
+
+<h2>Referral Program</h2>
+
+<div class="referral-box">
+
+<h3>Top Referrer</h3>
+
+<p>Rahul Photography</p>
+
+<p>18 Successful Referrals</p>
+
+<button>View Leaderboard</button>
+
+</div>
+
+</section>
+
+<!-- ================= SUPPORT ================= -->
+
+<section class="section" id="support">
+
+<h2>Support Tickets</h2>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Ticket</th>
+
+<th>User</th>
+
+<th>Status</th>
+
+<th>Priority</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<td>#1023</td>
+
+<td>Dream Studio</td>
+
+<td>Open</td>
+
+<td>High</td>
+
+</tr>
+
+<tr>
+
+<td>#1024</td>
+
+<td>Pixel Memories</td>
+
+<td>Resolved</td>
+
+<td>Low</td>
+
+</tr>
+
+<tr>
+
+<td>#1025</td>
+
+<td>Rahul Photography</td>
+
+<td>Pending</td>
+
+<td>Medium</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</section>
+
+<!-- ================= ANNOUNCEMENTS ================= -->
+
+<section class="section">
+
+<h2>Announcements</h2>
+
+<div class="announcement">
+
+<p>
+
+✔ New AI Gallery feature launching next month.
+
+</p>
+
+</div>
+
+<div class="announcement">
+
+<p>
+
+✔ Scheduled maintenance on Sunday 2:00 AM.
+
+</p>
+
+</div>
+
+</section>
+
+<!-- ================= SETTINGS ================= -->
+
+<section class="section"
+
+id="settings">
+
+<h2>Platform Settings</h2>
+
+<div class="settings-grid">
+
+<div class="setting-card">
+
+Logo
+
+</div>
+
+<div class="setting-card">
+
+Payment Gateway
+
+</div>
+
+<div class="setting-card">
+
+Email Settings
+
+</div>
+
+<div class="setting-card">
+
+GST & Taxes
+
+</div>
+
+<div class="setting-card">
+
+Security
+
+</div>
+
+<div class="setting-card">
+
+Admin Profile
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ================= FOOTER ================= -->
+
+<footer>
+
+<p>
+
+© 2026 PhotoSaaS
+
+</p>
+
+<p>
+
+Admin Dashboard
+
+</p>
+
+</footer>
+
+<script src="index.js"></script>
+
+</body>
+
+</html>
