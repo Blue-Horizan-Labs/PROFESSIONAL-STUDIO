@@ -1,5 +1,5 @@
 // Ping handler at url/api/ping
 
-export function handler(req,res){
-    res.send('SaaS Pinged!!!')
+export default function handler(req, res) {
+  res.status(200).json({ message: 'SaaS Pinged!!!' })
 }
