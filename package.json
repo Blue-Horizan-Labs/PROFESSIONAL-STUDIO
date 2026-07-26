@@ -1,0 +1,20 @@
+{
+  "name": "photo-studio",
+  "version": "1.0.0",
+  "description": "a PaaS for photographers",
+  "homepage": "https://github.com/nrgr35/PROFESSIONAL-STUDIO#readme",
+  "bugs": {
+    "url": "https://github.com/nrgr35/PROFESSIONAL-STUDIO/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nrgr35/PROFESSIONAL-STUDIO.git"
+  },
+  "license": "ISC",
+  "author": "Magarevedant",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
