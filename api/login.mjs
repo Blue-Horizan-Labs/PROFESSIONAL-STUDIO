@@ -1,6 +1,6 @@
 // login endpoint reciving emial and password from the user
 
-export default function login(req, res) {
+export default function handler(req, res) {
   const { email, pwd } = req.body;
 
   //
