@@ -168,6 +168,8 @@ a{
 
     gap:28px;
 
+    border-radius: 7px;
+
 }
 
 .navbar nav a{
@@ -638,7 +640,7 @@ STATUS BADGES
 
 .status.pro{
 
-    color:#1d4ed8;
+    color:#254dba;
 
     background:#dbeafe;
 
