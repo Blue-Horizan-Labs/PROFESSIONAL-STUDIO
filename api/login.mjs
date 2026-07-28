@@ -16,10 +16,12 @@ export default function handler(req, res) {
   for (const userId in users) {
     const user = users[userId];
     if (user.email === email && user.password === password) {
+      console.log(`User ${userId} logged in successfully.`);
       return res.status(200).json({ message: 'Login successful', userId });
     } 
   }
 
   // 2. Added a failure response if the loop finishes without finding a match
+  console.log(`Failed login attempt for email: ${email}`);
   return res.status(401).json({ message: 'Invalid email or password.' });
 }
