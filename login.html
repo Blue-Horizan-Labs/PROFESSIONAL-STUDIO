@@ -57,6 +57,7 @@ body::after{
     margin:20px;
     padding:45px;
     border-radius:22px;
+    overflow: hidden;
     background:rgba(255,255,255,.08);
     backdrop-filter:blur(20px);
     border:1px solid rgba(255,255,255,.12);
@@ -73,15 +74,20 @@ body::after{
     border-radius:22px;
     padding:1px;
     background:linear-gradient(135deg,#7c3aed,#4f46e5,#3b82f6);
-    -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-    /* Standard property for compatibility */
+
     mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-    -webkit-mask-composite:xor;
-            mask-composite:exclude;
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+
+    pointer-events:none;
+    z-index:-1;
 }
 
 h1{
