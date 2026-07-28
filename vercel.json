@@ -1,0 +1,15 @@
+{
+    "cleanUrls": true,
+    "redirects": [
+        {
+            "source": "/login",
+            "destination": "/api/login_page",
+            "statusCode": 301
+        },
+        {
+            "source": "/auth/login.html",
+            "destination": "/api/login_page",
+            "statusCode": 301
+        }
+    ]
+}
