@@ -1,5 +1,6 @@
-export default function handler(req, res) {
-  // 1. Changed 'pwd' to 'password' to match the frontend
+import { createClient } from "@supabase/supabase-js";
+
+export default async function handler(req, res) {
   const { email, password } = req.body;
 
   // Validate the input
@@ -7,21 +8,19 @@ export default function handler(req, res) {
     return res.status(400).json({ message: 'Email and password are required.' });
   }
 
-  // Mock database
-  const users = {
-    '1': { email: 'vedantmagare8@gmail.com', password: 'password123' }
-  };
+  const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  });
 
-  // Check credentials
-  for (const userId in users) {
-    const user = users[userId];
-    if (user.email === email && user.password === password) {
-      console.log(`User ${userId} logged in successfully.`);
-      return res.status(200).json({ message: 'Login successful', userId });
-    } 
+  if (error) {
+    console.log('Error during login:');
+    return res.status(401).json({ message: 'Invalid email or password.' });
   }
-
-  // 2. Added a failure response if the loop finishes without finding a match
-  console.log(`Failed login attempt for email: ${email}`);
-  return res.status(401).json({ message: 'Invalid email or password.' });
+  if (data){
+    console.log('Login successful:');
+    res.setHeader('Set-Cookie', 'token=' + data.session.access_token + '; HttpOnly; Path=/; Max-Age=3600');
+    return res.status(200).json({ message: 'Login successful'});
+  }
 }

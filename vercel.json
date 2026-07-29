@@ -10,6 +10,15 @@
             "source": "/auth/login.html",
             "destination": "/api/login_page",
             "statusCode": 301
-        }
-    ]
+        },
+        {
+            "source": "/signup",
+            "destination": "/api/signup_page",
+            "statusCode": 301
+        },
+        {
+            "source": "/auth/signup.html",
+            "destination": "/api/signup_page",
+            "statusCode": 301
+        }]
 }
