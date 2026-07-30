@@ -289,6 +289,22 @@ select:focus{
 
 }
 
+.add-service-box{
+    display:flex;
+    gap:12px;
+    margin-top:20px;
+    flex-wrap:wrap;
+}
+
+.add-service-box input{
+    flex:1;
+    min-width:220px;
+}
+
+.service-card{
+    cursor:pointer;
+}
+
 
 /* ===========================
    PRICING
