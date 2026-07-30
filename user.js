@@ -295,6 +295,106 @@ document.addEventListener("DOMContentLoaded", () => {
 
     });
 
+    const serviceGrid = document.getElementById("serviceGrid");
+const pricingGrid = document.getElementById("pricingGrid");
+const addServiceBtn = document.getElementById("addServiceBtn");
+const newService = document.getElementById("newService");
+
+function createPricingCard(serviceName) {
+
+    return `
+        <div class="pricing-card" data-service="${serviceName}">
+
+            <h3>${serviceName}</h3>
+
+            <label>Basic Package</label>
+            <input type="text" placeholder="₹">
+
+            <label>Premium Package</label>
+            <input type="text" placeholder="₹">
+
+            <label>Luxury Package</label>
+            <input type="text" placeholder="₹">
+
+            <button>Save Pricing</button>
+
+        </div>
+    `;
+}
+
+function updatePricing() {
+
+    pricingGrid.innerHTML = "";
+
+    const services = serviceGrid.querySelectorAll("label");
+
+    services.forEach(service => {
+
+        const checkbox = service.querySelector("input");
+
+        if (checkbox.checked) {
+
+            const name = service.textContent.trim();
+
+            pricingGrid.innerHTML += createPricingCard(name);
+
+        }
+
+    });
+
+}
+
+function attachCheckboxEvents() {
+
+    const checkboxes = serviceGrid.querySelectorAll("input[type='checkbox']");
+
+    checkboxes.forEach(box => {
+
+        box.onchange = updatePricing;
+
+    });
+
+}
+
+addServiceBtn.onclick = () => {
+
+    const name = newService.value.trim();
+
+    if (name === "") return;
+
+    const exists = [...serviceGrid.querySelectorAll("label")].some(
+        s => s.textContent.trim().toLowerCase() === name.toLowerCase()
+    );
+
+    if (exists) {
+
+        alert("Service already exists.");
+        return;
+
+    }
+
+    const label = document.createElement("label");
+
+    label.className = "service-card";
+
+    label.innerHTML = `
+        <input type="checkbox" checked>
+        ${name}
+    `;
+
+    serviceGrid.appendChild(label);
+
+    newService.value = "";
+
+    attachCheckboxEvents();
+
+    updatePricing();
+
+};
+
+attachCheckboxEvents();
+updatePricing();
+
 
     /* ==========================
        GALLERY FILE COUNT
