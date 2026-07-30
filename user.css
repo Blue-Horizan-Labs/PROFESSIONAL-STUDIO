@@ -289,6 +289,22 @@ select:focus{
 
 }
 
+.add-service-box{
+    display:flex;
+    gap:12px;
+    margin-top:20px;
+    flex-wrap:wrap;
+}
+
+.add-service-box input{
+    flex:1;
+    min-width:220px;
+}
+
+.service-card{
+    cursor:pointer;
+}
+
 
 /* ===========================
    PRICING
@@ -470,6 +486,93 @@ tr:hover{
 
 }
 
+
+/* Booking Controls */
+
+.booking-controls{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+    flex-wrap:wrap;
+    margin:25px 0;
+}
+
+.booking-filter,
+.booking-compare{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.booking-filter label,
+.booking-compare label{
+    font-weight:600;
+    color:#444;
+}
+
+.booking-filter select,
+.booking-compare select{
+    padding:10px 14px;
+    border:1px solid #ddd;
+    border-radius:10px;
+    background:#fff;
+    font-size:14px;
+    cursor:pointer;
+    outline:none;
+    transition:.3s;
+}
+
+.booking-filter select:focus,
+.booking-compare select:focus{
+    border-color:#4f46e5;
+}
+
+
+/* Comparison Cards */
+
+.compare-summary{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:20px;
+    margin-bottom:30px;
+}
+
+.compare-card{
+    background:#fff;
+    border:1px solid #ececec;
+    border-radius:14px;
+    padding:20px;
+    text-align:center;
+    transition:.3s;
+}
+
+.compare-card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 10px 20px rgba(0,0,0,.08);
+}
+
+.compare-card h4{
+    font-size:15px;
+    color:#666;
+    margin-bottom:10px;
+}
+
+.compare-card .count{
+    font-size:34px;
+    font-weight:700;
+    margin-bottom:6px;
+    color:#222;
+}
+
+.compare-card span{
+    font-size:13px;
+    color:#777;
+}
+
+.compare-card.increase .count{
+    color:#16a34a;
+}
 
 /* ===========================
    STATUS

@@ -197,72 +197,60 @@ Save Profile
 
 <section class="section" id="services">
 
-<h2>Services</h2>
+    <h2>Services</h2>
 
-<div class="service-grid">
+    <div class="service-grid" id="serviceGrid">
 
-<label class="service-card">
+        <label class="service-card">
+            <input type="checkbox" checked>
+            Wedding Photography
+        </label>
 
-<input type="checkbox" checked>
+        <label class="service-card">
+            <input type="checkbox" checked>
+            Pre-Wedding Shoot
+        </label>
 
-Wedding Photography
+        <label class="service-card">
+            <input type="checkbox" checked>
+            Portrait Photography
+        </label>
 
-</label>
+        <label class="service-card">
+            <input type="checkbox">
+            Commercial Photography
+        </label>
 
+        <label class="service-card">
+            <input type="checkbox">
+            Corporate Events
+        </label>
 
-<label class="service-card">
+        <label class="service-card">
+            <input type="checkbox">
+            Drone Photography
+        </label>
 
-<input type="checkbox" checked>
+    </div>
 
-Pre-Wedding Shoot
+    <div class="add-service-box">
 
-</label>
+        <input
+            type="text"
+            id="newService"
+            placeholder="Enter new service">
 
+        <button type="button" id="addServiceBtn">
+            + Add Service
+        </button>
 
-<label class="service-card">
+    </div>
 
-<input type="checkbox" checked>
+    <br>
 
-Portrait Photography
-
-</label>
-
-
-<label class="service-card">
-
-<input type="checkbox">
-
-Commercial Photography
-
-</label>
-
-
-<label class="service-card">
-
-<input type="checkbox">
-
-Corporate Events
-
-</label>
-
-
-<label class="service-card">
-
-<input type="checkbox">
-
-Drone Photography
-
-</label>
-
-</div>
-
-<br>
-
-<button>
-
-Save Services
-
-</button>
+    <button>
+        Save Services
+    </button>
 
 </section>
 
@@ -272,49 +260,13 @@ Save Services
 
 <section class="section" id="pricing">
 
-<h2>Pricing</h2>
+    <h2>Pricing</h2>
 
-<div class="pricing-grid">
-
-    <div class="pricing-card">
-
-        <h3>Wedding Photography</h3>
-
-        <label>Basic Package</label>
-        <input type="text" placeholder="₹25,000">
-
-        <label>Premium Package</label>
-        <input type="text" placeholder="₹45,000">
-
-        <label>Luxury Package</label>
-        <input type="text" placeholder="₹80,000">
-
-        <button>Save Pricing</button>
+    <div class="pricing-grid" id="pricingGrid">
 
     </div>
-
-
-    <div class="pricing-card">
-
-        <h3>Pre-Wedding Shoot</h3>
-
-        <label>Basic Package</label>
-        <input type="text" placeholder="₹15,000">
-
-        <label>Premium Package</label>
-        <input type="text" placeholder="₹30,000">
-
-        <label>Luxury Package</label>
-        <input type="text" placeholder="₹50,000">
-
-        <button>Save Pricing</button>
-
-    </div>
-
-</div>
 
 </section>
-
 
 <!-- ==========================
         EQUIPMENT
@@ -443,77 +395,111 @@ Create Album
 <!-- ==========================
         BOOKINGS
 =========================== -->
-
 <section class="section" id="bookings">
 
-<h2>Bookings</h2>
+    <h2>Bookings</h2>
 
-<div class="table-container">
+    <!-- Booking Controls -->
+    <div class="booking-controls">
 
-<table>
+        <div class="booking-filter">
 
-<thead>
+            <label>View:</label>
 
-<tr>
+            <select>
+                <option selected>This Week</option>
+                <option>This Month</option>
+                <option>This Year</option>
+                <option>All Time</option>
+            </select>
 
-<th>Client</th>
+        </div>
 
-<th>Service</th>
+        <div class="booking-compare">
 
-<th>Date</th>
+            <label>Compare:</label>
 
-<th>Status</th>
 
-</tr>
+            <select>
+                <option selected> Last Month</option>
+                <option>Last Week</option>
+                <option>Last Year</option>
+                <option>No Comparison</option>
+            </select>
 
-</thead>
+        </div>
 
-<tbody>
+    </div>
 
-<tr>
+    <!-- Comparison Summary -->
+    <div class="compare-summary">
 
-<td>Rahul Patil</td>
+        <div class="compare-card">
+            <h4>This Month</h4>
+            <p class="count">18</p>
+            <span>Bookings</span>
+        </div>
 
-<td>Wedding</td>
+        <div class="compare-card">
+            <h4>Last Month</h4>
+            <p class="count">14</p>
+            <span>Bookings</span>
+        </div>
 
-<td>15 Aug 2026</td>
+        <div class="compare-card increase">
+            <h4>Growth</h4>
+            <p class="count">+28%</p>
+            <span>Compared to Last Month</span>
+        </div>
 
-<td><span class="status active">Confirmed</span></td>
+    </div>
 
-</tr>
+    <!-- Booking Table -->
+    <div class="table-container">
 
-<tr>
+        <table>
 
-<td>Neha Sharma</td>
+            <thead>
 
-<td>Pre-Wedding</td>
+                <tr>
+                    <th>Client</th>
+                    <th>Service</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                </tr>
 
-<td>22 Aug 2026</td>
+            </thead>
 
-<td><span class="status pending">Pending</span></td>
+            <tbody>
 
-</tr>
+                <tr>
+                    <td>Rahul Patil</td>
+                    <td>Wedding</td>
+                    <td>15 Aug 2026</td>
+                    <td><span class="status active">Confirmed</span></td>
+                </tr>
 
-<tr>
+                <tr>
+                    <td>Neha Sharma</td>
+                    <td>Pre-Wedding</td>
+                    <td>22 Aug 2026</td>
+                    <td><span class="status pending">Pending</span></td>
+                </tr>
 
-<td>Aryan Mehta</td>
+                <tr>
+                    <td>Aryan Mehta</td>
+                    <td>Portrait</td>
+                    <td>30 Aug 2026</td>
+                    <td><span class="status completed">Completed</span></td>
+                </tr>
 
-<td>Portrait</td>
+            </tbody>
 
-<td>30 Aug 2026</td>
+        </table>
 
-<td><span class="status completed">Completed</span></td>
-
-</tr>
-
-</tbody>
-
-</table>
-
-</div>
+    </div>
 
 </section>
-
 
 <!-- ==========================
         REVIEWS
@@ -734,17 +720,9 @@ Delete
 
 <footer>
 
-<p>
-
-© 2026 PhotoSaaS
-
-</p>
-
-<p>
-
-Photographer Dashboard
-
-</p>
+ <p>
+          © 2026   Powered by <a href="index.html" target="_blank"> Professional Studio</a> 
+        </p>
 
 </footer>
 
