@@ -395,77 +395,111 @@ Create Album
 <!-- ==========================
         BOOKINGS
 =========================== -->
-
 <section class="section" id="bookings">
 
-<h2>Bookings</h2>
+    <h2>Bookings</h2>
 
-<div class="table-container">
+    <!-- Booking Controls -->
+    <div class="booking-controls">
 
-<table>
+        <div class="booking-filter">
 
-<thead>
+            <label>View:</label>
 
-<tr>
+            <select>
+                <option selected>This Week</option>
+                <option>This Month</option>
+                <option>This Year</option>
+                <option>All Time</option>
+            </select>
 
-<th>Client</th>
+        </div>
 
-<th>Service</th>
+        <div class="booking-compare">
 
-<th>Date</th>
+            <label>Compare:</label>
 
-<th>Status</th>
 
-</tr>
+            <select>
+                <option selected> Last Month</option>
+                <option>Last Week</option>
+                <option>Last Year</option>
+                <option>No Comparison</option>
+            </select>
 
-</thead>
+        </div>
 
-<tbody>
+    </div>
 
-<tr>
+    <!-- Comparison Summary -->
+    <div class="compare-summary">
 
-<td>Rahul Patil</td>
+        <div class="compare-card">
+            <h4>This Month</h4>
+            <p class="count">18</p>
+            <span>Bookings</span>
+        </div>
 
-<td>Wedding</td>
+        <div class="compare-card">
+            <h4>Last Month</h4>
+            <p class="count">14</p>
+            <span>Bookings</span>
+        </div>
 
-<td>15 Aug 2026</td>
+        <div class="compare-card increase">
+            <h4>Growth</h4>
+            <p class="count">+28%</p>
+            <span>Compared to Last Month</span>
+        </div>
 
-<td><span class="status active">Confirmed</span></td>
+    </div>
 
-</tr>
+    <!-- Booking Table -->
+    <div class="table-container">
 
-<tr>
+        <table>
 
-<td>Neha Sharma</td>
+            <thead>
 
-<td>Pre-Wedding</td>
+                <tr>
+                    <th>Client</th>
+                    <th>Service</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                </tr>
 
-<td>22 Aug 2026</td>
+            </thead>
 
-<td><span class="status pending">Pending</span></td>
+            <tbody>
 
-</tr>
+                <tr>
+                    <td>Rahul Patil</td>
+                    <td>Wedding</td>
+                    <td>15 Aug 2026</td>
+                    <td><span class="status active">Confirmed</span></td>
+                </tr>
 
-<tr>
+                <tr>
+                    <td>Neha Sharma</td>
+                    <td>Pre-Wedding</td>
+                    <td>22 Aug 2026</td>
+                    <td><span class="status pending">Pending</span></td>
+                </tr>
 
-<td>Aryan Mehta</td>
+                <tr>
+                    <td>Aryan Mehta</td>
+                    <td>Portrait</td>
+                    <td>30 Aug 2026</td>
+                    <td><span class="status completed">Completed</span></td>
+                </tr>
 
-<td>Portrait</td>
+            </tbody>
 
-<td>30 Aug 2026</td>
+        </table>
 
-<td><span class="status completed">Completed</span></td>
-
-</tr>
-
-</tbody>
-
-</table>
-
-</div>
+    </div>
 
 </section>
-
 
 <!-- ==========================
         REVIEWS

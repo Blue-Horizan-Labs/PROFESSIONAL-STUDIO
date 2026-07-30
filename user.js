@@ -548,9 +548,7 @@ updatePricing();
     }
 
 
-    /* ==========================
-       AUTO CLOSE MOBILE MENU
-    ========================== */
+  
 
     document.querySelectorAll(".menu a")
         .forEach(link => {
@@ -568,3 +566,100 @@ updatePricing();
         });
 
 });
+
+
+  /* ==========================
+       BOOKING SEC-
+    ========================== */
+    const viewSelect = document.querySelector(".booking-filter select");
+const compareSelect = document.querySelector(".booking-compare select");
+
+const cards = document.querySelectorAll(".compare-card");
+
+const bookingStats = {
+
+    week:{
+        current:5,
+        previous:4,
+        growth:"+25%"
+    },
+
+    month:{
+        current:18,
+        previous:14,
+        growth:"+28%"
+    },
+
+    year:{
+        current:132,
+        previous:115,
+        growth:"+15%"
+    },
+
+    all:{
+        current:584,
+        previous:530,
+        growth:"+10%"
+    }
+
+};
+
+function updateCards(type){
+
+    let data;
+
+    switch(type){
+
+        case "This Week":
+            data = bookingStats.week;
+            cards[0].querySelector("h4").textContent="This Week";
+            cards[1].querySelector("h4").textContent="Last Week";
+        break;
+
+        case "This Year":
+            data = bookingStats.year;
+            cards[0].querySelector("h4").textContent="This Year";
+            cards[1].querySelector("h4").textContent="Last Year";
+        break;
+
+        case "All Time":
+            data = bookingStats.all;
+            cards[0].querySelector("h4").textContent="All Time";
+            cards[1].querySelector("h4").textContent="Previous Total";
+        break;
+
+        default:
+            data = bookingStats.month;
+            cards[0].querySelector("h4").textContent="This Month";
+            cards[1].querySelector("h4").textContent="Last Month";
+    }
+
+    cards[0].querySelector(".count").textContent=data.current;
+    cards[1].querySelector(".count").textContent=data.previous;
+    cards[2].querySelector(".count").textContent=data.growth;
+
+}
+
+viewSelect.addEventListener("change",function(){
+
+    updateCards(this.value);
+
+});
+
+compareSelect.addEventListener("change",function(){
+
+    if(this.value==="No Comparison"){
+
+        cards[1].style.display="none";
+        cards[2].style.display="none";
+
+    }else{
+
+        cards[1].style.display="block";
+        cards[2].style.display="block";
+
+    }
+
+});
+
+updateCards("This Month");
