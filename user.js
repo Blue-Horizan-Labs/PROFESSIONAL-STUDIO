@@ -568,98 +568,200 @@ updatePricing();
 });
 
 
-  /* ==========================
-       BOOKING SEC-
-    ========================== */
-    const viewSelect = document.querySelector(".booking-filter select");
-const compareSelect = document.querySelector(".booking-compare select");
+/* ==========================================
+   BOOKING DASHBOARD
+========================================== */
 
-const cards = document.querySelectorAll(".compare-card");
-
-const bookingStats = {
-
-    week:{
-        current:5,
-        previous:4,
-        growth:"+25%"
+const bookings = [
+    {
+        client: "Rahul Patil",
+        service: "Wedding",
+        date: "15 Aug 2026",
+        amount: "₹45,000",
+        status: "Confirmed"
     },
-
-    month:{
-        current:18,
-        previous:14,
-        growth:"+28%"
+    {
+        client: "Neha Sharma",
+        service: "Pre-Wedding",
+        date: "22 Aug 2026",
+        amount: "₹18,000",
+        status: "Pending"
     },
-
-    year:{
-        current:132,
-        previous:115,
-        growth:"+15%"
+    {
+        client: "Aryan Mehta",
+        service: "Portrait",
+        date: "30 Aug 2026",
+        amount: "₹9,000",
+        status: "Completed"
     },
-
-    all:{
-        current:584,
-        previous:530,
-        growth:"+10%"
+    {
+        client: "Priya Deshmukh",
+        service: "Maternity",
+        date: "4 Sep 2026",
+        amount: "₹12,500",
+        status: "Confirmed"
+    },
+    {
+        client: "Karan Joshi",
+        service: "Birthday",
+        date: "12 Sep 2026",
+        amount: "₹15,000",
+        status: "Pending"
+    },
+    {
+        client: "Sneha Kulkarni",
+        service: "Corporate",
+        date: "18 Sep 2026",
+        amount: "₹32,000",
+        status: "Completed"
     }
+];
 
-};
+const table = document.getElementById("bookingTable");
 
-function updateCards(type){
+const searchInput = document.getElementById("searchBooking");
+const statusFilter = document.getElementById("statusFilter");
+const viewFilter = document.getElementById("viewFilter");
+const compareFilter = document.getElementById("compareFilter");
 
-    let data;
+const totalBookings = document.getElementById("totalBookings");
+const confirmedBookings = document.getElementById("confirmedBookings");
+const pendingBookings = document.getElementById("pendingBookings");
+const completedBookings = document.getElementById("completedBookings");
 
-    switch(type){
+const currentValue = document.getElementById("currentValue");
+const previousValue = document.getElementById("previousValue");
+const growthValue = document.getElementById("growthValue");
 
-        case "This Week":
-            data = bookingStats.week;
-            cards[0].querySelector("h4").textContent="This Week";
-            cards[1].querySelector("h4").textContent="Last Week";
-        break;
+function statusClass(status){
 
-        case "This Year":
-            data = bookingStats.year;
-            cards[0].querySelector("h4").textContent="This Year";
-            cards[1].querySelector("h4").textContent="Last Year";
-        break;
-
-        case "All Time":
-            data = bookingStats.all;
-            cards[0].querySelector("h4").textContent="All Time";
-            cards[1].querySelector("h4").textContent="Previous Total";
-        break;
-
-        default:
-            data = bookingStats.month;
-            cards[0].querySelector("h4").textContent="This Month";
-            cards[1].querySelector("h4").textContent="Last Month";
-    }
-
-    cards[0].querySelector(".count").textContent=data.current;
-    cards[1].querySelector(".count").textContent=data.previous;
-    cards[2].querySelector(".count").textContent=data.growth;
+    if(status==="Confirmed") return "active";
+    if(status==="Pending") return "pending";
+    return "completed";
 
 }
 
-viewSelect.addEventListener("change",function(){
+function renderTable(){
 
-    updateCards(this.value);
+    let search = searchInput.value.toLowerCase();
 
-});
+    let status = statusFilter.value;
 
-compareSelect.addEventListener("change",function(){
+    let filtered = bookings.filter(function(booking){
 
-    if(this.value==="No Comparison"){
+        let matchSearch =
+        booking.client.toLowerCase().includes(search) ||
+        booking.service.toLowerCase().includes(search);
 
-        cards[1].style.display="none";
-        cards[2].style.display="none";
+        let matchStatus =
+        status==="all" || booking.status===status;
 
-    }else{
+        return matchSearch && matchStatus;
 
-        cards[1].style.display="block";
-        cards[2].style.display="block";
+    });
+
+    table.innerHTML="";
+
+    filtered.forEach(function(booking){
+
+        table.innerHTML += `
+
+        <tr>
+
+            <td>${booking.client}</td>
+
+            <td>${booking.service}</td>
+
+            <td>${booking.date}</td>
+
+            <td>${booking.amount}</td>
+
+            <td>
+                <span class="status ${statusClass(booking.status)}">
+                    ${booking.status}
+                </span>
+            </td>
+
+        </tr>
+
+        `;
+
+    });
+
+    updateStats(filtered);
+
+}
+
+function updateStats(list){
+
+    totalBookings.textContent=list.length;
+
+    confirmedBookings.textContent=
+    list.filter(b=>b.status==="Confirmed").length;
+
+    pendingBookings.textContent=
+    list.filter(b=>b.status==="Pending").length;
+
+    completedBookings.textContent=
+    list.filter(b=>b.status==="Completed").length;
+
+}
+
+function updateComparison(){
+
+    let current=0;
+    let previous=0;
+
+    switch(viewFilter.value){
+
+        case "week":
+            current=5;
+            previous=4;
+        break;
+
+        case "month":
+            current=18;
+            previous=14;
+        break;
+
+        case "year":
+            current=132;
+            previous=115;
+        break;
+
+        default:
+            current=584;
+            previous=530;
 
     }
 
-});
+    if(compareFilter.value==="none"){
 
-updateCards("This Month");
+        previousValue.textContent="--";
+        growthValue.textContent="--";
+        return;
+
+    }
+
+    currentValue.textContent=current;
+
+    previousValue.textContent=previous;
+
+    let growth=((current-previous)/previous*100).toFixed(0);
+
+    growthValue.textContent=
+    (growth>=0?"+":"")+growth+"%";
+
+}
+
+searchInput.addEventListener("keyup",renderTable);
+
+statusFilter.addEventListener("change",renderTable);
+
+viewFilter.addEventListener("change",updateComparison);
+
+compareFilter.addEventListener("change",updateComparison);
+
+renderTable();
+
+updateComparison();

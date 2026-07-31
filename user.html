@@ -52,7 +52,7 @@
     <div class="hero-content">
 
         <h1>
-            Welcome, Rahul Photography
+            Welcome, <span id="name">Rahul Sharma</span>
         </h1>
 
         <p>
@@ -136,51 +136,51 @@
 
 <input
 type="text"
-placeholder="Rahul Photography">
+placeholder="Studio Name" id="new_studio_name">
 
 <label>Photographer Name</label>
 
 <input
 type="text"
-placeholder="Rahul Sharma">
+placeholder="Rahul Sharma" id="new_photographer_name">
 
 <label>Experience</label>
 
 <input
 type="text"
-placeholder="5 Years">
+placeholder="5 Years" id="new_experience">
 
 <label>Location</label>
 
 <input
 type="text"
-placeholder="Nagpur, Maharashtra">
+placeholder="Nagpur, Maharashtra" id="new_location">
 
 <label>Phone</label>
 
 <input
 type="tel"
-placeholder="+91 9876543210">
+placeholder="+91 9876543210" id="new_phone">
 
 <label>Email</label>
 
 <input
 type="email"
-placeholder="contact@email.com">
+placeholder="contact@email.com" id="new_email">
 
 <label>Instagram</label>
 
 <input
 type="text"
-placeholder="@rahulphotography">
+placeholder="@rahulphotography" id="new_instagram">
 
 <label>About</label>
 
 <textarea
 rows="5"
-placeholder="Write a short introduction about yourself..."></textarea>
+placeholder="Write a short introduction about yourself..." id="new_about"></textarea>
 
-<button>
+<button id="saveProfileBtn">
 
 Save Profile
 
@@ -392,69 +392,122 @@ Create Album
 
 </section>
 
-<!-- ==========================
-        BOOKINGS
-=========================== -->
+<!-- ================= BOOKING MANAGEMENT ================= -->
+
 <section class="section" id="bookings">
 
-    <h2>Bookings</h2>
+    <div class="section-header">
+        <div>
+            <h2>Booking Management</h2>
+            <p>Manage, monitor and compare all your photography bookings.</p>
+        </div>
 
-    <!-- Booking Controls -->
-    <div class="booking-controls">
+        <button class="btn-primary">
+            + New Booking
+        </button>
+    </div>
 
-        <div class="booking-filter">
+    <!-- Statistics -->
 
-            <label>View:</label>
+    <div class="booking-stats">
 
-            <select>
-                <option selected>This Week</option>
-                <option>This Month</option>
-                <option>This Year</option>
-                <option>All Time</option>
-            </select>
+        <div class="stat-card">
+            <h4>Total Bookings</h4>
+            <h2 id="totalBookings">128</h2>
+            <span>+12 this month</span>
+        </div>
+
+        <div class="stat-card">
+            <h4>Confirmed</h4>
+            <h2 id="confirmedBookings">82</h2>
+            <span>64%</span>
+        </div>
+
+        <div class="stat-card">
+            <h4>Pending</h4>
+            <h2 id="pendingBookings">24</h2>
+            <span>Waiting Approval</span>
+        </div>
+
+        <div class="stat-card">
+            <h4>Completed</h4>
+            <h2 id="completedBookings">22</h2>
+            <span>Successfully Finished</span>
+        </div>
+
+    </div>
+
+    <!-- Filters -->
+
+    <div class="booking-toolbar">
+
+        <input
+            type="text"
+            id="searchBooking"
+            placeholder="Search client..."
+        >
+
+        <select id="viewFilter">
+            <option value="week">This Week</option>
+            <option value="month" selected>This Month</option>
+            <option value="year">This Year</option>
+            <option value="all">All Time</option>
+        </select>
+
+        <select id="statusFilter">
+            <option value="all">All Status</option>
+            <option value="Confirmed">Confirmed</option>
+            <option value="Pending">Pending</option>
+            <option value="Completed">Completed</option>
+        </select>
+
+        <select id="compareFilter">
+            <option value="month">Compare Last Month</option>
+            <option value="week">Compare Last Week</option>
+            <option value="year">Compare Last Year</option>
+            <option value="none">No Comparison</option>
+        </select>
+
+    </div>
+
+    <!-- Comparison -->
+
+    <div class="comparison-cards">
+
+        <div class="compare-card">
+
+            <h5>Current Period</h5>
+
+            <h2 id="currentValue">18</h2>
+
+            <p>Bookings</p>
 
         </div>
 
-        <div class="booking-compare">
+        <div class="compare-card">
 
-            <label>Compare:</label>
+            <h5>Previous Period</h5>
 
+            <h2 id="previousValue">14</h2>
 
-            <select>
-                <option selected> Last Month</option>
-                <option>Last Week</option>
-                <option>Last Year</option>
-                <option>No Comparison</option>
-            </select>
+            <p>Bookings</p>
+
+        </div>
+
+        <div class="compare-card positive">
+
+            <h5>Growth</h5>
+
+            <h2 id="growthValue">+28%</h2>
+
+            <p>Compared to Previous</p>
 
         </div>
 
     </div>
 
-    <!-- Comparison Summary -->
-    <div class="compare-summary">
+    <!-- Table -->
 
-        <div class="compare-card">
-            <h4>This Month</h4>
-            <p class="count">18</p>
-            <span>Bookings</span>
-        </div>
-
-        <div class="compare-card">
-            <h4>Last Month</h4>
-            <p class="count">14</p>
-            <span>Bookings</span>
-        </div>
-
-        <div class="compare-card increase">
-            <h4>Growth</h4>
-            <p class="count">+28%</p>
-            <span>Compared to Last Month</span>
-        </div>
-
-    </div>
-
-    <!-- Booking Table -->
     <div class="table-container">
 
         <table>
@@ -462,35 +515,77 @@ Create Album
             <thead>
 
                 <tr>
+
                     <th>Client</th>
                     <th>Service</th>
                     <th>Date</th>
+                    <th>Amount</th>
                     <th>Status</th>
+
                 </tr>
 
             </thead>
 
-            <tbody>
+            <tbody id="bookingTable">
 
                 <tr>
+
                     <td>Rahul Patil</td>
                     <td>Wedding</td>
                     <td>15 Aug 2026</td>
+                    <td>₹45,000</td>
                     <td><span class="status active">Confirmed</span></td>
+
                 </tr>
 
                 <tr>
+
                     <td>Neha Sharma</td>
                     <td>Pre-Wedding</td>
                     <td>22 Aug 2026</td>
+                    <td>₹18,000</td>
                     <td><span class="status pending">Pending</span></td>
+
                 </tr>
 
                 <tr>
+
                     <td>Aryan Mehta</td>
                     <td>Portrait</td>
                     <td>30 Aug 2026</td>
+                    <td>₹9,000</td>
                     <td><span class="status completed">Completed</span></td>
+
+                </tr>
+
+                <tr>
+
+                    <td>Priya Deshmukh</td>
+                    <td>Maternity</td>
+                    <td>4 Sep 2026</td>
+                    <td>₹12,500</td>
+                    <td><span class="status active">Confirmed</span></td>
+
+                </tr>
+
+                <tr>
+
+                    <td>Karan Joshi</td>
+                    <td>Birthday</td>
+                    <td>12 Sep 2026</td>
+                    <td>₹15,000</td>
+                    <td><span class="status pending">Pending</span></td>
+
+                </tr>
+
+                <tr>
+
+                    <td>Sneha Kulkarni</td>
+                    <td>Corporate</td>
+                    <td>18 Sep 2026</td>
+                    <td>₹32,000</td>
+                    <td><span class="status completed">Completed</span></td>
+
                 </tr>
 
             </tbody>
@@ -500,7 +595,6 @@ Create Album
     </div>
 
 </section>
-
 <!-- ==========================
         REVIEWS
 =========================== -->

@@ -319,3 +319,13 @@ lightbox.addEventListener("click",(e)=>{
     }
 
 });
+
+const card = document.createElement("div");
+card.className = "gallery-item";
+
+const img = document.createElement("img");
+img.src = imagePath;
+img.alt = "Gallery Image";
+
+card.appendChild(img);
+galleryGrid.appendChild(card);
