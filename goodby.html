@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Professional Studio | Goodbye</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Segoe UI",sans-serif;
+}
+
+body{
+    background:#0b0b0b;
+    color:#ffffff;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    padding:20px;
+}
+
+.container{
+    width:100%;
+    max-width:700px;
+}
+
+.card{
+    background:#141414;
+    border:1px solid #252525;
+    border-radius:14px;
+    padding:45px;
+    text-align:center;
+}
+
+h1{
+    font-size:32px;
+    font-weight:600;
+    margin-bottom:18px;
+}
+
+.subtitle{
+    color:#9d9d9d;
+    font-size:15px;
+    margin-bottom:35px;
+}
+
+.message{
+    color:#d3d3d3;
+    font-size:15px;
+    line-height:1.8;
+    text-align:left;
+}
+
+.message p{
+    margin-bottom:18px;
+}
+
+.highlight{
+    color:#ffffff;
+    font-weight:600;
+}
+
+.buttons{
+    margin-top:40px;
+    display:flex;
+    justify-content:center;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
+.btn{
+    text-decoration:none;
+    padding:14px 28px;
+    border-radius:10px;
+    font-weight:600;
+    transition:.3s;
+}
+
+.primary{
+    background:#2563eb;
+    color:#fff;
+}
+
+.primary:hover{
+    background:#1d4ed8;
+}
+
+.secondary{
+    background:#1f1f1f;
+    border:1px solid #333;
+    color:#fff;
+}
+
+.secondary:hover{
+    background:#2b2b2b;
+}
+
+.footer{
+    margin-top:35px;
+    color:#8d8d8d;
+    font-size:14px;
+    line-height:1.6;
+}
+
+.timer{
+    color:#ffffff;
+    font-weight:600;
+}
+
+@media(max-width:600px){
+
+.card{
+    padding:30px;
+}
+
+h1{
+    font-size:26px;
+}
+
+.buttons{
+    flex-direction:column;
+}
+
+.btn{
+    width:100%;
+}
+
+.message{
+    text-align:center;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="card">
+
+<h1>Thank You</h1>
+
+<p class="subtitle">
+Your account has been permanently deleted.
+</p>
+
+<div class="message">
+
+    
+<p>
+Thank you for being a part of <span class="highlight">Professional Studio</span>. We're grateful for the trust you placed in us throughout your journey.
+</p>
+
+<p>
+Your account has been permanently deleted as requested. While we're sad to see you go, we truly appreciate having had the opportunity to work with you.
+</p>
+
+<p>
+If you ever decide to return, we'll be delighted to welcome you back and help you continue growing your photography business.
+</p>
+
+<p class="highlight">
+Thank you for choosing Professional Studio. We wish you all the best and hope to work with you again in the future.
+</p>
+
+</div>
+
+<div class="buttons">
+
+<a href="signup.html" class="btn primary">
+Create New Account
+</a>
+
+<a href="index.html" class="btn secondary">
+Return to Home
+</a>
+
+</div>
+
+<div class="footer">
+
+Redirecting to the home page in
+<span class="timer" id="timer">15</span>
+seconds.
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+let time = 15;
+
+const timer = document.getElementById("timer");
+
+const countdown = setInterval(function(){
+
+    time--;
+
+    timer.innerHTML = time;
+
+    if(time <= 0){
+
+        clearInterval(countdown);
+
+        window.location.href = "index.html";
+
+    }
+
+},1000);
+
+</script>
+
+</body>
+</html>

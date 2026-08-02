@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Professional Studio | Delete Account</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Segoe UI",sans-serif;
+}
+
+body{
+    background:#0b0b0b;
+    color:#ffffff;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    padding:20px;
+}
+
+.container{
+    width:100%;
+    max-width:520px;
+}
+
+.card{
+    background:#141414;
+    border:1px solid #252525;
+    border-radius:14px;
+    padding:35px;
+}
+
+h1{
+    font-size:28px;
+    margin-bottom:10px;
+    font-weight:600;
+}
+
+.subtitle{
+    color:#9d9d9d;
+    font-size:14px;
+    line-height:1.7;
+    margin-bottom:25px;
+}
+
+.warning{
+    background:#181818;
+    border:1px solid #3a3a3a;
+    border-left:4px solid #dc2626;
+    border-radius:10px;
+    padding:18px;
+    margin-bottom:28px;
+}
+
+.warning h3{
+    color:#ffffff;
+    font-size:16px;
+    margin-bottom:12px;
+}
+
+.warning ul{
+    margin-left:18px;
+}
+
+.warning li{
+    color:#bdbdbd;
+    margin:8px 0;
+    line-height:1.5;
+    font-size:14px;
+}
+
+.input-group{
+    margin-bottom:20px;
+}
+
+label{
+    display:block;
+    margin-bottom:8px;
+    font-size:14px;
+    color:#d4d4d4;
+}
+
+input[type="text"]{
+    width:100%;
+    padding:14px;
+    background:#1d1d1d;
+    border:1px solid #303030;
+    border-radius:10px;
+    color:#ffffff;
+    outline:none;
+    font-size:15px;
+    transition:.3s;
+}
+
+input[type="text"]:focus{
+    border-color:#dc2626;
+}
+
+.status{
+    display:none;
+    margin-top:12px;
+    padding:12px;
+    border-radius:8px;
+    background:#13361d;
+    color:#7ee787;
+    font-size:14px;
+}
+
+.checkbox{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    margin:25px 0;
+}
+
+.checkbox input{
+    margin-top:4px;
+    accent-color:#dc2626;
+}
+
+.checkbox label{
+    margin:0;
+    color:#bdbdbd;
+    line-height:1.6;
+}
+
+.buttons{
+    display:flex;
+    gap:12px;
+}
+
+button{
+    flex:1;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.cancel-btn{
+    background:#222;
+    color:#fff;
+}
+
+.cancel-btn:hover{
+    background:#303030;
+}
+
+.delete-btn{
+    background:#dc2626;
+    color:white;
+}
+
+.delete-btn:hover{
+    background:#b91c1c;
+}
+
+.delete-btn:disabled{
+    background:#555;
+    cursor:not-allowed;
+}
+
+.back{
+    text-align:center;
+    margin-top:25px;
+}
+
+.back a{
+    color:#8f8f8f;
+    text-decoration:none;
+}
+
+.back a:hover{
+    color:#ffffff;
+}
+
+@media(max-width:600px){
+
+.card{
+    padding:25px;
+}
+
+.buttons{
+    flex-direction:column;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="card">
+
+<h1>Delete Account</h1>
+
+<p class="subtitle">
+Deleting your Professional Studio account is permanent. Once deleted, your account, bookings, portfolio, and all associated data cannot be recovered.
+</p>
+
+<div class="warning">
+
+<h3>Before you continue</h3>
+
+<ul>
+
+<li>Your account will be permanently deleted.</li>
+
+<li>All bookings, projects and profile information will be removed.</li>
+
+<li>You will lose access to your dashboard immediately.</li>
+
+<li>This action cannot be undone.</li>
+
+</ul>
+
+</div>
+
+<form id="deleteForm">
+
+<div class="input-group">
+
+<label>
+Type <strong>DELETE</strong> to continue
+</label>
+
+<input
+type="text"
+id="deleteInput"
+placeholder="Type DELETE">
+
+<div
+class="status"
+id="status">
+✓ Verification complete. You can now press <strong>Delete Account</strong> to continue.
+</div>
+
+</div>
+
+<div class="checkbox">
+
+<input
+type="checkbox"
+id="agree">
+
+<label for="agree">
+I understand that this action is permanent and all of my account data will be deleted forever.
+</label>
+
+</div>
+
+<div class="buttons">
+
+<button
+type="button"
+class="cancel-btn"
+onclick="window.location.href='settings.html'">
+
+Cancel
+
+</button>
+
+<button
+type="submit"
+class="delete-btn"
+id="deleteBtn"
+disabled>
+
+Delete Account
+
+</button>
+
+</div>
+
+</form>
+
+<div class="back">
+
+<a href="user.html">
+
+← Back to Dashboard
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const input=document.getElementById("deleteInput");
+const checkbox=document.getElementById("agree");
+const button=document.getElementById("deleteBtn");
+const status=document.getElementById("status");
+
+function validate(){
+
+if(input.value.trim()==="DELETE"){
+
+status.style.display="block";
+
+}
+else{
+
+status.style.display="none";
+
+}
+
+button.disabled=!(input.value.trim()==="DELETE" && checkbox.checked);
+
+}
+
+input.addEventListener("input",validate);
+
+checkbox.addEventListener("change",validate);
+
+document.getElementById("deleteForm").addEventListener("submit",function(e){
+
+e.preventDefault();
+
+const confirmDelete=confirm(
+"Delete your Professional Studio account permanently?\n\nThis action cannot be undone."
+);
+
+if(confirmDelete){
+
+// Backend delete request goes here
+
+window.location.href="goodby.html";
+
+}
+
+});
+
+</script>
+
+</body>
+</html>
