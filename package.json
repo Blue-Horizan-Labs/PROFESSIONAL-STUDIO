@@ -19,7 +19,6 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.111.0",
-    "cookie-parser": "^1.4.7",
     "fs": "^0.0.1-security",
     "path": "^0.12.7"
   }
