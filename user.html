@@ -142,25 +142,25 @@ placeholder="Studio Name" id="new_studio_name">
 
 <input
 type="text"
-placeholder="Rahul Sharma" id="new_photographer_name">
+placeholder="ex: Rahul Sharma" id="new_photographer_name">
 
 <label>Experience</label>
 
 <input
 type="text"
-placeholder="5 Years" id="new_experience">
+placeholder="ex: 5 Years" id="new_experience">
 
 <label>Location</label>
 
 <input
 type="text"
-placeholder="Nagpur, Maharashtra" id="new_location">
+placeholder="ex: Nagpur, Maharashtra" id="new_location">
 
 <label>Phone</label>
 
 <input
 type="tel"
-placeholder="+91 9876543210" id="new_phone">
+placeholder="ex: +91 9876543210" id="new_phone">
 
 <label>Email</label>
 
@@ -172,7 +172,19 @@ placeholder="contact@email.com" id="new_email">
 
 <input
 type="text"
-placeholder="@rahulphotography" id="new_instagram">
+placeholder="ex: https://instagram.com/yourprofile" id="new_instagram">
+
+<label>Facebook</label>
+
+<input
+type="text"
+placeholder="ex: https://facebook.com/yourprofile" id="new_facebook">
+
+<label>YouTube</label>
+
+<input
+type="text"
+placeholder="ex: https://youtube.com/yourchannel" id="new_youtube">
 
 <label>About</label>
 
@@ -271,61 +283,72 @@ Save Profile
 <!-- ==========================
         EQUIPMENT
 =========================== -->
-
 <section class="section" id="equipment">
 
-<h2>Equipment</h2>
+    <h2>Equipment</h2>
 
-<div class="equipment-grid">
+    <div class="equipment-grid">
 
-<div class="equipment-card">
+        <!-- Cameras -->
+        <div class="equipment-card">
+            <h3>Cameras</h3>
 
-<h3>Cameras</h3>
+            <ul class="equipment-list"></ul>
 
-<textarea rows="5"
-placeholder="Sony A7 IV&#10;Canon R6"></textarea>
+            <div class="equipment-input">
+                <input type="text" placeholder="Enter camera name">
+                <button class="add-item-btn">Add Item</button>
+            </div>
+        </div>
 
-<button>Add Camera</button>
+        <!-- Lenses -->
+        <div class="equipment-card">
+            <h3>Lenses</h3>
 
-</div>
+            <ul class="equipment-list"></ul>
 
+            <div class="equipment-input">
+                <input type="text" placeholder="Enter lens name">
+                <button class="add-item-btn">Add Item</button>
+            </div>
+        </div>
 
-<div class="equipment-card">
+        <!-- Lighting -->
+        <div class="equipment-card">
+            <h3>Lighting</h3>
 
-<h3>Lenses</h3>
+            <ul class="equipment-list"></ul>
 
-<textarea rows="5"
-placeholder="24-70mm&#10;70-200mm"></textarea>
+            <div class="equipment-input">
+                <input type="text" placeholder="Enter lighting equipment">
+                <button class="add-item-btn">Add Item</button>
+            </div>
+        </div>
 
-<button>Add Lens</button>
+        <!-- Drone & Accessories -->
+        <div class="equipment-card">
+            <h3>Drone & Accessories</h3>
 
-</div>
+            <ul class="equipment-list"></ul>
 
+            <div class="equipment-input">
+                <input type="text" placeholder="Enter equipment">
+                <button class="add-item-btn">Add Item</button>
+            </div>
+        </div>
 
-<div class="equipment-card">
+        <!-- Add Equipment Card -->
+        <div class="equipment-card add-equipment-card" id="addEquipment">
 
-<h3>Lighting</h3>
+            <div class="add-icon">+</div>
 
-<textarea rows="5"
-placeholder="Godox V1&#10;Softbox"></textarea>
+            <h3>Add Equipment</h3>
 
-<button>Add Lighting</button>
+            <p>Create a new equipment category</p>
 
-</div>
+        </div>
 
-
-<div class="equipment-card">
-
-<h3>Drone / Accessories</h3>
-
-<textarea rows="5"
-placeholder="DJI Air 3&#10;Gimbal&#10;Tripod"></textarea>
-
-<button>Save Equipment</button>
-
-</div>
-
-</div>
+    </div>
 
 </section>
 

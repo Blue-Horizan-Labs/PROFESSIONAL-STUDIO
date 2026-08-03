@@ -225,26 +225,123 @@ document.addEventListener("DOMContentLoaded", () => {
        ADD EQUIPMENT
     ========================== */
 
-    document.querySelectorAll(".equipment-card").forEach(card => {
+/* ==========================
+   EQUIPMENT SECTION
+========================== */
 
-        const button = card.querySelector("button");
-        const textarea = card.querySelector("textarea");
+function attachEquipmentEvents(card) {
 
-        if (!button || !textarea) return;
+    const input = card.querySelector(".equipment-input input");
+    const button = card.querySelector(".add-item-btn");
+    const list = card.querySelector(".equipment-list");
 
-        button.addEventListener("click", () => {
+    if (!input || !button || !list) return;
 
-            const value = prompt("Enter new equipment");
+    function addItem() {
 
-            if (!value) return;
+        const value = input.value.trim();
 
-            textarea.value +=
-                (textarea.value ? "\n" : "") + value;
+        if (!value) return;
 
-        });
+        const li = document.createElement("li");
+        li.textContent = value;
 
+        list.appendChild(li);
+
+        input.value = "";
+        input.focus();
+    }
+
+    button.addEventListener("click", addItem);
+
+    input.addEventListener("keydown", e => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            addItem();
+        }
     });
 
+}
+
+document.querySelectorAll(".equipment-card").forEach(card => {
+    attachEquipmentEvents(card);
+});
+
+const equipmentGrid = document.querySelector(".equipment-grid");
+const addEquipment = document.getElementById("addEquipment");
+
+addEquipment.addEventListener("click", () => {
+
+    // Prevent opening multiple create cards
+    if (document.querySelector(".create-equipment-card")) return;
+
+    const createCard = document.createElement("div");
+    createCard.className = "equipment-card create-equipment-card";
+
+    createCard.innerHTML = `
+        <h3>New Equipment Category</h3>
+
+        <input
+            type="text"
+            id="newEquipmentName"
+            placeholder="Category name">
+
+        <div class="create-actions">
+            <button class="create-btn">Create</button>
+            <button class="cancel-btn">Cancel</button>
+        </div>
+    `;
+
+    equipmentGrid.insertBefore(createCard, addEquipment);
+
+    const input = createCard.querySelector("#newEquipmentName");
+
+    input.focus();
+
+    function createCategory() {
+
+        const category = input.value.trim();
+
+        if (!category) return;
+
+        const card = document.createElement("div");
+        card.className = "equipment-card";
+
+        card.innerHTML = `
+            <h3>${category}</h3>
+
+            <ul class="equipment-list"></ul>
+
+            <div class="equipment-input">
+                <input
+                    type="text"
+                    placeholder="Add ${category}">
+                <button class="add-item-btn">
+                    Add Item
+                </button>
+            </div>
+        `;
+
+        equipmentGrid.insertBefore(card, createCard);
+
+        attachEquipmentEvents(card);
+
+        createCard.remove();
+    }
+
+    createCard.querySelector(".create-btn")
+        .addEventListener("click", createCategory);
+
+    input.addEventListener("keydown", e => {
+        if (e.key === "Enter") createCategory();
+    });
+
+    createCard.querySelector(".cancel-btn")
+        .addEventListener("click", () => {
+            createCard.remove();
+        });
+
+});
 
     /* ==========================
        ADD PRICING PACKAGE
