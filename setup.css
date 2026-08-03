@@ -1,0 +1,552 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+:root{
+    --bg:#0b1120;
+    --card:rgba(255,255,255,.06);
+    --border:rgba(255,255,255,.12);
+    --text:#ffffff;
+    --muted:#aeb6c7;
+    --primary:#7c5cff;
+    --primary2:#5d7cff;
+    --success:#22c55e;
+}
+
+body{
+    font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+    background:linear-gradient(135deg,#07101f,#111827,#0d1325);
+    color:var(--text);
+    min-height:100vh;
+    overflow-x:hidden;
+    position:relative;
+}
+
+.background-blur{
+    position:fixed;
+    border-radius:50%;
+    filter:blur(90px);
+    z-index:-1;
+    opacity:.35;
+}
+
+.blur1{
+    width:320px;
+    height:320px;
+    background:#6c63ff;
+    top:-100px;
+    left:-100px;
+}
+
+.blur2{
+    width:350px;
+    height:350px;
+    background:#00c6ff;
+    right:-120px;
+    bottom:-120px;
+}
+
+.setup-container{
+    width:min(1200px,92%);
+    margin:auto;
+    padding:50px 0 70px;
+}
+
+/*================ HEADER ================*/
+
+.setup-header{
+    text-align:center;
+    margin-bottom:35px;
+}
+
+.setup-header h1{
+    font-size:2.4rem;
+    margin-bottom:12px;
+    font-weight:700;
+}
+
+.setup-header p{
+    color:var(--muted);
+    font-size:1rem;
+}
+
+.progress-section{
+    max-width:700px;
+    margin:35px auto 0;
+}
+
+.progress-text{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:12px;
+    color:#d6d9e2;
+    font-size:.95rem;
+}
+
+.progress-bar{
+    width:100%;
+    height:10px;
+    background:rgba(255,255,255,.08);
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.progress-fill{
+    width:33%;
+    height:100%;
+    background:linear-gradient(90deg,var(--primary),var(--primary2));
+    border-radius:20px;
+}
+
+/*================ CARDS ================*/
+
+.card{
+    background:var(--card);
+    border:1px solid var(--border);
+    backdrop-filter:blur(20px);
+    border-radius:22px;
+    padding:35px;
+    margin-bottom:28px;
+    box-shadow:0 15px 35px rgba(0,0,0,.25);
+}
+
+.card h2{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:1.4rem;
+    margin-bottom:28px;
+}
+
+.card h2 i{
+    color:#8f82ff;
+}
+
+/*================ GRID ================*/
+
+.grid-2{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:22px;
+}
+
+.input-column{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+}
+
+/*================ LABELS ================*/
+
+label{
+    display:block;
+    margin-bottom:8px;
+    font-size:.95rem;
+    color:#e5e7eb;
+}
+
+input,
+textarea{
+    width:100%;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:14px;
+    color:white;
+    padding:14px 16px;
+    outline:none;
+    transition:.3s;
+    font-size:.95rem;
+}
+
+textarea{
+    resize:vertical;
+    min-height:130px;
+}
+
+input:focus,
+textarea:focus{
+    border-color:#7c5cff;
+    box-shadow:0 0 0 3px rgba(124,92,255,.18);
+}
+
+/*================ UPLOAD BOX ================*/
+
+.upload-box{
+    width:100%;
+}
+
+.upload-label{
+    width:100%;
+    min-height:240px;
+    border:2px dashed rgba(255,255,255,.18);
+    border-radius:18px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition:.3s;
+    text-align:center;
+    padding:20px;
+}
+
+.upload-label:hover{
+    border-color:#7c5cff;
+    background:rgba(124,92,255,.08);
+}
+
+.upload-label i{
+    font-size:2.6rem;
+    color:#7c5cff;
+    margin-bottom:18px;
+}
+
+.upload-label p{
+    font-size:1rem;
+    margin-bottom:8px;
+}
+
+.upload-label span{
+    color:var(--muted);
+    font-size:.9rem;
+}
+
+.upload-label img{
+    width:100%;
+    height:220px;
+    object-fit:cover;
+    border-radius:14px;
+    display:none;
+}
+
+/*================ SECTION HEADER ================*/
+
+.section-heading{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:25px;
+}
+
+.section-heading h2{
+    margin:0;
+}
+
+/*================ ADD BUTTON ================*/
+
+#addPhotographer{
+    border:none;
+    background:linear-gradient(135deg,#7c5cff,#5d7cff);
+    color:white;
+    padding:12px 18px;
+    border-radius:12px;
+    cursor:pointer;
+    font-weight:600;
+    transition:.3s;
+}
+
+#addPhotographer:hover{
+    transform:translateY(-2px);
+    box-shadow:0 12px 25px rgba(92,124,255,.3);
+}
+
+/*================ PHOTOGRAPHER CARD ================*/
+
+.photographer-card{
+    display:grid;
+    grid-template-columns:280px 1fr;
+    gap:35px;
+    padding:28px;
+    border-radius:18px;
+    background:rgba(255,255,255,.03);
+    border:1px solid rgba(255,255,255,.08);
+}
+
+.photo-side{
+    display:flex;
+    align-items:flex-start;
+}
+
+.details-side{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+}
+
+.details-side textarea{
+    margin-top:8px;
+}
+
+/* ================= BUTTONS ================= */
+
+.buttons{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:35px;
+}
+
+.skip-btn{
+    text-decoration:none;
+    color:#d1d5db;
+    padding:14px 28px;
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:14px;
+    transition:.3s;
+    font-weight:500;
+}
+
+.skip-btn:hover{
+    background:rgba(255,255,255,.06);
+    border-color:#7c5cff;
+}
+
+.save-btn{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    border:none;
+    cursor:pointer;
+    color:white;
+    font-size:1rem;
+    font-weight:600;
+    padding:15px 34px;
+    border-radius:14px;
+    background:linear-gradient(135deg,#7c5cff,#5d7cff);
+    transition:.3s;
+}
+
+.save-btn:hover{
+    transform:translateY(-3px);
+    box-shadow:0 15px 35px rgba(124,92,255,.35);
+}
+
+.save-btn i{
+    transition:.3s;
+}
+
+.save-btn:hover i{
+    transform:translateX(5px);
+}
+
+/* ================= CARD ANIMATION ================= */
+
+.card{
+    animation:fadeUp .6s ease;
+}
+
+@keyframes fadeUp{
+
+    from{
+        opacity:0;
+        transform:translateY(30px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+
+}
+
+/* ================= INPUT PLACEHOLDER ================= */
+
+input::placeholder,
+textarea::placeholder{
+    color:#94a3b8;
+}
+
+/* ================= SCROLLBAR ================= */
+
+::-webkit-scrollbar{
+    width:10px;
+}
+
+::-webkit-scrollbar-track{
+    background:#0f172a;
+}
+
+::-webkit-scrollbar-thumb{
+    background:#4f46e5;
+    border-radius:20px;
+}
+
+::-webkit-scrollbar-thumb:hover{
+    background:#6366f1;
+}
+
+/* ================= PHOTO PREVIEW ================= */
+
+.photoPreview,
+#logoPreview{
+    width:100%;
+    height:220px;
+    object-fit:cover;
+    border-radius:14px;
+    display:none;
+}
+
+.upload-label.has-image i,
+.upload-label.has-image p,
+.upload-label.has-image span{
+    display:none;
+}
+
+/* ================= OPTIONAL REMOVE BUTTON ================= */
+
+.remove-photographer{
+    margin-top:15px;
+    background:#ef4444;
+    color:white;
+    border:none;
+    border-radius:10px;
+    padding:10px 16px;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.remove-photographer:hover{
+    background:#dc2626;
+}
+
+/* ================= MOBILE ================= */
+
+@media(max-width:1100px){
+
+    .photographer-card{
+
+        grid-template-columns:1fr;
+
+    }
+
+}
+
+/* ================= TABLET ================= */
+
+@media(max-width:900px){
+
+    .grid-2{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .section-heading{
+
+        flex-direction:column;
+        align-items:flex-start;
+        gap:15px;
+
+    }
+
+}
+
+/* ================= MOBILE ================= */
+
+@media(max-width:768px){
+
+    .setup-container{
+
+        width:94%;
+        padding:30px 0 50px;
+
+    }
+
+    .setup-header h1{
+
+        font-size:2rem;
+
+    }
+
+    .card{
+
+        padding:24px;
+
+    }
+
+    .upload-label{
+
+        min-height:190px;
+
+    }
+
+    .buttons{
+
+        flex-direction:column-reverse;
+        gap:18px;
+
+    }
+
+    .buttons a,
+    .buttons button{
+
+        width:100%;
+        justify-content:center;
+
+    }
+
+}
+
+/* ================= SMALL MOBILE ================= */
+
+@media(max-width:500px){
+
+    .setup-header h1{
+
+        font-size:1.7rem;
+
+    }
+
+    .card h2{
+
+        font-size:1.15rem;
+
+    }
+
+    input,
+    textarea{
+
+        padding:13px;
+
+    }
+
+    .save-btn,
+    .skip-btn{
+
+        padding:14px;
+
+    }
+
+}
+
+/* ================= HOVER EFFECTS ================= */
+
+.card:hover{
+
+    border-color:rgba(124,92,255,.35);
+
+    transition:.3s;
+
+}
+
+.photographer-card:hover{
+
+    border-color:rgba(124,92,255,.25);
+
+    transition:.3s;
+
+}
+
+.upload-label{
+
+    transition:.35s;
+
+}
+
+.upload-label:hover{
+
+    transform:translateY(-3px);
+
+}
