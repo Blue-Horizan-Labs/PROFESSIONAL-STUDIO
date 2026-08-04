@@ -1289,3 +1289,218 @@ button{
     }
 
 }
+
+/* ==========================================
+   BOOKING DRAWER
+========================================== */
+
+.drawer-overlay{
+
+    position:fixed;
+    inset:0;
+
+    background:rgba(0,0,0,.55);
+
+    opacity:0;
+    visibility:hidden;
+
+    transition:.35s;
+
+    z-index:999;
+
+}
+
+.drawer-overlay.active{
+
+    opacity:1;
+    visibility:visible;
+
+}
+
+.booking-drawer{
+
+    position:fixed;
+
+    top:0;
+    right:-450px;
+
+    width:420px;
+    max-width:95%;
+
+    height:100vh;
+
+    background:#101827;
+
+    z-index:1000;
+
+    overflow-y:auto;
+
+    transition:.4s;
+
+    padding:28px;
+
+    border-left:1px solid rgba(255,255,255,.08);
+
+}
+
+.booking-drawer.active{
+
+    right:0;
+
+}
+
+.drawer-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:30px;
+
+}
+
+.drawer-header h2{
+
+    font-size:1.5rem;
+
+}
+
+.close-drawer{
+
+    border:none;
+
+    width:42px;
+    height:42px;
+
+    border-radius:50%;
+
+    background:#1f2937;
+
+    color:white;
+
+    cursor:pointer;
+
+}
+
+.client-profile{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+    margin-bottom:30px;
+
+}
+
+.client-profile img{
+
+    width:75px;
+    height:75px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+}
+
+.client-profile span{
+
+    color:#94a3b8;
+
+}
+
+.drawer-section{
+
+    margin-bottom:28px;
+
+}
+
+.drawer-section h4{
+
+    color:#8b5cf6;
+
+    margin-bottom:15px;
+
+}
+
+.drawer-item{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    padding:12px 0;
+
+    border-bottom:1px solid rgba(255,255,255,.06);
+
+}
+
+.drawer-item span{
+
+    color:#94a3b8;
+
+}
+
+.paid{
+
+    color:#22c55e;
+
+}
+
+.equipment-list{
+
+    list-style:none;
+
+}
+
+.equipment-list li{
+
+    padding:10px 0;
+
+}
+
+.drawer-actions{
+
+    display:flex;
+
+    gap:15px;
+
+    margin-top:30px;
+
+}
+
+.drawer-actions button{
+
+    flex:1;
+
+    border:none;
+
+    padding:15px;
+
+    border-radius:12px;
+
+    cursor:pointer;
+
+    font-weight:600;
+
+}
+
+.edit-booking{
+
+    background:#7c3aed;
+
+    color:white;
+
+}
+
+.download-invoice{
+
+    background:#2563eb;
+
+    color:white;
+
+}
