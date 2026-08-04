@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Dashboard | Professional Studio</title>
+
+    <link rel="stylesheet" href="bookMng.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- ================= NAVBAR ================= -->
+
+    <header class="navbar">
+
+        <div class="logo">
+            <i class="fa-solid fa-camera-retro"></i>
+            <span>Professional Studio</span>
+        </div>
+
+        <nav>
+
+            <a href="user.html">Home</a>
+            <a href="#" class="active">Bookings</a>
+
+        </nav>
+
+        <div class="nav-buttons">
+
+            <button class="notification">
+                <i class="fa-solid fa-bell"></i>
+                <span>3</span>
+            </button>
+
+            <img src="images/profile.jpg" class="profile-img">
+
+        </div>
+
+    </header>
+
+
+
+    <!-- ================= HERO ================= -->
+
+    <section class="dashboard-hero">
+
+        <div>
+
+            <h1>Booking Management</h1>
+
+            <p>
+                Manage confirmed bookings, pending requests,
+                completed events and upcoming shoots from one place.
+            </p>
+
+        </div>
+
+        <button class="primary-btn">
+            <i class="fa-solid fa-plus"></i>
+            New Booking
+        </button>
+
+    </section>
+
+
+
+    <!-- ================= STATS ================= -->
+
+    <section class="stats">
+
+        <div class="stat-card pending">
+
+            <i class="fa-solid fa-hourglass-half"></i>
+
+            <h2>08</h2>
+
+            <p>Pending</p>
+
+        </div>
+
+        <div class="stat-card confirmed">
+
+            <i class="fa-solid fa-circle-check"></i>
+
+            <h2>14</h2>
+
+            <p>Confirmed</p>
+
+        </div>
+
+        <div class="stat-card upcoming">
+
+            <i class="fa-solid fa-calendar-days"></i>
+
+            <h2>06</h2>
+
+            <p>Upcoming</p>
+
+        </div>
+
+        <div class="stat-card completed">
+
+            <i class="fa-solid fa-trophy"></i>
+
+            <h2>129</h2>
+
+            <p>Completed</p>
+
+        </div>
+
+    </section>
+
+
+
+
+    <!-- ================= FILTER ================= -->
+
+    <section class="filter-section">
+
+        <input
+            type="text"
+            placeholder="Search booking, client or location...">
+
+        <select>
+
+            <option>All Status</option>
+            <option>Pending</option>
+            <option>Confirmed</option>
+            <option>Completed</option>
+            <option>Upcoming</option>
+
+        </select>
+
+        <select>
+
+            <option>All Services</option>
+
+            <option>Wedding Photography</option>
+
+            <option>Pre Wedding Shoot</option>
+
+            <option>Birthday Party</option>
+
+            <option>Corporate Event</option>
+
+            <option>Engagement</option>
+
+            <option>Maternity Shoot</option>
+
+            <option>Product Photography</option>
+
+            <option>Drone Coverage</option>
+
+            <option>Food Photography</option>
+
+            <option>Fashion Shoot</option>
+
+        </select>
+
+        <button>
+
+            <i class="fa-solid fa-filter"></i>
+
+            Apply
+
+        </button>
+
+    </section>
+
+
+
+
+
+    <!-- ================= BOOKINGS ================= -->
+
+    <section class="booking-container">
+
+
+
+
+        <!-- CARD -->
+
+        <div class="booking-card confirmed">
+
+            <div class="booking-header">
+
+                <h2>Wedding Photography</h2>
+
+                <span class="status confirmed-status">
+
+                    Confirmed
+
+                </span>
+
+            </div>
+
+            <div class="booking-details">
+
+                <div>
+
+                    <h4>Client</h4>
+
+                    <p>Rahul Sharma</p>
+
+                </div>
+
+                <div>
+
+                    <h4>Date</h4>
+
+                    <p>18 September 2026</p>
+
+                </div>
+
+                <div>
+
+                    <h4>Time</h4>
+
+                    <p>10:30 AM</p>
+
+                </div>
+
+                <div>
+
+                    <h4>Venue</h4>
+
+                    <p>Mumbai</p>
+
+                </div>
+
+                <div>
+
+                    <h4>Package</h4>
+
+                    <p>Luxury</p>
+
+                </div>
+
+                <div>
+
+                    <h4>Payment</h4>
+
+                    <p>Paid</p>
+
+                </div>
+
+            </div>
+
+            <div class="booking-buttons">
+
+                <button class="view-btn">
+
+                    View Details
+
+                </button>
+
+                <button class="message-btn">
+
+                    Message Client
+
+                </button>
+
+                <button class="invoice-btn">
+
+                    Invoice
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+
+
+
+
+        <!-- CARD -->
+
+        <div class="booking-card pending">
+
+            <div class="booking-header">
+
+                <h2>Birthday Photography</h2>
+
+                <span class="status pending-status">
+
+                    Pending
+
+                </span>
+
+            </div>
+
+            <div class="booking-details">
+
+                <div>
+
+                    <h4>Client</h4>
+
+                    <p>Ananya Patel</p>
+
+                </div>
+
+                <div>
+
+                    <h4>Date</h4>
+
+                    <p>25 August 2026</p>
+
+                </div>
+
+                <div>
+
+                    <h4>Time</h4>
+
+                    <p>5:00 PM</p>
+
+                </div>
+
+                <div>
+
+                    <h4>Venue</h4>
+
+                    <p>Pune</p>
+
+                </div>
+
+                <div>
+
+                    <h4>Package</h4>
+
+                    <p>Basic</p>
+
+                </div>
+
+                <div>
+
+                    <h4>Advance</h4>
+
+                    <p>Pending</p>
+
+                </div>
+
+            </div>
+
+            <div class="booking-buttons">
+
+                <button class="accept-btn">
+
+                    Accept
+
+                </button>
+
+                <button class="reject-btn">
+
+                    Reject
+
+                </button>
+
+                <button class="view-btn">
+
+                    View
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+
+
+
+
+        <!-- CARD -->
+
+        <div class="booking-card upcoming">
+
+            <div class="booking-header">
+
+                <h2>Corporate Event</h2>
+
+                <span class="status upcoming-status">
+
+                    Upcoming
+
+                </span>
+
+            </div>
+
+            <div class="booking-details">
+
+                <div>
+
+                    <h4>Client</h4>
+
+                    <p>Infosys Ltd.</p>
+
+                </div>
+
+                <div>
+
+                    <h4>Date</h4>
+
+                    <p>5 September 2026</p>
+
+                </div>
+
+                <div>
+
+                    <h4>Time</h4>
+
+                    <p>9:00 AM</p>
+
+                </div>
+
+                <div>
+
+                    <h4>Venue</h4>
+
+                    <p>Bengaluru</p>
+
+                </div>
+
+                <div>
+
+                    <h4>Package</h4>
+
+                    <p>Premium</p>
+
+                </div>
+
+                <div>
+
+                    <h4>Payment</h4>
+
+                    <p>50% Paid</p>
+
+                </div>
+
+            </div>
+
+            <div class="booking-buttons">
+
+                <button class="view-btn">
+
+                    Details
+
+                </button>
+
+                <button class="message-btn">
+
+                    Contact
+
+                </button>
+
+                <button class="invoice-btn">
+
+                    Invoice
+
+                </button>
+
+            </div>
+
+        </div>
+                <!-- ================= COMPLETED EVENT ================= -->
+
+        <div class="booking-card completed">
+
+            <div class="booking-header">
+
+                <h2>Pre Wedding Shoot</h2>
+
+                <span class="status completed-status">
+                    Completed
+                </span>
+
+            </div>
+
+            <div class="booking-details">
+
+                <div>
+                    <h4>Client</h4>
+                    <p>Aryan & Sneha</p>
+                </div>
+
+                <div>
+                    <h4>Date</h4>
+                    <p>28 July 2026</p>
+                </div>
+
+                <div>
+                    <h4>Venue</h4>
+                    <p>Lonavala</p>
+                </div>
+
+                <div>
+                    <h4>Package</h4>
+                    <p>Luxury</p>
+                </div>
+
+                <div>
+                    <h4>Payment</h4>
+                    <p>₹85,000</p>
+                </div>
+
+                <div>
+                    <h4>Rating</h4>
+                    <p>★★★★★</p>
+                </div>
+
+            </div>
+
+            <div class="booking-buttons">
+
+                <button class="view-btn">
+                    Gallery
+                </button>
+
+                <button class="invoice-btn">
+                    Invoice
+                </button>
+
+            </div>
+
+        </div>
+
+
+
+
+
+        <!-- ================= MATERNITY ================= -->
+
+        <div class="booking-card confirmed">
+
+            <div class="booking-header">
+
+                <h2>Maternity Shoot</h2>
+
+                <span class="status confirmed-status">
+                    Confirmed
+                </span>
+
+            </div>
+
+            <div class="booking-details">
+
+                <div>
+                    <h4>Client</h4>
+                    <p>Priya Mehta</p>
+                </div>
+
+                <div>
+                    <h4>Date</h4>
+                    <p>12 September 2026</p>
+                </div>
+
+                <div>
+                    <h4>Venue</h4>
+                    <p>Pune</p>
+                </div>
+
+                <div>
+                    <h4>Package</h4>
+                    <p>Premium</p>
+                </div>
+
+                <div>
+                    <h4>Payment</h4>
+                    <p>Advance Paid</p>
+                </div>
+
+                <div>
+                    <h4>Duration</h4>
+                    <p>3 Hours</p>
+                </div>
+
+            </div>
+
+            <div class="booking-buttons">
+
+                <button class="view-btn">Details</button>
+
+                <button class="message-btn">Message</button>
+
+                <button class="invoice-btn">Invoice</button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+
+
+    <!-- ================= UPCOMING EVENTS ================= -->
+
+    <section class="timeline-section">
+
+        <h2 class="section-title">
+            Upcoming Events
+        </h2>
+
+        <div class="timeline">
+
+            <div class="timeline-card">
+
+                <h3>Tomorrow</h3>
+
+                <h4>Birthday Photography</h4>
+
+                <p>
+                    10:00 AM
+                </p>
+
+                <span>Pune</span>
+
+            </div>
+
+            <div class="timeline-card">
+
+                <h3>Friday</h3>
+
+                <h4>Corporate Event</h4>
+
+                <p>
+                    4:00 PM
+                </p>
+
+                <span>Bengaluru</span>
+
+            </div>
+
+            <div class="timeline-card">
+
+                <h3>Sunday</h3>
+
+                <h4>Wedding Shoot</h4>
+
+                <p>
+                    8:00 AM
+                </p>
+
+                <span>Mumbai</span>
+
+            </div>
+
+            <div class="timeline-card">
+
+                <h3>Next Week</h3>
+
+                <h4>Drone Coverage</h4>
+
+                <p>
+                    2:00 PM
+                </p>
+
+                <span>Goa</span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+
+
+
+    <!-- ================= RECENT ACTIVITY ================= -->
+
+    <section class="activity-section">
+
+        <h2 class="section-title">
+
+            Recent Activity
+
+        </h2>
+
+        <div class="activity-list">
+
+            <div class="activity-item">
+
+                <i class="fa-solid fa-circle-check"></i>
+
+                <div>
+
+                    <h4>Wedding Booking Confirmed</h4>
+
+                    <p>2 minutes ago</p>
+
+                </div>
+
+            </div>
+
+            <div class="activity-item">
+
+                <i class="fa-solid fa-file-invoice"></i>
+
+                <div>
+
+                    <h4>Invoice Generated</h4>
+
+                    <p>15 minutes ago</p>
+
+                </div>
+
+            </div>
+
+            <div class="activity-item">
+
+                <i class="fa-solid fa-camera"></i>
+
+                <div>
+
+                    <h4>Corporate Shoot Completed</h4>
+
+                    <p>Yesterday</p>
+
+                </div>
+
+            </div>
+
+            <div class="activity-item">
+
+                <i class="fa-solid fa-star"></i>
+
+                <div>
+
+                    <h4>New 5-Star Review Received</h4>
+
+                    <p>Yesterday</p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+
+
+
+    <!-- ================= CALENDAR ================= -->
+
+    <section class="calendar-section">
+
+        <h2 class="section-title">
+
+            August Schedule
+
+        </h2>
+
+        <div class="calendar-grid">
+
+            <div>1</div>
+            <div>2</div>
+            <div>3</div>
+            <div>4</div>
+            <div>5</div>
+            <div class="event">6</div>
+            <div>7</div>
+
+            <div>8</div>
+            <div>9</div>
+            <div class="event">10</div>
+            <div>11</div>
+            <div>12</div>
+            <div>13</div>
+            <div>14</div>
+
+            <div class="event">15</div>
+            <div>16</div>
+            <div>17</div>
+            <div>18</div>
+            <div class="event">19</div>
+            <div>20</div>
+            <div>21</div>
+
+            <div>22</div>
+            <div>23</div>
+            <div class="event">24</div>
+            <div>25</div>
+            <div>26</div>
+            <div>27</div>
+            <div class="event">28</div>
+
+            <div>29</div>
+            <div>30</div>
+            <div>31</div>
+
+        </div>
+
+    </section>
+
+
+
+
+
+
+    <!-- ================= QUICK ACTIONS ================= -->
+
+    <section class="quick-actions">
+
+        <h2 class="section-title">
+
+            Quick Actions
+
+        </h2>
+
+        <div class="action-grid">
+
+            <button>
+
+                <i class="fa-solid fa-plus"></i>
+
+                Add Booking
+
+            </button>
+
+            <button>
+
+                <i class="fa-solid fa-file-invoice"></i>
+
+                Generate Invoice
+
+            </button>
+
+            <button>
+
+                <i class="fa-solid fa-image"></i>
+
+                Upload Gallery
+
+            </button>
+
+            <button>
+
+                <i class="fa-solid fa-share"></i>
+
+                Share Portfolio
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+
+
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer>
+
+        <p>
+
+            © 2026 Professional Studio.
+            All Rights Reserved.
+
+        </p>
+
+    </footer>
+
+    <script src="bookMng.js"></script>
+
+</body>
+
+</html>
