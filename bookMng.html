@@ -189,7 +189,30 @@
 
         <!-- CARD -->
 
-        <div class="booking-card confirmed">
+        <div class="booking-card confirmed"
+
+data-client="Rahul Sharma"
+data-client-type="Wedding Client"
+
+data-phone="+91 9876543210"
+data-email="rahul@gmail.com"
+data-instagram="@rahul_sharma"
+
+data-service="Wedding Photography"
+data-package="Luxury"
+
+data-date="18 September 2026"
+data-location="The Taj Palace, Mumbai"
+
+data-payment="Paid"
+data-advance="₹25,000"
+data-remaining="₹60,000"
+
+data-image="images/client1.jpg"
+
+data-equipment="Sony A7 IV,DJI Drone,Ronin Gimbal,Lighting Kit"
+
+>
 
             <div class="booking-header">
 
@@ -897,36 +920,42 @@
 
     <div class="client-profile">
 
-        <img src="images/profile.jpg" alt="Client">
+    <img
+        src="images/profile.jpg"
+        alt="Client"
+        id="drawer-image"
+    >
 
-        <div>
+    <div>
 
-            <h3>Rahul Sharma</h3>
+        <h3 id="drawer-client-name">
+            Client Name
+        </h3>
 
-            <span>Wedding Client</span>
-
-        </div>
+        <span id="drawer-client-type">
+            Booking Client
+        </span>
 
     </div>
 
+</div>
+
     <div class="drawer-section">
 
-        <h4>Client Information</h4>
-
         <div class="drawer-item">
-            <span>Phone</span>
-            <strong>+91 9876543210</strong>
-        </div>
+    <span>Phone</span>
+    <strong id="drawer-phone"></strong>
+</div>
 
-        <div class="drawer-item">
-            <span>Email</span>
-            <strong>rahul@gmail.com</strong>
-        </div>
+<div class="drawer-item">
+    <span>Email</span>
+    <strong id="drawer-email"></strong>
+</div>
 
-        <div class="drawer-item">
-            <span>Instagram</span>
-            <strong>@rahul_sharma</strong>
-        </div>
+<div class="drawer-item">
+    <span>Instagram</span>
+    <strong id="drawer-instagram"></strong>
+</div>
 
     </div>
 
@@ -935,25 +964,25 @@
         <h4>Event Details</h4>
 
         <div class="drawer-item">
-            <span>Service</span>
-            <strong>Wedding Photography</strong>
-        </div>
+    <span>Service</span>
+    <strong id="drawer-service"></strong>
+</div>
 
-        <div class="drawer-item">
-            <span>Package</span>
-            <strong>Luxury</strong>
-        </div>
+<div class="drawer-item">
+    <span>Package</span>
+    <strong id="drawer-package"></strong>
+</div>
 
-        <div class="drawer-item">
-            <span>Date</span>
-            <strong>18 September 2026</strong>
-        </div>
+<div class="drawer-item">
+    <span>Date</span>
+    <strong id="drawer-date"></strong>
+</div>
 
-        <div class="drawer-item">
-            <span>Venue</span>
-            <strong>Mumbai</strong>
-        </div>
-
+<div class="drawer-item">
+    <span>Venue</span>
+    <strong id="drawer-location"></strong>
+</div>
+       
     </div>
 
     <div class="drawer-section">
@@ -961,19 +990,20 @@
         <h4>Payment</h4>
 
         <div class="drawer-item">
-            <span>Advance</span>
-            <strong>₹25,000</strong>
-        </div>
+    <span>Advance</span>
+    <strong id="drawer-advance"></strong>
+</div>
 
-        <div class="drawer-item">
-            <span>Remaining</span>
-            <strong>₹60,000</strong>
-        </div>
+<div class="drawer-item">
+    <span>Remaining</span>
+    <strong id="drawer-remaining"></strong>
+</div>
 
-        <div class="drawer-item">
-            <span>Status</span>
-            <strong class="paid">Paid</strong>
-        </div>
+<div class="drawer-item">
+    <span>Status</span>
+    <strong id="drawer-payment-status" class="paid"></strong>
+</div>
+       
 
     </div>
 
@@ -981,18 +1011,12 @@
 
         <h4>Equipment</h4>
 
-        <ul class="equipment-list">
-
-            <li>📷 Sony A7 IV</li>
-
-            <li>🚁 DJI Drone</li>
-
-            <li>🎥 Gimbal</li>
-
-            <li>💡 Lighting Kit</li>
-
-        </ul>
-
+<ul
+    class="equipment-list"
+    id="drawer-equipment"
+>
+</ul>
+        
     </div>
 
     <div class="drawer-actions">
@@ -1008,6 +1032,203 @@
     </div>
 
 </aside>
+
+<!-- ==========================================
+     EDIT BOOKING MODAL
+========================================== -->
+
+<div class="modal-overlay"></div>
+
+<div class="edit-modal">
+
+    <div class="modal-header">
+
+        <h2>Edit Booking</h2>
+
+        <button class="close-modal">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+    </div>
+
+    <form class="edit-form">
+
+        <div class="form-grid">
+
+            <div class="input-group">
+
+                <label>Client Name</label>
+
+                <input
+                    type="text"
+                    id="edit-client"
+                >
+
+            </div>
+
+            <div class="input-group">
+
+                <label>Phone</label>
+
+                <input
+                    type="text"
+                    id="edit-phone"
+                >
+
+            </div>
+
+            <div class="input-group">
+
+                <label>Email</label>
+
+                <input
+                    type="email"
+                    id="edit-email"
+                >
+
+            </div>
+
+            <div class="input-group">
+
+                <label>Instagram</label>
+
+                <input
+                    type="text"
+                    id="edit-instagram"
+                >
+
+            </div>
+
+            <div class="input-group">
+
+                <label>Service</label>
+
+                <select id="edit-service">
+
+                    <option>Wedding Photography</option>
+
+                    <option>Pre Wedding Shoot</option>
+
+                    <option>Birthday Photography</option>
+
+                    <option>Corporate Event</option>
+
+                    <option>Fashion Shoot</option>
+
+                    <option>Product Photography</option>
+
+                    <option>Drone Shoot</option>
+
+                </select>
+
+            </div>
+
+            <div class="input-group">
+
+                <label>Package</label>
+
+                <select id="edit-package">
+
+                    <option>Basic</option>
+
+                    <option>Premium</option>
+
+                    <option>Luxury</option>
+
+                </select>
+
+            </div>
+
+            <div class="input-group">
+
+                <label>Date</label>
+
+                <input
+                    type="date"
+                    id="edit-date"
+                >
+
+            </div>
+
+            <div class="input-group">
+
+                <label>Time</label>
+
+                <input
+                    type="time"
+                    id="edit-time"
+                >
+
+            </div>
+
+            <div class="input-group full">
+
+                <label>Venue</label>
+
+                <input
+                    type="text"
+                    id="edit-location"
+                >
+
+            </div>
+
+            <div class="input-group">
+
+                <label>Advance Paid</label>
+
+                <input
+                    type="text"
+                    id="edit-advance"
+                >
+
+            </div>
+
+            <div class="input-group">
+
+                <label>Remaining</label>
+
+                <input
+                    type="text"
+                    id="edit-remaining"
+                >
+
+            </div>
+
+            <div class="input-group full">
+
+                <label>Special Notes</label>
+
+                <textarea
+                    id="edit-notes"
+                    rows="5"
+                ></textarea>
+
+            </div>
+
+        </div>
+
+        <div class="modal-buttons">
+
+            <button
+                type="button"
+                class="cancel-edit"
+            >
+                Cancel
+            </button>
+
+            <button
+                type="submit"
+                class="save-booking"
+            >
+                Save Changes
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
     <script src="bookMng.js"></script>
 
 </body>
