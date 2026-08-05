@@ -462,9 +462,109 @@ form.addEventListener("submit", function (e) {
 
     submitBtn.innerText = "Submitting...";
 
-    // =====================================
-    // BACKEND WILL BE ADDED HERE LATER
-    // =====================================
+
+// =====================================
+// SAVE BOOKING (Frontend)
+// =====================================
+
+// Get the first selected date
+const selectedDates = document.querySelectorAll(".date-time-row");
+
+let bookingDate = "";
+let bookingTime = "";
+
+if (selectedDates.length > 0) {
+
+    bookingDate =
+        selectedDates[0].querySelector("h4").innerText;
+
+    bookingTime =
+        selectedDates[0]
+        .querySelector(".start-time")
+        .value;
+
+}
+
+const booking = {
+
+    id: "BK-" + Date.now(),
+
+    client:
+        document.getElementById("name").value,
+
+    phone:
+
+        phone,
+
+    email:
+
+        email,
+
+    service:
+
+        serviceSelect.options[
+            serviceSelect.selectedIndex
+        ].text,
+
+    package:
+
+        selectedPackage.value || "-",
+
+    date:
+
+        bookingDate,
+
+    time:
+
+        bookingTime,
+
+    location:
+
+        location,
+
+    status:
+
+        "Pending",
+
+    payment:
+
+        "Pending",
+
+    advance:
+
+        "₹0",
+
+    remaining:
+
+        "-",
+
+    image:
+
+        "images/profile.jpg",
+
+    equipment:
+
+        "",
+
+    notes:
+
+        ""
+
+};
+
+let bookings =
+JSON.parse(localStorage.getItem("bookings")) || [];
+
+bookings.unshift(booking);
+
+localStorage.setItem(
+
+    "bookings",
+
+    JSON.stringify(bookings)
+
+);
+
 
     setTimeout(() => {
 

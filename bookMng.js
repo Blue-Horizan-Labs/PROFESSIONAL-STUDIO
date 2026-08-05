@@ -17,6 +17,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const serviceFilter = document.querySelectorAll(".filter-section select")[1];
 
+/* ==========================================
+   BOOKING CONTAINER
+========================================== */
+
+const bookingContainer = document.querySelector(".bookings-grid");    
+
     /* ==========================================
        SEARCH
     ========================================== */
@@ -156,53 +162,55 @@ document.addEventListener("DOMContentLoaded", () => {
 
     });
 
+function initializeBookingCard(card){
+
+    /* Accept / Reject */
+
+    const acceptBtn = card.querySelector(".accept-btn");
+    const rejectBtn = card.querySelector(".reject-btn");
+
+    if(acceptBtn && rejectBtn){
+
+        acceptBtn.addEventListener("click",()=>{
+
+            acceptBtn.innerHTML =
+            '<i class="fa-solid fa-check"></i> Accepted';
+
+            acceptBtn.disabled = true;
+            acceptBtn.style.background="#16a34a";
+
+            rejectBtn.disabled=true;
+            rejectBtn.style.opacity=".45";
+            rejectBtn.style.cursor="not-allowed";
+
+        });
+
+        rejectBtn.addEventListener("click",()=>{
+
+            rejectBtn.innerHTML =
+            '<i class="fa-solid fa-xmark"></i> Rejected';
+
+            rejectBtn.disabled=true;
+            rejectBtn.style.background="#dc2626";
+
+            acceptBtn.disabled=true;
+            acceptBtn.style.opacity=".45";
+            acceptBtn.style.cursor="not-allowed";
+
+        });
+
+    }
+
+}
+
     /* ==========================================
        ACCEPT / REJECT BOOKING
     ========================================== */
+{document.querySelectorAll(".booking-card").forEach(card=>{
 
-    document.querySelectorAll(".booking-card").forEach(card => {
+    initializeBookingCard(card);
 
-        const acceptBtn = card.querySelector(".accept-btn");
-
-        const rejectBtn = card.querySelector(".reject-btn");
-
-        if (!acceptBtn || !rejectBtn) return;
-
-        acceptBtn.addEventListener("click", () => {
-
-            acceptBtn.innerHTML =
-                '<i class="fa-solid fa-check"></i> Accepted';
-
-            acceptBtn.disabled = true;
-
-            acceptBtn.style.background = "#16a34a";
-
-            rejectBtn.disabled = true;
-
-            rejectBtn.style.opacity = ".45";
-
-            rejectBtn.style.cursor = "not-allowed";
-
-        });
-
-        rejectBtn.addEventListener("click", () => {
-
-            rejectBtn.innerHTML =
-                '<i class="fa-solid fa-xmark"></i> Rejected';
-
-            rejectBtn.disabled = true;
-
-            rejectBtn.style.background = "#dc2626";
-
-            acceptBtn.disabled = true;
-
-            acceptBtn.style.opacity = ".45";
-
-            acceptBtn.style.cursor = "not-allowed";
-
-        });
-
-    });
+});
 
     /* ==========================================
    DYNAMIC BOOKING DRAWER
@@ -212,7 +220,7 @@ const drawer = document.querySelector(".booking-drawer");
 const overlay = document.querySelector(".drawer-overlay");
 const closeDrawer = document.querySelector(".close-drawer");
 
-if (drawer && overlay && closeDrawer) {
+if (drawer && overlay && closeDrawer) 
 
     document.querySelectorAll(".view-btn").forEach(button => {
 
