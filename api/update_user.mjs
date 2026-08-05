@@ -12,11 +12,12 @@ export default async function updateUser(req, res) {
 
     //check payload
     const req_data = req.body;
+    const req_user = JSON.parse(req_data);
     if (!req_user || !req_user.email) {
         res.status(400).json({ error: "Bad Request: Missing user data" });
         return;
     }
-    const req_user = JSON.parse(req_data);
+    
 
     const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
@@ -32,6 +33,12 @@ export default async function updateUser(req, res) {
     const user_data = await supabase.from("user_data").select("*").eq("email", user.user.email).single();
     if (user_data.error.code === 400){
         // first time user, create a new entry in user_data table
-        const new_entry = await supabase.from('user_data').insert({ email: req_user.email})
+        const new_entry = await supabase.from('user_data').insert({ 
+            email: req_user.email,
+            studio_name: req_user.studio_name,
+            studio_tagline: req_user.studio_tagline,
+            name: req_user.name,
+            
+        })
     }
 }
