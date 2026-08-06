@@ -23,7 +23,8 @@ const successPopup = document.getElementById("successPopup");
 
 
 // ================================
-// MULTI DATE PICKER
+// MULTI DATE PICKERy
+
 // ================================
 
 flatpickr("#multiDate", {
@@ -489,80 +490,52 @@ const booking = {
 
     id: "BK-" + Date.now(),
 
-    client:
-        document.getElementById("name").value,
+    client: document.getElementById("name").value,
 
-    phone:
+    clientType: "Photography Client",
 
-        phone,
+    phone: phone,
 
-    email:
+    email: email,
 
-        email,
+    instagram: instagram || "-",
 
-    service:
+    service: serviceSelect.options[
+        serviceSelect.selectedIndex
+    ].text,
 
-        serviceSelect.options[
-            serviceSelect.selectedIndex
-        ].text,
+    package: selectedPackage.value,
 
-    package:
+    date: bookingDate,
 
-        selectedPackage.value || "-",
+    time: bookingTime,
 
-    date:
+    location: location,
 
-        bookingDate,
+    status: "Pending",
 
-    time:
+    payment: "Pending",
 
-        bookingTime,
+    advance: "₹0",
 
-    location:
+    remaining: packagePrice.value,
 
-        location,
+    image: "images/profile.jpg",
 
-    status:
+    equipment: "",
 
-        "Pending",
-
-    payment:
-
-        "Pending",
-
-    advance:
-
-        "₹0",
-
-    remaining:
-
-        "-",
-
-    image:
-
-        "images/profile.jpg",
-
-    equipment:
-
-        "",
-
-    notes:
-
-        ""
+    notes: ""
 
 };
 
-let bookings =
+const bookings =
 JSON.parse(localStorage.getItem("bookings")) || [];
 
 bookings.unshift(booking);
 
 localStorage.setItem(
-
     "bookings",
-
     JSON.stringify(bookings)
-
 );
 
 
