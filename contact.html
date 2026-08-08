@@ -1,0 +1,652 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Contact Us | Professional Studio</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+
+        /* =========================
+           RESET
+        ========================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            background: #ffffff;
+            color: #171717;
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
+        .navbar {
+            height: 75px;
+            padding: 0 7%;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            border-bottom: 1px solid #eeeeee;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 9px;
+
+            background: #171717;
+            color: white;
+
+            font-size: 15px;
+        }
+
+        .back-link {
+            color: #555;
+            font-size: 14px;
+            font-weight: 500;
+
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #111;
+        }
+
+
+        /* =========================
+           CONTACT HEADER
+        ========================= */
+
+        .contact-header {
+            padding: 75px 20px 45px;
+            text-align: center;
+        }
+
+        .contact-header h1 {
+            margin-bottom: 15px;
+
+            font-family: "Playfair Display", serif;
+            font-size: clamp(40px, 5vw, 58px);
+            line-height: 1.1;
+        }
+
+        .contact-header p {
+            max-width: 570px;
+            margin: auto;
+
+            color: #666;
+            font-size: 15px;
+        }
+
+
+        /* =========================
+           CONTACT CONTENT
+        ========================= */
+
+        .contact-container {
+            max-width: 1050px;
+            margin: auto;
+
+            padding: 25px 7% 90px;
+
+            display: grid;
+            grid-template-columns: 0.8fr 1.2fr;
+            gap: 65px;
+        }
+
+
+        /* =========================
+           CONTACT DETAILS
+        ========================= */
+
+        .contact-details h2 {
+            margin-bottom: 12px;
+
+            font-family: "Playfair Display", serif;
+            font-size: 30px;
+        }
+
+        .contact-details > p {
+            margin-bottom: 30px;
+
+            color: #666;
+            font-size: 14px;
+        }
+
+        .detail {
+            margin-bottom: 25px;
+        }
+
+        .detail h3 {
+            margin-bottom: 4px;
+
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .detail p,
+        .detail a {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .detail a:hover {
+            color: #111;
+        }
+
+
+        /* =========================
+           FORM
+        ========================= */
+
+        .contact-form {
+            padding: 30px;
+
+            border: 1px solid #e5e5e5;
+            border-radius: 14px;
+
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+        }
+
+        .contact-form h2 {
+            margin-bottom: 22px;
+
+            font-size: 21px;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 17px;
+        }
+
+        .form-group label {
+            display: block;
+
+            margin-bottom: 7px;
+
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea {
+
+            width: 100%;
+
+            padding: 12px 13px;
+
+            border: 1px solid #dddddd;
+            border-radius: 8px;
+
+            outline: none;
+
+            font-family: inherit;
+            font-size: 14px;
+
+            transition: border 0.2s ease;
+        }
+
+        .form-group input {
+            height: 45px;
+        }
+
+        .form-group textarea {
+            height: 130px;
+            resize: vertical;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: #171717;
+        }
+
+
+        /* =========================
+           BUTTON
+        ========================= */
+
+        .submit-btn {
+            width: 100%;
+            height: 46px;
+
+            border: none;
+            border-radius: 8px;
+
+            background: #171717;
+            color: white;
+
+            font-size: 14px;
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition: background 0.2s ease;
+        }
+
+        .submit-btn:hover {
+            background: #333;
+        }
+
+
+        /* =========================
+           MESSAGE
+        ========================= */
+
+        .message {
+            display: none;
+
+            margin-top: 15px;
+            padding: 10px 12px;
+
+            border-radius: 7px;
+
+            font-size: 13px;
+        }
+
+        .message.success {
+            display: block;
+
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+
+        .message.error {
+            display: block;
+
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 750px) {
+
+            .navbar {
+                padding: 0 5%;
+            }
+
+            .contact-header {
+                padding: 60px 20px 35px;
+            }
+
+            .contact-container {
+                grid-template-columns: 1fr;
+                gap: 40px;
+
+                padding: 20px 5% 60px;
+            }
+
+            .contact-form {
+                padding: 23px 18px;
+            }
+
+        }
+
+        @media (max-width: 450px) {
+
+            .logo {
+                font-size: 17px;
+            }
+
+            .logo-icon {
+                width: 34px;
+                height: 34px;
+            }
+
+            .back-link {
+                font-size: 13px;
+            }
+
+            .contact-header h1 {
+                font-size: 40px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         NAVBAR
+    ========================= -->
+
+    <header class="navbar">
+
+        <a href="index.html" class="logo">
+
+            <span class="logo-icon">
+                📷
+            </span>
+
+            <span>
+                Professional Studio
+            </span>
+
+        </a>
+
+        <a href="index.html" class="back-link">
+            ← Back
+        </a>
+
+    </header>
+
+
+    <!-- =========================
+         HEADER
+    ========================= -->
+
+    <section class="contact-header">
+
+        <h1>
+            Contact Us
+        </h1>
+
+        <p>
+            Have a question or need help?
+            Get in touch with the Professional Studio team.
+            We're happy to assist you.
+        </p>
+
+    </section>
+
+
+    <!-- =========================
+         CONTACT CONTENT
+    ========================= -->
+
+    <main class="contact-container">
+
+
+        <!-- CONTACT DETAILS -->
+
+        <section class="contact-details">
+
+            <h2>
+                Get in touch
+            </h2>
+
+            <p>
+                Reach out to us through any of the options below,
+                or send us a message using the form.
+            </p>
+
+
+            <div class="detail">
+
+                <h3>
+                    Email
+                </h3>
+
+                <a href="mailto:hello@professionalstudio.com">
+                    hello@professionalstudio.com
+                </a>
+
+            </div>
+
+
+            <div class="detail">
+
+                <h3>
+                    Phone
+                </h3>
+
+                <a href="tel:+919529924506">
+                    +91 9529924506
+                </a>
+                <br>
+                <a href="tel:+919309703484">
+                    +91 93097 03484
+                </a>
+
+            </div>
+
+
+            <div class="detail">
+
+                <h3>
+                    Support Hours
+                </h3>
+
+                <p>
+                    Monday – Saturday<br>
+                    9:00 AM – 6:00 PM
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- CONTACT FORM -->
+
+        <section class="contact-form">
+
+            <h2>
+                Send us a message
+            </h2>
+
+            <form id="contactForm">
+
+
+                <div class="form-group">
+
+                    <label for="name">
+                        Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="name"
+                        placeholder="Enter your name"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="email">
+                        Email
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="Enter your email"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="subject">
+                        Subject
+                    </label>
+
+                    <input
+                        type="text"
+                        id="subject"
+                        placeholder="What can we help you with?"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="message">
+                        Message
+                    </label>
+
+                    <textarea
+                        id="message"
+                        placeholder="Write your message..."
+                        required
+                    ></textarea>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="submit-btn"
+                >
+                    Send Message
+                </button>
+
+
+                <div
+                    id="formMessage"
+                    class="message"
+                ></div>
+
+
+            </form>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================= -->
+
+    <script>
+
+        const form =
+            document.getElementById("contactForm");
+
+        const formMessage =
+            document.getElementById("formMessage");
+
+
+        form.addEventListener("submit", function (event) {
+
+            event.preventDefault();
+
+
+            const name =
+                document.getElementById("name").value.trim();
+
+            const email =
+                document.getElementById("email").value.trim();
+
+            const subject =
+                document.getElementById("subject").value.trim();
+
+            const message =
+                document.getElementById("message").value.trim();
+
+
+            /* Basic validation */
+
+            if (!name || !email || !subject || !message) {
+
+                formMessage.textContent =
+                    "Please fill in all the fields.";
+
+                formMessage.className =
+                    "message error";
+
+                return;
+            }
+
+
+            /* Email validation */
+
+            const emailPattern =
+                /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+            if (!emailPattern.test(email)) {
+
+                formMessage.textContent =
+                    "Please enter a valid email address.";
+
+                formMessage.className =
+                    "message error";
+
+                return;
+            }
+
+
+            /*
+                Frontend only for now.
+
+                Later this can be connected to
+                your backend/email service.
+            */
+
+            formMessage.textContent =
+                "Thank you! Your message has been received.";
+
+            formMessage.className =
+                "message success";
+
+
+            form.reset();
+
+        });
+
+    </script>
+
+
+</body>
+</html>
+
