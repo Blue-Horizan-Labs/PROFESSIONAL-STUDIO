@@ -1,39 +1,19 @@
-// ===============================
-// Studio Logo Preview
-// ===============================
 
-const studioLogo = document.getElementById("studioLogo");
-const logoPreview = document.getElementById("logoPreview");
-
-studioLogo.addEventListener("change", function () {
-
-    const file = this.files[0];
-
-    if (!file) return;
-
-    logoPreview.src = URL.createObjectURL(file);
-    logoPreview.style.display = "block";
-
-    logoPreview.parentElement.classList.add("has-image");
-
-});
 
 // ===============================
 // Photographer Image Preview
 // ===============================
-
 function initializePhotoUploads() {
-
     const uploadBoxes = document.querySelectorAll(".photographer-card");
 
     uploadBoxes.forEach(card => {
-
         const input = card.querySelector(".photoInput");
         const preview = card.querySelector(".photoPreview");
         const label = card.querySelector(".upload-label");
 
-        input.onchange = function () {
+        if (!input || !preview || !label) return;
 
+        input.onchange = function () {
             const file = this.files[0];
 
             if (!file) return;
@@ -42,11 +22,8 @@ function initializePhotoUploads() {
             preview.style.display = "block";
 
             label.classList.add("has-image");
-
         };
-
     });
-
 }
 
 initializePhotoUploads();
