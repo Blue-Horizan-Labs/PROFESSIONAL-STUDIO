@@ -1,0 +1,815 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Demo & Guide | Professional Studio</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+
+        /* =========================
+           RESET
+        ========================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            background: #ffffff;
+            color: #171717;
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
+        .navbar {
+            height: 75px;
+            padding: 0 7%;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            border-bottom: 1px solid #eeeeee;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 9px;
+
+            background: #171717;
+            color: #ffffff;
+
+            font-size: 15px;
+        }
+
+        .back-link {
+            color: #555555;
+            font-size: 14px;
+            font-weight: 500;
+
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #111111;
+        }
+
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .demo-header {
+            padding: 75px 20px 55px;
+
+            text-align: center;
+        }
+
+        .demo-header h1 {
+            margin-bottom: 15px;
+
+            font-family: "Playfair Display", serif;
+            font-size: clamp(40px, 5vw, 58px);
+            line-height: 1.1;
+        }
+
+        .demo-header p {
+            max-width: 650px;
+            margin: auto;
+
+            color: #666666;
+            font-size: 15px;
+        }
+
+
+        /* =========================
+           GUIDE
+        ========================= */
+
+        .guide {
+            max-width: 1050px;
+            margin: auto;
+
+            padding: 20px 7% 80px;
+        }
+
+
+        /* =========================
+           STEP
+        ========================= */
+
+        .step {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+
+            gap: 55px;
+
+            align-items: center;
+
+            padding: 55px 0;
+
+            border-bottom: 1px solid #eeeeee;
+        }
+
+        .step:last-child {
+            border-bottom: none;
+        }
+
+        .step.reverse .step-image {
+            order: 2;
+        }
+
+        .step.reverse .step-content {
+            order: 1;
+        }
+
+
+        /* =========================
+           STEP IMAGE
+        ========================= */
+
+        .step-image {
+            width: 100%;
+            height: 300px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: 1px solid #e2e2e2;
+            border-radius: 12px;
+
+            background: #f7f7f7;
+
+            color: #999999;
+
+            font-size: 14px;
+            text-align: center;
+
+            overflow: hidden;
+        }
+
+        .step-image img {
+            width: 100%;
+            height: 100%;
+
+            object-fit: cover;
+
+            display: block;
+        }
+
+
+        /* =========================
+           STEP CONTENT
+        ========================= */
+
+        .step-number {
+            display: inline-block;
+
+            margin-bottom: 12px;
+
+            color: #777777;
+
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .step-content h2 {
+            margin-bottom: 12px;
+
+            font-family: "Playfair Display", serif;
+            font-size: 30px;
+            line-height: 1.2;
+        }
+
+        .step-content p {
+            color: #666666;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .step-content ul {
+            margin-top: 15px;
+            padding-left: 18px;
+
+            color: #666666;
+
+            font-size: 13px;
+        }
+
+        .step-content li {
+            margin-bottom: 7px;
+        }
+
+
+        /* =========================
+           VIDEO SECTION
+        ========================= */
+
+        .video-section {
+            max-width: 900px;
+            margin: 20px auto 80px;
+
+            padding: 45px 7%;
+
+            text-align: center;
+        }
+
+        .video-section h2 {
+            margin-bottom: 12px;
+
+            font-family: "Playfair Display", serif;
+            font-size: 32px;
+        }
+
+        .video-section > p {
+            max-width: 600px;
+            margin: 0 auto 28px;
+
+            color: #666666;
+            font-size: 14px;
+        }
+
+        .video-box {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: 1px solid #dddddd;
+            border-radius: 12px;
+
+            background: #f5f5f5;
+
+            overflow: hidden;
+        }
+
+        .video-box iframe {
+            width: 100%;
+            height: 100%;
+
+            border: none;
+        }
+
+        .youtube-btn {
+            display: inline-block;
+
+            margin-top: 22px;
+
+            padding: 11px 20px;
+
+            border-radius: 8px;
+
+            background: #171717;
+            color: #ffffff;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            transition: background 0.2s ease;
+        }
+
+        .youtube-btn:hover {
+            background: #333333;
+        }
+
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 750px) {
+
+            .navbar {
+                padding: 0 5%;
+            }
+
+            .demo-header {
+                padding: 60px 20px 40px;
+            }
+
+            .guide {
+                padding: 10px 5% 50px;
+            }
+
+            .step {
+                grid-template-columns: 1fr;
+
+                gap: 25px;
+
+                padding: 40px 0;
+            }
+
+            .step.reverse .step-image {
+                order: 1;
+            }
+
+            .step.reverse .step-content {
+                order: 2;
+            }
+
+            .step-image {
+                height: 250px;
+            }
+
+            .step-content h2 {
+                font-size: 27px;
+            }
+
+            .video-section {
+                padding: 35px 5%;
+                margin-bottom: 50px;
+            }
+
+        }
+
+
+        @media (max-width: 450px) {
+
+            .logo {
+                font-size: 17px;
+            }
+
+            .logo-icon {
+                width: 34px;
+                height: 34px;
+            }
+
+            .back-link {
+                font-size: 13px;
+            }
+
+            .demo-header h1 {
+                font-size: 40px;
+            }
+
+            .step-image {
+                height: 210px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         NAVBAR
+    ========================= -->
+
+    <header class="navbar">
+
+        <a href="index.html" class="logo">
+
+            <span class="logo-icon">
+                📷
+            </span>
+
+            <span>
+                Professional Studio
+            </span>
+
+        </a>
+
+        <a href="index.html" class="back-link">
+            ← Back
+        </a>
+
+    </header>
+
+
+    <!-- =========================
+         HEADER
+    ========================= -->
+
+    <section class="demo-header">
+
+        <h1>
+            Getting Started
+        </h1>
+
+        <p>
+            Follow this simple guide to create your Professional
+            Studio account, set up your profile, and build your
+            photography portfolio.
+        </p>
+
+    </section>
+
+
+    <!-- =========================
+         STEP-BY-STEP GUIDE
+    ========================= -->
+
+    <main class="guide">
+
+
+        <!-- STEP 1 -->
+
+        <section class="step">
+
+            <div class="step-image">
+
+                <!-- Replace this div with your screenshot -->
+
+                <img
+                    src="images/demo/signup.png"
+                    alt="Professional Studio account creation page"
+                >
+
+            </div>
+
+
+            <div class="step-content">
+
+                <span class="step-number">
+                    Step 01
+                </span>
+
+                <h2>
+                    Create Your Account
+                </h2>
+
+                <p>
+                    Start by creating your Professional Studio
+                    account. Enter your basic information and
+                    create your login credentials.
+                </p>
+
+                <ul>
+                    <li>Open the Professional Studio sign-up page.</li>
+                    <li>Enter your name and email address.</li>
+                    <li>Create a secure password.</li>
+                    <li>Complete the registration process.</li>
+                </ul>
+
+            </div>
+
+        </section>
+
+
+        <!-- STEP 2 -->
+
+        <section class="step reverse">
+
+            <div class="step-image">
+
+                <img
+                    src="images/demo/profile.png"
+                    alt="Professional Studio profile setup"
+                >
+
+            </div>
+
+
+            <div class="step-content">
+
+                <span class="step-number">
+                    Step 02
+                </span>
+
+                <h2>
+                    Set Up Your Profile
+                </h2>
+
+                <p>
+                    After creating your account, complete your
+                    photographer profile. This information helps
+                    clients understand who you are and what you do.
+                </p>
+
+                <ul>
+                    <li>Add your profile picture.</li>
+                    <li>Add your studio or business name.</li>
+                    <li>Enter your contact information.</li>
+                    <li>Add your location and experience.</li>
+                </ul>
+
+            </div>
+
+        </section>
+
+
+        <!-- STEP 3 -->
+
+        <section class="step">
+
+            <div class="step-image">
+
+                <img
+                    src="images/demo/portfolio.png"
+                    alt="Professional Studio portfolio setup"
+                >
+
+            </div>
+
+
+            <div class="step-content">
+
+                <span class="step-number">
+                    Step 03
+                </span>
+
+                <h2>
+                    Build Your Portfolio
+                </h2>
+
+                <p>
+                    Your portfolio is where potential clients can
+                    see your photography style and previous work.
+                    Add your best photographs and organize them
+                    clearly.
+                </p>
+
+                <ul>
+                    <li>Upload your best photography work.</li>
+                    <li>Create different work or event categories.</li>
+                    <li>Add photographs to each category.</li>
+                    <li>Choose your strongest images for your main portfolio.</li>
+                </ul>
+
+            </div>
+
+        </section>
+
+
+        <!-- STEP 4 -->
+
+        <section class="step reverse">
+
+            <div class="step-image">
+
+                <img
+                    src="images/demo/services.png"
+                    alt="Professional Studio services setup"
+                >
+
+            </div>
+
+
+            <div class="step-content">
+
+                <span class="step-number">
+                    Step 04
+                </span>
+
+                <h2>
+                    Add Your Services
+                </h2>
+
+                <p>
+                    Add the photography services you offer so
+                    clients can understand what they can book
+                    through your studio.
+                </p>
+
+                <ul>
+                    <li>Add your photography services.</li>
+                    <li>Describe each service.</li>
+                    <li>Set the available duration.</li>
+                    <li>Add relevant packages if required.</li>
+                </ul>
+
+            </div>
+
+        </section>
+
+
+        <!-- STEP 5 -->
+
+        <section class="step">
+
+            <div class="step-image">
+
+                <img
+                    src="images/demo/equipment.png"
+                    alt="Professional Studio equipment setup"
+                >
+
+            </div>
+
+
+            <div class="step-content">
+
+                <span class="step-number">
+                    Step 05
+                </span>
+
+                <h2>
+                    Add Your Equipment
+                </h2>
+
+                <p>
+                    Showcase the equipment you use for your
+                    photography work. This gives clients more
+                    information about your capabilities.
+                </p>
+
+                <ul>
+                    <li>Add cameras and lenses.</li>
+                    <li>Add drones or other equipment.</li>
+                    <li>Include important equipment details.</li>
+                </ul>
+
+            </div>
+
+        </section>
+
+
+        <!-- STEP 6 -->
+
+        <section class="step reverse">
+
+            <div class="step-image">
+
+                <img
+                    src="images/demo/pricing.png"
+                    alt="Professional Studio pricing setup"
+                >
+
+            </div>
+
+
+            <div class="step-content">
+
+                <span class="step-number">
+                    Step 06
+                </span>
+
+                <h2>
+                    Set Your Pricing
+                </h2>
+
+                <p>
+                    Create packages and pricing that match your
+                    services. You can provide different options
+                    depending on your clients' requirements.
+                </p>
+
+                <ul>
+                    <li>Add your service prices.</li>
+                    <li>Create different packages.</li>
+                    <li>Set package details and inclusions.</li>
+                    <li>Add discounts when applicable.</li>
+                </ul>
+
+            </div>
+
+        </section>
+
+
+        <!-- STEP 7 -->
+
+        <section class="step">
+
+            <div class="step-image">
+
+                <img
+                    src="images/demo/complete.png"
+                    alt="Completed Professional Studio profile"
+                >
+
+            </div>
+
+
+            <div class="step-content">
+
+                <span class="step-number">
+                    Step 07
+                </span>
+
+                <h2>
+                    Your Studio Is Ready
+                </h2>
+
+                <p>
+                    Once your profile, portfolio, services,
+                    equipment, and pricing are complete, your
+                    Professional Studio setup is ready.
+                </p>
+
+                <ul>
+                    <li>Review your profile.</li>
+                    <li>Check your portfolio.</li>
+                    <li>Verify your services and pricing.</li>
+                    <li>You're ready to start managing your studio.</li>
+                </ul>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =========================
+         VIDEO GUIDE
+    ========================= -->
+
+    <section class="video-section">
+
+        <h2>
+            Watch the Complete Guide
+        </h2>
+
+        <p>
+            Prefer watching instead of reading?
+            Follow the complete setup process in our
+            step-by-step video guide.
+        </p>
+
+
+        <div class="video-box">
+
+            <!--
+                Replace YOUR_YOUTUBE_VIDEO_ID with
+                the ID of your YouTube video.
+
+                Example:
+
+                https://www.youtube.com/watch?v=ABC123
+
+                becomes:
+
+                https://www.youtube.com/embed/ABC123
+            -->
+
+            <iframe
+                src="https://www.youtube.com/embed/YOUR_YOUTUBE_VIDEO_ID"
+                title="Professional Studio Setup Guide"
+                allowfullscreen
+            ></iframe>
+
+        </div>
+
+
+        <!--
+            Replace the # below with your actual
+            YouTube video URL.
+        -->
+
+        <a
+            href="#"
+            class="youtube-btn"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            Watch on YouTube
+        </a>
+
+    </section>
+
+
+</body>
+
+</html>
+```

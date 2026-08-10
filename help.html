@@ -1,0 +1,842 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Help Center | Professional Studio</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+
+        /* =========================
+           RESET
+        ========================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            background: #ffffff;
+            color: #171717;
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
+        .navbar {
+            height: 75px;
+            padding: 0 7%;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            border-bottom: 1px solid #eeeeee;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 9px;
+
+            background: #171717;
+            color: #ffffff;
+
+            font-size: 15px;
+        }
+
+        .back-link {
+            color: #555555;
+            font-size: 14px;
+            font-weight: 500;
+
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #111111;
+        }
+
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .help-header {
+            padding: 75px 20px 45px;
+            text-align: center;
+        }
+
+        .help-header h1 {
+            margin-bottom: 15px;
+
+            font-family: "Playfair Display", serif;
+            font-size: clamp(40px, 5vw, 58px);
+            line-height: 1.1;
+        }
+
+        .help-header p {
+            max-width: 580px;
+            margin: auto;
+
+            color: #666666;
+            font-size: 15px;
+        }
+
+
+        /* =========================
+           HELP CONTENT
+        ========================= */
+
+        .help-container {
+            max-width: 950px;
+            margin: auto;
+
+            padding: 25px 7% 80px;
+        }
+
+
+        /* =========================
+           SEARCH
+        ========================= */
+
+        .search-box {
+            margin-bottom: 45px;
+
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            height: 52px;
+
+            padding: 0 18px 0 48px;
+
+            border: 1px solid #dddddd;
+            border-radius: 9px;
+
+            outline: none;
+
+            font-family: inherit;
+            font-size: 14px;
+
+            transition: border 0.2s ease;
+        }
+
+        .search-box input:focus {
+            border-color: #171717;
+        }
+
+        .search-icon {
+            position: absolute;
+
+            left: 17px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            color: #777777;
+            font-size: 15px;
+        }
+
+
+        /* =========================
+           HELP TOPICS
+        ========================= */
+
+        .topics-title {
+            margin-bottom: 20px;
+
+            font-family: "Playfair Display", serif;
+            font-size: 30px;
+        }
+
+        .topics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+
+            margin-bottom: 55px;
+        }
+
+        .topic {
+            padding: 22px;
+
+            border: 1px solid #e5e5e5;
+            border-radius: 12px;
+
+            transition:
+                border-color 0.2s ease,
+                transform 0.2s ease;
+        }
+
+        .topic:hover {
+            border-color: #cccccc;
+            transform: translateY(-2px);
+        }
+
+        .topic-icon {
+            width: 40px;
+            height: 40px;
+
+            margin-bottom: 12px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 8px;
+
+            background: #f4f4f4;
+
+            font-size: 16px;
+        }
+
+        .topic h3 {
+            margin-bottom: 5px;
+
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .topic p {
+            color: #666666;
+            font-size: 13px;
+        }
+
+
+        /* =========================
+           COMMON QUESTIONS
+        ========================= */
+
+        .questions-title {
+            margin-bottom: 20px;
+
+            font-family: "Playfair Display", serif;
+            font-size: 30px;
+        }
+
+        .questions {
+            border-top: 1px solid #e5e5e5;
+        }
+
+        .question {
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .question button {
+            width: 100%;
+
+            padding: 18px 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            border: none;
+            background: transparent;
+
+            color: #171717;
+
+            text-align: left;
+
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+
+            cursor: pointer;
+        }
+
+        .question button span {
+            transition: transform 0.2s ease;
+        }
+
+        .question.active button span {
+            transform: rotate(45deg);
+        }
+
+        .answer {
+            display: none;
+
+            padding: 0 35px 18px 0;
+
+            color: #666666;
+            font-size: 13px;
+        }
+
+        .question.active .answer {
+            display: block;
+        }
+
+
+        /* =========================
+           CONTACT SUPPORT
+        ========================= */
+
+        .support {
+            margin-top: 55px;
+            padding: 30px;
+
+            text-align: center;
+
+            border: 1px solid #e5e5e5;
+            border-radius: 12px;
+
+            background: #fafafa;
+        }
+
+        .support h2 {
+            margin-bottom: 8px;
+
+            font-family: "Playfair Display", serif;
+            font-size: 27px;
+        }
+
+        .support p {
+            margin-bottom: 18px;
+
+            color: #666666;
+            font-size: 14px;
+        }
+
+        .support-btn {
+            display: inline-block;
+
+            padding: 11px 20px;
+
+            border-radius: 8px;
+
+            background: #171717;
+            color: #ffffff;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            transition: background 0.2s ease;
+        }
+
+        .support-btn:hover {
+            background: #333333;
+        }
+
+
+        /* =========================
+           SEARCH RESULT
+        ========================= */
+
+        .no-results {
+            display: none;
+
+            padding: 25px 0;
+
+            color: #666666;
+
+            font-size: 14px;
+            text-align: center;
+        }
+
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 700px) {
+
+            .navbar {
+                padding: 0 5%;
+            }
+
+            .help-header {
+                padding: 60px 20px 35px;
+            }
+
+            .help-container {
+                padding: 20px 5% 60px;
+            }
+
+            .topics {
+                grid-template-columns: 1fr;
+            }
+
+            .support {
+                padding: 25px 18px;
+            }
+
+        }
+
+
+        @media (max-width: 450px) {
+
+            .logo {
+                font-size: 17px;
+            }
+
+            .logo-icon {
+                width: 34px;
+                height: 34px;
+            }
+
+            .back-link {
+                font-size: 13px;
+            }
+
+            .help-header h1 {
+                font-size: 40px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         NAVBAR
+    ========================= -->
+
+    <header class="navbar">
+
+        <a href="index.html" class="logo">
+
+            <span class="logo-icon">
+                ?
+            </span>
+
+            <span>
+                Professional Studio
+            </span>
+
+        </a>
+
+        <a href="index.html" class="back-link">
+            ← Back
+        </a>
+
+    </header>
+
+
+    <!-- =========================
+         HEADER
+    ========================= -->
+
+    <section class="help-header">
+
+        <h1>
+            How can we help?
+        </h1>
+
+        <p>
+            Find answers to common questions or learn more about
+            using Professional Studio.
+        </p>
+
+    </section>
+
+
+    <!-- =========================
+         HELP CONTENT
+    ========================= -->
+
+    <main class="help-container">
+
+
+        <!-- SEARCH -->
+
+        <div class="search-box">
+
+            <span class="search-icon">
+                🔍
+            </span>
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search for help..."
+                autocomplete="off"
+            >
+
+        </div>
+
+
+        <!-- HELP TOPICS -->
+
+        <h2 class="topics-title">
+            Help Topics
+        </h2>
+
+        <section class="topics" id="topics">
+
+
+            <div class="topic">
+
+                <div class="topic-icon">
+                    👤
+                </div>
+
+                <h3>
+                    Account
+                </h3>
+
+                <p>
+                    Get help with creating your account, logging in,
+                    and managing your profile.
+                </p>
+
+            </div>
+
+
+            <div class="topic">
+
+                <div class="topic-icon">
+                    📅
+                </div>
+
+                <h3>
+                    Bookings
+                </h3>
+
+                <p>
+                    Learn how to create, manage, accept, and track
+                    photography bookings.
+                </p>
+
+            </div>
+
+
+            <div class="topic">
+
+                <div class="topic-icon">
+                    💳
+                </div>
+
+                <h3>
+                    Payments
+                </h3>
+
+                <p>
+                    Find information about pricing, payments,
+                    advances, and billing.
+                </p>
+
+            </div>
+
+
+            <div class="topic">
+
+                <div class="topic-icon">
+                    ⚙
+                </div>
+
+                <h3>
+                    Settings
+                </h3>
+
+                <p>
+                    Manage your studio information, profile,
+                    services, and preferences.
+                </p>
+
+            </div>
+
+
+        </section>
+
+
+        <!-- COMMON QUESTIONS -->
+
+        <h2 class="questions-title">
+            Common Questions
+        </h2>
+
+        <section class="questions" id="questions">
+
+
+            <div class="question">
+
+                <button type="button">
+
+                    <span>
+                        How do I create an account?
+                    </span>
+
+                    <span>
+                        +
+                    </span>
+
+                </button>
+
+                <div class="answer">
+                    Select the sign-up option and enter the required
+                    information to create your Professional Studio
+                    account.
+                </div>
+
+            </div>
+
+
+            <div class="question">
+
+                <button type="button">
+
+                    <span>
+                        How can I manage my bookings?
+                    </span>
+
+                    <span>
+                        +
+                    </span>
+
+                </button>
+
+                <div class="answer">
+                    Your bookings can be managed from the booking
+                    management section of your Professional Studio
+                    dashboard.
+                </div>
+
+            </div>
+
+
+            <div class="question">
+
+                <button type="button">
+
+                    <span>
+                        Can I update my studio information?
+                    </span>
+
+                    <span>
+                        +
+                    </span>
+
+                </button>
+
+                <div class="answer">
+                    Yes. Your studio profile and relevant business
+                    information can be updated from your account
+                    settings.
+                </div>
+
+            </div>
+
+
+            <div class="question">
+
+                <button type="button">
+
+                    <span>
+                        What should I do if I have a problem?
+                    </span>
+
+                    <span>
+                        +
+                    </span>
+
+                </button>
+
+                <div class="answer">
+                    If you cannot find a solution here, contact our
+                    support team and provide details about the issue
+                    you are experiencing.
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+        <div
+            class="no-results"
+            id="noResults"
+        >
+            No matching help topics or questions found.
+        </div>
+
+
+        <!-- SUPPORT -->
+
+        <section class="support">
+
+            <h2>
+                Still need help?
+            </h2>
+
+            <p>
+                If you couldn't find what you're looking for,
+                contact our support team.
+            </p>
+
+            <a
+                href="contact.html"
+                class="support-btn"
+            >
+                Contact Support
+            </a>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================= -->
+
+    <script>
+
+        /* =========================
+           FAQ ACCORDION
+        ========================= */
+
+        const questions =
+            document.querySelectorAll(".question");
+
+
+        questions.forEach(function(question) {
+
+            const button =
+                question.querySelector("button");
+
+
+            button.addEventListener("click", function() {
+
+                question.classList.toggle("active");
+
+            });
+
+        });
+
+
+        /* =========================
+           SEARCH
+        ========================= */
+
+        const searchInput =
+            document.getElementById("searchInput");
+
+        const topics =
+            document.querySelectorAll(".topic");
+
+        const questionItems =
+            document.querySelectorAll(".question");
+
+        const noResults =
+            document.getElementById("noResults");
+
+
+        searchInput.addEventListener("input", function() {
+
+            const search =
+                searchInput.value.toLowerCase().trim();
+
+            let found = false;
+
+
+            /* Search help topics */
+
+            topics.forEach(function(topic) {
+
+                const text =
+                    topic.textContent.toLowerCase();
+
+                if (text.includes(search)) {
+
+                    topic.style.display = "";
+
+                    found = true;
+
+                } else {
+
+                    topic.style.display = "none";
+
+                }
+
+            });
+
+
+            /* Search questions */
+
+            questionItems.forEach(function(question) {
+
+                const text =
+                    question.textContent.toLowerCase();
+
+                if (text.includes(search)) {
+
+                    question.style.display = "";
+
+                    found = true;
+
+                } else {
+
+                    question.style.display = "none";
+
+                }
+
+            });
+
+
+            /* Show result message */
+
+            if (search && !found) {
+
+                noResults.style.display = "block";
+
+            } else {
+
+                noResults.style.display = "none";
+
+            }
+
+        });
+
+    </script>
+
+
+</body>
+
+</html>
+```

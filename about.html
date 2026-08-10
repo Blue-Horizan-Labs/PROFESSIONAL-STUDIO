@@ -1,0 +1,551 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>About Us | Professional Studio</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+
+        /* =========================
+           RESET
+        ========================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            background: #ffffff;
+            color: #171717;
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
+        .navbar {
+            height: 75px;
+            padding: 0 7%;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            border-bottom: 1px solid #eeeeee;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 9px;
+
+            background: #171717;
+            color: white;
+
+            font-size: 15px;
+        }
+
+        .back-link {
+            color: #555555;
+            font-size: 14px;
+            font-weight: 500;
+
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #111111;
+        }
+
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .about-header {
+            padding: 75px 20px 45px;
+            text-align: center;
+        }
+
+        .about-header h1 {
+            margin-bottom: 15px;
+
+            font-family: "Playfair Display", serif;
+            font-size: clamp(40px, 5vw, 58px);
+            line-height: 1.1;
+        }
+
+        .about-header p {
+            max-width: 600px;
+            margin: auto;
+
+            color: #666666;
+            font-size: 15px;
+        }
+
+
+        /* =========================
+           MAIN CONTENT
+        ========================= */
+
+        .about-container {
+            max-width: 1000px;
+            margin: auto;
+
+            padding: 25px 7% 80px;
+        }
+
+
+        /* =========================
+           INTRODUCTION
+        ========================= */
+
+        .intro {
+            padding: 35px;
+
+            border: 1px solid #e5e5e5;
+            border-radius: 14px;
+
+            background: #fafafa;
+        }
+
+        .intro h2 {
+            margin-bottom: 15px;
+
+            font-family: "Playfair Display", serif;
+            font-size: 30px;
+        }
+
+        .intro p {
+            color: #606060;
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+
+        /* =========================
+           MISSION
+        ========================= */
+
+        .mission {
+            padding: 55px 0;
+
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+        }
+
+        .mission h2 {
+            margin-bottom: 12px;
+
+            font-family: "Playfair Display", serif;
+            font-size: 30px;
+        }
+
+        .mission p {
+            color: #666666;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+
+        /* =========================
+           WHAT WE DO
+        ========================= */
+
+        .what-we-do {
+            padding: 35px;
+
+            border: 1px solid #e5e5e5;
+            border-radius: 14px;
+        }
+
+        .what-we-do h2 {
+            margin-bottom: 25px;
+
+            font-family: "Playfair Display", serif;
+            font-size: 30px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .feature {
+            padding: 5px 0;
+        }
+
+        .feature-icon {
+            width: 42px;
+            height: 42px;
+
+            margin-bottom: 13px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 9px;
+
+            background: #f3f3f3;
+
+            font-size: 17px;
+        }
+
+        .feature h3 {
+            margin-bottom: 6px;
+
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .feature p {
+            color: #666666;
+            font-size: 13px;
+        }
+
+
+        /* =========================
+           CLOSING
+        ========================= */
+
+        .closing {
+            padding: 55px 10px 0;
+            text-align: center;
+        }
+
+        .closing h2 {
+            margin-bottom: 12px;
+
+            font-family: "Playfair Display", serif;
+            font-size: 30px;
+        }
+
+        .closing p {
+            max-width: 620px;
+            margin: auto;
+
+            color: #666666;
+            font-size: 14px;
+        }
+
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 750px) {
+
+            .navbar {
+                padding: 0 5%;
+            }
+
+            .about-header {
+                padding: 60px 20px 35px;
+            }
+
+            .about-container {
+                padding: 20px 5% 60px;
+            }
+
+            .intro {
+                padding: 25px 20px;
+            }
+
+            .mission {
+                grid-template-columns: 1fr;
+                gap: 30px;
+
+                padding: 40px 0;
+            }
+
+            .what-we-do {
+                padding: 25px 20px;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+
+        }
+
+
+        @media (max-width: 450px) {
+
+            .logo {
+                font-size: 17px;
+            }
+
+            .logo-icon {
+                width: 34px;
+                height: 34px;
+            }
+
+            .back-link {
+                font-size: 13px;
+            }
+
+            .about-header h1 {
+                font-size: 40px;
+            }
+
+            .closing {
+                padding-left: 0;
+                padding-right: 0;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         NAVBAR
+    ========================= -->
+
+    <header class="navbar">
+
+        <a href="index.html" class="logo">
+
+            <span class="logo-icon">
+                📷
+            </span>
+
+            <span>
+                Professional Studio
+            </span>
+
+        </a>
+
+        <a href="index.html" class="back-link">
+            ← Back
+        </a>
+
+    </header>
+
+
+    <!-- =========================
+         HEADER
+    ========================= -->
+
+    <section class="about-header">
+
+        <h1>
+            About Us
+        </h1>
+
+        <p>
+            Professional Studio is built to make managing a
+            photography business simpler, more organized, and
+            more professional.
+        </p>
+
+    </section>
+
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================= -->
+
+    <main class="about-container">
+
+
+        <!-- INTRODUCTION -->
+
+        <section class="intro">
+
+            <h2>
+                Built for photographers
+            </h2>
+
+            <p>
+                Professional Studio is a platform designed for
+                photographers who want to manage their work and
+                business from one place. From showcasing your
+                portfolio to managing bookings, clients, pricing,
+                equipment, and events, our goal is to reduce
+                unnecessary work and let photographers focus on
+                what they do best — creating great photographs.
+            </p>
+
+        </section>
+
+
+        <!-- MISSION -->
+
+        <section class="mission">
+
+            <div>
+
+                <h2>
+                    Our Mission
+                </h2>
+
+                <p>
+                    Our mission is to give photographers simple
+                    and reliable tools that help them run their
+                    business professionally without having to
+                    depend on multiple disconnected platforms.
+                </p>
+
+            </div>
+
+
+            <div>
+
+                <h2>
+                    Our Vision
+                </h2>
+
+                <p>
+                    We envision a platform where photographers
+                    can manage their entire workflow seamlessly,
+                    build stronger relationships with clients,
+                    and spend more time doing creative work.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- WHAT WE DO -->
+
+        <section class="what-we-do">
+
+            <h2>
+                What We Do
+            </h2>
+
+            <div class="features">
+
+
+                <div class="feature">
+
+                    <div class="feature-icon">
+                        📸
+                    </div>
+
+                    <h3>
+                        Portfolio
+                    </h3>
+
+                    <p>
+                        Help photographers present their work
+                        and professional identity to potential
+                        clients.
+                    </p>
+
+                </div>
+
+
+                <div class="feature">
+
+                    <div class="feature-icon">
+                        📅
+                    </div>
+
+                    <h3>
+                        Bookings
+                    </h3>
+
+                    <p>
+                        Make it easier to organize appointments,
+                        events, and upcoming photography work.
+                    </p>
+
+                </div>
+
+
+                <div class="feature">
+
+                    <div class="feature-icon">
+                        👥
+                    </div>
+
+                    <h3>
+                        Client Management
+                    </h3>
+
+                    <p>
+                        Keep important client and event
+                        information organized in one place.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <!-- CLOSING -->
+
+        <section class="closing">
+
+            <h2>
+                Photography first.
+            </h2>
+
+            <p>
+                Professional Studio is built with one simple idea:
+                technology should make running a photography
+                business easier, not more complicated.
+            </p>
+
+        </section>
+
+
+    </main>
+
+
+</body>
+
+</html>
+```
