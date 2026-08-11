@@ -1,35 +1,3 @@
-
-
-// ===============================
-// Photographer Image Preview
-// ===============================
-function initializePhotoUploads() {
-    const uploadBoxes = document.querySelectorAll(".photographer-card");
-
-    uploadBoxes.forEach(card => {
-        const input = card.querySelector(".photoInput");
-        const preview = card.querySelector(".photoPreview");
-        const label = card.querySelector(".upload-label");
-
-        if (!input || !preview || !label) return;
-
-        input.onchange = function () {
-            const file = this.files[0];
-
-            if (!file) return;
-
-            preview.src = URL.createObjectURL(file);
-            preview.style.display = "block";
-
-            label.classList.add("has-image");
-        };
-    });
-}
-
-initializePhotoUploads();
-
-
-
 // ===============================
 // Validation
 // ===============================
@@ -41,10 +9,9 @@ form.addEventListener("submit", function (e) {
     e.preventDefault();
 
     const studioName =
-        document.querySelector('input[placeholder="Professional Studio"]');
-
+        document.getElementById("studioName");
     const photographerName =
-        document.querySelector('input[placeholder="Rahul Patil"]');
+        document.getElementById("photographerName");
 
     if (studioName.value.trim() === "") {
 
@@ -68,48 +35,43 @@ form.addEventListener("submit", function (e) {
 
     alert("Profile saved successfully!");
 
-    // Future backend
+    
+    const user_object = {
+        std_name: studioName.value.trim(),
+        std_tag: document.getElementById("studioTagline").value.trim(),
+        full_name: photographerName.value.trim(),
+        experience: document.getElementById("photographerExperience").value.trim(),
+        specialization: document.getElementById("specialization").value.trim(),
+        about: document.getElementById("about").value.trim(),
+        email: document.getElementById("email").value.trim(),
+        phone: document.getElementById("phone").value.trim(),
+        std_address: document.getElementById("address").value.trim(),
+        insta_handle: document.getElementById("instagram").value.trim(),
+        facebook_handle: document.getElementById("facebook").value.trim(),
+        yt_handle: document.getElementById("youtube").value.trim()
+    };
+    
+    const user_data = JSON.stringify(user_object);
+
+    fetch("/api/update_user", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: user_data
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            console.error("Error updating user:", data.error);
+            alert("Error updating user: " + data.error);
+        } else {
+            console.log("User updated successfully:", data);
+            alert("User updated successfully!");
+        }
+    })
 
     // window.location.href = "services-setup.html";
-
-});
-
-
-// ===============================
-// Drag & Drop Support
-// ===============================
-
-document.querySelectorAll(".upload-label").forEach(label => {
-
-    label.addEventListener("dragover", e => {
-
-        e.preventDefault();
-
-        label.style.borderColor = "#7c5cff";
-
-    });
-
-    label.addEventListener("dragleave", () => {
-
-        label.style.borderColor = "";
-
-    });
-
-    label.addEventListener("drop", e => {
-
-        e.preventDefault();
-
-        label.style.borderColor = "";
-
-        const input = label.previousElementSibling;
-
-        if (!input) return;
-
-        input.files = e.dataTransfer.files;
-
-        input.dispatchEvent(new Event("change"));
-
-    });
 
 });
 

@@ -31,14 +31,21 @@ export default async function updateUser(req, res) {
 
     // get user data of email linked with auth token
     const user_data = await supabase.from("user_data").select("*").eq("email", user.user.email).single();
-    if (user_data.error.code === 400){
+    if (user_data.error.code === 406){
         // first time user, create a new entry in user_data table
         const new_entry = await supabase.from('user_data').insert({ 
-            email: req_user.email,
-            studio_name: req_user.studio_name,
-            studio_tagline: req_user.studio_tagline,
-            name: req_user.name,
-            
+            std_name: req_user.std_name,
+            std_tag: req_user.std_tag,
+            full_name: req_user.full_name,
+            experience: req_user.experience,
+            specialization: req_user.specialization,
+            about: req_user.about,
+            email: user.user.email,
+            phone: req_user.phone,
+            std_address: req_user.std_address,
+            insta_handle: req_user.insta_handle,
+            facebook_handle: req_user.facebook_handle,
+            yt_handle: req_user.yt_handle,
         })
     }
 }
