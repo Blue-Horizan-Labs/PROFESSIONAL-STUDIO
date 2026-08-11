@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -8,76 +9,657 @@
 
     <title>Terms & Conditions | Professional Studio</title>
 
-    <link rel="stylesheet" href="terms.css">
-
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+        rel="stylesheet"
+    >
 
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <style>
+
+        /* ==================================================
+           RESET
+        ================================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 100px;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            background: #ffffff;
+            color: #171717;
+            line-height: 1.7;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        ul {
+            padding-left: 22px;
+        }
+
+        button {
+            font-family: inherit;
+        }
+
+
+        /* ==================================================
+           NAVBAR
+        ================================================== */
+
+        .navbar {
+            height: 75px;
+            padding: 0 7%;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            border-bottom: 1px solid #eeeeee;
+
+            background: #ffffff;
+
+            position: relative;
+            z-index: 20;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 9px;
+
+            background: #171717;
+            color: #ffffff;
+
+            font-size: 15px;
+        }
+
+        .back-link {
+            color: #555555;
+            font-size: 14px;
+            font-weight: 500;
+
+            transition: color .2s ease;
+        }
+
+        .back-link:hover {
+            color: #111111;
+        }
+
+
+        /* ==================================================
+           HEADER
+        ================================================== */
+
+        .terms-header {
+            padding: 70px 20px 50px;
+
+            text-align: center;
+        }
+
+        .terms-header h1 {
+            margin-bottom: 15px;
+
+            font-family: "Playfair Display", serif;
+
+            font-size: clamp(40px, 5vw, 58px);
+            line-height: 1.1;
+        }
+
+        .terms-header p {
+            max-width: 680px;
+            margin: auto;
+
+            color: #666666;
+            font-size: 15px;
+        }
+
+        .legal-info {
+            max-width: 650px;
+            margin: 30px auto 0;
+
+            display: flex;
+            justify-content: center;
+            gap: 35px;
+
+            color: #666666;
+            font-size: 13px;
+        }
+
+        .legal-info div {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .legal-info strong {
+            color: #222222;
+            font-weight: 600;
+        }
+
+
+        /* ==================================================
+           MAIN LAYOUT
+        ================================================== */
+
+        .terms-wrapper {
+            width: min(1100px, 90%);
+            margin: auto;
+
+            display: grid;
+            grid-template-columns: 240px 1fr;
+
+            gap: 45px;
+
+            padding-bottom: 80px;
+        }
+
+
+        /* ==================================================
+           TABLE OF CONTENTS
+        ================================================== */
+
+        .toc {
+            position: sticky;
+            top: 25px;
+            align-self: start;
+
+            padding: 22px;
+
+            border: 1px solid #e5e5e5;
+            border-radius: 10px;
+
+            background: #fafafa;
+        }
+
+        .toc h3 {
+            margin-bottom: 15px;
+
+            font-family: "Playfair Display", serif;
+            font-size: 22px;
+        }
+
+        .toc ul {
+            list-style: none;
+            padding: 0;
+
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .toc li {
+            margin: 3px 0;
+        }
+
+        .toc a {
+            display: block;
+
+            padding: 7px 9px;
+
+            border-radius: 6px;
+
+            color: #666666;
+
+            font-size: 11px;
+
+            transition:
+                background .2s ease,
+                color .2s ease;
+        }
+
+        .toc a:hover {
+            background: #eeeeee;
+            color: #171717;
+        }
+
+        .toc a.active {
+            background: #171717;
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+
+        /* ==================================================
+           CONTENT
+        ================================================== */
+
+        .terms-content {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .card {
+            padding: 30px;
+
+            border: 1px solid #e5e5e5;
+            border-radius: 10px;
+
+            background: #ffffff;
+
+            scroll-margin-top: 100px;
+
+            transition:
+                border-color .2s ease,
+                box-shadow .2s ease;
+        }
+
+        .card:hover {
+            border-color: #d5d5d5;
+
+            box-shadow:
+                0 8px 25px rgba(0, 0, 0, .04);
+        }
+
+        .card h2 {
+            margin-bottom: 13px;
+
+            font-family: "Playfair Display", serif;
+
+            font-size: 25px;
+            line-height: 1.3;
+        }
+
+        .card p {
+            margin-bottom: 12px;
+
+            color: #5f5f5f;
+
+            font-size: 14px;
+        }
+
+        .card p:last-child {
+            margin-bottom: 0;
+        }
+
+        .card ul {
+            margin-top: 10px;
+        }
+
+        .card li {
+            margin: 7px 0;
+
+            color: #5f5f5f;
+
+            font-size: 14px;
+        }
+
+        .card li::marker {
+            color: #555555;
+        }
+
+
+        /* ==================================================
+           NOTE
+        ================================================== */
+
+        .note {
+            margin-top: 20px;
+            padding: 15px 18px;
+
+            border-left: 3px solid #171717;
+
+            background: #f7f7f7;
+
+            color: #555555;
+
+            font-size: 13px;
+        }
+
+
+        /* ==================================================
+           PLACEHOLDER
+        ================================================== */
+
+        .placeholder {
+            margin-top: 20px;
+            padding: 20px;
+
+            border: 1px dashed #cccccc;
+            border-radius: 8px;
+
+            background: #fafafa;
+        }
+
+        .placeholder h4 {
+            margin-bottom: 13px;
+
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .placeholder p {
+            margin-bottom: 8px;
+
+            color: #666666;
+            font-size: 13px;
+        }
+
+        .placeholder p:last-child {
+            margin-bottom: 0;
+        }
+
+
+        /* ==================================================
+           BACK TO TOP
+        ================================================== */
+
+        #backTop {
+            position: fixed;
+
+            right: 25px;
+            bottom: 25px;
+
+            width: 45px;
+            height: 45px;
+
+            border: none;
+            border-radius: 8px;
+
+            background: #171717;
+            color: #ffffff;
+
+            cursor: pointer;
+
+            font-size: 16px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            opacity: 0;
+            visibility: hidden;
+
+            transform: translateY(15px);
+
+            transition:
+                opacity .2s ease,
+                visibility .2s ease,
+                transform .2s ease;
+        }
+
+        #backTop.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        #backTop:hover {
+            background: #333333;
+        }
+
+
+        /* ==================================================
+           FOOTER
+        ================================================== */
+
+        .terms-footer {
+            padding: 35px 20px;
+
+            text-align: center;
+
+            border-top: 1px solid #eeeeee;
+
+            color: #777777;
+
+            font-size: 13px;
+        }
+
+
+        /* ==================================================
+           RESPONSIVE
+        ================================================== */
+
+        @media (max-width: 900px) {
+
+            .terms-wrapper {
+                width: 90%;
+
+                grid-template-columns: 1fr;
+
+                gap: 25px;
+            }
+
+            .toc {
+                position: relative;
+                top: 0;
+            }
+
+            .toc ul {
+                max-height: 300px;
+            }
+
+        }
+
+
+        @media (max-width: 650px) {
+
+            .navbar {
+                padding: 0 5%;
+            }
+
+            .terms-header {
+                padding: 60px 20px 40px;
+            }
+
+            .terms-wrapper {
+                width: 90%;
+            }
+
+            .legal-info {
+                flex-direction: column;
+
+                gap: 12px;
+            }
+
+            .card {
+                padding: 23px;
+            }
+
+            .card h2 {
+                font-size: 22px;
+            }
+
+            .card p,
+            .card li {
+                font-size: 13px;
+            }
+
+        }
+
+
+        @media (max-width: 450px) {
+
+            .logo {
+                font-size: 17px;
+            }
+
+            .logo-icon {
+                width: 34px;
+                height: 34px;
+            }
+
+            .back-link {
+                font-size: 13px;
+            }
+
+            .terms-header h1 {
+                font-size: 40px;
+            }
+
+            .terms-header p {
+                font-size: 14px;
+            }
+
+            .toc {
+                padding: 18px;
+            }
+
+            .card {
+                padding: 20px;
+                border-radius: 8px;
+            }
+
+            #backTop {
+                right: 18px;
+                bottom: 18px;
+
+                width: 42px;
+                height: 42px;
+            }
+
+        }
+
+
+        /* ==================================================
+           PRINT
+        ================================================== */
+
+        @media print {
+
+            .navbar,
+            .toc,
+            #backTop {
+                display: none;
+            }
+
+            body {
+                background: #ffffff;
+                color: #000000;
+            }
+
+            .terms-wrapper {
+                display: block;
+                width: 100%;
+            }
+
+            .card {
+                border: 1px solid #cccccc;
+                box-shadow: none;
+
+                break-inside: avoid;
+            }
+
+            .terms-footer {
+                border: none;
+            }
+
+        }
+
+    </style>
 
 </head>
 
+
 <body>
 
-    <!-- ================= HERO ================= -->
 
-    <section class="terms-hero">
+    <!-- ==================================================
+         NAVBAR
+    ================================================== -->
 
-        <div class="hero-overlay"></div>
+    <header class="navbar">
 
-        <div class="hero-content">
+        <a href="index.html" class="logo">
 
-            <span class="badge">
-                <i class="fa-solid fa-scale-balanced"></i>
-                Legal
+            <span class="logo-icon">
+                📷
             </span>
 
-            <h1>Terms & Conditions</h1>
+            <span>
+                Professional Studio
+            </span>
 
-            <p>
-                These Terms & Conditions govern the use of Professional Studio,
-                our booking platform, photographer portfolio services,
-                and related features.
-            </p>
+        </a>
 
-            <div class="hero-info">
+        <a href="index.html" class="back-link">
+            ← Back
+        </a>
 
-                <div>
-                    <strong>Effective Date</strong>
-                    <span>07/08/2026</span>
-                </div>
+    </header>
 
-                <div>
-                    <strong>Last Updated</strong>
-                    <span>07/08/2026</span>
-                </div>
-                </div>
 
-                <div>
-                    <strong>Version</strong>
-                    <span>1.0</span>
-                </div>
+    <!-- ==================================================
+         HEADER
+    ================================================== -->
 
+    <section class="terms-header">
+
+        <h1>
+            Terms & Conditions
+        </h1>
+
+        <p>
+            These Terms & Conditions govern the use of
+            Professional Studio, including our booking platform,
+            photographer portfolio services, and related features.
+        </p>
+
+        <div class="legal-info">
+
+            <div>
+                <strong>Effective Date</strong>
+                <span>07/08/2026</span>
+            </div>
+
+            <div>
+                <strong>Last Updated</strong>
+                <span>07/08/2026</span>
+            </div>
+
+            <div>
+                <strong>Version</strong>
+                <span>1.0</span>
             </div>
 
         </div>
 
     </section>
 
-    <!-- ================= CONTENT ================= -->
+
+    <!-- ==================================================
+         CONTENT
+    ================================================== -->
 
     <section class="terms-wrapper">
 
-        <!-- Sidebar -->
+
+        <!-- ==================================================
+             TABLE OF CONTENTS
+        ================================================== -->
 
         <aside class="toc">
 
-            <h3>Contents</h3>
+            <h3>
+                Contents
+            </h3>
 
             <ul>
 
@@ -94,9 +676,9 @@
                 <li><a href="#equipment">11. Equipment</a></li>
                 <li><a href="#conduct">12. User Conduct</a></li>
                 <li><a href="#content">13. User Content</a></li>
-                 <li><a href="#intellectual">14. Intellectual Property Rights</a></li>
+                <li><a href="#intellectual">14. Intellectual Property</a></li>
                 <li><a href="#copyright">15. Photography Copyright</a></li>
-                <li><a href="#privacy">16. Privacy</a></li> 
+                <li><a href="#privacy">16. Privacy</a></li>
                 <li><a href="#thirdparty">17. Third-Party Services</a></li>
                 <li><a href="#disclaimer">18. Disclaimer</a></li>
                 <li><a href="#liability">19. Limitation of Liability</a></li>
@@ -107,626 +689,850 @@
                 <li><a href="#contact">24. Contact Information</a></li>
                 <li><a href="#agreement">25. Entire Agreement</a></li>
 
-
             </ul>
 
         </aside>
 
-        <!-- Main -->
+
+        <!-- ==================================================
+             TERMS CONTENT
+        ================================================== -->
 
         <main class="terms-content">
 
+
+            <!-- 1 -->
+
             <section class="card" id="acceptance">
 
-                <h2>1. Acceptance of Terms</h2>
+                <h2>
+                    1. Acceptance of Terms
+                </h2>
 
                 <p>
-
-                    By accessing or using Professional Studio ("Platform",
-                    "Website", "Service"), you acknowledge that you have
-                    read, understood, and agreed to these Terms &
-                    Conditions.
-
+                    By accessing or using Professional Studio
+                    ("Platform", "Website", or "Service"), you
+                    acknowledge that you have read, understood,
+                    and agreed to these Terms & Conditions.
                 </p>
 
                 <p>
-
                     If you do not agree with any part of these Terms,
-                    you should immediately discontinue the use of the
-                    Platform.
-
+                    you should discontinue use of the Platform.
                 </p>
 
             </section>
 
+
+            <!-- 2 -->
+
             <section class="card" id="services">
 
-                <h2>2. Our Services</h2>
+                <h2>
+                    2. Our Services
+                </h2>
 
                 <p>
-
-                    Professional Studio provides an online platform that
-                    enables photographers to showcase portfolios,
-                    publish pricing, manage bookings,
-                    communicate with clients,
-                    and provide photography-related services.
-
+                    Professional Studio provides an online platform
+                    that enables photographers to showcase portfolios,
+                    publish pricing, manage bookings, communicate
+                    with clients, and provide photography-related
+                    services.
                 </p>
 
                 <ul>
 
                     <li>Portfolio Showcase</li>
-
                     <li>Photography Booking</li>
-
                     <li>Package Selection</li>
-
                     <li>Equipment Display</li>
-
                     <li>Appointment Management</li>
-
                     <li>Client Communication</li>
 
                 </ul>
 
                 <div class="note">
-
-                    Services may be modified, suspended,
-                    or discontinued at any time without prior notice.
-
+                    Services may be modified, suspended, or
+                    discontinued at any time without prior notice.
                 </div>
 
             </section>
 
+
+            <!-- 3 -->
+
             <section class="card" id="accounts">
 
-                <h2>3. User Accounts</h2>
+                <h2>
+                    3. User Accounts
+                </h2>
 
                 <p>
-
-                    Certain features require an account.
-
-                    You are responsible for maintaining
-                    the confidentiality of your login credentials.
-
+                    Certain features require an account. You are
+                    responsible for maintaining the confidentiality
+                    of your login credentials.
                 </p>
 
                 <ul>
 
                     <li>Provide accurate information.</li>
-
                     <li>Keep passwords secure.</li>
-
                     <li>Do not share your account.</li>
-
-                    <li>Notify us immediately of unauthorized access.</li>
+                    <li>Notify us of unauthorized access.</li>
 
                 </ul>
 
             </section>
 
+
+            <!-- 4 -->
+
             <section class="card" id="eligibility">
 
-                <h2>4. Eligibility</h2>
+                <h2>
+                    4. Eligibility
+                </h2>
 
                 <p>
-
-                    By using Professional Studio,
-                    you confirm that you meet the minimum legal age
-                    required under applicable laws
-                    or have parental/guardian consent.
-
+                    By using Professional Studio, you confirm that
+                    you meet the minimum legal age required under
+                    applicable laws or have parental or guardian
+                    consent where applicable.
                 </p>
 
             </section>
 
+
+            <!-- 5 -->
+
             <section class="card" id="bookings">
 
-                <h2>5. Booking Terms</h2>
+                <h2>
+                    5. Booking Terms
+                </h2>
 
                 <p>
-
-                    All bookings submitted through Professional Studio
-                    are considered requests until confirmed
+                    All bookings submitted through Professional
+                    Studio are considered requests until confirmed
                     by the photographer.
-
                 </p>
 
                 <ul>
 
                     <li>Availability is not guaranteed.</li>
-
                     <li>Pricing may vary depending on requirements.</li>
-
                     <li>Additional charges may apply.</li>
-
                     <li>Special requests may require approval.</li>
 
                 </ul>
 
             </section>
 
+
+            <!-- 6 -->
+
             <section class="card" id="payments">
 
-                <h2>6. Payments</h2>
+                <h2>
+                    6. Payments
+                </h2>
 
                 <p>
-
-                    Payment requirements will depend on the selected package,
-                    photographer policies,
-                    and any additional services requested.
-
+                    Payment requirements depend on the selected
+                    package, photographer policies, and additional
+                    services requested.
                 </p>
 
                 <div class="placeholder">
 
-                    <h4>Business Information (Fill Before Publishing)</h4>
+                    <h4>
+                        Business Information — Fill Before Publishing
+                    </h4>
 
+                    <p>
+                        Platform Fee / Platform Charges:
+                        __________________
+                    </p>
 
-                    <p>Platform Fee / Platform Charges : __________</p>
+                    <p>
+                        Accepted Payment Methods:
+                        __________________
+                    </p>
 
-                    <p>Accepted Payment Methods :</p>
-
-                    <p>______________________________________</p>
-
-                    <p>______________________________________</p>
-
-                    <p>Applicable Taxes / GST :</p>
-
-                    <p>______________________________________</p>
+                    <p>
+                        Applicable Taxes / GST:
+                        __________________
+                    </p>
 
                 </div>
 
             </section>
+
+
+            <!-- 7 -->
 
             <section class="card" id="cancel">
 
-                <h2>7. Cancellation Policy</h2>
+                <h2>
+                    7. Cancellation Policy
+                </h2>
 
                 <p>
-
-                    Cancellation requests must be submitted
-                    before the scheduled event date.
-
+                    Cancellation requests must be submitted before
+                    the scheduled event date.
                 </p>
 
                 <div class="placeholder">
 
-                    <p>Cancellation Window : __________</p>
+                    <p>
+                        Cancellation Window:
+                        __________________
+                    </p>
 
-                    <p>Cancellation Fee : __________</p>
+                    <p>
+                        Cancellation Fee:
+                        __________________
+                    </p>
 
-                    <p>Administrative Charges : __________</p>
+                    <p>
+                        Administrative Charges:
+                        __________________
+                    </p>
 
                 </div>
 
             </section>
+
+
+            <!-- 8 -->
 
             <section class="card" id="refund">
 
-                <h2>8. Refund Policy</h2>
+                <h2>
+                    8. Refund Policy
+                </h2>
 
                 <p>
-
                     Refund eligibility depends on the circumstances
-                    surrounding the cancellation
-                    and the applicable booking policy.
-
+                    surrounding the cancellation and the applicable
+                    booking policy.
                 </p>
 
                 <div class="placeholder">
 
-                    <p>Refund Processing Time :</p>
+                    <p>
+                        Refund Processing Time:
+                        __________________
+                    </p>
 
-                    <p>________________________</p>
+                    <p>
+                        Refund Percentage:
+                        __________________
+                    </p>
 
-                    <p>Refund Percentage :</p>
-
-                    <p>________________________</p>
-
-                    <p>Non-refundable Services :</p>
-
-                    <p>________________________</p>
+                    <p>
+                        Non-refundable Services:
+                        __________________
+                    </p>
 
                 </div>
 
             </section>
 
+
+            <!-- 9 -->
+
             <section class="card" id="clients">
 
-                <h2>9. Client Responsibilities</h2>
+                <h2>
+                    9. Client Responsibilities
+                </h2>
 
                 <ul>
 
                     <li>Provide accurate booking information.</li>
-
                     <li>Ensure venue accessibility.</li>
-
-                    <li>Obtain permissions where necessary.</li>
-
+                    <li>Obtain required permissions.</li>
                     <li>Maintain respectful behaviour.</li>
-
                     <li>Complete payments on time.</li>
 
                 </ul>
 
             </section>
 
+
+            <!-- 10 -->
+
             <section class="card" id="photographers">
 
-                <h2>10. Photographer Responsibilities</h2>
+                <h2>
+                    10. Photographer Responsibilities
+                </h2>
 
                 <ul>
 
                     <li>Provide services professionally.</li>
-
                     <li>Maintain listed equipment.</li>
-
                     <li>Communicate schedule changes promptly.</li>
-
                     <li>Deliver agreed services.</li>
-
                     <li>Respect client privacy.</li>
 
                 </ul>
 
             </section>
 
+
+            <!-- 11 -->
+
             <section class="card" id="equipment">
 
-                <h2>11. Equipment & Venue Requirements</h2>
+                <h2>
+                    11. Equipment & Venue Requirements
+                </h2>
 
                 <p>
-
                     Certain photography sessions may require
-                    electricity, lighting,
-                    venue permissions,
-                    or additional setup time.
-
-                    Clients are responsible for providing access
-                    where applicable.
-
+                    electricity, lighting, venue permissions,
+                    or additional setup time. Clients are responsible
+                    for providing access where applicable.
                 </p>
 
             </section>
+
+
+            <!-- 12 -->
 
             <section class="card" id="conduct">
 
-                <h2>12. Acceptable Use</h2>
+                <h2>
+                    12. Acceptable Use
+                </h2>
 
                 <p>
-
-                    Users shall not misuse the Platform,
-                    interfere with services,
-                    upload malicious software,
-                    attempt unauthorized access,
-                    or violate applicable laws.
-
+                    Users shall not misuse the Platform, interfere
+                    with services, upload malicious software, attempt
+                    unauthorized access, or violate applicable laws.
                 </p>
 
             </section>
+
+
+            <!-- 13 -->
 
             <section class="card" id="content">
 
-                <h2>13. User Content</h2>
+                <h2>
+                    13. User Content
+                </h2>
 
                 <p>
-
-                    Users retain ownership of content
-                    they upload while granting Professional Studio
-                    permission to display and process such content
-                    for the purpose of operating the Platform.
-
+                    Users retain ownership of content they upload
+                    while granting Professional Studio permission
+                    to display and process such content as necessary
+                    to operate the Platform.
                 </p>
 
             </section>
 
-                        <!-- ================= SECTION 14 ================= -->
+
+            <!-- 14 -->
 
             <section class="card" id="intellectual">
 
-                <h2>14. Intellectual Property Rights</h2>
+                <h2>
+                    14. Intellectual Property Rights
+                </h2>
 
                 <p>
-                    Unless otherwise stated, all content available on Professional Studio,
-                    including but not limited to logos, branding, graphics, website layout,
-                    user interface elements, source code, icons, text, and design assets,
-                    are the intellectual property of Professional Studio or their respective owners.
+                    Unless otherwise stated, content available on
+                    Professional Studio, including logos, branding,
+                    graphics, website layout, user interface elements,
+                    source code, icons, text, and design assets,
+                    belongs to Professional Studio or its respective
+                    owners.
                 </p>
 
                 <p>
-                    No material from this Platform may be copied, reproduced, redistributed,
-                    modified, or used for commercial purposes without prior written permission.
+                    No material from this Platform may be copied,
+                    reproduced, redistributed, modified, or used
+                    commercially without prior written permission.
                 </p>
 
             </section>
 
-            <!-- ================= SECTION 15 ================= -->
+
+            <!-- 15 -->
 
             <section class="card" id="copyright">
 
-                <h2>15. Photography Copyright</h2>
+                <h2>
+                    15. Photography Copyright
+                </h2>
 
                 <p>
-                    All photographs uploaded by photographers remain the intellectual property
-                    of their respective creators unless otherwise agreed in writing.
+                    Photographs uploaded by photographers remain
+                    the intellectual property of their respective
+                    creators unless otherwise agreed in writing.
                 </p>
 
                 <ul>
 
                     <li>Clients may not resell delivered photographs.</li>
-
                     <li>Commercial use requires permission where applicable.</li>
-
                     <li>Unauthorized editing or redistribution may violate copyright laws.</li>
-
                     <li>Watermarks must not be removed without permission.</li>
 
                 </ul>
 
             </section>
 
-            <!-- ================= SECTION 16 ================= -->
+
+            <!-- 16 -->
 
             <section class="card" id="privacy">
 
-                <h2>16. Privacy</h2>
+                <h2>
+                    16. Privacy
+                </h2>
 
                 <p>
-
-                    Your privacy is important to us.
-
-                    Information collected through Professional Studio is handled according
-                    to our Privacy Policy.
-
+                    Your privacy is important to us. Information
+                    collected through Professional Studio is handled
+                    according to our Privacy Policy.
                 </p>
 
                 <p>
-
-                    By using this Platform, you consent to the collection,
-                    storage and processing of information necessary to provide
-                    our services.
-
+                    By using this Platform, you consent to the
+                    collection, storage, and processing of information
+                    necessary to provide our services.
                 </p>
 
             </section>
 
-            <!-- ================= SECTION 17 ================= -->
+
+            <!-- 17 -->
 
             <section class="card" id="thirdparty">
 
-                <h2>17. Third-Party Services</h2>
+                <h2>
+                    17. Third-Party Services
+                </h2>
 
                 <p>
-
-                    Professional Studio may integrate with third-party services
-                    including payment gateways, maps, cloud storage,
-                    analytics providers and communication services.
-
+                    Professional Studio may integrate with third-party
+                    services including payment gateways, maps, cloud
+                    storage, analytics providers, and communication
+                    services.
                 </p>
 
                 <p>
-
-                    We are not responsible for the content,
-                    policies or practices of third-party providers.
-
+                    We are not responsible for the content, policies,
+                    or practices of third-party providers.
                 </p>
 
             </section>
 
-            <!-- ================= SECTION 18 ================= -->
+
+            <!-- 18 -->
 
             <section class="card" id="disclaimer">
 
-                <h2>18. Disclaimer</h2>
+                <h2>
+                    18. Disclaimer
+                </h2>
 
                 <p>
-
-                    The Platform is provided on an "AS IS"
-                    and "AS AVAILABLE" basis without warranties
-                    of any kind.
-
+                    The Platform is provided on an "AS IS" and
+                    "AS AVAILABLE" basis without warranties of any
+                    kind.
                 </p>
 
                 <p>
-
                     We do not guarantee uninterrupted availability,
-                    complete accuracy of listings,
-                    or error-free operation at all times.
-
+                    complete accuracy of listings, or error-free
+                    operation at all times.
                 </p>
 
             </section>
 
-            <!-- ================= SECTION 19 ================= -->
+
+            <!-- 19 -->
 
             <section class="card" id="liability">
 
-                <h2>19. Limitation of Liability</h2>
+                <h2>
+                    19. Limitation of Liability
+                </h2>
 
                 <p>
-
                     To the fullest extent permitted by applicable law,
-                    Professional Studio shall not be liable for indirect,
-                    incidental, consequential or special damages resulting
-                    from the use or inability to use the Platform.
-
+                    Professional Studio shall not be liable for
+                    indirect, incidental, consequential, or special
+                    damages resulting from use or inability to use
+                    the Platform.
                 </p>
 
                 <p>
-
-                    Users acknowledge that booking arrangements,
-                    event conditions,
-                    weather,
-                    venue restrictions,
-                    and circumstances beyond reasonable control
-                    may affect photography services.
-
+                    Booking arrangements, event conditions, weather,
+                    venue restrictions, and circumstances beyond
+                    reasonable control may affect photography services.
                 </p>
 
             </section>
 
-            <!-- ================= SECTION 20 ================= -->
+
+            <!-- 20 -->
 
             <section class="card" id="indemnity">
 
-                <h2>20. Indemnification</h2>
+                <h2>
+                    20. Indemnification
+                </h2>
 
                 <p>
-
                     You agree to indemnify and hold harmless
-                    Professional Studio,
-                    its owners,
-                    employees,
-                    affiliates,
-                    photographers and partners
-                    against any claims,
-                    damages,
-                    losses,
-                    liabilities,
-                    or expenses arising from your use of the Platform
-                    or violation of these Terms.
-
+                    Professional Studio, its owners, employees,
+                    affiliates, photographers, and partners against
+                    claims, damages, losses, liabilities, or expenses
+                    arising from your use of the Platform or violation
+                    of these Terms.
                 </p>
 
             </section>
 
-            <!-- ================= SECTION 21 ================= -->
+
+            <!-- 21 -->
 
             <section class="card" id="termination">
 
-                <h2>21. Suspension & Termination</h2>
+                <h2>
+                    21. Suspension & Termination
+                </h2>
 
                 <p>
-
-                    We reserve the right to suspend,
-                    restrict,
-                    or permanently terminate accounts
-                    that violate these Terms,
-                    engage in fraudulent activity,
-                    misuse the Platform,
-                    or negatively affect other users.
-
+                    We reserve the right to suspend, restrict, or
+                    permanently terminate accounts that violate these
+                    Terms, engage in fraudulent activity, misuse the
+                    Platform, or negatively affect other users.
                 </p>
 
             </section>
 
-            <!-- ================= SECTION 22 ================= -->
+
+            <!-- 22 -->
 
             <section class="card" id="changes">
 
-                <h2>22. Changes to These Terms</h2>
+                <h2>
+                    22. Changes to These Terms
+                </h2>
 
                 <p>
-
-                    Professional Studio reserves the right
-                    to modify these Terms at any time.
-
+                    Professional Studio reserves the right to modify
+                    these Terms at any time.
                 </p>
 
                 <p>
-
                     Updated versions will be published on this page
                     with a revised "Last Updated" date.
-
                 </p>
 
             </section>
 
-            <!-- ================= SECTION 23 ================= -->
+
+            <!-- 23 -->
 
             <section class="card" id="law">
 
-                <h2>23. Governing Law</h2>
+                <h2>
+                    23. Governing Law
+                </h2>
 
                 <div class="placeholder">
 
-                    <p><strong>Country :</strong> __________________________</p>
+                    <p>
+                        <strong>Country:</strong>
+                        __________________
+                    </p>
 
-                    <p><strong>State :</strong> __________________________</p>
+                    <p>
+                        <strong>State:</strong>
+                        __________________
+                    </p>
 
-                    <p><strong>City :</strong> __________________________</p>
+                    <p>
+                        <strong>City:</strong>
+                        __________________
+                    </p>
 
-                    <p><strong>Jurisdiction :</strong> __________________________</p>
+                    <p>
+                        <strong>Jurisdiction:</strong>
+                        __________________
+                    </p>
 
                 </div>
 
             </section>
 
-            <!-- ================= SECTION 24 ================= -->
+
+            <!-- 24 -->
 
             <section class="card" id="contact">
 
-                <h2>24. Contact Information</h2>
+                <h2>
+                    24. Contact Information
+                </h2>
 
                 <div class="placeholder">
 
-                    <p><strong>Business Name</strong></p>
-                    <p>Professional Studio</p>
+                    <p>
+                        <strong>Business Name</strong>
+                    </p>
 
-                    <p><strong>Registered Address</strong></p>
-                    <p>________________________________</p>
+                    <p>
+                        Professional Studio
+                    </p>
 
-                    <p>________________________________</p>
+                    <p>
+                        <strong>Registered Address</strong>
+                    </p>
 
-                    <p><strong>Email</strong></p>
-                    <p>bluehorizanlabs@gmail.com</p>
+                    <p>
+                        ________________________________
+                    </p>
 
-                    <p><strong>Phone</strong></p>
-                    <p>+91 9529924506</p>
-                    <p>+91 9309703484</p>
+                    <p>
+                        ________________________________
+                    </p>
 
-                    <p><strong>Business Hours</strong></p>
-                    <p>Monday - Saturday: 9:00 AM - 9:00 PM</p>
+                    <p>
+                        <strong>Email</strong>
+                    </p>
+
+                    <p>
+                        bluehorizanlabs@gmail.com
+                    </p>
+
+                    <p>
+                        <strong>Phone</strong>
+                    </p>
+
+                    <p>
+                        +91 9529924506
+                    </p>
+
+                    <p>
+                        +91 9309703484
+                    </p>
+
+                    <p>
+                        <strong>Business Hours</strong>
+                    </p>
+
+                    <p>
+                        Monday - Saturday: 9:00 AM - 9:00 PM
+                    </p>
 
                 </div>
 
             </section>
 
-            <!-- ================= SECTION 25 ================= -->
+
+            <!-- 25 -->
 
             <section class="card" id="agreement">
 
-                <h2>25. Entire Agreement</h2>
+                <h2>
+                    25. Entire Agreement
+                </h2>
 
                 <p>
-
-                    These Terms & Conditions constitute the entire agreement
-                    between you and Professional Studio regarding the use
-                    of the Platform and supersede all prior communications,
-                    understandings and agreements.
-
+                    These Terms & Conditions constitute the entire
+                    agreement between you and Professional Studio
+                    regarding use of the Platform and supersede all
+                    prior communications, understandings, and
+                    agreements.
                 </p>
 
             </section>
+
 
         </main>
 
     </section>
 
-    <!-- ================= BACK TO TOP ================= -->
 
-    <button id="backTop">
+    <!-- ==================================================
+         BACK TO TOP
+    ================================================== -->
 
-        <i class="fa-solid fa-arrow-up"></i>
-
+    <button id="backTop" aria-label="Back to top">
+        ↑
     </button>
 
-    <!-- ================= FOOTER ================= -->
+
+    <!-- ==================================================
+         FOOTER
+    ================================================== -->
 
     <footer class="terms-footer">
 
         <p>
-
-            © 2026 Professional Studio.
-            All Rights Reserved.
-
+            © 2026 Professional Studio. All Rights Reserved.
         </p>
+
+            <div>
+
+        
+        <p>
+            Powered by <a href="index.html" target="_blank"> Bluehorizanlabs</a> 
+        </p>
+
+
+    </div>
+
 
     </footer>
 
-    <script src="terms.js"></script>
+
+    <!-- ==================================================
+         JAVASCRIPT
+    ================================================== -->
+
+    <script>
+
+        /* ================================================
+           ELEMENTS
+        ================================================= */
+
+        const backTop =
+            document.getElementById("backTop");
+
+        const sections =
+            document.querySelectorAll(".card");
+
+        const navLinks =
+            document.querySelectorAll(".toc a");
+
+
+        /* ================================================
+           BACK TO TOP
+        ================================================= */
+
+        window.addEventListener("scroll", function () {
+
+            if (window.scrollY > 500) {
+
+                backTop.classList.add("show");
+
+            } else {
+
+                backTop.classList.remove("show");
+
+            }
+
+        });
+
+
+        backTop.addEventListener("click", function () {
+
+            window.scrollTo({
+
+                top: 0,
+
+                behavior: "smooth"
+
+            });
+
+        });
+
+
+        /* ================================================
+           ACTIVE TABLE OF CONTENTS
+        ================================================= */
+
+        function updateActiveLink() {
+
+            let current = "";
+
+            sections.forEach(function (section) {
+
+                const sectionTop =
+                    section.offsetTop - 180;
+
+                const sectionHeight =
+                    section.offsetHeight;
+
+
+                if (
+                    window.scrollY >= sectionTop &&
+                    window.scrollY <
+                    sectionTop + sectionHeight
+                ) {
+
+                    current =
+                        section.getAttribute("id");
+
+                }
+
+            });
+
+
+            navLinks.forEach(function (link) {
+
+                link.classList.remove("active");
+
+
+                if (
+                    link.getAttribute("href") ===
+                    "#" + current
+                ) {
+
+                    link.classList.add("active");
+
+                }
+
+            });
+
+        }
+
+
+        window.addEventListener(
+            "scroll",
+            updateActiveLink
+        );
+
+
+        window.addEventListener(
+            "load",
+            updateActiveLink
+        );
+
+
+        /* ================================================
+           TOC CLICK
+        ================================================= */
+
+        navLinks.forEach(function (link) {
+
+            link.addEventListener("click", function () {
+
+                navLinks.forEach(function (item) {
+
+                    item.classList.remove("active");
+
+                });
+
+                link.classList.add("active");
+
+            });
+
+        });
+
+    </script>
+
 
 </body>
 
 </html>
+```
