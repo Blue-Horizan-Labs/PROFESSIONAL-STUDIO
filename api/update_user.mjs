@@ -26,7 +26,7 @@ export default async function updateUser(req, res) {
     // if no user is found
     if (userError) {
         console.error("Error fetching user info:", userError);
-        return res.status(401).json({ error: "Unauthorized" });
+        return res.status(401).json({ error: userError });
     }
 
     // get user data of email linked with auth token
