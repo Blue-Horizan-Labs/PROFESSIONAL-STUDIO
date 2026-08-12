@@ -2,11 +2,29 @@
    Dashboard Core
 ========================================== */
 
-/* Copy link */
+// GLOBAL VARIABLES
+var  userName = "Rahul Photography";
+var  link = "https://rahulphotography.com/portfolio";
 
-function copyPortfolioLink() {
-    const portfolioLink = window.location.origin + "/portfolio.html";
+// Server requests and other dashboard functionalities can be added here
+fetch("/api/dashboard-data", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    
+})
+.then(response => response.json())
+.then(data => {
+    // Handle the response data
+    document.getElementById('name').textContent = data.name;
+    link = window.location.origin + '/api/user?id=' + data.link;
+    document.getElementById('openPortfolioBtn').disabled = false;
+});
 
+/* Open link */
+
+function openPortfolio() {
+    const portfolioLink = link;
+    window.open(portfolioLink, "_blank");
     navigator.clipboard.writeText(portfolioLink).then(() => {
         const button = document.getElementById("copyPortfolioBtn");
 

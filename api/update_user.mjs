@@ -74,4 +74,6 @@ export default async function updateUser(req, res) {
 
         console.log('update entry:', update_entry);
     }
+
+    res.status(200).json({ message: "User info updated successfully", redirect: '/user.html' });
 }
