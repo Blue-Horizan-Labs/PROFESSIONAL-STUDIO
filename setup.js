@@ -63,12 +63,17 @@ form.addEventListener("submit", function (e) {
     .then(response => response.json())
     .then(data => {
         if (data.error) {
+            if (data.redirect) {
+                window.location.href = data.redirect;
+                return;
+            }
             console.error("Error updating user:", data.error);
             alert("Error updating user: " + data.error);
         } else {
             console.log("User updated successfully:", data);
             alert("User updated successfully!");
         }
+            
     })
 
     // window.location.href = "services-setup.html";
