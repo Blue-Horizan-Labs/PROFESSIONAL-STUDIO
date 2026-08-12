@@ -34,7 +34,7 @@
 
         <a href="#pricing">Pricing</a>
 
-        <a href="#gallery">Gallery</a>
+       <!-- <a href="#gallery">Gallery</a> -->
 
         <a href="#settings">Settings</a>
 
@@ -59,10 +59,42 @@
             Manage your portfolio, services, gallery and bookings from one place.
         </p>
 
+        <button
+    onclick="copyPortfolioLink()"
+    id="copyPortfolioBtn"
+    style="
+        padding: 14px 28px;
+        font-size: 16px;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+    "
+>
+    Copy Portfolio Link
+</button>
+
     </div>
 
 </section>
 
+
+
+<section class="section" id="profile">
+
+ <a href="setup.html">
+    <button style="
+        padding: 14px 25px;
+        font-size: 25px;
+        font-weight: 600;
+        border-radius: 8px;
+        cursor: pointer;
+    ">
+        Update Profile
+    </button>
+</a>
+
+ </section>
 
 <!-- ==========================
       DASHBOARD OVERVIEW
@@ -119,88 +151,11 @@
 
 </div>
 
-</section>
-
-
-<!-- ==========================
-        PROFILE
-=========================== -->
-
-<section class="section" id="profile">
-
-<h2>Update Profile</h2>
-
-<div class="form-card">
-
-<label>Studio Name</label>
-
-<input
-type="text"
-placeholder="Studio Name" id="new_studio_name">
-
-<label>Photographer Name</label>
-
-<input
-type="text"
-placeholder="ex: Rahul Sharma" id="new_photographer_name">
-
-<label>Experience</label>
-
-<input
-type="text"
-placeholder="ex: 5 Years" id="new_experience">
-
-<label>Location</label>
-
-<input
-type="text"
-placeholder="ex: Nagpur, Maharashtra" id="new_location">
-
-<label>Phone</label>
-
-<input
-type="tel"
-placeholder="ex: +91 9876543210" id="new_phone">
-
-<label>Email</label>
-
-<input
-type="email"
-placeholder="contact@email.com" id="new_email">
-
-<label>Instagram</label>
-
-<input
-type="text"
-placeholder="ex: https://instagram.com/yourprofile" id="new_instagram">
-
-<label>Facebook</label>
-
-<input
-type="text"
-placeholder="ex: https://facebook.com/yourprofile" id="new_facebook">
-
-<label>YouTube</label>
-
-<input
-type="text"
-placeholder="ex: https://youtube.com/yourchannel" id="new_youtube">
-
-<label>About</label>
-
-<textarea
-rows="5"
-placeholder="Write a short introduction about yourself..." id="new_about"></textarea>
-
-<button id="saveProfileBtn">
-
-Save Profile
-
-</button>
-
-</div>
 
 </section>
+
+
+
 
 
 <!-- ==========================
@@ -355,7 +310,7 @@ Save Profile
 
 <!-- ==========================
         GALLERY
-=========================== -->
+=========================== 
 
 <section class="section" id="gallery">
 
@@ -415,6 +370,8 @@ Create Album
 
 </section>
 
+-->
+
 <!-- ================= BOOKING MANAGEMENT ================= -->
 
 <section class="section" id="bookings">
@@ -425,12 +382,13 @@ Create Album
             <p>Manage, monitor and compare all your photography bookings.</p>
         </div>
 
-        <button class="btn-primary">
-            + New Booking
+       <a href="bookMng.html"> <button class="btn-primary">
+            MANAGE BOOKINGS
         </button>
+        </a>
     </div>
 
-    <!-- Statistics -->
+    <!-- Statistics 
 
     <div class="booking-stats">
 
@@ -459,7 +417,7 @@ Create Album
         </div>
 
     </div>
-
+-->
     <!-- Filters -->
 
     <div class="booking-toolbar">
@@ -470,7 +428,7 @@ Create Album
             placeholder="Search client..."
         >
 
-        <select id="viewFilter">
+       <!-- <select id="viewFilter">
             <option value="week">This Week</option>
             <option value="month" selected>This Month</option>
             <option value="year">This Year</option>
@@ -493,7 +451,7 @@ Create Album
 
     </div>
 
-    <!-- Comparison -->
+     Comparison 
 
     <div class="comparison-cards">
 
@@ -528,6 +486,7 @@ Create Album
         </div>
 
     </div>
+-->
 
     <!-- Table -->
 

@@ -1,7 +1,23 @@
 /* ==========================================
-   user.js - Part 1
    Dashboard Core
 ========================================== */
+
+/* Copy link */
+
+function copyPortfolioLink() {
+    const portfolioLink = window.location.origin + "/portfolio.html";
+
+    navigator.clipboard.writeText(portfolioLink).then(() => {
+        const button = document.getElementById("copyPortfolioBtn");
+
+        button.textContent = "Copied!";
+
+        setTimeout(() => {
+            button.textContent = "Copy Portfolio Link";
+        }, 2000);
+    });
+}
+
 
 document.addEventListener("DOMContentLoaded", () => {
 
