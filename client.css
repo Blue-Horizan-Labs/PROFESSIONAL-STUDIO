@@ -90,11 +90,12 @@ body{
 
 /* ===============================
    HERO
-=================================*/
-
+=================================
+*/
 .hero{
-    height:80vh;
-    background:url("hero.jpg") center center/cover no-repeat;
+    height:15vh;
+    min-height:400px;
+   /* background:url("hero.jpg") center center/cover no-repeat;*/
     display:flex;
     justify-content:center;
     align-items:center;
@@ -105,20 +106,19 @@ body{
     background:rgba(0,0,0,.45);
     color:white;
     text-align:center;
-    padding:50px;
+    padding:30px;
     border-radius:15px;
-    max-width:700px;
+    max-width:650px;
 }
 
 .hero-content h1{
-    font-size:3rem;
-    margin-bottom:20px;
+    font-size:2.5rem;
+    margin-bottom:15px;
 }
 
 .hero-content p{
-    font-size:1.2rem;
+    font-size:1.1rem;
 }
-
 /* ===============================
    SECTION
 =================================*/
