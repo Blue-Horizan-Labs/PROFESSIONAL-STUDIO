@@ -16,7 +16,7 @@ export default async function handler(req, res) {
 
   if (error) {
     console.error('Error during signup:', error);
-    return res.status(400).json({ message: 'Error during signup.' });
+    return res.status(400).json({ message: error });
   }
   if (data){
     console.log('Signup successful:', data);
