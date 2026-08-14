@@ -1,88 +1,200 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
     <title>Book Photography Session</title>
 
-    <meta name="theme-color" content="#260573">
-    <meta name="description" content="Book photography sessions easily">
-    <meta name="robots" content="index,follow">
+    <meta name="theme-color"
+          content="#260573">
 
-    <link rel="stylesheet" href="booking.css">
+    <meta name="description"
+          content="Book photography sessions easily">
 
-    <!-- Flatpickr CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <meta name="robots"
+          content="index,follow">
 
-    
+    <link rel="stylesheet"
+          href="booking.css">
+
+
+    <!-- ================================
+         FLATPICKR CSS
+    ================================= -->
+<link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
 </head>
+
 
 <body>
 
 <section class="booking-section">
+
     <div class="container">
 
         <h1>Book Your Photography Session</h1>
-        <p>Select your service and fill in the details below.</p>
+
+        <p>
+            Select your service and fill in the details below.
+        </p>
+
 
         <form id="bookingForm">
 
-            <!-- Service Selection -->
+
+            <!-- ================================
+                 SERVICE SELECTION
+            ================================= -->
+
             <label>Select Service</label>
 
             <div class="select-group">
-                <label for="serviceSelect">Type of Service</label>
+
+                <label for="serviceSelect">
+                    Type of Service
+                </label>
 
                 <div class="custom-select">
-                    <select id="serviceSelect" name="service" required>
-                        <option value="">Select Service</option>
-                        <option value="wedding">Wedding Photography</option>
-                        <option value="event">Event Photography</option>
-                        <option value="portrait">Portrait Session</option>
-                        <option value="prewedding">Pre-Wedding Shoot</option>
+
+                    <select
+                        id="serviceSelect"
+                        name="service"
+                        required>
+
+                        <option value="">
+                            Select Service
+                        </option>
+
+                        <option value="wedding">
+                            Wedding Photography
+                        </option>
+
+                        <option value="event">
+                            Event Photography
+                        </option>
+
+                        <option value="portrait">
+                            Portrait Session
+                        </option>
+
+                        <option value="prewedding">
+                            Pre-Wedding Shoot
+                        </option>
+
                     </select>
+
                 </div>
+
             </div>
 
-            <!-- Package Section -->
-          
-          <div id="packageSection" class="package-section">
-        <label>Select Package</label>
+
+            <!-- ================================
+                 PACKAGE SECTION
+            ================================= -->
+
+            <div
+                id="packageSection"
+                class="package-section">
+
+                <label>Select Package</label>
+
 
                 <div class="package-options">
 
-                    <div class="package-card" data-package="basic">
-                        <h4>Wedding Basic</h4>
-                        <p>Candid + Traditional</p>
+
+                    <div
+                        class="package-card"
+                        data-package="basic">
+
+                        <h4>
+                            Wedding Basic
+                        </h4>
+
+                        <p>
+                            Candid + Traditional
+                        </p>
+
                     </div>
 
-                    <div class="package-card recommended" data-package="premium">
-                        <span class="badge">Most Popular</span>
-                        <h4>Wedding Premium</h4>
-                        <p>Cinematic + Candid + Traditional</p>
+
+                    <div
+                        class="package-card recommended"
+                        data-package="premium">
+
+                        <span class="badge">
+                            Most Popular
+                        </span>
+
+                        <h4>
+                            Wedding Premium
+                        </h4>
+
+                        <p>
+                            Cinematic + Candid + Traditional
+                        </p>
+
                     </div>
 
-                    <div class="package-card" data-package="luxury">
-                        <h4>Wedding Luxury</h4>
-                        <p>All Included + Pre-Wedding</p>
+
+                    <div
+                        class="package-card"
+                        data-package="luxury">
+
+                        <h4>
+                            Wedding Luxury
+                        </h4>
+
+                        <p>
+                            All Included + Pre-Wedding
+                        </p>
+
                     </div>
+
 
                 </div>
 
-                <div id="packageDetails" class="package-details"></div>
 
-                <input type="hidden" id="selectedPackage" name="package">
+                <div
+                    id="packageDetails"
+                    class="package-details">
+                </div>
+
+
+                <input
+                    type="hidden"
+                    id="selectedPackage"
+                    name="package">
 
             </div>
 
-            <!-- Duration -->
-            <div id="durationBox" class="duration-box">
+
+            <!-- ================================
+                 DURATION
+            ================================= -->
+
+            <div
+                id="durationBox"
+                class="duration-box">
+
                 <p id="durationText"></p>
+
             </div>
 
-            <!-- Dates -->
-            <label for="multiDate">Select Event Dates</label>
+
+            <!-- ================================
+                 DATES
+            ================================= -->
+
+            <label for="multiDate">
+                Select Event Dates
+            </label>
+
 
             <input
                 type="text"
@@ -91,15 +203,31 @@
                 placeholder="Select multiple dates"
                 required>
 
+
             <div id="dateTimeContainer"></div>
 
-            <div class="hours-box" style="margin-top:15px;">
+
+            <div
+                class="hours-box"
+                style="margin-top:15px;">
+
                 Total Combined Hours:
-                <span id="totalHours">0</span>
+
+                <span id="totalHours">
+                    0
+                </span>
+
             </div>
 
-            <!-- Location -->
-            <label for="location">Event Location</label>
+
+            <!-- ================================
+                 LOCATION
+            ================================= -->
+
+            <label for="location">
+                Event Location
+            </label>
+
 
             <input
                 type="text"
@@ -108,92 +236,209 @@
                 placeholder="Enter location manually"
                 required>
 
+
             <button
                 type="button"
                 class="gps-btn"
                 onclick="getLocation()">
+
                 Use Current Location (GPS)
+
             </button>
 
-            <!-- Customer Details -->
-            <h3>Customer Details</h3>
 
-             <label>Expected Guests</label>
+            <!-- ================================
+                 CUSTOMER DETAILS
+            ================================= -->
+
+            <h3>
+                Customer Details
+            </h3>
+
+
+            <label>
+                Expected Guests
+            </label>
+
+
             <input
                 type="number"
                 min="1"
                 placeholder="Approx guest count">
 
 
-            <label for="fullName">Full Name</label>
-            <input type="text" id="fullName" name="fullName" required>
+            <label for="fullName">
+                Full Name
+            </label>
 
-            <label for="phone">Phone Number</label>
-            <input type="tel" id="phone" name="phone" required>
 
-            <label for="email">Email Address</label>
-            <input type="email" id="email" name="email" required>
+            <input
+                type="text"
+                id="fullName"
+                name="fullName"
+                required>
 
-            <label for="message">Additional Details / Message</label>
-            <textarea id="message" name="message" rows="4"></textarea>
 
-            
+            <label for="phone">
+                Phone Number
+            </label>
+
+
+            <input
+                type="tel"
+                id="phone"
+                name="phone"
+                required>
+
+
+            <label for="email">
+                Email Address
+            </label>
+
+
+            <input
+                type="email"
+                id="email"
+                name="email"
+                required>
+
+
+            <label for="message">
+                Additional Details / Message
+            </label>
+
+
+            <textarea
+                id="message"
+                name="message"
+                rows="4">
+            </textarea>
+
+
+            <!-- ================================
+                 HONEYPOT
+            ================================= -->
 
             <input
                 type="text"
                 name="website"
                 style="display:none">
 
-            <button type="submit" class="submit-btn">
+
+            <!-- ================================
+                 SUBMIT
+            ================================= -->
+
+            <button
+                type="submit"
+                class="submit-btn">
+
                 Submit Booking Request
+
             </button>
+
 
         </form>
 
     </div>
+
 </section>
 
-<!-- Help Section -->
+
+<!-- ================================
+     HELP SECTION
+================================= -->
+
 <div class="help-section">
 
-    <h3>Need Help With Booking?</h3>
+    <h3>
+        Need Help With Booking?
+    </h3>
 
     <p>
+
         Having trouble selecting dates, packages, or booking your session?
         Contact us and we'll help you choose the perfect photography plan.
+
     </p>
 
 </div>
 
-<div id="successPopup" class="success-popup">
+
+<!-- ================================
+     SUCCESS POPUP
+================================= -->
+
+<div
+    id="successPopup"
+    class="success-popup">
+
     Booking request submitted successfully 🎉
+
 </div>
+
+
+<!-- ================================
+     PROGRESS BAR
+================================= -->
 
 <div class="progress-bar">
-    <div class="progress-fill" id="progressFill"></div>
-</div>
 
-<div class="booking-footer">
-    Secure Booking • Fast Response • Instant Confirmation 
-</div>
-
- <p>
-            © 2026 Professional Studio. All rights reserved.
-        </p>
-
-    <div>
-
-        
-        <p>
-            Powered by <a href="https://bluehorizanlabs.vercel.app/" target="_blank"> Bluehorizanlabs</a> 
-        </p>
-
-
+    <div
+        class="progress-fill"
+        id="progressFill">
     </div>
 
+</div>
+
+
+<!-- ================================
+     FOOTER
+================================= -->
+
+<div class="booking-footer">
+
+    Secure Booking • Fast Response • Instant Confirmation
+
+</div>
+
+
+<p>
+    © 2026 Professional Studio. All rights reserved.
+</p>
+
+
+<div>
+
+    <p>
+
+        Powered by
+
+        <a
+            href="https://bluehorizanlabs.vercel.app/"
+            target="_blank"
+            rel="noopener noreferrer">
+
+            Bluehorizanlabs
+
+        </a>
+
+    </p>
+
+</div>
+
+
+<!-- ================================
+     FLATPICKR JAVASCRIPT
+================================= -->
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="Booking.js"></script>
+
+
+
+<script src="booking.js"></script>
+
 
 </body>
 </html>
+```
