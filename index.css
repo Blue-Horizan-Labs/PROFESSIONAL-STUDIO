@@ -608,6 +608,25 @@ section{
 
 }
 
+@media (max-width: 768px) {
+
+    .hero-right {
+        margin-top: 35px;
+        padding: 0 10px;
+    }
+
+    .hero-right > div:first-child {
+        max-width: 360px !important;
+        border-radius: 12px !important;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.07) !important;
+    }
+
+    .desktop-floating-card {
+        display: none !important;
+    }
+
+}
+
 /*=========================================
   TRUSTED BY
 =========================================*/
