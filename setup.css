@@ -5,37 +5,42 @@
 }
 
 :root{
-    --bg:#0b1120;
-    --card:rgba(255,255,255,.06);
-    --border:rgba(255,255,255,.12);
-    --text:#ffffff;
-    --muted:#aeb6c7;
-    --primary:#7c5cff;
-    --primary2:#5d7cff;
+    --bg:#ffffff;
+    --card:#ffffff;
+    --border:#e5e5e5;
+    --text:#111111;
+    --muted:#666666;
+    --primary:#7c3aed;
+    --primary2:#a78bfa;
     --success:#22c55e;
 }
 
+/* ================= BODY ================= */
+
 body{
-    font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
-    background:linear-gradient(135deg,#07101f,#111827,#0d1325);
-    color:var(--text);
+    font-family:'Poppins','Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+    background:#ffffff;
+    color:#111111;
     min-height:100vh;
     overflow-x:hidden;
     position:relative;
+    line-height:1.7;
 }
+
+/* ================= BACKGROUND BLUR ================= */
 
 .background-blur{
     position:fixed;
     border-radius:50%;
-    filter:blur(90px);
+    filter:blur(100px);
     z-index:-1;
-    opacity:.35;
+    opacity:.08;
 }
 
 .blur1{
     width:320px;
     height:320px;
-    background:#6c63ff;
+    background:#7c3aed;
     top:-100px;
     left:-100px;
 }
@@ -43,10 +48,12 @@ body{
 .blur2{
     width:350px;
     height:350px;
-    background:#00c6ff;
+    background:#a78bfa;
     right:-120px;
     bottom:-120px;
 }
+
+/* ================= CONTAINER ================= */
 
 .setup-container{
     width:min(1200px,92%);
@@ -65,12 +72,15 @@ body{
     font-size:2.4rem;
     margin-bottom:12px;
     font-weight:700;
+    color:#111111;
 }
 
 .setup-header p{
-    color:var(--muted);
+    color:#666666;
     font-size:1rem;
 }
+
+/* ================= PROGRESS ================= */
 
 .progress-section{
     max-width:700px;
@@ -81,14 +91,14 @@ body{
     display:flex;
     justify-content:space-between;
     margin-bottom:12px;
-    color:#d6d9e2;
+    color:#333333;
     font-size:.95rem;
 }
 
 .progress-bar{
     width:100%;
     height:10px;
-    background:rgba(255,255,255,.08);
+    background:#eeeeee;
     border-radius:20px;
     overflow:hidden;
 }
@@ -96,20 +106,24 @@ body{
 .progress-fill{
     width:33%;
     height:100%;
-    background:linear-gradient(90deg,var(--primary),var(--primary2));
+    background:linear-gradient(
+        90deg,
+        #7c3aed,
+        #a78bfa
+    );
     border-radius:20px;
 }
 
 /*================ CARDS ================*/
 
 .card{
-    background:var(--card);
-    border:1px solid var(--border);
-    backdrop-filter:blur(20px);
-    border-radius:22px;
+    background:#ffffff;
+    border:1px solid #e5e5e5;
+    backdrop-filter:blur(15px);
+    border-radius:20px;
     padding:35px;
     margin-bottom:28px;
-    box-shadow:0 15px 35px rgba(0,0,0,.25);
+    box-shadow:0 10px 30px rgba(0,0,0,.05);
 }
 
 .card h2{
@@ -118,10 +132,11 @@ body{
     gap:10px;
     font-size:1.4rem;
     margin-bottom:28px;
+    color:#111111;
 }
 
 .card h2 i{
-    color:#8f82ff;
+    color:#7c3aed;
 }
 
 /*================ GRID ================*/
@@ -144,16 +159,16 @@ label{
     display:block;
     margin-bottom:8px;
     font-size:.95rem;
-    color:#e5e7eb;
+    color:#333333;
 }
 
 input,
 textarea{
     width:100%;
-    background:rgba(255,255,255,.05);
-    border:1px solid rgba(255,255,255,.1);
-    border-radius:14px;
-    color:white;
+    background:#f7f7f7;
+    border:1px solid #dddddd;
+    border-radius:12px;
+    color:#111111;
     padding:14px 16px;
     outline:none;
     transition:.3s;
@@ -167,8 +182,8 @@ textarea{
 
 input:focus,
 textarea:focus{
-    border-color:#7c5cff;
-    box-shadow:0 0 0 3px rgba(124,92,255,.18);
+    border-color:#7c3aed;
+    box-shadow:0 0 0 3px rgba(124,58,237,.12);
 }
 
 /*================ UPLOAD BOX ================*/
@@ -180,7 +195,7 @@ textarea:focus{
 .upload-label{
     width:100%;
     min-height:240px;
-    border:2px dashed rgba(255,255,255,.18);
+    border:2px dashed #d9d9d9;
     border-radius:18px;
     display:flex;
     flex-direction:column;
@@ -190,26 +205,28 @@ textarea:focus{
     transition:.3s;
     text-align:center;
     padding:20px;
+    background:#fafafa;
 }
 
 .upload-label:hover{
-    border-color:#7c5cff;
-    background:rgba(124,92,255,.08);
+    border-color:#7c3aed;
+    background:rgba(124,58,237,.04);
 }
 
 .upload-label i{
     font-size:2.6rem;
-    color:#7c5cff;
+    color:#7c3aed;
     margin-bottom:18px;
 }
 
 .upload-label p{
     font-size:1rem;
     margin-bottom:8px;
+    color:#111111;
 }
 
 .upload-label span{
-    color:var(--muted);
+    color:#666666;
     font-size:.9rem;
 }
 
@@ -238,10 +255,10 @@ textarea:focus{
 
 #addPhotographer{
     border:none;
-    background:linear-gradient(135deg,#7c5cff,#5d7cff);
-    color:white;
+    background:#111111;
+    color:#ffffff;
     padding:12px 18px;
-    border-radius:12px;
+    border-radius:50px;
     cursor:pointer;
     font-weight:600;
     transition:.3s;
@@ -249,7 +266,7 @@ textarea:focus{
 
 #addPhotographer:hover{
     transform:translateY(-2px);
-    box-shadow:0 12px 25px rgba(92,124,255,.3);
+    box-shadow:0 12px 25px rgba(0,0,0,.15);
 }
 
 /*================ PHOTOGRAPHER CARD ================*/
@@ -260,8 +277,8 @@ textarea:focus{
     gap:35px;
     padding:28px;
     border-radius:18px;
-    background:rgba(255,255,255,.03);
-    border:1px solid rgba(255,255,255,.08);
+    background:#fafafa;
+    border:1px solid #e5e5e5;
 }
 
 .photo-side{
@@ -290,17 +307,19 @@ textarea:focus{
 
 .skip-btn{
     text-decoration:none;
-    color:#d1d5db;
+    color:#333333;
     padding:14px 28px;
-    border:1px solid rgba(255,255,255,.12);
-    border-radius:14px;
+    border:1px solid #dddddd;
+    border-radius:50px;
     transition:.3s;
     font-weight:500;
+    background:#ffffff;
 }
 
 .skip-btn:hover{
-    background:rgba(255,255,255,.06);
-    border-color:#7c5cff;
+    background:#111111;
+    color:#ffffff;
+    border-color:#111111;
 }
 
 .save-btn{
@@ -309,18 +328,18 @@ textarea:focus{
     gap:10px;
     border:none;
     cursor:pointer;
-    color:white;
+    color:#ffffff;
     font-size:1rem;
     font-weight:600;
     padding:15px 34px;
-    border-radius:14px;
-    background:linear-gradient(135deg,#7c5cff,#5d7cff);
+    border-radius:50px;
+    background:#111111;
     transition:.3s;
 }
 
 .save-btn:hover{
     transform:translateY(-3px);
-    box-shadow:0 15px 35px rgba(124,92,255,.35);
+    box-shadow:0 15px 35px rgba(0,0,0,.15);
 }
 
 .save-btn i{
@@ -355,7 +374,7 @@ textarea:focus{
 
 input::placeholder,
 textarea::placeholder{
-    color:#94a3b8;
+    color:#999999;
 }
 
 /* ================= SCROLLBAR ================= */
@@ -365,16 +384,16 @@ textarea::placeholder{
 }
 
 ::-webkit-scrollbar-track{
-    background:#0f172a;
+    background:#f5f5f5;
 }
 
 ::-webkit-scrollbar-thumb{
-    background:#4f46e5;
+    background:#7c3aed;
     border-radius:20px;
 }
 
 ::-webkit-scrollbar-thumb:hover{
-    background:#6366f1;
+    background:#6d28d9;
 }
 
 /* ================= PHOTO PREVIEW ================= */
@@ -399,7 +418,7 @@ textarea::placeholder{
 .remove-photographer{
     margin-top:15px;
     background:#ef4444;
-    color:white;
+    color:#ffffff;
     border:none;
     border-radius:10px;
     padding:10px 16px;
@@ -416,9 +435,7 @@ textarea::placeholder{
 @media(max-width:1100px){
 
     .photographer-card{
-
         grid-template-columns:1fr;
-
     }
 
 }
@@ -428,17 +445,13 @@ textarea::placeholder{
 @media(max-width:900px){
 
     .grid-2{
-
         grid-template-columns:1fr;
-
     }
 
     .section-heading{
-
         flex-direction:column;
         align-items:flex-start;
         gap:15px;
-
     }
 
 }
@@ -448,43 +461,40 @@ textarea::placeholder{
 @media(max-width:768px){
 
     .setup-container{
-
         width:94%;
         padding:30px 0 50px;
-
     }
 
     .setup-header h1{
-
         font-size:2rem;
+        line-height:1.25;
+    }
 
+    .setup-header p{
+        font-size:.9rem;
     }
 
     .card{
-
         padding:24px;
+    }
 
+    .card h2{
+        font-size:1.25rem;
     }
 
     .upload-label{
-
         min-height:190px;
-
     }
 
     .buttons{
-
         flex-direction:column-reverse;
         gap:18px;
-
     }
 
     .buttons a,
     .buttons button{
-
         width:100%;
         justify-content:center;
-
     }
 
 }
@@ -494,29 +504,34 @@ textarea::placeholder{
 @media(max-width:500px){
 
     .setup-header h1{
-
         font-size:1.7rem;
+    }
 
+    .setup-header p{
+        font-size:.85rem;
+    }
+
+    .card{
+        padding:20px;
     }
 
     .card h2{
-
         font-size:1.15rem;
-
     }
 
     input,
     textarea{
-
         padding:13px;
+        font-size:.9rem;
+    }
 
+    label{
+        font-size:.85rem;
     }
 
     .save-btn,
     .skip-btn{
-
         padding:14px;
-
     }
 
 }
@@ -525,16 +540,14 @@ textarea::placeholder{
 
 .card:hover{
 
-    border-color:rgba(124,92,255,.35);
-
+    border-color:rgba(124,58,237,.35);
     transition:.3s;
 
 }
 
 .photographer-card:hover{
 
-    border-color:rgba(124,92,255,.25);
-
+    border-color:rgba(124,58,237,.25);
     transition:.3s;
 
 }
