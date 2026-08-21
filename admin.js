@@ -1,7 +1,3 @@
-// ===============================
-// PhotoSaaS Admin Dashboard
-// index.js
-// ===============================
 
 document.addEventListener("DOMContentLoaded", () => {
 
