@@ -248,7 +248,9 @@ textarea::placeholder{
     color:#999999;
 }
 
-/* Remove number spinner */
+/* =========================================================
+   NUMBER INPUT
+========================================================= */
 
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button{
@@ -345,7 +347,9 @@ input[type="number"]::-webkit-outer-spin-button{
     display:none;
 }
 
-/* Change photo overlay */
+/* =========================================================
+   PHOTO OVERLAY
+========================================================= */
 
 .photo-overlay{
     position:absolute;
@@ -514,7 +518,7 @@ input[type="number"]::-webkit-outer-spin-button{
 }
 
 /* =========================================================
-   SUCCESS MESSAGE
+   OLD SUCCESS MESSAGE
 ========================================================= */
 
 .success-message{
@@ -532,6 +536,68 @@ input[type="number"]::-webkit-outer-spin-button{
     color:#166534;
 
     font-size:.9rem;
+}
+
+/* =========================================================
+   NEW SUCCESS POPUP
+========================================================= */
+
+.setup-success-popup{
+
+    position:fixed;
+
+    top:25px;
+    left:50%;
+
+    transform:translate(-50%, -25px) scale(.95);
+
+    background:#111111;
+    color:#ffffff;
+
+    padding:14px 22px;
+
+    border-radius:14px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    gap:10px;
+
+    font-size:.9rem;
+    font-weight:500;
+
+    box-shadow:0 15px 40px rgba(0,0,0,.18);
+
+    opacity:0;
+    visibility:hidden;
+
+    z-index:9999;
+
+    transition:
+        opacity .3s ease,
+        transform .3s ease,
+        visibility .3s ease;
+
+    pointer-events:none;
+}
+
+.setup-success-popup.show{
+
+    opacity:1;
+
+    visibility:visible;
+
+    transform:translate(-50%, 0) scale(1);
+
+}
+
+.setup-success-popup i{
+
+    color:#4ade80;
+
+    font-size:1.1rem;
+
 }
 
 /* =========================================================
@@ -726,6 +792,18 @@ input[type="number"]::-webkit-outer-spin-button{
         height:190px;
     }
 
+    .setup-success-popup{
+
+        width:calc(100% - 40px);
+
+        top:18px;
+
+        text-align:center;
+
+        padding:13px 18px;
+
+    }
+
 }
 
 </style>
@@ -781,6 +859,21 @@ input[type="number"]::-webkit-outer-spin-button{
 <div id="successMessage" class="success-message">
     <i class="fa-solid fa-circle-check"></i>
     Profile saved successfully.
+</div>
+
+
+<!-- =========================================================
+     SUCCESS POPUP
+========================================================= -->
+
+<div id="setupSuccessPopup" class="setup-success-popup">
+
+    <i class="fa-solid fa-circle-check"></i>
+
+    <span>
+        Profile saved successfully!
+    </span>
+
 </div>
 
 
@@ -889,8 +982,11 @@ input[type="number"]::-webkit-outer-spin-button{
                         </span>
 
                         <div class="photo-overlay">
+
                             <i class="fa-solid fa-camera"></i>
+
                             Change Photo
+
                         </div>
 
                     </label>
@@ -903,7 +999,6 @@ input[type="number"]::-webkit-outer-spin-button{
             <!-- DETAILS -->
 
             <div class="details-side">
-
 
                 <div class="grid-2">
 
@@ -1041,7 +1136,9 @@ input[type="number"]::-webkit-outer-spin-button{
                     <small
                         class="char-counter"
                         id="aboutCounter">
+
                         0 / 300
+
                     </small>
 
                 </div>
@@ -1083,7 +1180,9 @@ input[type="number"]::-webkit-outer-spin-button{
     <small
         class="char-counter"
         id="addressCounter">
+
         0 / 300
+
     </small>
 
 </section>
@@ -1183,11 +1282,17 @@ input[type="number"]::-webkit-outer-spin-button{
    ELEMENTS
 ========================================================= */
 
-const form = document.getElementById("profileForm");
+const form =
+    document.getElementById("profileForm");
 
-const photoInput = document.getElementById("photoInput");
-const photoPreview = document.getElementById("photoPreview");
-const uploadLabel = document.querySelector(".upload-label");
+const photoInput =
+    document.getElementById("photoInput");
+
+const photoPreview =
+    document.getElementById("photoPreview");
+
+const uploadLabel =
+    document.querySelector(".upload-label");
 
 
 /* =========================================================
@@ -1201,6 +1306,7 @@ photoInput.addEventListener("change", function(){
     if(!file){
         return;
     }
+
 
     /* Validate image */
 
@@ -1249,22 +1355,32 @@ photoInput.addEventListener("change", function(){
 
 function setupCounter(textareaId, counterId){
 
-    const textarea = document.getElementById(textareaId);
-    const counter = document.getElementById(counterId);
+    const textarea =
+        document.getElementById(textareaId);
+
+    const counter =
+        document.getElementById(counterId);
 
     if(!textarea || !counter){
         return;
     }
 
+
     function updateCounter(){
 
-        const length = textarea.value.length;
+        const length =
+            textarea.value.length;
 
-        counter.textContent = `${length} / 300`;
+        counter.textContent =
+            `${length} / 300`;
 
     }
 
-    textarea.addEventListener("input", updateCounter);
+
+    textarea.addEventListener(
+        "input",
+        updateCounter
+    );
 
     updateCounter();
 
@@ -1272,6 +1388,7 @@ function setupCounter(textareaId, counterId){
 
 
 setupCounter("about", "aboutCounter");
+
 setupCounter("address", "addressCounter");
 
 
@@ -1290,256 +1407,287 @@ function clearError(input){
    FORM SUBMISSION
 ========================================================= */
 
-form.addEventListener("submit", async function(e){
+form.addEventListener(
+    "submit",
+    async function(e){
 
-    e.preventDefault();
-
-
-    const studioName =
-        document.getElementById("studioName");
-
-    const studioTagline =
-        document.getElementById("studioTagline");
-
-    const photographerName =
-        document.getElementById("photographerName");
-
-    const professionalRole =
-        document.getElementById("professionalRole");
-
-    const experience =
-        document.getElementById("photographerExperience");
-
-    const sessionsDone =
-        document.getElementById("sessionsDone");
-
-    const specialization =
-        document.getElementById("specialization");
-
-    const about =
-        document.getElementById("about");
-
-    const phone =
-        document.getElementById("phone");
-
-    const address =
-        document.getElementById("address");
-
-    const instagram =
-        document.getElementById("instagram");
-
-    const facebook =
-        document.getElementById("facebook");
-
-    const youtube =
-        document.getElementById("youtube");
+        e.preventDefault();
 
 
-    /* =====================================================
-       VALIDATION
-    ===================================================== */
+        const studioName =
+            document.getElementById("studioName");
 
-    const requiredFields = [
+        const studioTagline =
+            document.getElementById("studioTagline");
 
-        {
-            element:studioName,
-            message:"Please enter your studio name."
-        },
+        const photographerName =
+            document.getElementById("photographerName");
 
-        {
-            element:photographerName,
-            message:"Please enter photographer name."
-        }
+        const professionalRole =
+            document.getElementById("professionalRole");
 
-    ];
+        const experience =
+            document.getElementById("photographerExperience");
 
+        const sessionsDone =
+            document.getElementById("sessionsDone");
 
-    for(const field of requiredFields){
+        const specialization =
+            document.getElementById("specialization");
 
-        if(field.element.value.trim() === ""){
+        const about =
+            document.getElementById("about");
 
-            alert(field.message);
+        const phone =
+            document.getElementById("phone");
 
-            field.element.classList.add("input-error");
+        const address =
+            document.getElementById("address");
 
-            field.element.focus();
+        const instagram =
+            document.getElementById("instagram");
 
-            return;
+        const facebook =
+            document.getElementById("facebook");
 
-        }
-
-    }
-
-
-    /* Remove errors when typing */
-
-    [
-        studioName,
-        photographerName,
-        experience,
-        sessionsDone
-    ].forEach(input => {
-
-        input.addEventListener("input", function(){
-
-            clearError(this);
-
-        }, {once:true});
-
-    });
+        const youtube =
+            document.getElementById("youtube");
 
 
-    /* =====================================================
-       USER OBJECT
-    ===================================================== */
+        /* =====================================================
+           VALIDATION
+        ===================================================== */
 
-    const user_object = {
+        const requiredFields = [
 
-        std_name:
-            studioName.value.trim(),
-
-        std_tag:
-            studioTagline.value.trim(),
-
-        full_name:
-            photographerName.value.trim(),
-
-        professional_role:
-            professionalRole.value.trim(),
-
-        experience:
-            experience.value.trim(),
-
-        sessions_done:
-            sessionsDone.value.trim(),
-
-        specialization:
-            specialization.value.trim(),
-
-        about:
-            about.value.trim(),
-
-        phone:
-            phone.value.trim(),
-
-        std_address:
-            address.value.trim(),
-
-        insta_handle:
-            instagram.value.trim(),
-
-        facebook_handle:
-            facebook.value.trim(),
-
-        yt_handle:
-            youtube.value.trim()
-
-    };
-
-
-    const user_data =
-        JSON.stringify(user_object);
-
-
-    /* =====================================================
-       API REQUEST
-    ===================================================== */
-
-    try{
-
-        const response = await fetch(
-            "/api/update_user",
             {
-                method:"POST",
+                element:studioName,
+                message:"Please enter your studio name."
+            },
 
-                headers:{
-                    "Content-Type":"application/json"
-                },
-
-                body:user_data
+            {
+                element:photographerName,
+                message:"Please enter photographer name."
             }
-        );
+
+        ];
 
 
-        if(!response.ok){
+        for(const field of requiredFields){
 
-            throw new Error(
-                `Server error: ${response.status}`
-            );
+            if(field.element.value.trim() === ""){
 
-        }
+                alert(field.message);
 
+                field.element.classList.add(
+                    "input-error"
+                );
 
-        const data =
-            await response.json();
+                field.element.focus();
 
+                return;
 
-        /* =================================================
-           REDIRECT
-        ================================================= */
-
-        if(data.redirect){
-
-            window.location.href =
-                data.redirect;
-
-            return;
+            }
 
         }
 
 
-        /* =================================================
-           ERROR
-        ================================================= */
+        /* Remove errors when typing */
 
-        if(data.error){
+        [
+            studioName,
+            photographerName,
+            experience,
+            sessionsDone
+        ].forEach(input => {
 
-            console.error(
-                "Error updating user:",
-                data.error
+            input.addEventListener(
+                "input",
+                function(){
+
+                    clearError(this);
+
+                },
+                {once:true}
             );
 
-            alert(
-                "Error updating profile: " +
-                data.error
-            );
-
-            return;
-
-        }
-
-
-        /* =================================================
-           SUCCESS
-        ================================================= */
-
-        const successMessage =
-            document.getElementById("successMessage");
-
-        successMessage.style.display = "block";
-
-        window.scrollTo({
-            top:0,
-            behavior:"smooth"
         });
 
 
+        /* =====================================================
+           USER OBJECT
+        ===================================================== */
+
+        const user_object = {
+
+            std_name:
+                studioName.value.trim(),
+
+            std_tag:
+                studioTagline.value.trim(),
+
+            full_name:
+                photographerName.value.trim(),
+
+            professional_role:
+                professionalRole.value.trim(),
+
+            experience:
+                experience.value.trim(),
+
+            sessions_done:
+                sessionsDone.value.trim(),
+
+            specialization:
+                specialization.value.trim(),
+
+            about:
+                about.value.trim(),
+
+            phone:
+                phone.value.trim(),
+
+            std_address:
+                address.value.trim(),
+
+            insta_handle:
+                instagram.value.trim(),
+
+            facebook_handle:
+                facebook.value.trim(),
+
+            yt_handle:
+                youtube.value.trim()
+
+        };
+
+
+        const user_data =
+            JSON.stringify(user_object);
+
+
+        /* =====================================================
+           API REQUEST
+        ===================================================== */
+
+        try{
+
+            const response = await fetch(
+                "/api/update_user",
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":"application/json"
+                    },
+
+                    body:user_data
+                }
+            );
+
+
+            if(!response.ok){
+
+                throw new Error(
+                    `Server error: ${response.status}`
+                );
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            /* =================================================
+               REDIRECT
+            ================================================= */
+
+            if(data.redirect){
+
+                window.location.href =
+                    data.redirect;
+
+                return;
+
+            }
+
+
+            /* =================================================
+               ERROR
+            ================================================= */
+
+            if(data.error){
+
+                console.error(
+                    "Error updating user:",
+                    data.error
+                );
+
+                alert(
+                    "Error updating profile: " +
+                    data.error
+                );
+
+                return;
+
+            }
+
+
+            /* =================================================
+               SUCCESS POPUP
+            ================================================= */
+
+            const successPopup =
+                document.getElementById(
+                    "setupSuccessPopup"
+                );
+
+
+            if(successPopup){
+
+                successPopup.classList.add("show");
+
+
+                setTimeout(function(){
+
+                    successPopup.classList.remove(
+                        "show"
+                    );
+
+                }, 3000);
+
+            }
+
+
+            /* Smoothly move to top */
+
+            window.scrollTo({
+
+                top:0,
+
+                behavior:"smooth"
+
+            });
+
+
+        }
+
+        catch(error){
+
+            console.error(
+                "Profile update failed:",
+                error
+            );
+
+            alert(
+                "Something went wrong while saving your profile."
+            );
+
+        }
+
     }
-
-    catch(error){
-
-        console.error(
-            "Profile update failed:",
-            error
-        );
-
-        alert(
-            "Something went wrong while saving your profile."
-        );
-
-    }
-
-});
+);
 
 </script>
 
