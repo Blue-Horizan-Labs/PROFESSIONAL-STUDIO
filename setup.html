@@ -8,11 +8,727 @@
 
 <title>Setup Your Portfolio</title>
 
-<link rel="stylesheet" href="setup.css">
-
 <link
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 rel="stylesheet">
+
+<style>
+
+/* =========================================================
+   RESET
+========================================================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+:root{
+    --bg:#ffffff;
+    --card:#ffffff;
+    --soft:#f7f7f7;
+    --soft2:#fafafa;
+    --border:#e5e5e5;
+    --border-dark:#d5d5d5;
+    --text:#111111;
+    --muted:#666666;
+    --light-muted:#999999;
+    --black:#111111;
+    --success:#16a34a;
+    --danger:#dc2626;
+}
+
+/* =========================================================
+   BODY
+========================================================= */
+
+body{
+    font-family:'Poppins','Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+    background:#ffffff;
+    color:var(--text);
+    min-height:100vh;
+    overflow-x:hidden;
+    position:relative;
+    line-height:1.7;
+}
+
+/* =========================================================
+   BACKGROUND
+========================================================= */
+
+.background-blur{
+    position:fixed;
+    border-radius:50%;
+    filter:blur(120px);
+    z-index:-1;
+    opacity:.035;
+    pointer-events:none;
+}
+
+.blur1{
+    width:350px;
+    height:350px;
+    background:#000000;
+    top:-150px;
+    left:-120px;
+}
+
+.blur2{
+    width:400px;
+    height:400px;
+    background:#777777;
+    right:-180px;
+    bottom:-180px;
+}
+
+/* =========================================================
+   CONTAINER
+========================================================= */
+
+.setup-container{
+    width:min(1200px,92%);
+    margin:auto;
+    padding:50px 0 70px;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.setup-header{
+    text-align:center;
+    margin-bottom:40px;
+}
+
+.setup-header h1{
+    font-size:2.4rem;
+    margin-bottom:10px;
+    font-weight:700;
+    color:#111111;
+    letter-spacing:-.5px;
+}
+
+.setup-header p{
+    color:#666666;
+    font-size:1rem;
+}
+
+/* =========================================================
+   PROGRESS
+========================================================= */
+
+.progress-section{
+    max-width:700px;
+    margin:35px auto 0;
+}
+
+.progress-text{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:12px;
+    color:#333333;
+    font-size:.9rem;
+    font-weight:500;
+}
+
+.progress-bar{
+    width:100%;
+    height:8px;
+    background:#eeeeee;
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.progress-fill{
+    width:33%;
+    height:100%;
+    background:#111111;
+    border-radius:20px;
+}
+
+/* =========================================================
+   CARDS
+========================================================= */
+
+.card{
+    background:#ffffff;
+    border:1px solid #e5e5e5;
+    border-radius:20px;
+    padding:35px;
+    margin-bottom:28px;
+    box-shadow:0 10px 30px rgba(0,0,0,.045);
+    animation:fadeUp .6s ease;
+    transition:.3s ease;
+}
+
+.card:hover{
+    border-color:#cfcfcf;
+    box-shadow:0 14px 35px rgba(0,0,0,.07);
+}
+
+.card h2{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:1.4rem;
+    margin-bottom:28px;
+    color:#111111;
+}
+
+.card h2 i{
+    color:#111111;
+}
+
+/* =========================================================
+   GRID
+========================================================= */
+
+.grid-2{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:22px;
+}
+
+.input-column{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+}
+
+/* =========================================================
+   LABELS
+========================================================= */
+
+label{
+    display:block;
+    margin-bottom:8px;
+    font-size:.92rem;
+    color:#333333;
+    font-weight:500;
+}
+
+/* =========================================================
+   INPUTS
+========================================================= */
+
+input,
+textarea{
+    width:100%;
+    background:#f8f8f8;
+    border:1px solid #dddddd;
+    border-radius:12px;
+    color:#111111;
+    padding:14px 16px;
+    outline:none;
+    transition:.25s ease;
+    font-size:.95rem;
+    font-family:inherit;
+}
+
+input:hover,
+textarea:hover{
+    border-color:#cfcfcf;
+}
+
+input:focus,
+textarea:focus{
+    background:#ffffff;
+    border-color:#111111;
+    box-shadow:0 0 0 3px rgba(0,0,0,.06);
+}
+
+textarea{
+    resize:vertical;
+    min-height:130px;
+}
+
+input::placeholder,
+textarea::placeholder{
+    color:#999999;
+}
+
+/* Remove number spinner */
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button{
+    opacity:1;
+}
+
+/* =========================================================
+   UPLOAD BOX
+========================================================= */
+
+.upload-box{
+    width:100%;
+}
+
+.photo-upload{
+    width:100%;
+}
+
+.upload-label{
+    width:100%;
+    min-height:250px;
+
+    border:2px dashed #d5d5d5;
+    border-radius:18px;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+
+    cursor:pointer;
+
+    transition:.3s ease;
+    text-align:center;
+
+    padding:20px;
+
+    background:#fafafa;
+
+    overflow:hidden;
+    position:relative;
+}
+
+.upload-label:hover{
+    border-color:#111111;
+    background:#f5f5f5;
+    transform:translateY(-2px);
+}
+
+.upload-label i{
+    font-size:2.5rem;
+    color:#111111;
+    margin-bottom:16px;
+}
+
+.upload-label p{
+    font-size:1rem;
+    margin-bottom:6px;
+    color:#111111;
+    font-weight:600;
+}
+
+.upload-label span{
+    color:#777777;
+    font-size:.85rem;
+}
+
+/* =========================================================
+   PHOTO PREVIEW
+========================================================= */
+
+.photoPreview{
+    width:100%;
+    height:250px;
+    object-fit:cover;
+    border-radius:14px;
+    display:none;
+}
+
+.upload-label.has-image{
+    padding:8px;
+    border-style:solid;
+    border-color:#dddddd;
+    background:#ffffff;
+}
+
+.upload-label.has-image .photoPreview{
+    display:block;
+}
+
+.upload-label.has-image i,
+.upload-label.has-image p,
+.upload-label.has-image span{
+    display:none;
+}
+
+/* Change photo overlay */
+
+.photo-overlay{
+    position:absolute;
+    left:50%;
+    bottom:18px;
+    transform:translateX(-50%);
+
+    background:rgba(17,17,17,.9);
+    color:#ffffff;
+
+    padding:8px 15px;
+    border-radius:30px;
+
+    font-size:.78rem;
+    font-weight:500;
+
+    opacity:0;
+    transition:.25s ease;
+}
+
+.upload-label.has-image:hover .photo-overlay{
+    opacity:1;
+}
+
+/* =========================================================
+   SECTION HEADER
+========================================================= */
+
+.section-heading{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:25px;
+}
+
+.section-heading h2{
+    margin:0;
+}
+
+/* =========================================================
+   PHOTOGRAPHER CARD
+========================================================= */
+
+.photographer-card{
+    display:grid;
+    grid-template-columns:280px 1fr;
+    gap:35px;
+
+    padding:28px;
+
+    border-radius:18px;
+
+    background:#fafafa;
+    border:1px solid #e5e5e5;
+
+    transition:.3s ease;
+}
+
+.photographer-card:hover{
+    border-color:#d0d0d0;
+}
+
+.photo-side{
+    display:flex;
+    align-items:flex-start;
+}
+
+.details-side{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+}
+
+.details-side textarea{
+    margin-top:0;
+}
+
+/* =========================================================
+   SESSIONS INPUT
+========================================================= */
+
+.sessions-input{
+    position:relative;
+}
+
+.sessions-input input{
+    padding-right:60px;
+}
+
+.sessions-unit{
+    position:absolute;
+    right:16px;
+    top:50%;
+    transform:translateY(-50%);
+
+    color:#777777;
+    font-size:.8rem;
+    pointer-events:none;
+}
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.buttons{
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+    margin-top:35px;
+}
+
+.save-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+
+    border:none;
+    cursor:pointer;
+
+    color:#ffffff;
+
+    font-size:1rem;
+    font-weight:600;
+
+    padding:15px 34px;
+
+    border-radius:50px;
+
+    background:#111111;
+
+    transition:.3s ease;
+}
+
+.save-btn:hover{
+    transform:translateY(-3px);
+    box-shadow:0 15px 35px rgba(0,0,0,.15);
+}
+
+.save-btn i{
+    transition:.3s ease;
+}
+
+.save-btn:hover i{
+    transform:translateX(5px);
+}
+
+/* =========================================================
+   CHARACTER COUNTER
+========================================================= */
+
+.char-counter{
+    color:#999999;
+    display:block;
+    margin-top:7px;
+    font-size:.78rem;
+}
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+.input-error{
+    border-color:#dc2626 !important;
+    box-shadow:0 0 0 3px rgba(220,38,38,.08) !important;
+}
+
+/* =========================================================
+   SUCCESS MESSAGE
+========================================================= */
+
+.success-message{
+    display:none;
+
+    padding:14px 18px;
+
+    margin-bottom:20px;
+
+    border-radius:12px;
+
+    background:#f0fdf4;
+    border:1px solid #bbf7d0;
+
+    color:#166534;
+
+    font-size:.9rem;
+}
+
+/* =========================================================
+   ANIMATION
+========================================================= */
+
+@keyframes fadeUp{
+
+    from{
+        opacity:0;
+        transform:translateY(25px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+
+}
+
+/* =========================================================
+   SCROLLBAR
+========================================================= */
+
+::-webkit-scrollbar{
+    width:9px;
+}
+
+::-webkit-scrollbar-track{
+    background:#f5f5f5;
+}
+
+::-webkit-scrollbar-thumb{
+    background:#bdbdbd;
+    border-radius:20px;
+}
+
+::-webkit-scrollbar-thumb:hover{
+    background:#888888;
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media(max-width:1100px){
+
+    .photographer-card{
+        grid-template-columns:1fr;
+    }
+
+    .photo-side{
+        max-width:350px;
+    }
+
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media(max-width:900px){
+
+    .grid-2{
+        grid-template-columns:1fr;
+    }
+
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:768px){
+
+    .setup-container{
+        width:94%;
+        padding:30px 0 45px;
+    }
+
+    .setup-header{
+        margin-bottom:30px;
+    }
+
+    .setup-header h1{
+        font-size:2rem;
+        line-height:1.25;
+    }
+
+    .setup-header p{
+        font-size:.88rem;
+        line-height:1.5;
+    }
+
+    .card{
+        padding:22px;
+        margin-bottom:20px;
+        border-radius:17px;
+    }
+
+    .card h2{
+        font-size:1.2rem;
+        margin-bottom:22px;
+    }
+
+    .photographer-card{
+        padding:18px;
+        gap:22px;
+    }
+
+    .photo-side{
+        width:100%;
+        max-width:none;
+    }
+
+    .upload-label{
+        min-height:210px;
+    }
+
+    .photoPreview{
+        height:210px;
+    }
+
+    .details-side{
+        gap:16px;
+    }
+
+    .buttons{
+        margin-top:25px;
+    }
+
+    .save-btn{
+        width:100%;
+        padding:14px 22px;
+    }
+
+}
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media(max-width:500px){
+
+    .setup-container{
+        width:92%;
+    }
+
+    .setup-header h1{
+        font-size:1.7rem;
+    }
+
+    .setup-header p{
+        font-size:.82rem;
+    }
+
+    .progress-section{
+        margin-top:25px;
+    }
+
+    .progress-text{
+        font-size:.8rem;
+    }
+
+    .card{
+        padding:18px;
+    }
+
+    .card h2{
+        font-size:1.1rem;
+    }
+
+    .photographer-card{
+        padding:14px;
+    }
+
+    input,
+    textarea{
+        padding:13px;
+        font-size:.9rem;
+    }
+
+    label{
+        font-size:.85rem;
+    }
+
+    .upload-label{
+        min-height:190px;
+    }
+
+    .photoPreview{
+        height:190px;
+    }
+
+}
+
+</style>
 
 </head>
 
@@ -23,342 +739,809 @@ rel="stylesheet">
 
 <div class="setup-container">
 
-<!-- ================= HEADER ================= -->
+<!-- =========================================================
+     HEADER
+========================================================= -->
 
 <header class="setup-header">
 
-<h1>Complete Your Portfolio</h1>
+    <h1>Complete Your Portfolio</h1>
 
-<p>
-Create your professional profile before accessing your dashboard.
-</p>
+    <p>
+        Create your professional profile before accessing your dashboard.
+    </p>
 
-<div class="progress-section">
+    <div class="progress-section">
 
-<div class="progress-text">
+        <div class="progress-text">
 
-<span>Step 1 of 3</span>
+            <span>Step 1 of 3</span>
 
-<span>33%</span>
+            <span>33%</span>
 
-</div>
+        </div>
 
-<div class="progress-bar">
+        <div class="progress-bar">
 
-<div class="progress-fill"></div>
+            <div class="progress-fill"></div>
 
-</div>
+        </div>
 
-</div>
+    </div>
 
 </header>
 
-<!-- ================= FORM ================= -->
+
+<!-- =========================================================
+     FORM
+========================================================= -->
 
 <form id="profileForm">
 
-<!-- ================= STUDIO INFO ================= -->
-
-<section class="card">
-
-<h2>
-
-<i class="fa-solid fa-building"></i>
-
-Studio Information
-
-</h2>
-
-<div class="grid-2">
-
-<div>
+<div id="successMessage" class="success-message">
+    <i class="fa-solid fa-circle-check"></i>
+    Profile saved successfully.
 </div>
 
-</div>
 
-<div class="input-column">
+<!-- =========================================================
+     STUDIO INFORMATION
+========================================================= -->
 
-<label>Studio Name</label>
-
-<input id="studioName"
-type="text"
-placeholder="ex: Professional Studio">
-
-<label>Studio Tagline</label>
-
-<input id="studioTagline"
-type="text"
-placeholder="ex: Capturing Timeless Memories">
-
-</div>
-
-</div>
-
-</section>
-
-<!-- ================= PHOTOGRAPHER ================= -->
-
-<section class="card">
-
-<div class="section-heading">
-
-<h2>
-
-<i class="fa-solid fa-camera"></i>
-
-Meet the Photographer
-
-</h2>
-
-</div>
-
-<div id="photographerContainer">
-
-<!-- Photographer Card -->
-
-<div class="photographer-card">
-
-<div class="photo-side">
-
-<div class="upload-box">
-
-<input 
-type="file"
-accept="image/*"
-class="photoInput"
-hidden>
-
-<label class="upload-label">
-
-<img
-class="photoPreview"
-src=""
-alt="">
-
-<i class="fa-solid fa-user"></i>
-
-<p>Upload Photo</p>
-
-<span>JPG or PNG</span>
-
-</label>
-
-</div>
-
-</div>
-
-<div class="details-side">
-
-<div class="grid-2">
-
-<div>
-
-<label>Full Name</label>
-
-<input 
-id="photographerName"
-type="text"
-placeholder="ex: Rahul Patil">
-
-</div>
-
-<div>
-
-<label>Professional Role</label>
-
-<input
-type="text"
-placeholder="ex: Lead Photographer">
-
-</div>
-
-<div>
-
-<label>Experience</label>
-
-<input id="photographerExperience"
-type="number"
-placeholder="ex: 5">
-
-</div>
-
-<div>
-
-<label>Specialization</label>
-
-<input id="specialization"
-type="text"
-placeholder="ex: Wedding Photography">
-
-</div>
-
-</div>
-
-<label>About Yourself</label>
-
-<textarea
-id="about"
-rows="5"
-placeholder="Tell clients about yourself, your experience and photography style."></textarea>
-
-<div class="grid-2">
-
-
-<div>
-
-<label>Phone Number</label>
-
-<input
-id="phone"
-type="tel"
-placeholder="ex: +91 9876543210">
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</section>
-
-<!-- ================= CONTACT ================= 
-
-<section class="card">
-
-<h2>
-
-<i class="fa-solid fa-phone"></i>
-
-Studio Contact (OPTIONAL)
-
-</h2>
-
-<div class="grid-2">
-
-<div>
-
-<label>Studio Phone</label>
-
-<input
-type="tel"
-placeholder="ex: +91 9876543210">
-
-</div>
-
-<div>
-
-<label>Studio Email</label>
-
-<input
-type="email"
-placeholder="ex: studio@email.com">
-
-</div>
-
-<div>
-
-<label>Website</label>
-
-<input
-type="url"
-placeholder="ex: https://yourwebsite.com">
-
-</div>
-
-<div>
-
-<label>Business Hours</label>
-
-<input
-type="text"
-placeholder="ex: 9:00 AM - 7:00 PM">
-
-</div>
-
-</div>
-
-</section>
--->
-
-<!-- ================= ADDRESS ================= -->
 <section class="card">
 
     <h2>
-        <i class="fa-solid fa-location-dot"></i>
-        Studio Address
+
+        <i class="fa-solid fa-building"></i>
+
+        Studio Information
+
     </h2>
 
-    <label>Full Address</label>
-
-    <textarea
-        id="address"
-        rows="4"
-        placeholder="Enter your complete studio address"></textarea>
-
-</section>
-<!-- ================= SOCIAL ================= -->
-<section class="card">
-
-    <h2>
-        <i class="fa-solid fa-share-nodes"></i>
-        Social Media
-    </h2>
-
-    <div class="grid-2">
+    <div class="input-column">
 
         <div>
-            <label>Instagram</label>
+
+            <label for="studioName">
+                Studio Name
+            </label>
+
             <input
-                id="instagram"
+                id="studioName"
                 type="text"
-                placeholder="ex: @yourprofile">
+                placeholder="ex: Professional Studio">
+
         </div>
 
         <div>
-            <label>Facebook</label>
-            <input
-                id="facebook"
-                type="text"
-                placeholder="ex: yourprofile">
-        </div>
 
-        <div>
-            <label>YouTube</label>
+            <label for="studioTagline">
+                Studio Tagline
+            </label>
+
             <input
-                id="youtube"
+                id="studioTagline"
                 type="text"
-                placeholder="ex: @yourchannel">
+                placeholder="ex: Capturing Timeless Memories">
+
         </div>
 
     </div>
 
 </section>
 
-<!-- ================= BUTTONS ================= -->
+
+<!-- =========================================================
+     PHOTOGRAPHER
+========================================================= -->
+
+<section class="card">
+
+    <div class="section-heading">
+
+        <h2>
+
+            <i class="fa-solid fa-camera"></i>
+
+            Meet the Photographer
+
+        </h2>
+
+    </div>
+
+
+    <div id="photographerContainer">
+
+        <div class="photographer-card">
+
+
+            <!-- PHOTO -->
+
+            <div class="photo-side">
+
+                <div class="upload-box">
+
+                    <input
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        class="photoInput"
+                        id="photoInput"
+                        hidden>
+
+                    <label
+                        class="upload-label"
+                        for="photoInput">
+
+                        <img
+                            class="photoPreview"
+                            id="photoPreview"
+                            src=""
+                            alt="Photographer Preview">
+
+                        <i class="fa-solid fa-user"></i>
+
+                        <p>
+                            Upload Photo
+                        </p>
+
+                        <span>
+                            JPG, PNG or WebP
+                        </span>
+
+                        <div class="photo-overlay">
+                            <i class="fa-solid fa-camera"></i>
+                            Change Photo
+                        </div>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- DETAILS -->
+
+            <div class="details-side">
+
+
+                <div class="grid-2">
+
+
+                    <!-- NAME -->
+
+                    <div>
+
+                        <label for="photographerName">
+                            Full Name
+                        </label>
+
+                        <input
+                            id="photographerName"
+                            type="text"
+                            placeholder="ex: Rahul Patil">
+
+                    </div>
+
+
+                    <!-- ROLE -->
+
+                    <div>
+
+                        <label for="professionalRole">
+                            Professional Role
+                        </label>
+
+                        <input
+                            id="professionalRole"
+                            type="text"
+                            placeholder="ex: Lead Photographer">
+
+                    </div>
+
+
+                    <!-- EXPERIENCE -->
+
+                    <div>
+
+                        <label for="photographerExperience">
+                            Experience
+                        </label>
+
+                        <div class="sessions-input">
+
+                            <input
+                                id="photographerExperience"
+                                type="number"
+                                min="0"
+                                placeholder="ex: 5">
+
+                            <span class="sessions-unit">
+                                Years
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- SESSIONS -->
+
+                    <div>
+
+                        <label for="sessionsDone">
+                            Sessions Done
+                        </label>
+
+                        <div class="sessions-input">
+
+                            <input
+                                id="sessionsDone"
+                                type="number"
+                                min="0"
+                                placeholder="ex: 250">
+
+                            <span class="sessions-unit">
+                                Sessions
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- SPECIALIZATION -->
+
+                    <div>
+
+                        <label for="specialization">
+                            Specialization
+                        </label>
+
+                        <input
+                            id="specialization"
+                            type="text"
+                            placeholder="ex: Wedding Photography">
+
+                    </div>
+
+
+                    <!-- PHONE -->
+
+                    <div>
+
+                        <label for="phone">
+                            Phone Number
+                        </label>
+
+                        <input
+                            id="phone"
+                            type="tel"
+                            placeholder="ex: +91 9876543210">
+
+                    </div>
+
+                </div>
+
+
+                <!-- ABOUT -->
+
+                <div>
+
+                    <label for="about">
+                        About Yourself
+                    </label>
+
+                    <textarea
+                        id="about"
+                        rows="5"
+                        maxlength="300"
+                        placeholder="Tell clients about yourself, your experience and photography style."></textarea>
+
+                    <small
+                        class="char-counter"
+                        id="aboutCounter">
+                        0 / 300
+                    </small>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     ADDRESS
+========================================================= -->
+
+<section class="card">
+
+    <h2>
+
+        <i class="fa-solid fa-location-dot"></i>
+
+        Studio Address
+
+    </h2>
+
+    <label for="address">
+        Full Address
+    </label>
+
+    <textarea
+        id="address"
+        rows="4"
+        maxlength="300"
+        placeholder="Enter your complete studio address"></textarea>
+
+    <small
+        class="char-counter"
+        id="addressCounter">
+        0 / 300
+    </small>
+
+</section>
+
+
+<!-- =========================================================
+     SOCIAL MEDIA
+========================================================= -->
+
+<section class="card">
+
+    <h2>
+
+        <i class="fa-solid fa-share-nodes"></i>
+
+        Social Media
+
+    </h2>
+
+    <div class="grid-2">
+
+
+        <div>
+
+            <label for="instagram">
+                Instagram
+            </label>
+
+            <input
+                id="instagram"
+                type="text"
+                placeholder="ex: @yourprofile">
+
+        </div>
+
+
+        <div>
+
+            <label for="facebook">
+                Facebook
+            </label>
+
+            <input
+                id="facebook"
+                type="text"
+                placeholder="ex: yourprofile">
+
+        </div>
+
+
+        <div>
+
+            <label for="youtube">
+                YouTube
+            </label>
+
+            <input
+                id="youtube"
+                type="text"
+                placeholder="ex: @yourchannel">
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     BUTTON
+========================================================= -->
 
 <div class="buttons">
 
-<button
-type="submit"
-class="save-btn">
+    <button
+        type="submit"
+        class="save-btn">
 
-Save & Continue
+        Save & Continue
 
-<i class="fa-solid fa-arrow-right"></i>
+        <i class="fa-solid fa-arrow-right"></i>
 
-</button>
+    </button>
 
 </div>
+
 
 </form>
 
 </div>
 
-<script src="setup.js"></script>
+
+<script>
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const form = document.getElementById("profileForm");
+
+const photoInput = document.getElementById("photoInput");
+const photoPreview = document.getElementById("photoPreview");
+const uploadLabel = document.querySelector(".upload-label");
+
+
+/* =========================================================
+   PHOTO UPLOAD + PREVIEW
+========================================================= */
+
+photoInput.addEventListener("change", function(){
+
+    const file = this.files[0];
+
+    if(!file){
+        return;
+    }
+
+    /* Validate image */
+
+    if(!file.type.startsWith("image/")){
+
+        alert("Please select a valid image file.");
+
+        this.value = "";
+
+        return;
+    }
+
+
+    /* Limit file size to 5MB */
+
+    if(file.size > 5 * 1024 * 1024){
+
+        alert("Please select an image smaller than 5MB.");
+
+        this.value = "";
+
+        return;
+    }
+
+
+    /* Create preview */
+
+    const reader = new FileReader();
+
+    reader.onload = function(e){
+
+        photoPreview.src = e.target.result;
+
+        uploadLabel.classList.add("has-image");
+
+    };
+
+    reader.readAsDataURL(file);
+
+});
+
+
+/* =========================================================
+   CHARACTER COUNTERS
+========================================================= */
+
+function setupCounter(textareaId, counterId){
+
+    const textarea = document.getElementById(textareaId);
+    const counter = document.getElementById(counterId);
+
+    if(!textarea || !counter){
+        return;
+    }
+
+    function updateCounter(){
+
+        const length = textarea.value.length;
+
+        counter.textContent = `${length} / 300`;
+
+    }
+
+    textarea.addEventListener("input", updateCounter);
+
+    updateCounter();
+
+}
+
+
+setupCounter("about", "aboutCounter");
+setupCounter("address", "addressCounter");
+
+
+/* =========================================================
+   REMOVE ERROR
+========================================================= */
+
+function clearError(input){
+
+    input.classList.remove("input-error");
+
+}
+
+
+/* =========================================================
+   FORM SUBMISSION
+========================================================= */
+
+form.addEventListener("submit", async function(e){
+
+    e.preventDefault();
+
+
+    const studioName =
+        document.getElementById("studioName");
+
+    const studioTagline =
+        document.getElementById("studioTagline");
+
+    const photographerName =
+        document.getElementById("photographerName");
+
+    const professionalRole =
+        document.getElementById("professionalRole");
+
+    const experience =
+        document.getElementById("photographerExperience");
+
+    const sessionsDone =
+        document.getElementById("sessionsDone");
+
+    const specialization =
+        document.getElementById("specialization");
+
+    const about =
+        document.getElementById("about");
+
+    const phone =
+        document.getElementById("phone");
+
+    const address =
+        document.getElementById("address");
+
+    const instagram =
+        document.getElementById("instagram");
+
+    const facebook =
+        document.getElementById("facebook");
+
+    const youtube =
+        document.getElementById("youtube");
+
+
+    /* =====================================================
+       VALIDATION
+    ===================================================== */
+
+    const requiredFields = [
+
+        {
+            element:studioName,
+            message:"Please enter your studio name."
+        },
+
+        {
+            element:photographerName,
+            message:"Please enter photographer name."
+        }
+
+    ];
+
+
+    for(const field of requiredFields){
+
+        if(field.element.value.trim() === ""){
+
+            alert(field.message);
+
+            field.element.classList.add("input-error");
+
+            field.element.focus();
+
+            return;
+
+        }
+
+    }
+
+
+    /* Remove errors when typing */
+
+    [
+        studioName,
+        photographerName,
+        experience,
+        sessionsDone
+    ].forEach(input => {
+
+        input.addEventListener("input", function(){
+
+            clearError(this);
+
+        }, {once:true});
+
+    });
+
+
+    /* =====================================================
+       USER OBJECT
+    ===================================================== */
+
+    const user_object = {
+
+        std_name:
+            studioName.value.trim(),
+
+        std_tag:
+            studioTagline.value.trim(),
+
+        full_name:
+            photographerName.value.trim(),
+
+        professional_role:
+            professionalRole.value.trim(),
+
+        experience:
+            experience.value.trim(),
+
+        sessions_done:
+            sessionsDone.value.trim(),
+
+        specialization:
+            specialization.value.trim(),
+
+        about:
+            about.value.trim(),
+
+        phone:
+            phone.value.trim(),
+
+        std_address:
+            address.value.trim(),
+
+        insta_handle:
+            instagram.value.trim(),
+
+        facebook_handle:
+            facebook.value.trim(),
+
+        yt_handle:
+            youtube.value.trim()
+
+    };
+
+
+    const user_data =
+        JSON.stringify(user_object);
+
+
+    /* =====================================================
+       API REQUEST
+    ===================================================== */
+
+    try{
+
+        const response = await fetch(
+            "/api/update_user",
+            {
+                method:"POST",
+
+                headers:{
+                    "Content-Type":"application/json"
+                },
+
+                body:user_data
+            }
+        );
+
+
+        if(!response.ok){
+
+            throw new Error(
+                `Server error: ${response.status}`
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        /* =================================================
+           REDIRECT
+        ================================================= */
+
+        if(data.redirect){
+
+            window.location.href =
+                data.redirect;
+
+            return;
+
+        }
+
+
+        /* =================================================
+           ERROR
+        ================================================= */
+
+        if(data.error){
+
+            console.error(
+                "Error updating user:",
+                data.error
+            );
+
+            alert(
+                "Error updating profile: " +
+                data.error
+            );
+
+            return;
+
+        }
+
+
+        /* =================================================
+           SUCCESS
+        ================================================= */
+
+        const successMessage =
+            document.getElementById("successMessage");
+
+        successMessage.style.display = "block";
+
+        window.scrollTo({
+            top:0,
+            behavior:"smooth"
+        });
+
+
+    }
+
+    catch(error){
+
+        console.error(
+            "Profile update failed:",
+            error
+        );
+
+        alert(
+            "Something went wrong while saving your profile."
+        );
+
+    }
+
+});
+
+</script>
 
 </body>
 
