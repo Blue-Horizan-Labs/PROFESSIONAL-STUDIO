@@ -1,4 +1,3 @@
-
 // ============================================================
 // BOOKING FORM JAVASCRIPT
 // Professional Studio
@@ -11,38 +10,138 @@ document.addEventListener("DOMContentLoaded", function () {
     // ============================================================
 
     const form = document.getElementById("bookingForm");
-
     const serviceSelect = document.getElementById("serviceSelect");
-
     const packageSection = document.getElementById("packageSection");
     const packageDetails = document.getElementById("packageDetails");
     const selectedPackage = document.getElementById("selectedPackage");
-
     const durationBox = document.getElementById("durationBox");
     const durationText = document.getElementById("durationText");
-
     const locationInput = document.getElementById("location");
-
     const dateContainer = document.getElementById("dateTimeContainer");
     const totalHoursElement = document.getElementById("totalHours");
-
     const submitBtn = document.querySelector(".submit-btn");
     const successPopup = document.getElementById("successPopup");
-
     const multiDateInput = document.getElementById("multiDate");
+    const progressFill = document.getElementById("progressFill");
 
-    const packageCards =
-        document.querySelectorAll(".package-card");
-
-    // ============================================================
-    // BASIC SAFETY CHECK
-    // ============================================================
+    const packageCards = document.querySelectorAll(".package-card");
 
     if (!form) {
-        console.error("Booking form (#bookingForm) was not found.");
+        console.error("Booking form not found.");
         return;
     }
 
+    // ============================================================
+    // PACKAGE DATA
+    // ============================================================
+
+    const packageData = {
+
+        wedding: {
+            basic: {
+                name: "Wedding Basic",
+                price: "₹20,000",
+                features: [
+                    "Candid Photography",
+                    "Traditional Photography",
+                    "100 Edited Photos",
+                    "Online Gallery"
+                ]
+            },
+
+            premium: {
+                name: "Wedding Premium",
+                price: "₹45,000",
+                features: [
+                    "Cinematic Video",
+                    "Candid Photography",
+                    "Traditional Photography",
+                    "Drone Coverage",
+                    "300 Edited Photos"
+                ]
+            },
+
+            luxury: {
+                name: "Wedding Luxury",
+                price: "₹80,000",
+                features: [
+                    "Cinematic Video",
+                    "Candid Photography",
+                    "Traditional Photography",
+                    "Premium Album",
+                    "Pre-Wedding Shoot",
+                    "Unlimited Edited Photos"
+                ]
+            }
+        },
+
+        event: {
+            basic: {
+                name: "Event Basic",
+                price: "₹12,000",
+                features: [
+                    "4 Hours Coverage",
+                    "150 Edited Photos",
+                    "Online Gallery"
+                ]
+            },
+
+            premium: {
+                name: "Event Premium",
+                price: "₹25,000",
+                features: [
+                    "8 Hours Coverage",
+                    "Drone Coverage",
+                    "300 Edited Photos",
+                    "Online Gallery"
+                ]
+            }
+        },
+
+        portrait: {
+            basic: {
+                name: "Portrait Standard",
+                price: "₹3,000",
+                features: [
+                    "1 Hour Session",
+                    "20 Edited Photos",
+                    "Studio Lighting"
+                ]
+            },
+
+            premium: {
+                name: "Portrait Premium",
+                price: "₹6,000",
+                features: [
+                    "2 Hour Session",
+                    "50 Edited Photos",
+                    "Outdoor + Studio"
+                ]
+            }
+        },
+
+        prewedding: {
+            basic: {
+                name: "Pre-Wedding Basic",
+                price: "₹10,000",
+                features: [
+                    "2 Hours Coverage",
+                    "50 Edited Photos",
+                    "Outdoor Shoot"
+                ]
+            },
+
+            premium: {
+                name: "Pre-Wedding Premium",
+                price: "₹18,000",
+                features: [
+                    "4 Hours Coverage",
+                    "Drone Coverage",
+                    "120 Edited Photos"
+                ]
+            }
+        }
+    };
 
     // ============================================================
     // MULTI DATE PICKER
@@ -50,199 +149,132 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let datePicker = null;
 
-    if (multiDateInput) {
+    if (multiDateInput && typeof flatpickr === "function") {
 
-        if (typeof flatpickr === "function") {
+        datePicker = flatpickr(multiDateInput, {
 
-            datePicker = flatpickr(multiDateInput, {
+            mode: "multiple",
+            dateFormat: "d-m-Y",
+            allowInput: false,
 
-                mode: "multiple",
+            onChange: function (selectedDates) {
 
-                dateFormat: "d-m-Y",
+                dateContainer.innerHTML = "";
 
-                allowInput: false,
+                selectedDates.forEach(function (date) {
 
-                onChange: function (selectedDates) {
+                    const day = String(date.getDate()).padStart(2, "0");
+                    const month = String(date.getMonth() + 1).padStart(2, "0");
+                    const year = date.getFullYear();
 
-                    if (!dateContainer) return;
+                    const formattedDate = `${day}-${month}-${year}`;
 
-                    dateContainer.innerHTML = "";
+                    const row = document.createElement("div");
 
-                    selectedDates.forEach(function (date) {
+                    row.className = "date-time-row";
 
-                        // Consistent date formatting
-                        const day =
-                            String(date.getDate()).padStart(2, "0");
+                    row.innerHTML = `
+                        <h4>${formattedDate}</h4>
 
-                        const month =
-                            String(date.getMonth() + 1).padStart(2, "0");
+                        <div class="time-row">
 
-                        const year =
-                            date.getFullYear();
-
-                        const formattedDate =
-                            `${day}-${month}-${year}`;
-
-
-                        const row =
-                            document.createElement("div");
-
-                        row.className = "date-time-row";
-
-                        row.innerHTML = `
-
-                            <h4>${formattedDate}</h4>
-
-                            <div class="time-row">
-
-                                <input
-                                    type="time"
-                                    class="start-time"
-                                    required>
-
-                                <input
-                                    type="time"
-                                    class="end-time"
-                                    required>
-
+                            <div class="time-field">
+                                <label>Start Time</label>
+                                <input type="time"
+                                       class="start-time"
+                                       required>
                             </div>
 
-                            <div class="hours-box">
-
-                                Total Hours :
-                                <span class="hours">0</span>
-
+                            <div class="time-field">
+                                <label>End Time</label>
+                                <input type="time"
+                                       class="end-time"
+                                       required>
                             </div>
 
-                        `;
+                        </div>
 
-                        dateContainer.appendChild(row);
+                        <div class="hours-box">
+                            Total Hours:
+                            <span class="hours">0</span>
+                        </div>
+                    `;
 
+                    dateContainer.appendChild(row);
 
-                        const startInput =
-                            row.querySelector(".start-time");
+                    const startInput =
+                        row.querySelector(".start-time");
 
-                        const endInput =
-                            row.querySelector(".end-time");
+                    const endInput =
+                        row.querySelector(".end-time");
 
-                        const hours =
-                            row.querySelector(".hours");
+                    const hours =
+                        row.querySelector(".hours");
 
+                    function calculateHours() {
 
-                        function calculateHours() {
-
-                            if (
-                                !startInput ||
-                                !endInput ||
-                                !hours
-                            ) {
-                                return;
-                            }
-
-                            if (
-                                !startInput.value ||
-                                !endInput.value
-                            ) {
-                                hours.innerText = "0";
-                                updateTotalHours();
-                                return;
-                            }
-
-
-                            const startParts =
-                                startInput.value.split(":");
-
-                            const endParts =
-                                endInput.value.split(":");
-
-
-                            let startMinutes =
-                                parseInt(startParts[0]) * 60 +
-                                parseInt(startParts[1]);
-
-                            let endMinutes =
-                                parseInt(endParts[0]) * 60 +
-                                parseInt(endParts[1]);
-
-
-                            let difference =
-                                endMinutes - startMinutes;
-
-
-                            // Overnight timing support
-                            if (difference < 0) {
-
-                                difference += 24 * 60;
-
-                            }
-
-
-                            // Same start and end time
-                            if (difference === 0) {
-
-                                hours.innerText = "Invalid";
-
-                                updateTotalHours();
-
-                                return;
-
-                            }
-
-
-                            const calculatedHours =
-                                difference / 60;
-
-
-                            hours.innerText =
-                                calculatedHours.toFixed(1);
-
-
+                        if (!startInput.value || !endInput.value) {
+                            hours.innerText = "0";
                             updateTotalHours();
-
+                            return;
                         }
 
+                        const startParts = startInput.value.split(":");
+                        const endParts = endInput.value.split(":");
 
-                        if (startInput) {
+                        let startMinutes =
+                            parseInt(startParts[0]) * 60 +
+                            parseInt(startParts[1]);
 
-                            startInput.addEventListener(
-                                "change",
-                                calculateHours
-                            );
+                        let endMinutes =
+                            parseInt(endParts[0]) * 60 +
+                            parseInt(endParts[1]);
 
+                        let difference =
+                            endMinutes - startMinutes;
+
+                        // Allow overnight sessions
+                        if (difference < 0) {
+                            difference += 24 * 60;
                         }
 
-
-                        if (endInput) {
-
-                            endInput.addEventListener(
-                                "change",
-                                calculateHours
-                            );
-
+                        if (difference === 0) {
+                            hours.innerText = "Invalid";
+                            updateTotalHours();
+                            return;
                         }
 
-                    });
+                        const calculatedHours =
+                            difference / 60;
 
+                        hours.innerText =
+                            calculatedHours.toFixed(1);
 
-                    updateTotalHours();
+                        updateTotalHours();
+                    }
 
-                }
+                    startInput.addEventListener(
+                        "change",
+                        calculateHours
+                    );
 
-            });
+                    endInput.addEventListener(
+                        "change",
+                        calculateHours
+                    );
+                });
 
-        } else {
+                updateTotalHours();
+                updateProgress();
+            }
+        });
 
-            console.error(
-                "Flatpickr is not loaded. Check your Flatpickr CSS/JS CDN."
-            );
+    } else if (multiDateInput) {
 
-            // Keep the rest of the website working.
-            multiDateInput.removeAttribute("readonly");
+        console.error("Flatpickr is not loaded.");
 
-        }
-
+        multiDateInput.removeAttribute("readonly");
     }
-
 
     // ============================================================
     // TOTAL HOURS
@@ -254,28 +286,117 @@ document.addEventListener("DOMContentLoaded", function () {
 
         let total = 0;
 
+        document.querySelectorAll(".hours").forEach(function (hour) {
 
-        document
-            .querySelectorAll(".hours")
-            .forEach(function (hour) {
+            const value = parseFloat(hour.innerText);
 
-                const value =
-                    parseFloat(hour.innerText);
+            if (!isNaN(value)) {
+                total += value;
+            }
+        });
 
-                if (!isNaN(value)) {
-
-                    total += value;
-
-                }
-
-            });
-
-
-        totalHoursElement.innerText =
-            total.toFixed(1);
-
+        totalHoursElement.innerText = total.toFixed(1);
     }
 
+    // ============================================================
+    // PACKAGE DISPLAY
+    // ============================================================
+
+    function loadPackages(service) {
+
+        if (!packageSection) return;
+
+        packageSection.style.display = "none";
+
+        if (packageDetails) {
+            packageDetails.innerHTML = "";
+        }
+
+        if (selectedPackage) {
+            selectedPackage.value = "";
+        }
+
+        packageCards.forEach(function (card) {
+            card.classList.remove("active");
+        });
+
+        if (!packageData[service]) {
+            return;
+        }
+
+        const packages = packageData[service];
+
+        const packageOptions =
+            packageSection.querySelector(".package-options");
+
+        if (!packageOptions) return;
+
+        packageOptions.innerHTML = "";
+
+        Object.keys(packages).forEach(function (key, index) {
+
+            const pkg = packages[key];
+
+            const card = document.createElement("div");
+
+            card.className = "package-card";
+
+            card.dataset.package = key;
+
+            card.innerHTML = `
+
+                ${index === 1 ? `
+                    <span class="badge">
+                        Most Popular
+                    </span>
+                ` : ""}
+
+                <h4>${pkg.name}</h4>
+
+                <div class="package-price">
+                    ${pkg.price}
+                </div>
+
+                <p>
+                    ${pkg.features.slice(0, 2).join(" • ")}
+                </p>
+            `;
+
+            packageOptions.appendChild(card);
+
+            card.addEventListener("click", function () {
+
+                packageOptions
+                    .querySelectorAll(".package-card")
+                    .forEach(function (c) {
+                        c.classList.remove("active");
+                    });
+
+                card.classList.add("active");
+
+                selectedPackage.value = key;
+
+                packageDetails.innerHTML = `
+
+                    <h4>${pkg.name}</h4>
+
+                    <p>
+                        <strong>Price:</strong> ${pkg.price}
+                    </p>
+
+                    <ul>
+                        ${pkg.features.map(function (feature) {
+                            return `<li>✔ ${feature}</li>`;
+                        }).join("")}
+                    </ul>
+                `;
+
+                updateProgress();
+            });
+        });
+
+        packageSection.style.display = "block";
+    }
 
     // ============================================================
     // SERVICE SELECTION
@@ -283,205 +404,57 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (serviceSelect) {
 
-        serviceSelect.addEventListener(
-            "change",
-            function () {
+        serviceSelect.addEventListener("change", function () {
 
-                if (packageSection) {
+            const service = serviceSelect.value;
 
-                    packageSection.style.display = "none";
-
-                }
-
-                if (packageDetails) {
-
-                    packageDetails.innerHTML = "";
-
-                }
-
-                if (durationBox) {
-
-                    durationBox.style.display = "none";
-
-                }
-
-                if (selectedPackage) {
-
-                    selectedPackage.value = "";
-
-                }
-
-
-                // Remove old package selection
-                packageCards.forEach(function (card) {
-
-                    card.classList.remove("active");
-
-                });
-
-
-                let message = "";
-
-
-                switch (serviceSelect.value) {
-
-                    case "select service":
-
-                        break;
-
-
-                    case "wedding":
-
-                        message =
-                            "Expected duration: 3–5 days (extra 1–2 days possible).";
-
-                        if (packageSection) {
-
-                            packageSection.style.display = "block";
-
-                        }
-
-                        break;
-
-
-                    case "event":
-
-                        message =
-                            "Expected duration: 1 day event coverage.";
-
-                        break;
-
-
-                    case "portrait":
-
-                        message =
-                            "Expected duration: Few hours (single day session).";
-
-                        break;
-
-
-                    case "prewedding":
-
-                        message =
-                            "Expected duration: 1–2 days shoot.";
-
-                        break;
-
-
-                    default:
-
-                        message = "";
-
-                }
-
-
-                if (
-                    message !== "" &&
-                    durationText &&
-                    durationBox
-                ) {
-
-                    durationText.innerText =
-                        message;
-
-                    durationBox.style.display =
-                        "block";
-
-                }
-
-            }
-        );
-
-    }
-
-
-    // ============================================================
-    // PACKAGE SELECTION
-    // ============================================================
-
-    packageCards.forEach(function (card) {
-
-        card.addEventListener("click", function () {
-
-            packageCards.forEach(function (c) {
-
-                c.classList.remove("active");
-
-            });
-
-
-            card.classList.add("active");
-
-
-            const pkg =
-                card.dataset.package;
-
-
-            if (selectedPackage) {
-
-                selectedPackage.value =
-                    pkg;
-
+            if (durationBox) {
+                durationBox.style.display = "none";
             }
 
+            if (service === "") {
+                loadPackages("");
+                updateProgress();
+                return;
+            }
 
-            let details = "";
+            loadPackages(service);
 
+            let message = "";
 
-            switch (pkg) {
+            switch (service) {
 
-                case "basic":
-
-                    details = `
-                        <ul>
-                            <li>Candid Photography</li>
-                            <li>Traditional Photography</li>
-                        </ul>
-                    `;
-
+                case "wedding":
+                    message =
+                        "Expected duration: 3–5 days. Extra 1–2 days may be required depending on the event.";
                     break;
 
-
-                case "premium":
-
-                    details = `
-                        <ul>
-                            <li>Cinematic Video</li>
-                            <li>Candid Photography</li>
-                            <li>Traditional Photography</li>
-                        </ul>
-                    `;
-
+                case "event":
+                    message =
+                        "Expected duration: 1 day event coverage.";
                     break;
 
-
-                case "luxury":
-
-                    details = `
-                        <ul>
-                            <li>Cinematic Video</li>
-                            <li>Candid Photography</li>
-                            <li>Traditional Photography</li>
-                            <li>Pre-Wedding Shoot</li>
-                        </ul>
-                    `;
-
+                case "portrait":
+                    message =
+                        "Expected duration: Few hours, usually a single-day session.";
                     break;
 
+                case "prewedding":
+                    message =
+                        "Expected duration: 1–2 days depending on the selected shoot plan.";
+                    break;
             }
 
+            if (message && durationText && durationBox) {
 
-            if (packageDetails) {
+                durationText.innerText = message;
 
-                packageDetails.innerHTML =
-                    details;
-
+                durationBox.style.display = "block";
             }
 
+            updateProgress();
         });
-
-    });
-
+    }
 
     // ============================================================
     // GPS LOCATION
@@ -490,45 +463,29 @@ document.addEventListener("DOMContentLoaded", function () {
     window.getLocation = function () {
 
         if (!locationInput) {
-
             alert("Location field was not found.");
-
             return;
-
         }
 
-
-        // Browser support check
         if (!("geolocation" in navigator)) {
-
             alert(
                 "Geolocation is not supported by this browser."
             );
-
             return;
-
         }
 
-
-        // HTTPS check
         if (
             window.location.protocol !== "https:" &&
             window.location.hostname !== "localhost" &&
             window.location.hostname !== "127.0.0.1"
         ) {
-
             alert(
-                "GPS requires a secure HTTPS connection. Please open this website using HTTPS."
+                "GPS requires a secure HTTPS connection."
             );
-
             return;
-
         }
 
-
-        locationInput.value =
-            "Fetching location...";
-
+        locationInput.value = "Fetching location...";
 
         navigator.geolocation.getCurrentPosition(
 
@@ -540,620 +497,464 @@ document.addEventListener("DOMContentLoaded", function () {
                 const longitude =
                     position.coords.longitude;
 
-
                 locationInput.value =
                     `${latitude}, ${longitude}`;
 
-
-                // Trigger input/change events
-                locationInput.dispatchEvent(
-                    new Event("input", {
-                        bubbles: true
-                    })
-                );
-
-
-                locationInput.dispatchEvent(
-                    new Event("change", {
-                        bubbles: true
-                    })
-                );
-
+                updateProgress();
             },
-
 
             function (error) {
 
                 locationInput.value = "";
 
-
                 switch (error.code) {
 
                     case error.PERMISSION_DENIED:
-
                         alert(
-                            "Location permission was denied. Please allow location access in your browser settings."
+                            "Location permission was denied. Please allow location access."
                         );
-
                         break;
-
 
                     case error.POSITION_UNAVAILABLE:
-
                         alert(
-                            "Your current location could not be determined. Please try again."
+                            "Your current location could not be determined."
                         );
-
                         break;
 
-
                     case error.TIMEOUT:
-
                         alert(
                             "Location request timed out. Please try again."
                         );
-
                         break;
 
-
                     default:
-
                         alert(
                             "Unable to fetch your location. Please enter it manually."
                         );
-
                 }
-
             },
 
-
             {
-
                 enableHighAccuracy: true,
-
                 timeout: 15000,
-
                 maximumAge: 0
-
             }
-
         );
-
     };
-
-
-    // ============================================================
-    // SUCCESS POPUP
-    // ============================================================
-
-    function showSuccess() {
-
-        if (!successPopup) return;
-
-
-        successPopup.style.display =
-            "block";
-
-
-        setTimeout(function () {
-
-            successPopup.style.display =
-                "none";
-
-        }, 4000);
-
-    }
-
 
     // ============================================================
     // FORM SUBMIT
     // ============================================================
 
-    form.addEventListener(
-        "submit",
-        function (e) {
+    form.addEventListener("submit", function (e) {
 
-            e.preventDefault();
+        e.preventDefault();
 
+        const nameElement =
+            document.getElementById("fullName");
 
-            const phoneElement =
-                document.getElementById("phone");
+        const phoneElement =
+            document.getElementById("phone");
 
-            const emailElement =
-                document.getElementById("email");
+        const emailElement =
+            document.getElementById("email");
 
-            const nameElement =
-                document.getElementById("name");
+        const name =
+            nameElement
+                ? nameElement.value.trim()
+                : "";
 
+        const phone =
+            phoneElement
+                ? phoneElement.value.trim()
+                : "";
 
-            const phone =
-                phoneElement
-                    ? phoneElement.value.trim()
-                    : "";
+        const email =
+            emailElement
+                ? emailElement.value.trim()
+                : "";
 
+        const location =
+            locationInput
+                ? locationInput.value.trim()
+                : "";
 
-            const email =
-                emailElement
-                    ? emailElement.value.trim()
-                    : "";
+        // ========================================================
+        // REQUIRED DETAILS
+        // ========================================================
 
+        if (!name) {
+            alert("Please enter your full name.");
+            return;
+        }
 
-            const location =
-                locationInput
-                    ? locationInput.value.trim()
-                    : "";
+        // ========================================================
+        // PHONE VALIDATION
+        // ========================================================
 
+        const cleanPhone =
+            phone.replace(/\D/g, "");
 
-            // ====================================================
-            // PHONE VALIDATION
-            // ====================================================
+        if (
+            cleanPhone.length < 10 ||
+            cleanPhone.length > 15
+        ) {
+            alert("Please enter a valid phone number.");
+            return;
+        }
 
-            const cleanPhone =
-                phone.replace(/\D/g, "");
+        // ========================================================
+        // EMAIL VALIDATION
+        // ========================================================
 
+        const emailRegex =
+            /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailRegex.test(email)) {
+            alert("Please enter a valid email address.");
+            return;
+        }
+
+        // ========================================================
+        // LOCATION
+        // ========================================================
+
+        if (!location) {
+            alert("Please enter your event location.");
+            return;
+        }
+
+        // ========================================================
+        // SERVICE
+        // ========================================================
+
+        if (!serviceSelect || !serviceSelect.value) {
+            alert("Please select a service.");
+            return;
+        }
+
+        // ========================================================
+        // PACKAGE
+        // ========================================================
+
+        if (
+            selectedPackage &&
+            selectedPackage.value === ""
+        ) {
+            alert("Please select a package.");
+            return;
+        }
+
+        // ========================================================
+        // DATES
+        // ========================================================
+
+        const selectedDateRows =
+            document.querySelectorAll(".date-time-row");
+
+        if (selectedDateRows.length === 0) {
+            alert("Please select at least one date.");
+            return;
+        }
+
+        // ========================================================
+        // TIME VALIDATION
+        // ========================================================
+
+        let invalidTime = false;
+
+        selectedDateRows.forEach(function (row) {
+
+            const start =
+                row.querySelector(".start-time");
+
+            const end =
+                row.querySelector(".end-time");
 
             if (
-                cleanPhone.length < 10 ||
-                cleanPhone.length > 15
+                !start ||
+                !end ||
+                !start.value ||
+                !end.value
             ) {
-
-                alert(
-                    "Please enter a valid phone number."
-                );
-
+                invalidTime = true;
                 return;
-
             }
 
+            if (start.value === end.value) {
+                invalidTime = true;
+            }
+        });
 
-            // ====================================================
-            // EMAIL VALIDATION
-            // ====================================================
+        if (invalidTime) {
+            alert(
+                "Please select valid start and end times for every date."
+            );
+            return;
+        }
 
-            const emailRegex =
-                /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        // ========================================================
+        // PACKAGE INFORMATION
+        // ========================================================
 
+        const service =
+            serviceSelect.value;
 
-            if (!emailRegex.test(email)) {
+        const packageKey =
+            selectedPackage
+                ? selectedPackage.value
+                : "";
 
-                alert(
-                    "Please enter a valid email address."
-                );
+        const selectedPkg =
+            packageData[service] &&
+            packageData[service][packageKey];
 
-                return;
+        const packageName =
+            selectedPkg
+                ? selectedPkg.name
+                : "";
 
+        const packagePrice =
+            selectedPkg
+                ? selectedPkg.price
+                : "₹0";
+
+        // ========================================================
+        // FIRST DATE
+        // ========================================================
+
+        const firstDate =
+            selectedDateRows[0];
+
+        let bookingDate = "";
+        let bookingTime = "";
+
+        if (firstDate) {
+
+            const dateHeading =
+                firstDate.querySelector("h4");
+
+            const startTime =
+                firstDate.querySelector(".start-time");
+
+            if (dateHeading) {
+                bookingDate =
+                    dateHeading.innerText;
             }
 
+            if (startTime) {
+                bookingTime =
+                    startTime.value;
+            }
+        }
 
-            // ====================================================
-            // LOCATION VALIDATION
-            // ====================================================
+        // ========================================================
+        // TOTAL HOURS
+        // ========================================================
 
-            if (location === "") {
+        const totalHours =
+            totalHoursElement
+                ? totalHoursElement.innerText
+                : "0";
 
-                alert(
-                    "Please enter your event location."
-                );
+        // ========================================================
+        // OTHER DETAILS
+        // ========================================================
 
-                return;
+        const instagramElement =
+            document.getElementById("instagram");
 
+        const instagram =
+            instagramElement
+                ? instagramElement.value.trim()
+                : "-";
+
+        const messageElement =
+            document.getElementById("message");
+
+        const message =
+            messageElement
+                ? messageElement.value.trim()
+                : "";
+
+        const guestsElement =
+            document.querySelector(
+                'input[type="number"]'
+            );
+
+        const guests =
+            guestsElement
+                ? guestsElement.value
+                : "";
+
+        // ========================================================
+        // BOOKING OBJECT
+        // ========================================================
+
+        const booking = {
+
+            id: "BK-" + Date.now(),
+
+            client: name,
+
+            clientType: "Photography Client",
+
+            phone: phone,
+
+            email: email,
+
+            instagram: instagram || "-",
+
+            service:
+                serviceSelect.options[
+                    serviceSelect.selectedIndex
+                ].text,
+
+            serviceType: service,
+
+            package: packageName,
+
+            packageKey: packageKey,
+
+            packagePrice: packagePrice,
+
+            date: bookingDate,
+
+            time: bookingTime,
+
+            totalHours: totalHours,
+
+            location: location,
+
+            guests: guests,
+
+            status: "Pending",
+
+            payment: "Pending",
+
+            advance: "₹0",
+
+            remaining: packagePrice,
+
+            image: "images/profile.jpg",
+
+            equipment: "",
+
+            notes: message
+
+        };
+
+        // ========================================================
+        // SAVE BOOKING
+        // ========================================================
+
+        let bookings = [];
+
+        try {
+
+            bookings =
+                JSON.parse(
+                    localStorage.getItem("bookings")
+                ) || [];
+
+            if (!Array.isArray(bookings)) {
+                bookings = [];
             }
 
+        } catch (error) {
 
-            // ====================================================
-            // SERVICE VALIDATION
-            // ====================================================
+            console.error(
+                "Unable to read bookings:",
+                error
+            );
 
-            if (
-                !serviceSelect ||
-                !serviceSelect.value ||
-                serviceSelect.value === "select service"
-            ) {
+            bookings = [];
+        }
 
-                alert(
-                    "Please select a service."
-                );
+        bookings.unshift(booking);
 
-                return;
+        try {
 
+            localStorage.setItem(
+                "bookings",
+                JSON.stringify(bookings)
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Unable to save booking:",
+                error
+            );
+
+            alert(
+                "Unable to save booking. Please try again."
+            );
+
+            return;
+        }
+
+        // ========================================================
+        // SUCCESS
+        // ========================================================
+
+        if (submitBtn) {
+
+            submitBtn.disabled = true;
+
+            submitBtn.innerText =
+                "Booking Submitted ✓";
+        }
+
+        if (successPopup) {
+
+            successPopup.style.display =
+                "block";
+        }
+
+        setTimeout(function () {
+
+            if (successPopup) {
+                successPopup.style.display =
+                    "none";
             }
-
-
-            // ====================================================
-            // PACKAGE VALIDATION
-            // ====================================================
-
-            if (
-                serviceSelect.value === "wedding" &&
-                selectedPackage &&
-                selectedPackage.value === ""
-            ) {
-
-                alert(
-                    "Please select a wedding package."
-                );
-
-                return;
-
-            }
-
-
-            // ====================================================
-            // DATE VALIDATION
-            // ====================================================
-
-            const selectedDateRows =
-                document.querySelectorAll(
-                    ".date-time-row"
-                );
-
-
-            if (selectedDateRows.length === 0) {
-
-                alert(
-                    "Please select at least one date."
-                );
-
-                return;
-
-            }
-
-
-            // Make sure all selected dates have valid times
-            let invalidTime = false;
-
-
-            selectedDateRows.forEach(function (row) {
-
-                const start =
-                    row.querySelector(".start-time");
-
-                const end =
-                    row.querySelector(".end-time");
-
-
-                if (
-                    !start ||
-                    !end ||
-                    !start.value ||
-                    !end.value
-                ) {
-
-                    invalidTime = true;
-
-                }
-
-            });
-
-
-            if (invalidTime) {
-
-                alert(
-                    "Please select start and end time for every date."
-                );
-
-                return;
-
-            }
-
-
-            // ====================================================
-            // LOADING BUTTON
-            // ====================================================
 
             if (submitBtn) {
 
-                submitBtn.disabled = true;
+                submitBtn.disabled = false;
 
                 submitBtn.innerText =
-                    "Submitting...";
-
+                    "Submit Booking Request";
             }
 
+            form.reset();
 
-            // ====================================================
-            // SAVE BOOKING
-            // ====================================================
-
-            const firstDate =
-                selectedDateRows[0];
-
-
-            let bookingDate = "";
-            let bookingTime = "";
-
-
-            if (firstDate) {
-
-                const dateHeading =
-                    firstDate.querySelector("h4");
-
-                const startTime =
-                    firstDate.querySelector(".start-time");
-
-
-                if (dateHeading) {
-
-                    bookingDate =
-                        dateHeading.innerText;
-
-                }
-
-
-                if (startTime) {
-
-                    bookingTime =
-                        startTime.value;
-
-                }
-
+            if (datePicker) {
+                datePicker.clear();
             }
 
+            dateContainer.innerHTML = "";
 
-            // ====================================================
-            // OPTIONAL INSTAGRAM FIELD
-            // ====================================================
+            packageSection.style.display = "none";
 
-            const instagramElement =
-                document.getElementById("instagram");
+            packageDetails.innerHTML = "";
 
+            durationBox.style.display = "none";
 
-            const instagram =
-                instagramElement
-                    ? instagramElement.value.trim()
-                    : "-";
+            selectedPackage.value = "";
 
+            updateTotalHours();
 
-            // ====================================================
-            // PACKAGE PRICE
-            // ====================================================
+            updateProgress();
 
-            const packagePriceElement =
-                document.getElementById("packagePrice");
+            clearFormStorage();
 
+            // IMPORTANT:
+            // Stay on booking page.
+            // Do NOT redirect to client.html.
 
-            const packagePrice =
-                packagePriceElement
-                    ? packagePriceElement.value
-                    : "₹0";
-
-
-            // ====================================================
-            // BOOKING OBJECT
-            // ====================================================
-
-            const booking = {
-
-                id:
-                    "BK-" + Date.now(),
-
-
-                client:
-                    nameElement
-                        ? nameElement.value.trim()
-                        : "",
-
-
-                clientType:
-                    "Photography Client",
-
-
-                phone:
-                    phone,
-
-
-                email:
-                    email,
-
-
-                instagram:
-                    instagram || "-",
-
-
-                service:
-                    serviceSelect.options[
-                        serviceSelect.selectedIndex
-                    ]
-                        ? serviceSelect.options[
-                            serviceSelect.selectedIndex
-                        ].text
-                        : serviceSelect.value,
-
-
-                package:
-                    selectedPackage
-                        ? selectedPackage.value
-                        : "",
-
-
-                date:
-                    bookingDate,
-
-
-                time:
-                    bookingTime,
-
-
-                location:
-                    location,
-
-
-                status:
-                    "Pending",
-
-
-                payment:
-                    "Pending",
-
-
-                advance:
-                    "₹0",
-
-
-                remaining:
-                    packagePrice || "₹0",
-
-
-                image:
-                    "images/profile.jpg",
-
-
-                equipment:
-                    "",
-
-
-                notes:
-                    ""
-
-            };
-
-
-            // ====================================================
-            // LOCAL STORAGE
-            // ====================================================
-
-            let bookings = [];
-
-
-            try {
-
-                bookings =
-                    JSON.parse(
-                        localStorage.getItem("bookings")
-                    ) || [];
-
-
-                if (!Array.isArray(bookings)) {
-
-                    bookings = [];
-
-                }
-
-            } catch (error) {
-
-                console.error(
-                    "Unable to read bookings from localStorage:",
-                    error
-                );
-
-                bookings = [];
-
-            }
-
-
-            bookings.unshift(booking);
-
-
-            try {
-
-                localStorage.setItem(
-                    "bookings",
-                    JSON.stringify(bookings)
-                );
-
-            } catch (error) {
-
-                console.error(
-                    "Unable to save booking:",
-                    error
-                );
-
-            }
-
-
-            // ====================================================
-            // SUCCESS
-            // ====================================================
-
-            setTimeout(function () {
-
-                showSuccess();
-
-
-                if (submitBtn) {
-
-                    submitBtn.disabled = false;
-
-                    submitBtn.innerText =
-                        "Submit Booking Request";
-
-                }
-
-
-                form.reset();
-
-
-                // Clear date picker
-                if (datePicker) {
-
-                    datePicker.clear();
-
-                }
-
-
-                if (dateContainer) {
-
-                    dateContainer.innerHTML = "";
-
-                }
-
-
-                if (packageSection) {
-
-                    packageSection.style.display =
-                        "none";
-
-                }
-
-
-                if (packageDetails) {
-
-                    packageDetails.innerHTML =
-                        "";
-
-                }
-
-
-                if (durationBox) {
-
-                    durationBox.style.display =
-                        "none";
-
-                }
-
-
-                if (selectedPackage) {
-
-                    selectedPackage.value =
-                        "";
-
-                }
-
-
-                packageCards.forEach(function (card) {
-
-                    card.classList.remove("active");
-
-                });
-
-
-                updateTotalHours();
-
-
-                // Clear form autosave
-                clearFormStorage();
-
-
-                // Go to client page
-                window.location.href =
-                    "client.html";
-
-
-            }, 1200);
-
-        }
-    );
-
+        }, 1500);
+    });
 
     // ============================================================
     // PROGRESS BAR
@@ -1164,19 +965,12 @@ document.addEventListener("DOMContentLoaded", function () {
             "#bookingForm input, #bookingForm select, #bookingForm textarea"
         );
 
-
     function updateProgress() {
-
-        const progressFill =
-            document.getElementById("progressFill");
-
 
         if (!progressFill) return;
 
-
         let filled = 0;
         let total = 0;
-
 
         formFields.forEach(function (field) {
 
@@ -1185,38 +979,27 @@ document.addEventListener("DOMContentLoaded", function () {
                 field.type === "button" ||
                 field.disabled
             ) {
-
                 return;
-
             }
 
-
             total++;
-
 
             if (
                 typeof field.value === "string" &&
                 field.value.trim() !== ""
             ) {
-
                 filled++;
-
             }
-
         });
-
 
         const percentage =
             total > 0
                 ? (filled / total) * 100
                 : 0;
 
-
         progressFill.style.width =
             Math.min(percentage, 100) + "%";
-
     }
-
 
     formFields.forEach(function (field) {
 
@@ -1225,47 +1008,39 @@ document.addEventListener("DOMContentLoaded", function () {
             updateProgress
         );
 
-
         field.addEventListener(
             "change",
             updateProgress
         );
-
     });
 
-
     // ============================================================
-    // LOCAL STORAGE - AUTO SAVE
+    // AUTO SAVE
     // ============================================================
 
     formFields.forEach(function (field) {
 
         if (!field.id) return;
 
-
         try {
 
             const savedValue =
                 localStorage.getItem(field.id);
 
-
-            if (savedValue !== null) {
-
-                field.value =
-                    savedValue;
-
+            if (
+                savedValue !== null &&
+                field.type !== "date"
+            ) {
+                field.value = savedValue;
             }
 
         } catch (error) {
 
             console.error(
                 "Unable to load saved field:",
-                field.id,
-                error
+                field.id
             );
-
         }
-
 
         field.addEventListener(
             "input",
@@ -1282,15 +1057,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     console.error(
                         "Unable to save field:",
-                        field.id,
-                        error
+                        field.id
                     );
-
                 }
-
             }
         );
-
 
         field.addEventListener(
             "change",
@@ -1307,20 +1078,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     console.error(
                         "Unable to save field:",
-                        field.id,
-                        error
+                        field.id
                     );
-
                 }
-
             }
         );
-
     });
 
-
     // ============================================================
-    // CLEAR STORAGE AFTER SUCCESS
+    // CLEAR AUTOSAVE
     // ============================================================
 
     function clearFormStorage() {
@@ -1328,7 +1094,6 @@ document.addEventListener("DOMContentLoaded", function () {
         formFields.forEach(function (field) {
 
             if (!field.id) return;
-
 
             try {
 
@@ -1340,23 +1105,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 console.error(
                     "Unable to clear saved field:",
-                    field.id,
-                    error
+                    field.id
                 );
-
             }
-
         });
-
-    
-
+    }
 
     // ============================================================
-    // INITIAL PAGE LOAD
+    // INITIAL LOAD
     // ============================================================
 
     updateProgress();
-
     updateTotalHours();
 
-    }});
+});

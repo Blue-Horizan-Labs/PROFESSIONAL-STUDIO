@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,7 +10,7 @@
     <title>Book Photography Session</title>
 
     <meta name="theme-color"
-          content="#260573">
+          content="#111111">
 
     <meta name="description"
           content="Book photography sessions easily">
@@ -22,15 +21,11 @@
     <link rel="stylesheet"
           href="booking.css">
 
-
-    <!-- ================================
-         FLATPICKR CSS
-    ================================= -->
-<link rel="stylesheet"
+    <!-- FLATPICKR CSS -->
+    <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
 </head>
-
 
 <body>
 
@@ -44,77 +39,63 @@
             Select your service and fill in the details below.
         </p>
 
-
         <form id="bookingForm">
 
+            <!-- SERVICE -->
 
-            <!-- ================================
-                 SERVICE SELECTION
-            ================================= -->
+            <label for="serviceSelect">
+                Type of Service
+            </label>
 
-            <label>Select Service</label>
+            <div class="custom-select">
 
-            <div class="select-group">
+                <select
+                    id="serviceSelect"
+                    name="service"
+                    required>
 
-                <label for="serviceSelect">
-                    Type of Service
-                </label>
+                    <option value="">
+                        Select Service
+                    </option>
 
-                <div class="custom-select">
+                    <option value="wedding">
+                        Wedding Photography
+                    </option>
 
-                    <select
-                        id="serviceSelect"
-                        name="service"
-                        required>
+                    <option value="event">
+                        Event Photography
+                    </option>
 
-                        <option value="">
-                            Select Service
-                        </option>
+                    <option value="portrait">
+                        Portrait Session
+                    </option>
 
-                        <option value="wedding">
-                            Wedding Photography
-                        </option>
+                    <option value="prewedding">
+                        Pre-Wedding Shoot
+                    </option>
 
-                        <option value="event">
-                            Event Photography
-                        </option>
-
-                        <option value="portrait">
-                            Portrait Session
-                        </option>
-
-                        <option value="prewedding">
-                            Pre-Wedding Shoot
-                        </option>
-
-                    </select>
-
-                </div>
+                </select>
 
             </div>
 
 
-            <!-- ================================
-                 PACKAGE SECTION
-            ================================= -->
+            <!-- PACKAGE -->
 
             <div
                 id="packageSection"
                 class="package-section">
 
-                <label>Select Package</label>
-
+                <label>
+                    Select Package
+                </label>
 
                 <div class="package-options">
-
 
                     <div
                         class="package-card"
                         data-package="basic">
 
-                        <h4>
-                            Wedding Basic
-                        </h4>
+                        <h4>Wedding Basic</h4>
 
                         <p>
                             Candid + Traditional
@@ -131,9 +112,7 @@
                             Most Popular
                         </span>
 
-                        <h4>
-                            Wedding Premium
-                        </h4>
+                        <h4>Wedding Premium</h4>
 
                         <p>
                             Cinematic + Candid + Traditional
@@ -146,16 +125,13 @@
                         class="package-card"
                         data-package="luxury">
 
-                        <h4>
-                            Wedding Luxury
-                        </h4>
+                        <h4>Wedding Luxury</h4>
 
                         <p>
                             All Included + Pre-Wedding
                         </p>
 
                     </div>
-
 
                 </div>
 
@@ -174,9 +150,7 @@
             </div>
 
 
-            <!-- ================================
-                 DURATION
-            ================================= -->
+            <!-- DURATION -->
 
             <div
                 id="durationBox"
@@ -187,29 +161,25 @@
             </div>
 
 
-            <!-- ================================
-                 DATES
-            ================================= -->
+            <!-- DATES -->
 
             <label for="multiDate">
                 Select Event Dates
             </label>
 
-
             <input
                 type="text"
                 id="multiDate"
                 name="eventDates"
-                placeholder="Select multiple dates"
+                placeholder="Select event dates"
+                autocomplete="off"
                 required>
 
 
             <div id="dateTimeContainer"></div>
 
 
-            <div
-                class="hours-box"
-                style="margin-top:15px;">
+            <div class="hours-box">
 
                 Total Combined Hours:
 
@@ -220,20 +190,18 @@
             </div>
 
 
-            <!-- ================================
-                 LOCATION
-            ================================= -->
+            <!-- LOCATION -->
 
             <label for="location">
                 Event Location
             </label>
-
 
             <input
                 type="text"
                 id="location"
                 name="location"
                 placeholder="Enter location manually"
+                autocomplete="street-address"
                 required>
 
 
@@ -247,22 +215,21 @@
             </button>
 
 
-            <!-- ================================
-                 CUSTOMER DETAILS
-            ================================= -->
+            <!-- CUSTOMER DETAILS -->
 
             <h3>
                 Customer Details
             </h3>
 
 
-            <label>
+            <label for="guests">
                 Expected Guests
             </label>
 
-
             <input
                 type="number"
+                id="guests"
+                name="guests"
                 min="1"
                 placeholder="Approx guest count">
 
@@ -271,11 +238,11 @@
                 Full Name
             </label>
 
-
             <input
                 type="text"
                 id="fullName"
                 name="fullName"
+                autocomplete="name"
                 required>
 
 
@@ -283,11 +250,11 @@
                 Phone Number
             </label>
 
-
             <input
                 type="tel"
                 id="phone"
                 name="phone"
+                autocomplete="tel"
                 required>
 
 
@@ -295,11 +262,11 @@
                 Email Address
             </label>
 
-
             <input
                 type="email"
                 id="email"
                 name="email"
+                autocomplete="email"
                 required>
 
 
@@ -307,27 +274,25 @@
                 Additional Details / Message
             </label>
 
-
             <textarea
                 id="message"
                 name="message"
-                rows="4">
+                rows="4"
+                placeholder="Tell us anything important about your session">
             </textarea>
 
 
-            <!-- ================================
-                 HONEYPOT
-            ================================= -->
+            <!-- HONEYPOT -->
 
             <input
                 type="text"
                 name="website"
+                tabindex="-1"
+                autocomplete="off"
                 style="display:none">
 
 
-            <!-- ================================
-                 SUBMIT
-            ================================= -->
+            <!-- SUBMIT -->
 
             <button
                 type="submit"
@@ -337,7 +302,6 @@
 
             </button>
 
-
         </form>
 
     </div>
@@ -345,29 +309,23 @@
 </section>
 
 
-<!-- ================================
-     HELP SECTION
-================================= -->
+<!-- HELP -->
 
-<div class="help-section">
+<section class="help-section">
 
     <h3>
         Need Help With Booking?
     </h3>
 
     <p>
-
         Having trouble selecting dates, packages, or booking your session?
         Contact us and we'll help you choose the perfect photography plan.
-
     </p>
 
-</div>
+</section>
 
 
-<!-- ================================
-     SUCCESS POPUP
-================================= -->
+<!-- SUCCESS POPUP -->
 
 <div
     id="successPopup"
@@ -378,9 +336,7 @@
 </div>
 
 
-<!-- ================================
-     PROGRESS BAR
-================================= -->
+<!-- PROGRESS -->
 
 <div class="progress-bar">
 
@@ -392,26 +348,19 @@
 </div>
 
 
-<!-- ================================
-     FOOTER
-================================= -->
+<!-- FOOTER -->
 
-<div class="booking-footer">
-
-    Secure Booking • Fast Response • Instant Confirmation
-
-</div>
-
-
-<p>
-    © 2026 Professional Studio. All rights reserved.
-</p>
-
-
-<div>
+<footer class="booking-footer">
 
     <p>
+        Secure Booking • Fast Response • Instant Confirmation
+    </p>
 
+    <p>
+        © 2026 Professional Studio. All rights reserved.
+    </p>
+
+    <p>
         Powered by
 
         <a
@@ -422,22 +371,16 @@
             Bluehorizanlabs
 
         </a>
-
     </p>
 
-</div>
+</footer>
 
 
-<!-- ================================
-     FLATPICKR JAVASCRIPT
-================================= -->
+<!-- FLATPICKR -->
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-
-
 <script src="booking.js"></script>
-
 
 </body>
 </html>
