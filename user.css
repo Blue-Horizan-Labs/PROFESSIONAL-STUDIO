@@ -1180,3 +1180,20 @@ tbody tr:hover{
     line-height:1.5;
     opacity:.75;
 }
+
+.copy-profile-btn {
+    background: transparent;
+    color: #111;
+    border: 1px solid #111;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: 8px;
+}
+
+.copy-profile-btn:hover {
+    background: #111;
+    color: #fff;
+}

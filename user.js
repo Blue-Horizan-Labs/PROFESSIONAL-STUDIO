@@ -3,41 +3,103 @@
 ========================================== */
 
 // GLOBAL VARIABLES
-var  userName = "Rahul Photography";
-var  link = "https://rahulphotography.com/portfolio";
+var userName = "Rahul Photography";
+var link = "https://rahulphotography.com/portfolio";
 
-// Server requests and other dashboard functionalities can be added here
+
+// Server requests and other dashboard functionalities
 fetch("/api/dashboard-data", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    
+    headers: {
+        "Content-Type": "application/json"
+    }
 })
 .then(response => response.json())
 .then(data => {
-    // Handle the response data
-    document.getElementById('name').textContent = data.name;
-    link = window.location.origin + '/api/user?id=' + data.link;
-    document.getElementById('openPortfolioBtn').disabled = false;
+
+    document.getElementById("name").textContent = data.name;
+
+    // Public photographer profile link
+    link = window.location.origin + "/api/user?id=" + data.link;
+
+    // Enable profile buttons
+    const openButton = document.getElementById("openPortfolioBtn");
+    const copyButton = document.getElementById("copyProfileBtn");
+
+    if (openButton) {
+        openButton.disabled = false;
+    }
+
+    if (copyButton) {
+        copyButton.disabled = false;
+    }
+
+})
+.catch(error => {
+    console.error("Dashboard data error:", error);
 });
 
-/* Open link */
+
+/* ==========================================
+   OPEN PUBLIC PROFILE
+========================================== */
 
 function openPortfolio() {
+
     const portfolioLink = link;
+
     window.open(portfolioLink, "_blank");
-    navigator.clipboard.writeText(portfolioLink).then(() => {
-        const button = document.getElementById("copyPortfolioBtn");
-
-        button.textContent = "Copied!";
-
-        setTimeout(() => {
-            button.textContent = "Copy Portfolio Link";
-        }, 2000);
-    });
 }
 
 
+/* ==========================================
+   COPY PUBLIC PROFILE LINK
+========================================== */
+function copyProfileLink() {
+
+    if (!link) {
+        return;
+    }
+
+    const button = document.getElementById("copyProfileBtn");
+
+    navigator.clipboard.writeText(link)
+        .then(() => {
+
+            if (!button) {
+                return;
+            }
+
+            // Change button after successful copy
+            button.textContent = "✓ COPIED";
+
+            // Prevent clicking again while showing confirmation
+            button.disabled = true;
+
+            setTimeout(() => {
+
+                button.textContent = "Copy Profile Link";
+
+                button.disabled = false;
+
+            }, 2500);
+
+        })
+        .catch(error => {
+
+            console.error(
+                "Could not copy profile link:",
+                error
+            );
+
+        });
+}
+/* ==========================================
+   DOM CONTENT LOADED
+========================================== */
+
 document.addEventListener("DOMContentLoaded", () => {
+
 
     /* ==========================
        SIDEBAR ACTIVE
@@ -74,20 +136,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const speed = target / 80;
 
-        function updateCounter(){
+        function updateCounter() {
 
             current += speed;
 
-            if(current < target){
+            if (current < target) {
 
                 counter.textContent =
-                Math.floor(current);
+                    Math.floor(current);
 
                 requestAnimationFrame(updateCounter);
 
             }
-
-            else{
+            else {
 
                 counter.textContent = target;
 
@@ -105,29 +166,39 @@ document.addEventListener("DOMContentLoaded", () => {
     ========================== */
 
     document.querySelectorAll("button")
-    .forEach(button=>{
+        .forEach(button => {
 
-        button.addEventListener("click",(e)=>{
+            button.addEventListener("click", (e) => {
 
-            if(button.type==="submit") return;
+                // Do not interfere with profile buttons
+                if (
+                    button.id === "openPortfolioBtn" ||
+                    button.id === "copyProfileBtn"
+                ) {
+                    return;
+                }
 
-            const original = button.innerText;
+                if (button.type === "submit") {
+                    return;
+                }
 
-            button.innerText = "Saved ✓";
+                const original = button.innerText;
 
-            button.disabled = true;
+                button.innerText = "Saved ✓";
 
-            setTimeout(()=>{
+                button.disabled = true;
 
-                button.innerText = original;
+                setTimeout(() => {
 
-                button.disabled = false;
+                    button.innerText = original;
 
-            },1500);
+                    button.disabled = false;
+
+                }, 1500);
+
+            });
 
         });
-
-    });
 
 
     /* ==========================
@@ -135,31 +206,33 @@ document.addEventListener("DOMContentLoaded", () => {
     ========================== */
 
     const upload =
-    document.querySelector("input[type=file]");
+        document.querySelector("input[type=file]");
 
-    if(upload){
+    if (upload) {
 
-        upload.addEventListener("change",function(){
+        upload.addEventListener("change", function () {
 
             const file = this.files[0];
 
-            if(!file) return;
+            if (!file) {
+                return;
+            }
 
             const reader =
-            new FileReader();
+                new FileReader();
 
-            reader.onload=function(e){
+            reader.onload = function (e) {
 
                 let preview =
-                document.querySelector(".preview-image");
+                    document.querySelector(".preview-image");
 
-                if(!preview){
+                if (!preview) {
 
                     preview =
-                    document.createElement("img");
+                        document.createElement("img");
 
                     preview.className =
-                    "preview-image";
+                        "preview-image";
 
                     upload.parentNode.appendChild(preview);
 
@@ -167,7 +240,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 preview.src = e.target.result;
 
-            }
+            };
 
             reader.readAsDataURL(file);
 
@@ -181,31 +254,33 @@ document.addEventListener("DOMContentLoaded", () => {
     ========================== */
 
     document
-    .querySelectorAll('a[href^="#"]')
-    .forEach(anchor=>{
+        .querySelectorAll('a[href^="#"]')
+        .forEach(anchor => {
 
-        anchor.addEventListener("click",function(e){
+            anchor.addEventListener("click", function (e) {
 
-            const target =
-            document.querySelector(
-            this.getAttribute("href")
-            );
+                const target =
+                    document.querySelector(
+                        this.getAttribute("href")
+                    );
 
-            if(!target) return;
+                if (!target) {
+                    return;
+                }
 
-            e.preventDefault();
+                e.preventDefault();
 
-            target.scrollIntoView({
+                target.scrollIntoView({
 
-                behavior:"smooth",
+                    behavior: "smooth",
 
-                block:"start"
+                    block: "start"
+
+                });
 
             });
 
         });
-
-    });
 
 
     /* ==========================
@@ -213,18 +288,18 @@ document.addEventListener("DOMContentLoaded", () => {
     ========================== */
 
     const sections =
-    document.querySelectorAll("section");
+        document.querySelectorAll("section");
 
-    window.addEventListener("scroll",()=>{
+    window.addEventListener("scroll", () => {
 
-        let current="";
+        let current = "";
 
-        sections.forEach(section=>{
+        sections.forEach(section => {
 
             const top =
-            section.offsetTop-120;
+                section.offsetTop - 120;
 
-            if(pageYOffset>=top){
+            if (pageYOffset >= top) {
 
                 current = section.id;
 
@@ -232,11 +307,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
         });
 
-        menuLinks.forEach(link=>{
+        menuLinks.forEach(link => {
 
             link.classList.remove("active");
 
-            if(link.getAttribute("href")==="#"+current){
+            if (
+                link.getAttribute("href") ===
+                "#" + current
+            ) {
 
                 link.classList.add("active");
 
@@ -248,315 +326,517 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 
+
 /* ==========================================
-   user.js - Part 2
-   Interactive Dashboard Features
+   INTERACTIVE DASHBOARD FEATURES
 ========================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
 
+
     /* ==========================
-       ADD EQUIPMENT
+       EQUIPMENT SECTION
     ========================== */
 
-/* ==========================
-   EQUIPMENT SECTION
-========================== */
+    function attachEquipmentEvents(card) {
 
-function attachEquipmentEvents(card) {
+        const input =
+            card.querySelector(".equipment-input input");
 
-    const input = card.querySelector(".equipment-input input");
-    const button = card.querySelector(".add-item-btn");
-    const list = card.querySelector(".equipment-list");
+        const button =
+            card.querySelector(".add-item-btn");
 
-    if (!input || !button || !list) return;
+        const list =
+            card.querySelector(".equipment-list");
 
-    function addItem() {
-
-        const value = input.value.trim();
-
-        if (!value) return;
-
-        const li = document.createElement("li");
-        li.textContent = value;
-
-        list.appendChild(li);
-
-        input.value = "";
-        input.focus();
-    }
-
-    button.addEventListener("click", addItem);
-
-    input.addEventListener("keydown", e => {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            addItem();
+        if (!input || !button || !list) {
+            return;
         }
-    });
 
-}
+        function addItem() {
 
-document.querySelectorAll(".equipment-card").forEach(card => {
-    attachEquipmentEvents(card);
-});
+            const value =
+                input.value.trim();
 
-const equipmentGrid = document.querySelector(".equipment-grid");
-const addEquipment = document.getElementById("addEquipment");
+            if (!value) {
+                return;
+            }
 
-addEquipment.addEventListener("click", () => {
+            const li =
+                document.createElement("li");
 
-    // Prevent opening multiple create cards
-    if (document.querySelector(".create-equipment-card")) return;
+            li.textContent = value;
 
-    const createCard = document.createElement("div");
-    createCard.className = "equipment-card create-equipment-card";
+            list.appendChild(li);
 
-    createCard.innerHTML = `
-        <h3>New Equipment Category</h3>
+            input.value = "";
 
-        <input
-            type="text"
-            id="newEquipmentName"
-            placeholder="Category name">
+            input.focus();
 
-        <div class="create-actions">
-            <button class="create-btn">Create</button>
-            <button class="cancel-btn">Cancel</button>
-        </div>
-    `;
+        }
 
-    equipmentGrid.insertBefore(createCard, addEquipment);
+        button.addEventListener("click", addItem);
 
-    const input = createCard.querySelector("#newEquipmentName");
+        input.addEventListener("keydown", e => {
 
-    input.focus();
+            if (e.key === "Enter") {
 
-    function createCategory() {
+                e.preventDefault();
 
-        const category = input.value.trim();
+                addItem();
 
-        if (!category) return;
+            }
 
-        const card = document.createElement("div");
-        card.className = "equipment-card";
-
-        card.innerHTML = `
-            <h3>${category}</h3>
-
-            <ul class="equipment-list"></ul>
-
-            <div class="equipment-input">
-                <input
-                    type="text"
-                    placeholder="Add ${category}">
-                <button class="add-item-btn">
-                    Add Item
-                </button>
-            </div>
-        `;
-
-        equipmentGrid.insertBefore(card, createCard);
-
-        attachEquipmentEvents(card);
-
-        createCard.remove();
-    }
-
-    createCard.querySelector(".create-btn")
-        .addEventListener("click", createCategory);
-
-    input.addEventListener("keydown", e => {
-        if (e.key === "Enter") createCategory();
-    });
-
-    createCard.querySelector(".cancel-btn")
-        .addEventListener("click", () => {
-            createCard.remove();
         });
 
-});
+    }
+
+
+    document
+        .querySelectorAll(".equipment-card")
+        .forEach(card => {
+
+            attachEquipmentEvents(card);
+
+        });
+
+
+    const equipmentGrid =
+        document.querySelector(".equipment-grid");
+
+    const addEquipment =
+        document.getElementById("addEquipment");
+
+
+    if (addEquipment && equipmentGrid) {
+
+        addEquipment.addEventListener("click", () => {
+
+            if (
+                document.querySelector(
+                    ".create-equipment-card"
+                )
+            ) {
+                return;
+            }
+
+            const createCard =
+                document.createElement("div");
+
+            createCard.className =
+                "equipment-card create-equipment-card";
+
+            createCard.innerHTML = `
+
+                <h3>New Equipment Category</h3>
+
+                <input
+                    type="text"
+                    id="newEquipmentName"
+                    placeholder="Category name"
+                >
+
+                <div class="create-actions">
+
+                    <button class="create-btn">
+                        Create
+                    </button>
+
+                    <button class="cancel-btn">
+                        Cancel
+                    </button>
+
+                </div>
+
+            `;
+
+            equipmentGrid.insertBefore(
+                createCard,
+                addEquipment
+            );
+
+            const input =
+                createCard.querySelector(
+                    "#newEquipmentName"
+                );
+
+            input.focus();
+
+
+            function createCategory() {
+
+                const category =
+                    input.value.trim();
+
+                if (!category) {
+                    return;
+                }
+
+                const card =
+                    document.createElement("div");
+
+                card.className =
+                    "equipment-card";
+
+                card.innerHTML = `
+
+                    <h3>${category}</h3>
+
+                    <ul class="equipment-list"></ul>
+
+                    <div class="equipment-input">
+
+                        <input
+                            type="text"
+                            placeholder="Add ${category}"
+                        >
+
+                        <button class="add-item-btn">
+                            Add Item
+                        </button>
+
+                    </div>
+
+                `;
+
+                equipmentGrid.insertBefore(
+                    card,
+                    createCard
+                );
+
+                attachEquipmentEvents(card);
+
+                createCard.remove();
+
+            }
+
+
+            createCard
+                .querySelector(".create-btn")
+                .addEventListener(
+                    "click",
+                    createCategory
+                );
+
+
+            input.addEventListener("keydown", e => {
+
+                if (e.key === "Enter") {
+                    createCategory();
+                }
+
+            });
+
+
+            createCard
+                .querySelector(".cancel-btn")
+                .addEventListener("click", () => {
+
+                    createCard.remove();
+
+                });
+
+        });
+
+    }
+
 
     /* ==========================
        ADD PRICING PACKAGE
     ========================== */
 
-    document.querySelectorAll(".pricing-card").forEach(card => {
+    document
+        .querySelectorAll(".pricing-card")
+        .forEach(card => {
 
-        const addBtn = document.createElement("button");
+            const addBtn =
+                document.createElement("button");
 
-        addBtn.innerText = "Add Package";
+            addBtn.innerText =
+                "Add Package";
 
-        addBtn.classList.add("secondary");
+            addBtn.classList.add("secondary");
 
-        addBtn.style.marginTop = "15px";
+            addBtn.style.marginTop = "15px";
 
-        card.appendChild(addBtn);
+            card.appendChild(addBtn);
 
-        addBtn.addEventListener("click", () => {
 
-            const packageName =
-                prompt("Package Name");
+            addBtn.addEventListener("click", () => {
 
-            if (!packageName) return;
+                const packageName =
+                    prompt("Package Name");
 
-            const packagePrice =
-                prompt("Price");
+                if (!packageName) {
+                    return;
+                }
 
-            if (!packagePrice) return;
+                const packagePrice =
+                    prompt("Price");
 
-            const wrapper =
-                document.createElement("div");
+                if (!packagePrice) {
+                    return;
+                }
 
-            wrapper.style.marginTop = "15px";
+                const wrapper =
+                    document.createElement("div");
 
-            wrapper.innerHTML = `
+                wrapper.style.marginTop =
+                    "15px";
 
-                <label>${packageName}</label>
+                wrapper.innerHTML = `
 
-                <input
-                type="text"
-                value="${packagePrice}">
+                    <label>
+                        ${packageName}
+                    </label>
 
-            `;
+                    <input
+                        type="text"
+                        value="${packagePrice}"
+                    >
 
-            card.insertBefore(wrapper, addBtn);
+                `;
+
+                card.insertBefore(
+                    wrapper,
+                    addBtn
+                );
+
+            });
 
         });
 
-    });
 
-    const serviceGrid = document.getElementById("serviceGrid");
-const pricingGrid = document.getElementById("pricingGrid");
-const addServiceBtn = document.getElementById("addServiceBtn");
-const newService = document.getElementById("newService");
+    const serviceGrid =
+        document.getElementById("serviceGrid");
 
-function createPricingCard(serviceName) {
+    const pricingGrid =
+        document.getElementById("pricingGrid");
 
-    return `
-        <div class="pricing-card" data-service="${serviceName}">
+    const addServiceBtn =
+        document.getElementById("addServiceBtn");
 
-            <h3>${serviceName}</h3>
+    const newService =
+        document.getElementById("newService");
 
-            <label>Basic Package</label>
-            <input type="text" placeholder="₹">
 
-            <label>Premium Package</label>
-            <input type="text" placeholder="₹">
+    function createPricingCard(serviceName) {
 
-            <label>Luxury Package</label>
-            <input type="text" placeholder="₹">
+        return `
 
-            <button>Save Pricing</button>
+            <div
+                class="pricing-card"
+                data-service="${serviceName}"
+            >
 
-        </div>
-    `;
-}
+                <h3>${serviceName}</h3>
 
-function updatePricing() {
+                <label>
+                    Basic Package
+                </label>
 
-    pricingGrid.innerHTML = "";
+                <input
+                    type="text"
+                    placeholder="₹"
+                >
 
-    const services = serviceGrid.querySelectorAll("label");
+                <label>
+                    Premium Package
+                </label>
 
-    services.forEach(service => {
+                <input
+                    type="text"
+                    placeholder="₹"
+                >
 
-        const checkbox = service.querySelector("input");
+                <label>
+                    Luxury Package
+                </label>
 
-        if (checkbox.checked) {
+                <input
+                    type="text"
+                    placeholder="₹"
+                >
 
-            const name = service.textContent.trim();
+                <button>
+                    Save Pricing
+                </button>
 
-            pricingGrid.innerHTML += createPricingCard(name);
+            </div>
 
-        }
-
-    });
-
-}
-
-function attachCheckboxEvents() {
-
-    const checkboxes = serviceGrid.querySelectorAll("input[type='checkbox']");
-
-    checkboxes.forEach(box => {
-
-        box.onchange = updatePricing;
-
-    });
-
-}
-
-addServiceBtn.onclick = () => {
-
-    const name = newService.value.trim();
-
-    if (name === "") return;
-
-    const exists = [...serviceGrid.querySelectorAll("label")].some(
-        s => s.textContent.trim().toLowerCase() === name.toLowerCase()
-    );
-
-    if (exists) {
-
-        alert("Service already exists.");
-        return;
+        `;
 
     }
 
-    const label = document.createElement("label");
 
-    label.className = "service-card";
+    function updatePricing() {
 
-    label.innerHTML = `
-        <input type="checkbox" checked>
-        ${name}
-    `;
+        if (!pricingGrid || !serviceGrid) {
+            return;
+        }
 
-    serviceGrid.appendChild(label);
+        pricingGrid.innerHTML = "";
 
-    newService.value = "";
+        const services =
+            serviceGrid.querySelectorAll("label");
+
+        services.forEach(service => {
+
+            const checkbox =
+                service.querySelector("input");
+
+            if (checkbox.checked) {
+
+                const name =
+                    service.textContent.trim();
+
+                pricingGrid.innerHTML +=
+                    createPricingCard(name);
+
+            }
+
+        });
+
+    }
+
+
+    function attachCheckboxEvents() {
+
+        if (!serviceGrid) {
+            return;
+        }
+
+        const checkboxes =
+            serviceGrid.querySelectorAll(
+                "input[type='checkbox']"
+            );
+
+        checkboxes.forEach(box => {
+
+            box.onchange =
+                updatePricing;
+
+        });
+
+    }
+
+
+    if (
+        addServiceBtn &&
+        newService &&
+        serviceGrid
+    ) {
+
+        addServiceBtn.onclick = () => {
+
+            const name =
+                newService.value.trim();
+
+            if (name === "") {
+                return;
+            }
+
+            const exists =
+                [
+                    ...serviceGrid
+                        .querySelectorAll("label")
+                ].some(
+                    s =>
+                        s.textContent
+                            .trim()
+                            .toLowerCase() ===
+                        name.toLowerCase()
+                );
+
+
+            if (exists) {
+
+                alert(
+                    "Service already exists."
+                );
+
+                return;
+
+            }
+
+
+            const label =
+                document.createElement("label");
+
+            label.className =
+                "service-card";
+
+            label.innerHTML = `
+
+                <input
+                    type="checkbox"
+                    checked
+                >
+
+                ${name}
+
+            `;
+
+            serviceGrid.appendChild(label);
+
+            newService.value = "";
+
+            attachCheckboxEvents();
+
+            updatePricing();
+
+        };
+
+    }
+
 
     attachCheckboxEvents();
 
     updatePricing();
-
-};
-
-attachCheckboxEvents();
-updatePricing();
 
 
     /* ==========================
        GALLERY FILE COUNT
     ========================== */
 
-    const upload =
-        document.querySelector('input[type="file"]');
+    const galleryUpload =
+        document.querySelector(
+            'input[type="file"]'
+        );
 
-    if (upload) {
+    if (galleryUpload) {
 
-        upload.addEventListener("change", function () {
+        galleryUpload.addEventListener(
+            "change",
+            function () {
 
-            const count = this.files.length;
+                const count =
+                    this.files.length;
 
-            let info =
-                document.querySelector(".upload-count");
+                let info =
+                    document.querySelector(
+                        ".upload-count"
+                    );
 
-            if (!info) {
+                if (!info) {
 
-                info = document.createElement("p");
+                    info =
+                        document.createElement("p");
 
-                info.className = "upload-count";
+                    info.className =
+                        "upload-count";
 
-                this.parentNode.appendChild(info);
+                    this.parentNode.appendChild(
+                        info
+                    );
+
+                }
+
+                info.innerHTML =
+                    count + " file(s) selected";
 
             }
-
-            info.innerHTML =
-                count + " file(s) selected";
-
-        });
+        );
 
     }
 
@@ -565,13 +845,20 @@ updatePricing();
        SIMPLE LOCAL STORAGE
     ========================== */
 
-    document.querySelectorAll("input, textarea, select")
+    document
+        .querySelectorAll(
+            "input, textarea, select"
+        )
         .forEach(field => {
 
-            if (!field.name) return;
+            if (!field.name) {
+                return;
+            }
 
             const saved =
-                localStorage.getItem(field.name);
+                localStorage.getItem(
+                    field.name
+                );
 
             if (saved) {
 
@@ -579,17 +866,17 @@ updatePricing();
 
             }
 
-            field.addEventListener("input", () => {
+            field.addEventListener(
+                "input",
+                () => {
 
-                localStorage.setItem(
+                    localStorage.setItem(
+                        field.name,
+                        field.value
+                    );
 
-                    field.name,
-
-                    field.value
-
-                );
-
-            });
+                }
+            );
 
         });
 
@@ -598,7 +885,8 @@ updatePricing();
        ANALYTICS BAR
     ========================== */
 
-    document.querySelectorAll(".chart-placeholder")
+    document
+        .querySelectorAll(".chart-placeholder")
         .forEach(chart => {
 
             chart.innerHTML = "";
@@ -611,17 +899,21 @@ updatePricing();
                 bar.style.width = "28px";
 
                 bar.style.height =
-                    (40 + Math.random() * 100) + "px";
+                    (40 + Math.random() * 100)
+                    + "px";
 
                 bar.style.background = "#111";
 
                 bar.style.borderRadius = "6px";
 
-                bar.style.display = "inline-block";
+                bar.style.display =
+                    "inline-block";
 
-                bar.style.margin = "0 5px";
+                bar.style.margin =
+                    "0 5px";
 
-                bar.style.verticalAlign = "bottom";
+                bar.style.verticalAlign =
+                    "bottom";
 
                 chart.appendChild(bar);
 
@@ -635,18 +927,27 @@ updatePricing();
     ========================== */
 
     const toggle =
-        document.querySelector(".mobile-toggle");
+        document.querySelector(
+            ".mobile-toggle"
+        );
 
     const sidebar =
-        document.querySelector(".sidebar");
+        document.querySelector(
+            ".sidebar"
+        );
 
     if (toggle && sidebar) {
 
-        toggle.addEventListener("click", () => {
+        toggle.addEventListener(
+            "click",
+            () => {
 
-            sidebar.classList.toggle("show");
+                sidebar.classList.toggle(
+                    "show"
+                );
 
-        });
+            }
+        );
 
     }
 
@@ -655,44 +956,65 @@ updatePricing();
        DASHBOARD GREETING
     ========================== */
 
-    const hour = new Date().getHours();
+    const hour =
+        new Date().getHours();
 
     let greeting = "Welcome";
 
-    if (hour < 12)
-        greeting = "Good Morning";
+    if (hour < 12) {
 
-    else if (hour < 17)
-        greeting = "Good Afternoon";
+        greeting =
+            "Good Morning";
 
-    else
-        greeting = "Good Evening";
+    }
+    else if (hour < 17) {
 
-    const heading =
-        document.querySelector(".topbar h1");
+        greeting =
+            "Good Afternoon";
 
-    if (heading) {
+    }
+    else {
 
-        heading.innerHTML =
-            greeting + ", Rahul Photography";
+        greeting =
+            "Good Evening";
 
     }
 
 
-  
+    const heading =
+        document.querySelector(
+            ".topbar h1"
+        );
 
-    document.querySelectorAll(".menu a")
+    if (heading) {
+
+        heading.innerHTML =
+            greeting +
+            ", Rahul Photography";
+
+    }
+
+
+    document
+        .querySelectorAll(".menu a")
         .forEach(link => {
 
-            link.addEventListener("click", () => {
+            link.addEventListener(
+                "click",
+                () => {
 
-                if (window.innerWidth < 768) {
+                    if (
+                        window.innerWidth < 768
+                    ) {
 
-                    sidebar.classList.remove("show");
+                        sidebar.classList.remove(
+                            "show"
+                        );
+
+                    }
 
                 }
-
-            });
+            );
 
         });
 
@@ -704,6 +1026,7 @@ updatePricing();
 ========================================== */
 
 const bookings = [
+
     {
         client: "Rahul Patil",
         service: "Wedding",
@@ -711,6 +1034,7 @@ const bookings = [
         amount: "₹45,000",
         status: "Confirmed"
     },
+
     {
         client: "Neha Sharma",
         service: "Pre-Wedding",
@@ -718,6 +1042,7 @@ const bookings = [
         amount: "₹18,000",
         status: "Pending"
     },
+
     {
         client: "Aryan Mehta",
         service: "Portrait",
@@ -725,6 +1050,7 @@ const bookings = [
         amount: "₹9,000",
         status: "Completed"
     },
+
     {
         client: "Priya Deshmukh",
         service: "Maternity",
@@ -732,6 +1058,7 @@ const bookings = [
         amount: "₹12,500",
         status: "Confirmed"
     },
+
     {
         client: "Karan Joshi",
         service: "Birthday",
@@ -739,6 +1066,7 @@ const bookings = [
         amount: "₹15,000",
         status: "Pending"
     },
+
     {
         client: "Sneha Kulkarni",
         service: "Corporate",
@@ -746,152 +1074,335 @@ const bookings = [
         amount: "₹32,000",
         status: "Completed"
     }
+
 ];
 
-const table = document.getElementById("bookingTable");
 
-const searchInput = document.getElementById("searchBooking");
-const statusFilter = document.getElementById("statusFilter");
-const viewFilter = document.getElementById("viewFilter");
-const compareFilter = document.getElementById("compareFilter");
+const table =
+    document.getElementById(
+        "bookingTable"
+    );
 
-const totalBookings = document.getElementById("totalBookings");
-const confirmedBookings = document.getElementById("confirmedBookings");
-const pendingBookings = document.getElementById("pendingBookings");
-const completedBookings = document.getElementById("completedBookings");
+const searchInput =
+    document.getElementById(
+        "searchBooking"
+    );
 
-const currentValue = document.getElementById("currentValue");
-const previousValue = document.getElementById("previousValue");
-const growthValue = document.getElementById("growthValue");
+const statusFilter =
+    document.getElementById(
+        "statusFilter"
+    );
 
-function statusClass(status){
+const viewFilter =
+    document.getElementById(
+        "viewFilter"
+    );
 
-    if(status==="Confirmed") return "active";
-    if(status==="Pending") return "pending";
+const compareFilter =
+    document.getElementById(
+        "compareFilter"
+    );
+
+
+const totalBookings =
+    document.getElementById(
+        "totalBookings"
+    );
+
+const confirmedBookings =
+    document.getElementById(
+        "confirmedBookings"
+    );
+
+const pendingBookings =
+    document.getElementById(
+        "pendingBookings"
+    );
+
+const completedBookings =
+    document.getElementById(
+        "completedBookings"
+    );
+
+
+const currentValue =
+    document.getElementById(
+        "currentValue"
+    );
+
+const previousValue =
+    document.getElementById(
+        "previousValue"
+    );
+
+const growthValue =
+    document.getElementById(
+        "growthValue"
+    );
+
+
+function statusClass(status) {
+
+    if (status === "Confirmed") {
+        return "active";
+    }
+
+    if (status === "Pending") {
+        return "pending";
+    }
+
     return "completed";
 
 }
 
-function renderTable(){
 
-    let search = searchInput.value.toLowerCase();
+function renderTable() {
 
-    let status = statusFilter.value;
+    if (
+        !table ||
+        !searchInput ||
+        !statusFilter
+    ) {
+        return;
+    }
 
-    let filtered = bookings.filter(function(booking){
+    let search =
+        searchInput.value.toLowerCase();
 
-        let matchSearch =
-        booking.client.toLowerCase().includes(search) ||
-        booking.service.toLowerCase().includes(search);
+    let status =
+        statusFilter.value;
 
-        let matchStatus =
-        status==="all" || booking.status===status;
+    let filtered =
+        bookings.filter(
+            function (booking) {
 
-        return matchSearch && matchStatus;
+                let matchSearch =
+                    booking.client
+                        .toLowerCase()
+                        .includes(search) ||
 
-    });
+                    booking.service
+                        .toLowerCase()
+                        .includes(search);
 
-    table.innerHTML="";
 
-    filtered.forEach(function(booking){
+                let matchStatus =
+                    status === "all" ||
+                    booking.status === status;
 
-        table.innerHTML += `
 
-        <tr>
+                return (
+                    matchSearch &&
+                    matchStatus
+                );
 
-            <td>${booking.client}</td>
+            }
+        );
 
-            <td>${booking.service}</td>
 
-            <td>${booking.date}</td>
+    table.innerHTML = "";
 
-            <td>${booking.amount}</td>
 
-            <td>
-                <span class="status ${statusClass(booking.status)}">
-                    ${booking.status}
-                </span>
-            </td>
+    filtered.forEach(
+        function (booking) {
 
-        </tr>
+            table.innerHTML += `
 
-        `;
+                <tr>
 
-    });
+                    <td>
+                        ${booking.client}
+                    </td>
+
+                    <td>
+                        ${booking.service}
+                    </td>
+
+                    <td>
+                        ${booking.date}
+                    </td>
+
+                    <td>
+                        ${booking.amount}
+                    </td>
+
+                    <td>
+
+                        <span
+                            class="status ${statusClass(
+                                booking.status
+                            )}"
+                        >
+                            ${booking.status}
+                        </span>
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+    );
+
 
     updateStats(filtered);
 
 }
 
-function updateStats(list){
 
-    totalBookings.textContent=list.length;
+function updateStats(list) {
 
-    confirmedBookings.textContent=
-    list.filter(b=>b.status==="Confirmed").length;
+    if (!totalBookings) {
+        return;
+    }
 
-    pendingBookings.textContent=
-    list.filter(b=>b.status==="Pending").length;
+    totalBookings.textContent =
+        list.length;
 
-    completedBookings.textContent=
-    list.filter(b=>b.status==="Completed").length;
+    confirmedBookings.textContent =
+        list.filter(
+            b => b.status === "Confirmed"
+        ).length;
+
+    pendingBookings.textContent =
+        list.filter(
+            b => b.status === "Pending"
+        ).length;
+
+    completedBookings.textContent =
+        list.filter(
+            b => b.status === "Completed"
+        ).length;
 
 }
 
-function updateComparison(){
 
-    let current=0;
-    let previous=0;
+function updateComparison() {
 
-    switch(viewFilter.value){
+    if (
+        !viewFilter ||
+        !compareFilter ||
+        !currentValue ||
+        !previousValue ||
+        !growthValue
+    ) {
+        return;
+    }
+
+    let current = 0;
+    let previous = 0;
+
+
+    switch (viewFilter.value) {
 
         case "week":
-            current=5;
-            previous=4;
-        break;
+
+            current = 5;
+            previous = 4;
+
+            break;
+
 
         case "month":
-            current=18;
-            previous=14;
-        break;
+
+            current = 18;
+            previous = 14;
+
+            break;
+
 
         case "year":
-            current=132;
-            previous=115;
-        break;
+
+            current = 132;
+            previous = 115;
+
+            break;
+
 
         default:
-            current=584;
-            previous=530;
+
+            current = 584;
+            previous = 530;
 
     }
 
-    if(compareFilter.value==="none"){
 
-        previousValue.textContent="--";
-        growthValue.textContent="--";
+    if (
+        compareFilter.value === "none"
+    ) {
+
+        previousValue.textContent = "--";
+
+        growthValue.textContent = "--";
+
         return;
 
     }
 
-    currentValue.textContent=current;
 
-    previousValue.textContent=previous;
+    currentValue.textContent =
+        current;
 
-    let growth=((current-previous)/previous*100).toFixed(0);
+    previousValue.textContent =
+        previous;
 
-    growthValue.textContent=
-    (growth>=0?"+":"")+growth+"%";
+
+    let growth =
+        (
+            (current - previous) /
+            previous *
+            100
+        ).toFixed(0);
+
+
+    growthValue.textContent =
+        (growth >= 0 ? "+" : "") +
+        growth +
+        "%";
 
 }
 
-searchInput.addEventListener("keyup",renderTable);
 
-statusFilter.addEventListener("change",renderTable);
+if (searchInput) {
 
-viewFilter.addEventListener("change",updateComparison);
+    searchInput.addEventListener(
+        "keyup",
+        renderTable
+    );
 
-compareFilter.addEventListener("change",updateComparison);
+}
+
+
+if (statusFilter) {
+
+    statusFilter.addEventListener(
+        "change",
+        renderTable
+    );
+
+}
+
+
+if (viewFilter) {
+
+    viewFilter.addEventListener(
+        "change",
+        updateComparison
+    );
+
+}
+
+
+if (compareFilter) {
+
+    compareFilter.addEventListener(
+        "change",
+        updateComparison
+    );
+
+}
+
 
 renderTable();
 
