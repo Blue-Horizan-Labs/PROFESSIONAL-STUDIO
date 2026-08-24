@@ -21,7 +21,6 @@
 
         body {
             font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-
             min-height: 100vh;
 
             display: flex;
@@ -117,8 +116,6 @@
 
             z-index: 0;
         }
-
-        /* Keep actual content above decorative layer */
 
         .signup-container > * {
             position: relative;
@@ -429,7 +426,107 @@
         const form = document.getElementById("signupForm");
         const signupBtn = document.getElementById("signupBtn");
 
-        form.addEventListener("submit", function (e) {
+
+        /* =========================================================
+           GET A USEFUL ERROR MESSAGE FROM ANY API RESPONSE
+        ========================================================= */
+
+        function getErrorMessage(data) {
+
+            if (!data) {
+                return "Unable to create account.";
+            }
+
+            /* Direct string response */
+            if (typeof data === "string") {
+                return data;
+            }
+
+            /* Normal API response:
+               { message: "Something went wrong" }
+            */
+            if (typeof data.message === "string" && data.message.trim()) {
+                return data.message;
+            }
+
+            /* Nested message:
+               { message: { message: "Something went wrong" } }
+            */
+            if (
+                data.message &&
+                typeof data.message === "object" &&
+                typeof data.message.message === "string"
+            ) {
+                return data.message.message;
+            }
+
+            /* Common error format:
+               { error: "Something went wrong" }
+            */
+            if (typeof data.error === "string" && data.error.trim()) {
+                return data.error;
+            }
+
+            /* Nested error:
+               { error: { message: "Something went wrong" } }
+            */
+            if (
+                data.error &&
+                typeof data.error === "object" &&
+                typeof data.error.message === "string"
+            ) {
+                return data.error.message;
+            }
+
+            /* Supabase-style nested error */
+            if (
+                data.error &&
+                typeof data.error === "object" &&
+                typeof data.error.error_description === "string"
+            ) {
+                return data.error.error_description;
+            }
+
+            /* Details field */
+            if (typeof data.details === "string" && data.details.trim()) {
+                return data.details;
+            }
+
+            /* Description field */
+            if (
+                typeof data.error_description === "string" &&
+                data.error_description.trim()
+            ) {
+                return data.error_description;
+            }
+
+            /* Last resort:
+               Convert the object into readable JSON instead of
+               displaying [object Object].
+            */
+            try {
+                return JSON.stringify(data);
+            } catch (e) {
+                return "Unable to create account.";
+            }
+        }
+
+
+        /* =========================================================
+           RESET BUTTON
+        ========================================================= */
+
+        function resetSignupButton() {
+            signupBtn.disabled = false;
+            signupBtn.textContent = "Create Account";
+        }
+
+
+        /* =========================================================
+           SIGNUP
+        ========================================================= */
+
+        form.addEventListener("submit", async function (e) {
 
             e.preventDefault();
 
@@ -442,12 +539,16 @@
             const confirmPassword =
                 document.getElementById("confirmPassword").value;
 
+
+            /* ================= VALIDATION ================= */
+
             if (!email || !password || !confirmPassword) {
 
                 alert("Please fill in all fields.");
 
                 return;
             }
+
 
             if (password !== confirmPassword) {
 
@@ -456,57 +557,142 @@
                 return;
             }
 
+
+            /* ================= BUTTON STATE ================= */
+
             signupBtn.disabled = true;
             signupBtn.textContent = "Creating Account...";
 
-            fetch("/api/signup", {
 
-                method: "POST",
+            try {
 
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                const response = await fetch("/api/signup", {
 
-                body: JSON.stringify({
-                    email,
-                    password
-                })
+                    method: "POST",
 
-            })
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
 
-            .then(response => response.json())
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
 
-            .then(data => {
+                });
 
-                signupBtn.disabled = false;
-                signupBtn.textContent = "Create Account";
 
-                if (data.message === "200") {
+                /* =================================================
+                   READ RESPONSE SAFELY
+                   ================================================= */
 
-                    window.location.href = "/setup.html";
+                const contentType =
+                    response.headers.get("content-type") || "";
+
+                let data;
+
+
+                if (contentType.includes("application/json")) {
+
+                    data = await response.json();
 
                 } else {
 
-                    alert(
-                        data.message ||
-                        "Unable to create account."
-                    );
+                    const text = await response.text();
+
+                    data = text || null;
                 }
 
-            })
 
-            .catch(error => {
+                console.log("Signup HTTP status:", response.status);
+                console.log("Signup response:", data);
 
-                console.error(error);
 
-                signupBtn.disabled = false;
-                signupBtn.textContent = "Create Account";
+                /* =================================================
+                   SUCCESS
+                   ================================================= */
+
+                if (response.ok) {
+
+                    /*
+                     * Your previous backend uses:
+                     * { message: "200" }
+                     *
+                     * We also accept common successful responses
+                     * so a small backend response-format change
+                     * doesn't break the signup page.
+                     */
+
+                    const message =
+                        typeof data === "object" && data !== null
+                            ? data.message
+                            : data;
+
+
+                    if (
+                        message === "200" ||
+                        data?.success === true ||
+                        data?.status === "success" ||
+                        data?.status === 200
+                    ) {
+
+                        window.location.href = "/setup.html";
+
+                        return;
+                    }
+
+
+                    /*
+                     * If the HTTP request succeeded but the backend
+                     * didn't return the old "200" message, still check
+                     * for obvious success responses.
+                     */
+
+                    if (
+                        typeof data === "string" &&
+                        (
+                            data.toLowerCase().includes("success") ||
+                            data === "200"
+                        )
+                    ) {
+
+                        window.location.href = "/setup.html";
+
+                        return;
+                    }
+                }
+
+
+                /* =================================================
+                   ERROR
+                   ================================================= */
+
+                const errorMessage = getErrorMessage(data);
+
+                alert(errorMessage);
+
+
+                resetSignupButton();
+
+
+            } catch (error) {
+
+                console.error("Signup request failed:", error);
+
+                resetSignupButton();
+
+
+                /*
+                 * Network/fetch error.
+                 * This is different from an API error.
+                 */
 
                 alert(
-                    "Unable to connect to the server."
+                    error?.message ||
+                    "Unable to connect to the server. Please try again."
                 );
 
-            });
+            }
 
         });
 
