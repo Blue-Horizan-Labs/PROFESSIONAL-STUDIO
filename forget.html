@@ -1,0 +1,2661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Reset your Professional Studio account password securely."
+    >
+
+    <title>Forgot Password | Professional Studio</title>
+
+    <style>
+        /* =========================================================
+           PROFESSIONAL STUDIO
+           FORGOT PASSWORD PAGE
+        ========================================================= */
+
+        :root {
+            --primary: #111111;
+            --primary-soft: #1d1d1d;
+
+            --accent: #f59e0b;
+            --accent-dark: #d97706;
+            --accent-light: #fff7e6;
+
+            --text: #171717;
+            --text-light: #666666;
+            --text-muted: #8a8a8a;
+
+            --background: #f7f7f5;
+            --surface: #ffffff;
+            --surface-soft: #fafafa;
+
+            --border: #e8e8e5;
+            --border-dark: #d7d7d3;
+
+            --success: #16803c;
+            --success-bg: #edf9f1;
+
+            --error: #dc2626;
+            --error-bg: #fff1f1;
+
+            --warning: #d97706;
+            --warning-bg: #fff8e8;
+
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 22px;
+
+            --shadow-sm:
+                0 2px 10px rgba(0, 0, 0, 0.04);
+
+            --shadow-md:
+                0 12px 35px rgba(0, 0, 0, 0.07);
+
+            --shadow-lg:
+                0 25px 70px rgba(0, 0, 0, 0.10);
+
+            --transition:
+                all 0.25s ease;
+        }
+
+        /* =========================================================
+           RESET
+        ========================================================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        body {
+            font-family:
+                "Poppins",
+                "Segoe UI",
+                Arial,
+                sans-serif;
+
+            min-height: 100vh;
+
+            color: var(--text);
+
+            background:
+                radial-gradient(
+                    circle at 10% 10%,
+                    rgba(245, 158, 11, 0.08),
+                    transparent 28%
+                ),
+                radial-gradient(
+                    circle at 90% 90%,
+                    rgba(245, 158, 11, 0.06),
+                    transparent 28%
+                ),
+                var(--background);
+
+            display: flex;
+            flex-direction: column;
+
+            overflow-x: hidden;
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* =========================================================
+           PAGE BACKGROUND DECORATION
+        ========================================================= */
+
+        .background-shape {
+            position: fixed;
+            pointer-events: none;
+            z-index: 0;
+            border-radius: 50%;
+            filter: blur(1px);
+        }
+
+        .shape-one {
+            width: 320px;
+            height: 320px;
+
+            top: -180px;
+            left: -120px;
+
+            background:
+                rgba(245, 158, 11, 0.045);
+        }
+
+        .shape-two {
+            width: 400px;
+            height: 400px;
+
+            right: -180px;
+            bottom: -220px;
+
+            background:
+                rgba(0, 0, 0, 0.025);
+        }
+
+        /* =========================================================
+           HEADER
+        ========================================================= */
+
+        .topbar {
+            width: 100%;
+            position: relative;
+            z-index: 5;
+
+            padding: 22px 5%;
+        }
+
+        .topbar-inner {
+            width: 100%;
+            max-width: 1250px;
+
+            margin: 0 auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+
+            font-weight: 700;
+            font-size: 20px;
+            letter-spacing: -0.4px;
+        }
+
+        .brand-mark {
+            width: 38px;
+            height: 38px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 11px;
+
+            color: #ffffff;
+            background: var(--primary);
+
+            font-size: 16px;
+            font-weight: 700;
+
+            box-shadow:
+                0 5px 14px rgba(0, 0, 0, 0.12);
+        }
+
+        .brand span {
+            color: var(--text);
+        }
+
+        .top-login {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            color: var(--text-light);
+
+            font-size: 14px;
+        }
+
+        .top-login a {
+            color: var(--primary);
+            font-weight: 600;
+
+            transition: var(--transition);
+        }
+
+        .top-login a:hover {
+            color: var(--accent-dark);
+        }
+
+        /* =========================================================
+           MAIN
+        ========================================================= */
+
+        .main {
+            flex: 1;
+
+            width: 100%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding:
+                45px 20px
+                70px;
+
+            position: relative;
+            z-index: 1;
+        }
+
+        .auth-wrapper {
+            width: 100%;
+            max-width: 480px;
+        }
+
+        /* =========================================================
+           AUTH CARD
+        ========================================================= */
+
+        .auth-card {
+            width: 100%;
+
+            background: var(--surface);
+
+            border:
+                1px solid
+                rgba(0, 0, 0, 0.06);
+
+            border-radius: var(--radius-lg);
+
+            padding: 42px;
+
+            box-shadow: var(--shadow-lg);
+
+            animation:
+                cardEnter
+                0.55s ease
+                both;
+        }
+
+        @keyframes cardEnter {
+            from {
+                opacity: 0;
+                transform:
+                    translateY(20px)
+                    scale(0.98);
+            }
+
+            to {
+                opacity: 1;
+                transform:
+                    translateY(0)
+                    scale(1);
+            }
+        }
+
+        /* =========================================================
+           ICON
+        ========================================================= */
+
+        .auth-icon {
+            width: 58px;
+            height: 58px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 16px;
+
+            background: var(--accent-light);
+
+            color: var(--accent-dark);
+
+            margin-bottom: 23px;
+
+            font-size: 25px;
+
+            border:
+                1px solid
+                rgba(245, 158, 11, 0.16);
+        }
+
+        /* =========================================================
+           HEADING
+        ========================================================= */
+
+        .auth-header h1 {
+            font-size: 30px;
+            line-height: 1.2;
+
+            letter-spacing: -0.8px;
+
+            margin-bottom: 11px;
+        }
+
+        .auth-header p {
+            color: var(--text-light);
+
+            font-size: 14px;
+            line-height: 1.7;
+
+            max-width: 390px;
+        }
+
+        /* =========================================================
+           STEP INDICATOR
+        ========================================================= */
+
+        .steps {
+            display: flex;
+            align-items: center;
+
+            margin:
+                28px 0
+                30px;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            font-size: 12px;
+            font-weight: 600;
+
+            color: var(--text-muted);
+
+            white-space: nowrap;
+        }
+
+        .step-number {
+            width: 27px;
+            height: 27px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background: #f1f1ef;
+
+            color: #777;
+
+            font-size: 11px;
+        }
+
+        .step.active {
+            color: var(--primary);
+        }
+
+        .step.active .step-number {
+            color: #ffffff;
+            background: var(--primary);
+        }
+
+        .step-line {
+            flex: 1;
+
+            height: 1px;
+
+            margin:
+                0 10px;
+
+            background: var(--border);
+        }
+
+        /* =========================================================
+           FORM
+        ========================================================= */
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+
+            margin-bottom: 8px;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            color: var(--text);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+
+            left: 15px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            color: #999;
+
+            font-size: 16px;
+
+            pointer-events: none;
+
+            transition: var(--transition);
+        }
+
+        .form-input {
+            width: 100%;
+
+            height: 51px;
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 11px;
+
+            background:
+                var(--surface-soft);
+
+            padding:
+                0 15px
+                0 44px;
+
+            outline: none;
+
+            color: var(--text);
+
+            font-size: 14px;
+
+            transition: var(--transition);
+        }
+
+        .form-input::placeholder {
+            color: #aaa;
+        }
+
+        .form-input:hover {
+            border-color: var(--border-dark);
+        }
+
+        .form-input:focus {
+            background: #ffffff;
+
+            border-color: var(--primary);
+
+            box-shadow:
+                0 0 0 3px
+                rgba(0, 0, 0, 0.045);
+        }
+
+        .form-input:focus + .input-icon {
+            color: var(--primary);
+        }
+
+        .form-input.error {
+            border-color: var(--error);
+
+            background:
+                rgba(220, 38, 38, 0.025);
+        }
+
+        .form-input.success {
+            border-color: var(--success);
+        }
+
+        /* =========================================================
+           PASSWORD INPUT
+        ========================================================= */
+
+        .password-input {
+            padding-right: 48px;
+        }
+
+        .toggle-password {
+            position: absolute;
+
+            right: 13px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            width: 32px;
+            height: 32px;
+
+            border: 0;
+            background: transparent;
+
+            color: #888;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 7px;
+
+            transition: var(--transition);
+        }
+
+        .toggle-password:hover {
+            color: var(--primary);
+            background: #f2f2f0;
+        }
+
+        /* =========================================================
+           PASSWORD STRENGTH
+        ========================================================= */
+
+        .password-strength {
+            margin-top: 9px;
+
+            display: none;
+        }
+
+        .password-strength.visible {
+            display: block;
+        }
+
+        .strength-bars {
+            display: flex;
+            gap: 4px;
+
+            margin-bottom: 6px;
+        }
+
+        .strength-bar {
+            flex: 1;
+
+            height: 4px;
+
+            border-radius: 10px;
+
+            background: #e8e8e5;
+
+            transition: var(--transition);
+        }
+
+        .strength-text {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* =========================================================
+           FIELD MESSAGE
+        ========================================================= */
+
+        .field-message {
+            display: none;
+
+            margin-top: 7px;
+
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .field-message.error {
+            display: block;
+            color: var(--error);
+        }
+
+        .field-message.success {
+            display: block;
+            color: var(--success);
+        }
+
+        /* =========================================================
+           BUTTON
+        ========================================================= */
+
+        .primary-button {
+            width: 100%;
+
+            min-height: 52px;
+
+            border: 0;
+
+            border-radius: 11px;
+
+            background: var(--primary);
+
+            color: #ffffff;
+
+            font-size: 14px;
+            font-weight: 600;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 9px;
+
+            transition: var(--transition);
+
+            position: relative;
+            overflow: hidden;
+        }
+
+        .primary-button:hover {
+            background: #292929;
+
+            transform:
+                translateY(-1px);
+
+            box-shadow:
+                0 8px 20px
+                rgba(0, 0, 0, 0.13);
+        }
+
+        .primary-button:active {
+            transform:
+                translateY(0);
+        }
+
+        .primary-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* =========================================================
+           LOADER
+        ========================================================= */
+
+        .loader {
+            width: 17px;
+            height: 17px;
+
+            border:
+                2px solid
+                rgba(255, 255, 255, 0.35);
+
+            border-top-color:
+                #ffffff;
+
+            border-radius: 50%;
+
+            animation:
+                spin
+                0.7s linear infinite;
+
+            display: none;
+        }
+
+        .primary-button.loading .loader {
+            display: block;
+        }
+
+        .primary-button.loading .button-text {
+            opacity: 0.85;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* =========================================================
+           BACK LINK
+        ========================================================= */
+
+        .back-login {
+            margin-top: 22px;
+
+            display: flex;
+            justify-content: center;
+        }
+
+        .back-login a {
+            display: inline-flex;
+            align-items: center;
+
+            gap: 7px;
+
+            color: var(--text-light);
+
+            font-size: 13px;
+            font-weight: 500;
+
+            transition: var(--transition);
+        }
+
+        .back-login a:hover {
+            color: var(--primary);
+        }
+
+        /* =========================================================
+           SECURITY NOTE
+        ========================================================= */
+
+        .security-note {
+            margin-top: 25px;
+
+            padding: 13px 15px;
+
+            border-radius: 10px;
+
+            background:
+                #fafaf8;
+
+            border:
+                1px solid
+                var(--border);
+
+            display: flex;
+            align-items: flex-start;
+
+            gap: 10px;
+        }
+
+        .security-icon {
+            font-size: 15px;
+            margin-top: 1px;
+        }
+
+        .security-note p {
+            color: var(--text-muted);
+
+            font-size: 10.5px;
+            line-height: 1.6;
+        }
+
+        /* =========================================================
+           SUCCESS STATE
+        ========================================================= */
+
+        .success-screen {
+            display: none;
+
+            text-align: center;
+        }
+
+        .success-screen.show {
+            display: block;
+
+            animation:
+                successEnter
+                0.45s ease
+                both;
+        }
+
+        @keyframes successEnter {
+            from {
+                opacity: 0;
+                transform:
+                    translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform:
+                    translateY(0);
+            }
+        }
+
+        .success-icon {
+            width: 72px;
+            height: 72px;
+
+            margin:
+                0 auto
+                22px;
+
+            border-radius: 50%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background:
+                var(--success-bg);
+
+            color:
+                var(--success);
+
+            font-size: 30px;
+
+            border:
+                1px solid
+                rgba(22, 128, 60, 0.12);
+        }
+
+        .success-screen h2 {
+            font-size: 24px;
+
+            margin-bottom: 10px;
+
+            letter-spacing: -0.5px;
+        }
+
+        .success-screen > p {
+            color: var(--text-light);
+
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .email-highlight {
+            display: inline-block;
+
+            margin:
+                10px 0
+                4px;
+
+            padding:
+                7px 11px;
+
+            border-radius: 8px;
+
+            background:
+                var(--accent-light);
+
+            color:
+                var(--text);
+
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .success-info {
+            margin-top: 22px;
+
+            padding: 14px;
+
+            background:
+                var(--surface-soft);
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 10px;
+
+            text-align: left;
+        }
+
+        .success-info p {
+            color: var(--text-light);
+
+            font-size: 11px;
+            line-height: 1.65;
+        }
+
+        .resend-button {
+            margin-top: 20px;
+
+            width: 100%;
+
+            height: 48px;
+
+            border-radius: 10px;
+
+            border:
+                1px solid
+                var(--border-dark);
+
+            background:
+                #ffffff;
+
+            color:
+                var(--primary);
+
+            font-size: 13px;
+            font-weight: 600;
+
+            transition: var(--transition);
+        }
+
+        .resend-button:hover {
+            border-color: var(--primary);
+
+            background:
+                #fafafa;
+        }
+
+        /* =========================================================
+           RESET PASSWORD SCREEN
+        ========================================================= */
+
+        .reset-screen {
+            display: none;
+        }
+
+        .reset-screen.show {
+            display: block;
+
+            animation:
+                successEnter
+                0.45s ease
+                both;
+        }
+
+        /* =========================================================
+           FOOTER
+        ========================================================= */
+
+        .footer {
+            position: relative;
+            z-index: 2;
+
+            padding:
+                0 20px
+                24px;
+
+            text-align: center;
+
+            color: var(--text-muted);
+
+            font-size: 11px;
+        }
+
+        .footer strong {
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        /* =========================================================
+           TOAST
+        ========================================================= */
+
+        .toast {
+            position: fixed;
+
+            left: 50%;
+            bottom: 25px;
+
+            transform:
+                translate(-50%, 100px);
+
+            min-width: 270px;
+            max-width: calc(100% - 40px);
+
+            padding:
+                13px 16px;
+
+            border-radius: 10px;
+
+            background:
+                #1b1b1b;
+
+            color:
+                #ffffff;
+
+            font-size: 12px;
+
+            text-align: center;
+
+            box-shadow:
+                0 12px 30px
+                rgba(0, 0, 0, 0.18);
+
+            opacity: 0;
+
+            transition:
+                all 0.3s ease;
+
+            z-index: 100;
+        }
+
+        .toast.show {
+            opacity: 1;
+
+            transform:
+                translate(-50%, 0);
+        }
+
+        .toast.error-toast {
+            background:
+                #2b1717;
+        }
+
+        .toast.success-toast {
+            background:
+                #15251b;
+        }
+
+        /* =========================================================
+           MOBILE
+        ========================================================= */
+
+        @media (max-width: 600px) {
+
+            .topbar {
+                padding:
+                    18px 18px;
+            }
+
+            .brand {
+                font-size: 17px;
+            }
+
+            .brand-mark {
+                width: 34px;
+                height: 34px;
+
+                border-radius: 9px;
+            }
+
+            .top-login {
+                font-size: 11px;
+            }
+
+            .main {
+                align-items: flex-start;
+
+                padding:
+                    25px 14px
+                    45px;
+            }
+
+            .auth-card {
+                padding:
+                    27px 20px;
+
+                border-radius:
+                    18px;
+
+                box-shadow:
+                    0 12px 35px
+                    rgba(0, 0, 0, 0.07);
+            }
+
+            .auth-icon {
+                width: 50px;
+                height: 50px;
+
+                border-radius: 14px;
+
+                font-size: 21px;
+
+                margin-bottom: 18px;
+            }
+
+            .auth-header h1 {
+                font-size: 25px;
+
+                letter-spacing:
+                    -0.6px;
+            }
+
+            .auth-header p {
+                font-size: 12px;
+
+                line-height: 1.65;
+            }
+
+            .steps {
+                margin:
+                    23px 0
+                    25px;
+            }
+
+            .step {
+                font-size: 10px;
+
+                gap: 6px;
+            }
+
+            .step-number {
+                width: 24px;
+                height: 24px;
+
+                font-size: 10px;
+            }
+
+            .step-line {
+                margin:
+                    0 7px;
+            }
+
+            .form-group {
+                margin-bottom: 17px;
+            }
+
+            .form-label {
+                font-size: 12px;
+            }
+
+            .form-input {
+                height: 49px;
+
+                font-size: 13px;
+            }
+
+            .primary-button {
+                min-height: 50px;
+            }
+
+            .security-note {
+                margin-top: 20px;
+            }
+
+            .footer {
+                padding-bottom:
+                    18px;
+
+                font-size: 10px;
+            }
+        }
+
+        @media (max-width: 380px) {
+
+            .top-login span {
+                display: none;
+            }
+
+            .auth-card {
+                padding:
+                    24px 17px;
+            }
+
+            .step {
+                font-size: 9px;
+            }
+
+            .step-line {
+                margin:
+                    0 5px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Decorative Background -->
+    <div class="background-shape shape-one"></div>
+    <div class="background-shape shape-two"></div>
+
+
+    <!-- =========================================================
+         HEADER
+    ========================================================== -->
+
+    <header class="topbar">
+
+        <div class="topbar-inner">
+
+            <a
+                href="index.html"
+                class="brand"
+                aria-label="Professional Studio Home"
+            >
+                <div class="brand-mark">
+                    PS
+                </div>
+
+                <span>
+                    Professional Studio
+                </span>
+            </a>
+
+            <div class="top-login">
+                <span>Remember your password?</span>
+
+                <a href="login.html">
+                    Log in
+                </a>
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- =========================================================
+         MAIN
+    ========================================================== -->
+
+    <main class="main">
+
+        <div class="auth-wrapper">
+
+            <section class="auth-card">
+
+
+                <!-- =================================================
+                     FORGOT PASSWORD SCREEN
+                ================================================== -->
+
+                <div
+                    class="forgot-screen"
+                    id="forgotScreen"
+                >
+
+                    <div class="auth-icon">
+                        🔐
+                    </div>
+
+                    <div class="auth-header">
+
+                        <h1>
+                            Forgot your password?
+                        </h1>
+
+                        <p>
+                            No worries. Enter the email address
+                            associated with your Professional Studio
+                            account and we'll send you a secure
+                            password reset link.
+                        </p>
+
+                    </div>
+
+
+                    <!-- Steps -->
+
+                    <div class="steps">
+
+                        <div class="step active">
+
+                            <div class="step-number">
+                                1
+                            </div>
+
+                            <span>
+                                Email
+                            </span>
+
+                        </div>
+
+                        <div class="step-line"></div>
+
+                        <div class="step">
+
+                            <div class="step-number">
+                                2
+                            </div>
+
+                            <span>
+                                Verify
+                            </span>
+
+                        </div>
+
+                        <div class="step-line"></div>
+
+                        <div class="step">
+
+                            <div class="step-number">
+                                3
+                            </div>
+
+                            <span>
+                                Reset
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Email Form -->
+
+                    <form
+                        id="forgotForm"
+                        novalidate
+                    >
+
+                        <div class="form-group">
+
+                            <label
+                                class="form-label"
+                                for="email"
+                            >
+                                Email address
+                            </label>
+
+                            <div class="input-wrapper">
+
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    class="form-input"
+                                    placeholder="you@example.com"
+                                    autocomplete="email"
+                                    required
+                                >
+
+                                <span class="input-icon">
+                                    ✉
+                                </span>
+
+                            </div>
+
+                            <div
+                                class="field-message"
+                                id="emailMessage"
+                            ></div>
+
+                        </div>
+
+
+                        <button
+                            type="submit"
+                            class="primary-button"
+                            id="sendButton"
+                        >
+
+                            <span class="button-text">
+                                Send reset link
+                            </span>
+
+                            <span class="loader"></span>
+
+                        </button>
+
+                    </form>
+
+
+                    <!-- Back -->
+
+                    <div class="back-login">
+
+                        <a href="login.html">
+                            ← Back to login
+                        </a>
+
+                    </div>
+
+
+                    <!-- Security -->
+
+                    <div class="security-note">
+
+                        <span class="security-icon">
+                            🛡️
+                        </span>
+
+                        <p>
+                            For your security, we'll only send a
+                            reset link if this email is associated
+                            with an account. The link will expire
+                            after a limited time.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     SUCCESS SCREEN
+                ================================================== -->
+
+                <div
+                    class="success-screen"
+                    id="successScreen"
+                >
+
+                    <div class="success-icon">
+                        ✓
+                    </div>
+
+                    <h2>
+                        Check your inbox
+                    </h2>
+
+                    <p>
+                        We've sent a password reset link to
+                    </p>
+
+                    <div
+                        class="email-highlight"
+                        id="successEmail"
+                    >
+                        example@email.com
+                    </div>
+
+                    <p>
+                        Check your inbox and follow the link
+                        to create a new password.
+                    </p>
+
+
+                    <div class="success-info">
+
+                        <p>
+                            <strong>Didn't receive it?</strong><br>
+
+                            Check your spam or promotions folder.
+                            If it's still missing, you can request
+                            another email after the cooldown period.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="resend-button"
+                        id="resendButton"
+                    >
+                        Resend reset link
+                    </button>
+
+
+                    <div class="back-login">
+
+                        <a href="login.html">
+                            ← Back to login
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     RESET PASSWORD SCREEN
+                     Used when your backend redirects here with
+                     a valid reset token.
+                ================================================== -->
+
+                <div
+                    class="reset-screen"
+                    id="resetScreen"
+                >
+
+                    <div class="auth-icon">
+                        🔑
+                    </div>
+
+                    <div class="auth-header">
+
+                        <h1>
+                            Create a new password
+                        </h1>
+
+                        <p>
+                            Choose a strong password you haven't
+                            used with this account before.
+                        </p>
+
+                    </div>
+
+                    <div class="steps">
+
+                        <div class="step active">
+
+                            <div class="step-number">
+                                ✓
+                            </div>
+
+                            <span>
+                                Email
+                            </span>
+
+                        </div>
+
+                        <div class="step-line"></div>
+
+                        <div class="step active">
+
+                            <div class="step-number">
+                                ✓
+                            </div>
+
+                            <span>
+                                Verify
+                            </span>
+
+                        </div>
+
+                        <div class="step-line"></div>
+
+                        <div class="step active">
+
+                            <div class="step-number">
+                                3
+                            </div>
+
+                            <span>
+                                Reset
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <form
+                        id="resetForm"
+                        novalidate
+                    >
+
+                        <div class="form-group">
+
+                            <label
+                                class="form-label"
+                                for="newPassword"
+                            >
+                                New password
+                            </label>
+
+                            <div class="input-wrapper">
+
+                                <input
+                                    type="password"
+                                    id="newPassword"
+                                    class="form-input password-input"
+                                    placeholder="Enter new password"
+                                    autocomplete="new-password"
+                                    required
+                                >
+
+                                <span class="input-icon">
+                                    🔒
+                                </span>
+
+                                <button
+                                    type="button"
+                                    class="toggle-password"
+                                    data-target="newPassword"
+                                    aria-label="Show password"
+                                >
+                                    👁
+                                </button>
+
+                            </div>
+
+                            <div
+                                class="password-strength"
+                                id="passwordStrength"
+                            >
+
+                                <div class="strength-bars">
+
+                                    <span class="strength-bar"></span>
+                                    <span class="strength-bar"></span>
+                                    <span class="strength-bar"></span>
+                                    <span class="strength-bar"></span>
+
+                                </div>
+
+                                <span
+                                    class="strength-text"
+                                    id="strengthText"
+                                >
+                                    Password strength
+                                </span>
+
+                            </div>
+
+                            <div
+                                class="field-message"
+                                id="passwordMessage"
+                            ></div>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label
+                                class="form-label"
+                                for="confirmPassword"
+                            >
+                                Confirm new password
+                            </label>
+
+                            <div class="input-wrapper">
+
+                                <input
+                                    type="password"
+                                    id="confirmPassword"
+                                    class="form-input password-input"
+                                    placeholder="Confirm new password"
+                                    autocomplete="new-password"
+                                    required
+                                >
+
+                                <span class="input-icon">
+                                    🔒
+                                </span>
+
+                                <button
+                                    type="button"
+                                    class="toggle-password"
+                                    data-target="confirmPassword"
+                                    aria-label="Show password"
+                                >
+                                    👁
+                                </button>
+
+                            </div>
+
+                            <div
+                                class="field-message"
+                                id="confirmMessage"
+                            ></div>
+
+                        </div>
+
+
+                        <button
+                            type="submit"
+                            class="primary-button"
+                            id="resetButton"
+                        >
+
+                            <span class="button-text">
+                                Update password
+                            </span>
+
+                            <span class="loader"></span>
+
+                        </button>
+
+                    </form>
+
+
+                    <div class="back-login">
+
+                        <a href="login.html">
+                            ← Back to login
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+
+    <!-- =========================================================
+         FOOTER
+    ========================================================== -->
+
+    <footer class="footer">
+
+        © 2026
+        <strong>
+            Professional Studio
+        </strong>.
+        Built for photographers.
+
+    </footer>
+
+
+    <!-- =========================================================
+         TOAST
+    ========================================================== -->
+
+    <div
+        class="toast"
+        id="toast"
+    ></div>
+
+
+    <script>
+
+        /* =========================================================
+           ELEMENTS
+        ========================================================= */
+
+        const forgotForm =
+            document.getElementById("forgotForm");
+
+        const emailInput =
+            document.getElementById("email");
+
+        const emailMessage =
+            document.getElementById("emailMessage");
+
+        const sendButton =
+            document.getElementById("sendButton");
+
+        const resendButton =
+            document.getElementById("resendButton");
+
+        const forgotScreen =
+            document.getElementById("forgotScreen");
+
+        const successScreen =
+            document.getElementById("successScreen");
+
+        const resetScreen =
+            document.getElementById("resetScreen");
+
+        const successEmail =
+            document.getElementById("successEmail");
+
+        const toast =
+            document.getElementById("toast");
+
+
+        /* =========================================================
+           TOAST
+        ========================================================= */
+
+        function showToast(
+            message,
+            type = ""
+        ) {
+
+            toast.textContent = message;
+
+            toast.className =
+                "toast show " +
+                (
+                    type === "error"
+                        ? "error-toast"
+                        : type === "success"
+                            ? "success-toast"
+                            : ""
+                );
+
+            clearTimeout(
+                window.toastTimer
+            );
+
+            window.toastTimer =
+                setTimeout(() => {
+
+                    toast.classList.remove(
+                        "show"
+                    );
+
+                }, 3000);
+        }
+
+
+        /* =========================================================
+           EMAIL VALIDATION
+        ========================================================= */
+
+        function isValidEmail(email) {
+
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+                .test(email);
+
+        }
+
+
+        function validateEmail() {
+
+            const email =
+                emailInput.value.trim();
+
+            emailInput.classList.remove(
+                "error",
+                "success"
+            );
+
+            emailMessage.className =
+                "field-message";
+
+            emailMessage.textContent = "";
+
+
+            if (!email) {
+
+                emailInput.classList.add(
+                    "error"
+                );
+
+                emailMessage.classList.add(
+                    "error"
+                );
+
+                emailMessage.textContent =
+                    "Please enter your email address.";
+
+                return false;
+            }
+
+
+            if (!isValidEmail(email)) {
+
+                emailInput.classList.add(
+                    "error"
+                );
+
+                emailMessage.classList.add(
+                    "error"
+                );
+
+                emailMessage.textContent =
+                    "Please enter a valid email address.";
+
+                return false;
+            }
+
+
+            emailInput.classList.add(
+                "success"
+            );
+
+            return true;
+        }
+
+
+        emailInput.addEventListener(
+            "blur",
+            validateEmail
+        );
+
+
+        emailInput.addEventListener(
+            "input",
+            () => {
+
+                if (
+                    emailInput.classList.contains(
+                        "error"
+                    )
+                ) {
+                    validateEmail();
+                }
+
+            }
+        );
+
+
+        /* =========================================================
+           LOADING STATE
+        ========================================================= */
+
+        function setLoading(
+            button,
+            loading
+        ) {
+
+            button.disabled =
+                loading;
+
+            button.classList.toggle(
+                "loading",
+                loading
+            );
+
+        }
+
+
+        /* =========================================================
+           SEND RESET REQUEST
+        ========================================================= */
+
+        async function sendResetRequest() {
+
+            const email =
+                emailInput.value.trim();
+
+
+            setLoading(
+                sendButton,
+                true
+            );
+
+
+            try {
+
+                /*
+                 * ==================================================
+                 * REPLACE THIS WITH YOUR REAL BACKEND ENDPOINT
+                 * ==================================================
+                 *
+                 * Example:
+                 *
+                 * const response = await fetch(
+                 *     "https://your-api.com/auth/forgot-password",
+                 *     {
+                 *         method: "POST",
+                 *         headers: {
+                 *             "Content-Type":
+                 *                 "application/json"
+                 *         },
+                 *         body: JSON.stringify({
+                 *             email: email
+                 *         })
+                 *     }
+                 * );
+                 *
+                 * const data =
+                 *     await response.json();
+                 *
+                 * if (!response.ok) {
+                 *     throw new Error(
+                 *         data.message ||
+                 *         "Something went wrong."
+                 *     );
+                 * }
+                 */
+
+
+                /*
+                 * Temporary simulation so the UI can be
+                 * tested without a backend.
+                 */
+
+                await new Promise(
+                    resolve =>
+                        setTimeout(
+                            resolve,
+                            1200
+                        )
+                );
+
+
+                successEmail.textContent =
+                    email;
+
+
+                forgotScreen.style.display =
+                    "none";
+
+                successScreen.classList.add(
+                    "show"
+                );
+
+
+                showToast(
+                    "Reset link sent successfully.",
+                    "success"
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Forgot password error:",
+                    error
+                );
+
+
+                showToast(
+                    error.message ||
+                    "Unable to send reset link.",
+                    "error"
+                );
+
+            } finally {
+
+                setLoading(
+                    sendButton,
+                    false
+                );
+
+            }
+        }
+
+
+        /* =========================================================
+           FORGOT FORM
+        ========================================================= */
+
+        forgotForm.addEventListener(
+            "submit",
+            async event => {
+
+                event.preventDefault();
+
+
+                if (!validateEmail()) {
+
+                    return;
+
+                }
+
+
+                await sendResetRequest();
+
+            }
+        );
+
+
+        /* =========================================================
+           RESEND
+        ========================================================= */
+
+        resendButton.addEventListener(
+            "click",
+            async () => {
+
+                const email =
+                    successEmail.textContent.trim();
+
+
+                resendButton.disabled =
+                    true;
+
+                resendButton.textContent =
+                    "Sending...";
+
+
+                try {
+
+                    /*
+                     * Replace with the same backend request
+                     * used above.
+                     */
+
+                    await new Promise(
+                        resolve =>
+                            setTimeout(
+                                resolve,
+                                1000
+                            )
+                    );
+
+
+                    showToast(
+                        "A new reset link has been sent.",
+                        "success"
+                    );
+
+
+                    resendButton.textContent =
+                        "Link sent ✓";
+
+
+                    setTimeout(
+                        () => {
+
+                            resendButton.disabled =
+                                false;
+
+                            resendButton.textContent =
+                                "Resend reset link";
+
+                        },
+                        3000
+                    );
+
+
+                } catch (error) {
+
+                    resendButton.disabled =
+                        false;
+
+                    resendButton.textContent =
+                        "Resend reset link";
+
+
+                    showToast(
+                        "Unable to resend the link.",
+                        "error"
+                    );
+
+                }
+
+            }
+        );
+
+
+        /* =========================================================
+           PASSWORD VISIBILITY
+        ========================================================= */
+
+        document
+            .querySelectorAll(
+                ".toggle-password"
+            )
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        const targetId =
+                            button.dataset.target;
+
+                        const input =
+                            document.getElementById(
+                                targetId
+                            );
+
+
+                        if (
+                            input.type ===
+                            "password"
+                        ) {
+
+                            input.type =
+                                "text";
+
+                            button.textContent =
+                                "🙈";
+
+                            button.setAttribute(
+                                "aria-label",
+                                "Hide password"
+                            );
+
+                        } else {
+
+                            input.type =
+                                "password";
+
+                            button.textContent =
+                                "👁";
+
+                            button.setAttribute(
+                                "aria-label",
+                                "Show password"
+                            );
+
+                        }
+
+                    }
+                );
+
+            });
+
+
+        /* =========================================================
+           PASSWORD STRENGTH
+        ========================================================= */
+
+        const newPassword =
+            document.getElementById(
+                "newPassword"
+            );
+
+        const passwordStrength =
+            document.getElementById(
+                "passwordStrength"
+            );
+
+        const strengthBars =
+            document.querySelectorAll(
+                ".strength-bar"
+            );
+
+        const strengthText =
+            document.getElementById(
+                "strengthText"
+            );
+
+
+        function getPasswordStrength(
+            password
+        ) {
+
+            let score = 0;
+
+
+            if (
+                password.length >= 8
+            ) {
+                score++;
+            }
+
+            if (
+                /[A-Z]/.test(password)
+            ) {
+                score++;
+            }
+
+            if (
+                /[0-9]/.test(password)
+            ) {
+                score++;
+            }
+
+            if (
+                /[^A-Za-z0-9]/.test(password)
+            ) {
+                score++;
+            }
+
+
+            return score;
+
+        }
+
+
+        newPassword.addEventListener(
+            "input",
+            () => {
+
+                const password =
+                    newPassword.value;
+
+
+                if (!password) {
+
+                    passwordStrength.classList.remove(
+                        "visible"
+                    );
+
+                    return;
+
+                }
+
+
+                passwordStrength.classList.add(
+                    "visible"
+                );
+
+
+                const score =
+                    getPasswordStrength(
+                        password
+                    );
+
+
+                strengthBars.forEach(
+                    bar => {
+
+                        bar.style.background =
+                            "#e8e8e5";
+
+                    }
+                );
+
+
+                let label =
+                    "Too weak";
+
+
+                if (score === 1) {
+
+                    label =
+                        "Weak";
+
+                } else if (score === 2) {
+
+                    label =
+                        "Fair";
+
+                } else if (score === 3) {
+
+                    label =
+                        "Good";
+
+                } else if (score === 4) {
+
+                    label =
+                        "Strong";
+
+                }
+
+
+                strengthText.textContent =
+                    label;
+
+
+                for (
+                    let i = 0;
+                    i < score;
+                    i++
+                ) {
+
+                    strengthBars[i].style.background =
+                        score <= 1
+                            ? "#dc2626"
+                            : score === 2
+                                ? "#f59e0b"
+                                : "#16803c";
+
+                }
+
+            }
+        );
+
+
+        /* =========================================================
+           RESET PASSWORD
+        ========================================================= */
+
+        const resetForm =
+            document.getElementById(
+                "resetForm"
+            );
+
+        const confirmPassword =
+            document.getElementById(
+                "confirmPassword"
+            );
+
+        const passwordMessage =
+            document.getElementById(
+                "passwordMessage"
+            );
+
+        const confirmMessage =
+            document.getElementById(
+                "confirmMessage"
+            );
+
+        const resetButton =
+            document.getElementById(
+                "resetButton"
+            );
+
+
+        function validatePassword() {
+
+            const password =
+                newPassword.value;
+
+
+            passwordMessage.className =
+                "field-message";
+
+            passwordMessage.textContent =
+                "";
+
+            newPassword.classList.remove(
+                "error",
+                "success"
+            );
+
+
+            if (!password) {
+
+                newPassword.classList.add(
+                    "error"
+                );
+
+                passwordMessage.classList.add(
+                    "error"
+                );
+
+                passwordMessage.textContent =
+                    "Please enter a new password.";
+
+                return false;
+
+            }
+
+
+            if (password.length < 8) {
+
+                newPassword.classList.add(
+                    "error"
+                );
+
+                passwordMessage.classList.add(
+                    "error"
+                );
+
+                passwordMessage.textContent =
+                    "Password must contain at least 8 characters.";
+
+                return false;
+
+            }
+
+
+            newPassword.classList.add(
+                "success"
+            );
+
+            return true;
+
+        }
+
+
+        function validateConfirmPassword() {
+
+            const password =
+                newPassword.value;
+
+            const confirm =
+                confirmPassword.value;
+
+
+            confirmMessage.className =
+                "field-message";
+
+            confirmMessage.textContent =
+                "";
+
+            confirmPassword.classList.remove(
+                "error",
+                "success"
+            );
+
+
+            if (!confirm) {
+
+                confirmPassword.classList.add(
+                    "error"
+                );
+
+                confirmMessage.classList.add(
+                    "error"
+                );
+
+                confirmMessage.textContent =
+                    "Please confirm your password.";
+
+                return false;
+
+            }
+
+
+            if (password !== confirm) {
+
+                confirmPassword.classList.add(
+                    "error"
+                );
+
+                confirmMessage.classList.add(
+                    "error"
+                );
+
+                confirmMessage.textContent =
+                    "Passwords do not match.";
+
+                return false;
+
+            }
+
+
+            confirmPassword.classList.add(
+                "success"
+            );
+
+            confirmMessage.classList.add(
+                "success"
+            );
+
+            confirmMessage.textContent =
+                "Passwords match.";
+
+            return true;
+
+        }
+
+
+        newPassword.addEventListener(
+            "blur",
+            validatePassword
+        );
+
+        confirmPassword.addEventListener(
+            "blur",
+            validateConfirmPassword
+        );
+
+        confirmPassword.addEventListener(
+            "input",
+            () => {
+
+                if (
+                    confirmPassword.value
+                ) {
+
+                    validateConfirmPassword();
+
+                }
+
+            }
+        );
+
+
+        resetForm.addEventListener(
+            "submit",
+            async event => {
+
+                event.preventDefault();
+
+
+                const validPassword =
+                    validatePassword();
+
+                const validConfirm =
+                    validateConfirmPassword();
+
+
+                if (
+                    !validPassword ||
+                    !validConfirm
+                ) {
+
+                    return;
+
+                }
+
+
+                setLoading(
+                    resetButton,
+                    true
+                );
+
+
+                try {
+
+                    /*
+                     * ==================================================
+                     * REPLACE WITH YOUR REAL RESET PASSWORD API
+                     * ==================================================
+                     *
+                     * Example:
+                     *
+                     * const token =
+                     *     new URLSearchParams(
+                     *         window.location.search
+                     *     ).get("token");
+                     *
+                     * const response = await fetch(
+                     *     "https://your-api.com/auth/reset-password",
+                     *     {
+                     *         method: "POST",
+                     *         headers: {
+                     *             "Content-Type":
+                     *                 "application/json"
+                     *         },
+                     *         body: JSON.stringify({
+                     *             token,
+                     *             password:
+                     *                 newPassword.value
+                     *         })
+                     *     }
+                     * );
+                     */
+
+
+                    await new Promise(
+                        resolve =>
+                            setTimeout(
+                                resolve,
+                                1200
+                            )
+                    );
+
+
+                    showToast(
+                        "Password updated successfully.",
+                        "success"
+                    );
+
+
+                    setTimeout(
+                        () => {
+
+                            window.location.href =
+                                "login.html";
+
+                        },
+                        1200
+                    );
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Password reset error:",
+                        error
+                    );
+
+
+                    showToast(
+                        "Unable to update your password.",
+                        "error"
+                    );
+
+                } finally {
+
+                    setLoading(
+                        resetButton,
+                        false
+                    );
+
+                }
+
+            }
+        );
+
+
+        /* =========================================================
+           OPTIONAL RESET TOKEN DETECTION
+        =========================================================
+           If your backend redirects users to:
+
+           forgot-password.html?token=XXXXXXXX
+
+           you can automatically show the reset form.
+        ========================================================= */
+
+        const urlParams =
+            new URLSearchParams(
+                window.location.search
+            );
+
+        const resetToken =
+            urlParams.get("token");
+
+
+        if (resetToken) {
+
+            forgotScreen.style.display =
+                "none";
+
+            successScreen.classList.remove(
+                "show"
+            );
+
+            resetScreen.classList.add(
+                "show"
+            );
+
+        }
+
+    </script>
+
+</body>
+</html>
