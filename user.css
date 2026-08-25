@@ -1197,3 +1197,569 @@ tbody tr:hover{
     background: #111;
     color: #fff;
 }
+
+/* =========================================================
+   MOBILE FRIENDLY IMPROVEMENTS
+   Desktop remains completely unchanged
+========================================================= */
+
+@media (max-width: 768px){
+
+    /* ===========================
+       GENERAL
+    =========================== */
+
+    body{
+        overflow-x:hidden;
+        font-size:14px;
+    }
+
+    .section{
+        padding:40px 16px;
+    }
+
+    .section h2{
+        font-size:26px;
+        margin-bottom:22px;
+        line-height:1.3;
+    }
+
+/* ===========================
+     NAVBAR
+=========================== */
+
+.navbar{
+    padding:14px 16px;
+    gap:12px;
+}
+
+.logo{
+    font-size:24px;
+}
+
+.navbar nav{
+    width:100%;
+    display:flex;
+    gap:22px;
+    justify-content:flex-start;
+    overflow-x:auto;
+    flex-wrap:nowrap;
+    padding:3px 2px 6px;
+    scrollbar-width:none;
+}
+
+.navbar nav::-webkit-scrollbar{
+    display:none;
+}
+
+.navbar a{
+    flex:0 0 auto;
+    padding:0;
+    border:none;
+    border-radius:0;
+    font-size:14px;
+    white-space:nowrap;
+    background:transparent;
+    color:#111;
+    font-weight:500;
+}
+
+.navbar a:hover{
+    color:#666;
+}
+
+    /* ==========================
+       HERO
+    =========================== */
+
+    .hero{
+        padding:50px 18px;
+    }
+
+    .hero h1{
+        font-size:30px;
+        line-height:1.2;
+        margin-bottom:12px;
+    }
+
+    .hero p{
+        font-size:14px;
+        line-height:1.7;
+    }
+
+
+    /* ===========================
+       BUTTONS
+    =========================== */
+
+    button,
+    .btn-primary{
+        min-height:46px;
+        padding:12px 18px;
+        font-size:14px;
+    }
+
+    .copy-profile-btn{
+        min-height:46px;
+        margin-left:0;
+        margin-top:10px;
+        width:100%;
+    }
+
+
+    /* ===========================
+       SECTION HEADER
+    =========================== */
+
+    .section-header{
+        gap:15px;
+        margin-bottom:25px;
+    }
+
+    .section-header h2{
+        font-size:26px;
+        line-height:1.3;
+    }
+
+    .section-header p{
+        font-size:14px;
+        line-height:1.6;
+    }
+
+    .section-header .btn-primary{
+        width:100%;
+    }
+
+
+    /* ===========================
+       STAT CARDS
+    =========================== */
+
+    .stats-grid{
+        grid-template-columns:1fr;
+        gap:14px;
+    }
+
+    .stat-card{
+        padding:20px;
+        border-radius:12px;
+    }
+
+    .stat-card h1{
+        font-size:34px;
+    }
+
+
+    /* ===========================
+       FORMS
+    =========================== */
+
+    .form-card{
+        padding:20px;
+        border-radius:12px;
+    }
+
+    label{
+        margin-top:15px;
+        margin-bottom:7px;
+        font-size:14px;
+    }
+
+    input,
+    textarea,
+    select{
+        min-height:46px;
+        padding:12px 13px;
+        font-size:16px;
+        border-radius:9px;
+    }
+
+    textarea{
+        min-height:120px;
+    }
+
+
+    /* ===========================
+       SERVICES
+    =========================== */
+
+    .service-grid{
+        grid-template-columns:1fr;
+        gap:12px;
+    }
+
+    .service-card{
+        min-height:58px;
+        padding:15px;
+        border-radius:11px;
+    }
+
+    .service-card input{
+        width:20px;
+        height:20px;
+        flex-shrink:0;
+    }
+
+    .add-service-box{
+        flex-direction:column;
+        gap:10px;
+    }
+
+    .add-service-box input{
+        min-width:0;
+        width:100%;
+    }
+
+    .add-service-box button{
+        width:100%;
+        margin-top:0;
+    }
+
+
+    /* ===========================
+       PRICING
+    =========================== */
+
+    .pricing-grid{
+        grid-template-columns:1fr;
+        gap:15px;
+    }
+
+    .pricing-card{
+        padding:20px;
+        border-radius:12px;
+    }
+
+
+    /* ===========================
+       EQUIPMENT
+    =========================== */
+
+    .equipment-grid{
+        grid-template-columns:1fr;
+        gap:15px;
+    }
+
+    .equipment-card{
+        padding:20px;
+        border-radius:12px;
+    }
+
+    .equipment-card textarea{
+        min-height:130px;
+    }
+
+    .add-equipment-card{
+        min-height:220px;
+        padding:25px 20px;
+        border-radius:14px;
+    }
+
+    .add-icon{
+        width:58px;
+        height:58px;
+        font-size:32px;
+    }
+
+
+    /* ===========================
+       GALLERY
+    =========================== */
+
+    .gallery-manager{
+        padding:20px;
+        border-radius:12px;
+    }
+
+    input[type="file"]{
+        width:100%;
+        padding:12px 8px;
+        font-size:13px;
+    }
+
+
+    /* ===========================
+       BOOKING CONTROLS
+    =========================== */
+
+    .booking-controls{
+        flex-direction:column;
+        align-items:stretch;
+        gap:14px;
+        margin:20px 0;
+    }
+
+    .booking-filter,
+    .booking-compare{
+        width:100%;
+        flex-direction:column;
+        align-items:stretch;
+        gap:7px;
+    }
+
+    .booking-filter label,
+    .booking-compare label{
+        font-size:14px;
+    }
+
+    .booking-filter select,
+    .booking-compare select{
+        width:100%;
+        min-height:46px;
+        font-size:15px;
+    }
+
+
+    /* ===========================
+       BOOKING TOOLBAR
+    =========================== */
+
+    .booking-toolbar{
+        grid-template-columns:1fr;
+        gap:10px;
+        margin-bottom:22px;
+    }
+
+    .booking-toolbar input,
+    .booking-toolbar select{
+        width:100%;
+        min-height:46px;
+        font-size:16px;
+    }
+
+
+    /* ===========================
+       BOOKING STATISTICS
+    =========================== */
+
+    .booking-stats{
+        grid-template-columns:1fr;
+        gap:12px;
+        margin-bottom:25px;
+    }
+
+    .booking-stats .stat-card{
+        padding:20px;
+    }
+
+    .booking-stats h2{
+        font-size:32px;
+    }
+
+
+    /* ===========================
+       COMPARISON CARDS
+    =========================== */
+
+    .comparison-cards,
+    .compare-summary{
+        grid-template-columns:1fr;
+        gap:12px;
+        margin-bottom:25px;
+    }
+
+    .compare-card{
+        padding:20px;
+        border-radius:12px;
+    }
+
+    .compare-card h2,
+    .compare-card .count{
+        font-size:30px;
+    }
+
+
+    /* ===========================
+       BOOKINGS TABLE
+    =========================== */
+
+    .table-container{
+        width:100%;
+        overflow-x:auto;
+        -webkit-overflow-scrolling:touch;
+        border-radius:12px;
+    }
+
+    table{
+        min-width:780px;
+    }
+
+    th{
+        padding:14px;
+        font-size:13px;
+        white-space:nowrap;
+    }
+
+    td{
+        padding:14px;
+        font-size:13px;
+        white-space:nowrap;
+    }
+
+    /*
+       Small hint that the table can be scrolled
+    */
+    .table-container{
+        position:relative;
+    }
+
+    .table-container::after{
+        content:"Swipe horizontally →";
+        position:sticky;
+        left:0;
+        display:block;
+        width:max-content;
+        padding:6px 10px;
+        margin:0 0 8px 8px;
+        font-size:11px;
+        color:#777;
+        background:#f8f8f8;
+        border-radius:6px;
+    }
+
+
+    /* ===========================
+       STATUS
+    =========================== */
+
+    .status{
+        padding:6px 11px;
+        font-size:12px;
+        white-space:nowrap;
+    }
+
+
+    /* ===========================
+       REVIEWS
+    =========================== */
+
+    .review-grid{
+        grid-template-columns:1fr;
+        gap:14px;
+    }
+
+    .review-card{
+        padding:20px;
+        border-radius:12px;
+    }
+
+
+    /* ===========================
+       SUBSCRIPTION
+    =========================== */
+
+    .subscription-card{
+        padding:25px 18px;
+        border-radius:12px;
+    }
+
+    .subscription-card h1{
+        font-size:34px;
+    }
+
+
+    /* ===========================
+       SETTINGS
+    =========================== */
+
+    .settings-grid{
+        grid-template-columns:1fr;
+        gap:14px;
+    }
+
+    .setting-card{
+        padding:20px;
+        border-radius:12px;
+    }
+
+
+    /* ===========================
+       FOOTER
+    =========================== */
+
+    footer{
+        padding:25px 16px;
+        margin-top:35px;
+        font-size:13px;
+    }
+
+
+    /* ===========================
+       TOUCH FRIENDLY
+    =========================== */
+
+    a,
+    button,
+    select,
+    input[type="checkbox"],
+    input[type="radio"]{
+        -webkit-tap-highlight-color:transparent;
+    }
+
+    input[type="checkbox"],
+    input[type="radio"]{
+        min-width:20px;
+        min-height:20px;
+    }
+
+
+    /* ===========================
+       PREVENT LONG TEXT BREAKING
+    =========================== */
+
+    .stat-card,
+    .pricing-card,
+    .equipment-card,
+    .review-card,
+    .setting-card,
+    .compare-card{
+        overflow:hidden;
+        word-wrap:break-word;
+    }
+
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+   Extra adjustments for ~360px screens
+========================================================= */
+
+@media(max-width:380px){
+
+    .section{
+        padding:35px 13px;
+    }
+
+    .hero{
+        padding:42px 15px;
+    }
+
+    .hero h1{
+        font-size:27px;
+    }
+
+    .section h2{
+        font-size:24px;
+    }
+
+    .navbar{
+        padding:12px 13px;
+    }
+
+    .logo{
+        font-size:22px;
+    }
+
+    .stat-card,
+    .pricing-card,
+    .equipment-card,
+    .review-card,
+    .setting-card,
+    .compare-card,
+    .form-card,
+    .gallery-manager{
+        padding:17px;
+    }
+
+}
