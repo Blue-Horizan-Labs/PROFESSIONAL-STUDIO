@@ -12,7 +12,6 @@
 <title>Recent Work | Ganesh Photography</title>
 
 <style>
-
 /* =========================================================
    GLOBAL
 ========================================================= */
@@ -39,6 +38,7 @@ button,
 a{
     -webkit-tap-highlight-color:transparent;
 }
+
 
 /* =========================================================
    NAVBAR
@@ -82,6 +82,7 @@ a{
 .navbar nav a:hover{
     color:#777;
 }
+
 
 /* =========================================================
    HERO
@@ -132,6 +133,7 @@ a{
     color:rgba(255,255,255,.9);
 }
 
+
 /* =========================================================
    RECENT WORK SECTION
 ========================================================= */
@@ -161,6 +163,7 @@ a{
     font-size:.98rem;
 }
 
+
 /* =========================================================
    ALBUM GRID
 ========================================================= */
@@ -173,6 +176,7 @@ a{
 
     gap:25px;
 }
+
 
 /* =========================================================
    ALBUM CARD
@@ -201,6 +205,7 @@ a{
     box-shadow:
         0 18px 40px rgba(0,0,0,.13);
 }
+
 
 /* =========================================================
    ALBUM COVER
@@ -233,6 +238,7 @@ a{
     transform:scale(1.05);
 }
 
+
 /* =========================================================
    PHOTO COUNT
 ========================================================= */
@@ -257,6 +263,7 @@ a{
 
     backdrop-filter:blur(5px);
 }
+
 
 /* =========================================================
    ALBUM CONTENT
@@ -308,6 +315,7 @@ a{
     transform:translateX(4px);
 }
 
+
 /* =========================================================
    ALBUM VIEWER
 ========================================================= */
@@ -340,6 +348,7 @@ a{
     }
 
 }
+
 
 /* =========================================================
    VIEWER HEADER
@@ -393,6 +402,7 @@ a{
     background:#333;
 }
 
+
 /* =========================================================
    MASONRY GALLERY
 ========================================================= */
@@ -445,6 +455,7 @@ a{
     transform:scale(1.035);
 }
 
+
 /* =========================================================
    EMPTY STATE
 ========================================================= */
@@ -460,6 +471,7 @@ a{
 
     color:#777;
 }
+
 
 /* =========================================================
    CTA
@@ -509,6 +521,7 @@ a{
     transform:translateY(-2px);
 }
 
+
 /* =========================================================
    LIGHTBOX
 ========================================================= */
@@ -553,6 +566,7 @@ a{
     user-select:none;
 }
 
+
 /* =========================================================
    CLOSE BUTTON
 ========================================================= */
@@ -584,6 +598,7 @@ a{
 .close-btn:hover{
     transform:scale(1.12);
 }
+
 
 /* =========================================================
    LIGHTBOX NAVIGATION
@@ -628,6 +643,7 @@ a{
     right:25px;
 }
 
+
 /* =========================================================
    IMAGE COUNTER
 ========================================================= */
@@ -652,6 +668,7 @@ a{
 
     border-radius:20px;
 }
+
 
 /* =========================================================
    BACK SECTION
@@ -682,6 +699,7 @@ a{
 .back-btn:hover{
     background:#333;
 }
+
 
 /* =========================================================
    FOOTER
@@ -729,6 +747,7 @@ footer{
     text-decoration:underline;
 }
 
+
 /* =========================================================
    TABLET
 ========================================================= */
@@ -746,160 +765,435 @@ footer{
 
 }
 
+
 /* =========================================================
    MOBILE
 ========================================================= */
 
 @media(max-width:768px){
 
-    .navbar{
-        padding:15px 20px;
-    }
+    /* ================================
+       NAVBAR
+    ================================ */
 
-    .navbar nav{
-        gap:22px;
+    .navbar{
+        padding:14px 18px;
+
+        gap:16px;
     }
 
     .logo{
         font-size:1.3rem;
+
+        flex-shrink:0;
     }
 
+    .navbar nav{
+        display:flex;
+
+        gap:16px;
+
+        align-items:center;
+
+        justify-content:flex-end;
+
+        flex-wrap:wrap;
+    }
+
+    .navbar nav a{
+        font-size:.88rem;
+
+        white-space:nowrap;
+
+        padding:4px 0;
+    }
+
+
+    /* ================================
+       HERO
+    ================================ */
+
     .gallery-hero{
-        min-height:40vh;
+        min-height:42vh;
+
+        padding:35px 0;
     }
 
     .hero-content{
-        width:88%;
+        width:calc(100% - 36px);
+
+        max-width:none;
     }
 
     .hero-content h1{
-        font-size:2.2rem;
+        font-size:2.25rem;
+
+        line-height:1.15;
 
         letter-spacing:-.5px;
+
+        margin-bottom:12px;
     }
 
     .hero-content p{
         font-size:.95rem;
+
+        line-height:1.55;
+
+        max-width:500px;
     }
 
-    .recent-work{
-        width:calc(100% - 40px);
 
-        margin:50px auto 65px;
+    /* ================================
+       RECENT WORK
+    ================================ */
+
+    .recent-work{
+        width:calc(100% - 28px);
+
+        margin:45px auto 60px;
     }
 
     .section-heading{
-        margin-bottom:28px;
+        margin-bottom:25px;
+
+        padding:0 6px;
     }
 
     .section-heading h2{
         font-size:1.7rem;
+
+        line-height:1.25;
+
+        margin-bottom:7px;
     }
+
+    .section-heading p{
+        font-size:.9rem;
+
+        line-height:1.55;
+    }
+
+
+    /* ================================
+       ALBUM GRID
+    ================================ */
 
     .album-grid{
         grid-template-columns:1fr;
 
-        gap:18px;
+        gap:16px;
+    }
+
+
+    /* ================================
+       ALBUM CARD
+    ================================ */
+
+    .album-card{
+        border-radius:14px;
+
+        box-shadow:
+            0 5px 18px rgba(0,0,0,.07);
+    }
+
+    .album-card:hover{
+        transform:none;
+
+        box-shadow:
+            0 5px 18px rgba(0,0,0,.07);
     }
 
     .album-cover{
-        height:230px;
+        height:235px;
+    }
+
+    .album-card:hover .album-cover img{
+        transform:none;
     }
 
     .album-content{
-        padding:17px 18px 19px;
+        padding:16px 17px 18px;
     }
 
-    .album-viewer{
-        width:calc(100% - 40px);
+    .album-content h3{
+        font-size:1.08rem;
 
-        margin-bottom:65px;
+        margin-bottom:6px;
+    }
+
+    .album-content p{
+        font-size:.88rem;
+
+        line-height:1.5;
+
+        margin-bottom:13px;
+    }
+
+    .view-album{
+        font-size:.9rem;
+
+        padding:4px 0;
+    }
+
+
+    /* ================================
+       PHOTO COUNT
+    ================================ */
+
+    .photo-count{
+        top:12px;
+        right:12px;
+
+        padding:6px 10px;
+
+        font-size:12px;
+    }
+
+
+    /* ================================
+       ALBUM VIEWER
+    ================================ */
+
+    .album-viewer{
+        width:calc(100% - 28px);
+
+        margin:0 auto 60px;
     }
 
     .viewer-header{
-        align-items:flex-start;
-
         flex-direction:column;
 
-        margin-bottom:22px;
+        align-items:flex-start;
+
+        gap:14px;
+
+        margin-bottom:20px;
+    }
+
+    .viewer-title{
+        width:100%;
     }
 
     .viewer-title h2{
-        font-size:1.65rem;
+        font-size:1.6rem;
+
+        line-height:1.25;
+
+        margin-bottom:4px;
+    }
+
+    .viewer-title p{
+        font-size:.88rem;
+
+        line-height:1.5;
     }
 
     .close-album{
-        padding:9px 17px;
+        padding:10px 18px;
+
+        font-size:.86rem;
+
+        min-height:42px;
     }
+
+
+    /* ================================
+       GALLERY
+    ================================ */
 
     .gallery-grid{
         column-count:2;
 
-        column-gap:12px;
+        column-gap:10px;
     }
 
     .gallery-item{
-        margin-bottom:12px;
+        margin-bottom:10px;
 
         border-radius:10px;
+
+        box-shadow:
+            0 4px 14px rgba(0,0,0,.06);
     }
 
-    .lightbox{
-        padding:60px 12px;
+    .gallery-item:hover{
+        transform:none;
+
+        box-shadow:
+            0 4px 14px rgba(0,0,0,.06);
     }
 
-    .lightbox img{
-        max-width:94%;
-
-        max-height:78vh;
+    .gallery-item:hover img{
+        transform:none;
     }
 
-    .nav-btn{
-        width:43px;
-        height:43px;
 
-        font-size:20px;
+    /* ================================
+       EMPTY GALLERY
+    ================================ */
 
-        background:rgba(255,255,255,.15);
+    .empty-gallery{
+        padding:45px 18px;
+
+        border-radius:12px;
+
+        font-size:.9rem;
     }
 
-    .prev{
-        left:8px;
-    }
 
-    .next{
-        right:8px;
-    }
-
-    .close-btn{
-        top:12px;
-        right:14px;
-
-        width:40px;
-        height:40px;
-
-        font-size:32px;
-    }
-
-    .image-counter{
-        bottom:15px;
-
-        font-size:13px;
-    }
+    /* ================================
+       CTA
+    ================================ */
 
     .gallery-cta{
-        padding:55px 20px;
+        padding:50px 20px;
     }
 
     .gallery-cta h2{
-        font-size:1.7rem;
+        font-size:1.65rem;
+
+        line-height:1.25;
+
+        margin-bottom:10px;
     }
 
+    .gallery-cta p{
+        font-size:.9rem;
+
+        line-height:1.55;
+
+        margin-bottom:22px;
+    }
+
+    .book-btn{
+        padding:13px 27px;
+
+        font-size:.9rem;
+    }
+
+
+    /* ================================
+       BACK SECTION
+    ================================ */
+
     .back-section{
+        padding:40px 20px;
+    }
+
+    .back-btn{
+        padding:12px 25px;
+
+        font-size:.9rem;
+    }
+
+
+    /* ================================
+       LIGHTBOX
+    ================================ */
+
+    .lightbox{
+        padding:65px 8px 55px;
+    }
+
+    .lightbox img{
+        max-width:92%;
+
+        max-height:76vh;
+
+        border-radius:7px;
+    }
+
+
+    /* ================================
+       LIGHTBOX CLOSE
+    ================================ */
+
+    .close-btn{
+        top:10px;
+
+        right:10px;
+
+        width:44px;
+        height:44px;
+
+        font-size:32px;
+
+        z-index:2;
+    }
+
+
+    /* ================================
+       LIGHTBOX NAVIGATION
+    ================================ */
+
+    .nav-btn{
+        width:42px;
+        height:42px;
+
+        font-size:19px;
+
+        z-index:2;
+    }
+
+    .prev{
+        left:7px;
+    }
+
+    .next{
+        right:7px;
+    }
+
+
+    /* ================================
+       IMAGE COUNTER
+    ================================ */
+
+    .image-counter{
+        bottom:14px;
+
+        font-size:12px;
+
+        padding:5px 11px;
+
+        white-space:nowrap;
+    }
+
+
+    /* ================================
+       FOOTER
+    ================================ */
+
+    footer{
         padding:45px 20px;
     }
 
+    .footer-content h3{
+        font-size:1.05rem;
+
+        margin-bottom:9px;
+    }
+
+    .footer-content p{
+        font-size:.85rem;
+
+        line-height:1.55;
+    }
+
+    .copyright{
+        margin-top:17px;
+
+        font-size:12px;
+    }
+
+    .powered-by{
+        margin-top:20px;
+
+        font-size:12px;
+    }
+
 }
+
 
 /* =========================================================
    SMALL MOBILE
@@ -907,37 +1201,423 @@ footer{
 
 @media(max-width:500px){
 
+    /* ================================
+       NAVBAR
+    ================================ */
+
+    .navbar{
+        padding:13px 15px;
+
+        gap:12px;
+    }
+
+    .logo{
+        font-size:1.18rem;
+    }
+
     .navbar nav{
-        gap:15px;
+        gap:13px;
     }
 
     .navbar nav a{
-        font-size:.88rem;
+        font-size:.82rem;
+    }
+
+
+    /* ================================
+       HERO
+    ================================ */
+
+    .gallery-hero{
+        min-height:38vh;
+
+        padding:30px 0;
+    }
+
+    .hero-content{
+        width:calc(100% - 28px);
     }
 
     .hero-content h1{
         font-size:1.9rem;
+
+        line-height:1.18;
+
+        margin-bottom:10px;
     }
 
-    .gallery-grid{
-        column-count:1;
+    .hero-content p{
+        font-size:.88rem;
+
+        line-height:1.5;
     }
 
-    .gallery-item{
-        margin-bottom:15px;
+
+    /* ================================
+       RECENT WORK
+    ================================ */
+
+    .recent-work{
+        width:calc(100% - 22px);
+
+        margin:38px auto 50px;
+    }
+
+    .section-heading{
+        margin-bottom:22px;
+    }
+
+    .section-heading h2{
+        font-size:1.5rem;
+    }
+
+    .section-heading p{
+        font-size:.84rem;
+    }
+
+
+    /* ================================
+       ALBUM
+    ================================ */
+
+    .album-grid{
+        gap:14px;
     }
 
     .album-cover{
-        height:220px;
+        height:210px;
+    }
+
+    .album-content{
+        padding:15px 15px 17px;
+    }
+
+    .album-content h3{
+        font-size:1.02rem;
+    }
+
+    .album-content p{
+        font-size:.84rem;
+
+        margin-bottom:11px;
+    }
+
+    .view-album{
+        font-size:.86rem;
     }
 
     .photo-count{
-        top:12px;
+        top:10px;
 
-        right:12px;
+        right:10px;
+
+        padding:5px 9px;
+
+        font-size:11px;
+    }
+
+
+    /* ================================
+       VIEWER
+    ================================ */
+
+    .album-viewer{
+        width:calc(100% - 22px);
+
+        margin-bottom:50px;
+    }
+
+    .viewer-title h2{
+        font-size:1.45rem;
+    }
+
+    .viewer-title p{
+        font-size:.82rem;
+    }
+
+    .close-album{
+        min-height:40px;
+
+        padding:9px 16px;
+    }
+
+
+    /* ================================
+       GALLERY
+    ================================ */
+
+    .gallery-grid{
+        column-count:1;
+
+        column-gap:0;
+    }
+
+    .gallery-item{
+        margin-bottom:13px;
+
+        border-radius:10px;
+    }
+
+
+    /* ================================
+       CTA
+    ================================ */
+
+    .gallery-cta{
+        padding:45px 16px;
+    }
+
+    .gallery-cta h2{
+        font-size:1.5rem;
+    }
+
+    .gallery-cta p{
+        font-size:.84rem;
+
+        margin-bottom:20px;
+    }
+
+    .book-btn{
+        width:100%;
+
+        max-width:300px;
+
+        box-sizing:border-box;
+
+        padding:13px 20px;
+    }
+
+
+    /* ================================
+       BACK
+    ================================ */
+
+    .back-section{
+        padding:35px 16px;
+    }
+
+    .back-btn{
+        width:100%;
+
+        max-width:300px;
+
+        box-sizing:border-box;
+
+        padding:12px 20px;
+    }
+
+
+    /* ================================
+       LIGHTBOX
+    ================================ */
+
+    .lightbox{
+        padding:60px 5px 50px;
+    }
+
+    .lightbox img{
+        max-width:96%;
+
+        max-height:74vh;
+
+        border-radius:6px;
+    }
+
+    .close-btn{
+        top:8px;
+
+        right:7px;
+
+        width:42px;
+        height:42px;
+
+        font-size:30px;
+    }
+
+    .nav-btn{
+        width:38px;
+        height:38px;
+
+        font-size:17px;
+    }
+
+    .prev{
+        left:5px;
+    }
+
+    .next{
+        right:5px;
+    }
+
+    .image-counter{
+        bottom:10px;
+
+        font-size:11px;
+
+        padding:5px 10px;
+    }
+
+
+    /* ================================
+       FOOTER
+    ================================ */
+
+    footer{
+        padding:40px 16px;
+    }
+
+    .footer-content h3{
+        font-size:1rem;
+    }
+
+    .footer-content p{
+        font-size:.8rem;
+    }
+
+    .copyright{
+        font-size:11px;
+    }
+
+    .powered-by{
+        font-size:11px;
     }
 
 }
+
+
+/* =========================================================
+   VERY SMALL PHONES
+========================================================= */
+
+@media(max-width:380px){
+
+    .navbar{
+        padding:12px 12px;
+
+        gap:9px;
+    }
+
+    .logo{
+        font-size:1.08rem;
+    }
+
+    .navbar nav{
+        gap:10px;
+    }
+
+    .navbar nav a{
+        font-size:.76rem;
+    }
+
+
+    .gallery-hero{
+        min-height:36vh;
+
+        padding:25px 0;
+    }
+
+    .hero-content{
+        width:calc(100% - 22px);
+    }
+
+    .hero-content h1{
+        font-size:1.7rem;
+    }
+
+    .hero-content p{
+        font-size:.82rem;
+    }
+
+
+    .recent-work{
+        width:calc(100% - 18px);
+
+        margin:32px auto 42px;
+    }
+
+    .section-heading h2{
+        font-size:1.4rem;
+    }
+
+    .section-heading p{
+        font-size:.8rem;
+    }
+
+
+    .album-cover{
+        height:195px;
+    }
+
+    .album-content{
+        padding:14px;
+    }
+
+    .album-content h3{
+        font-size:1rem;
+    }
+
+    .album-content p{
+        font-size:.8rem;
+    }
+
+
+    .album-viewer{
+        width:calc(100% - 18px);
+    }
+
+    .viewer-title h2{
+        font-size:1.35rem;
+    }
+
+    .viewer-title p{
+        font-size:.79rem;
+    }
+
+
+    .gallery-cta{
+        padding:40px 14px;
+    }
+
+    .gallery-cta h2{
+        font-size:1.4rem;
+    }
+
+
+    .lightbox{
+        padding:55px 3px 45px;
+    }
+
+    .lightbox img{
+        max-width:97%;
+
+        max-height:72vh;
+    }
+
+    .nav-btn{
+        width:35px;
+        height:35px;
+
+        font-size:15px;
+    }
+
+    .prev{
+        left:3px;
+    }
+
+    .next{
+        right:3px;
+    }
+
+    .close-btn{
+        top:6px;
+
+        right:4px;
+
+        font-size:28px;
+    }
+
+}
+
 
 /* =========================================================
    REDUCED MOTION
@@ -958,7 +1638,6 @@ footer{
     }
 
 }
-
 </style>
 
 </head>
