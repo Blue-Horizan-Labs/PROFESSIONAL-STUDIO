@@ -1,7 +1,3 @@
-/* =========================================================
-   GLOBAL
-========================================================= */
-
 body{
     margin:0;
     font-family:Arial,sans-serif;
@@ -11,10 +7,9 @@ body{
     overflow-x:hidden;
 }
 
-
-/* =========================================================
+/* ================================
    BOOKING SECTION
-========================================================= */
+================================ */
 
 .booking-section{
     padding:50px 20px;
@@ -31,10 +26,9 @@ body{
     box-sizing:border-box;
 }
 
-
-/* =========================================================
+/* ================================
    TEXT
-========================================================= */
+================================ */
 
 h1{
     text-align:center;
@@ -51,10 +45,9 @@ h3{
     margin-top:35px;
 }
 
-
-/* =========================================================
+/* ================================
    FORM
-========================================================= */
+================================ */
 
 label{
     display:block;
@@ -87,20 +80,18 @@ textarea:focus{
     box-shadow:0 0 0 3px rgba(17,17,17,.08);
 }
 
-
-/* =========================================================
+/* ================================
    SELECT
-========================================================= */
+================================ */
 
 .custom-select{
     position:relative;
     width:100%;
 }
 
-
-/* =========================================================
+/* ================================
    DATE / TIME
-========================================================= */
+================================ */
 
 .date-time-row{
     margin-top:18px;
@@ -127,10 +118,9 @@ textarea:focus{
     color:#111;
 }
 
-
-/* =========================================================
+/* ================================
    DURATION
-========================================================= */
+================================ */
 
 .duration-box{
     display:none;
@@ -142,10 +132,9 @@ textarea:focus{
     color:#111;
 }
 
-
-/* =========================================================
+/* ================================
    PACKAGE
-========================================================= */
+================================ */
 
 .package-section{
     display:none;
@@ -178,7 +167,7 @@ textarea:focus{
 
 .package-card.active{
     border-color:#111;
-    background:#f5f5f5;
+    background:#c20b5d;
 }
 
 .package-card h4{
@@ -211,10 +200,9 @@ textarea:focus{
     border:1px solid #eee;
 }
 
-
-/* =========================================================
+/* ================================
    BUTTONS
-========================================================= */
+================================ */
 
 .gps-btn,
 .submit-btn{
@@ -254,10 +242,9 @@ textarea:focus{
     cursor:not-allowed;
 }
 
-
-/* =========================================================
+/* ================================
    HELP SECTION
-========================================================= */
+================================ */
 
 .help-section{
     margin-top:35px;
@@ -277,10 +264,9 @@ textarea:focus{
     line-height:1.6;
 }
 
-
-/* =========================================================
+/* ================================
    SUCCESS POPUP
-========================================================= */
+================================ */
 
 .success-popup{
     display:none;
@@ -296,10 +282,9 @@ textarea:focus{
     box-shadow:0 8px 25px rgba(0,0,0,.18);
 }
 
-
-/* =========================================================
+/* ================================
    CHECKBOX
-========================================================= */
+================================ */
 
 .checkbox{
     display:flex;
@@ -313,10 +298,9 @@ textarea:focus{
     margin:0;
 }
 
-
-/* =========================================================
+/* ================================
    PROGRESS BAR
-========================================================= */
+================================ */
 
 .progress-bar{
     height:8px;
@@ -333,10 +317,9 @@ textarea:focus{
     transition:.3s ease;
 }
 
-
-/* =========================================================
+/* ================================
    FOOTER
-========================================================= */
+================================ */
 
 .booking-footer{
     margin-top:30px;
@@ -345,401 +328,97 @@ textarea:focus{
     color:#777;
 }
 
-
-/* =========================================================
+/* ================================
    MOBILE
-   Desktop remains unchanged
-========================================================= */
+================================ */
 
 @media(max-width:650px){
 
-    /* ================================
-       PAGE
-    ================================ */
-
-    body{
-        font-size:14px;
-    }
-
     .booking-section{
-        padding:20px 10px 35px;
+        padding:25px 12px;
     }
-
-
-    /* ================================
-       MAIN CONTAINER
-    ================================ */
 
     .container{
         width:100%;
-        max-width:none;
-        padding:24px 16px;
-        border-radius:14px;
-        box-shadow:0 4px 20px rgba(0,0,0,.08);
+        padding:22px 16px;
+        border-radius:16px;
+        box-shadow:0 6px 25px rgba(0,0,0,.10);
     }
-
-
-    /* ================================
-       HEADER
-    ================================ */
 
     h1{
-        font-size:26px;
-        line-height:1.2;
-        margin:0 0 8px;
-    }
-
-    p{
-        font-size:13px;
-        line-height:1.6;
+        font-size:1.7rem;
     }
 
     h3{
-        font-size:18px;
-        line-height:1.3;
-        margin-top:30px;
-        margin-bottom:12px;
+        margin-top:28px;
     }
 
+    .time-row{
+        flex-direction:column;
+        gap:0;
+    }
 
-    /* ================================
-       FORM
-    ================================ */
+    .time-row input{
+        width:100%;
+    }
 
-    label{
-        margin-top:17px;
-        margin-bottom:7px;
-        font-size:14px;
+    .package-options{
+        grid-template-columns:1fr;
+    }
+
+    .package-card{
+        padding:18px;
+    }
+
+    .gps-btn,
+    .submit-btn{
+        padding:13px;
+    }
+
+    .success-popup{
+        top:12px;
+        left:12px;
+        right:12px;
+        max-width:none;
+        text-align:center;
+        padding:14px 16px;
+    }
+}
+
+/* ================================
+   VERY SMALL DEVICES
+================================ */
+
+@media(max-width:380px){
+
+    .booking-section{
+        padding:18px 8px;
+    }
+
+    .container{
+        padding:18px 13px;
+        border-radius:14px;
+    }
+
+    h1{
+        font-size:1.5rem;
     }
 
     input,
     select,
     textarea{
-        width:100%;
-        min-height:48px;
-        padding:13px 14px;
-        margin-top:0;
-        font-size:16px;
-        border-radius:10px;
-    }
-
-    textarea{
-        min-height:130px;
-    }
-
-
-    /* ================================
-       DATE / TIME
-    ================================ */
-
-    .date-time-row{
-        margin-top:15px;
-        padding:15px;
-        border-radius:12px;
-    }
-
-    .date-time-row label{
-        margin-top:8px;
-    }
-
-    .time-row{
-        display:grid;
-        grid-template-columns:1fr 1fr;
-        gap:10px;
-        margin-top:8px;
-    }
-
-    .time-row input{
-        width:100%;
-        min-width:0;
-    }
-
-    .hours-box{
-        margin-top:12px;
-        padding:10px 12px;
-        background:#fff;
-        border-radius:8px;
-        font-size:13px;
-    }
-
-
-    /* ================================
-       DURATION
-    ================================ */
-
-    .duration-box{
-        margin-top:15px;
-        padding:14px;
-        border-radius:10px;
+        padding:11px;
         font-size:14px;
-        line-height:1.5;
-    }
-
-
-    /* ================================
-       PACKAGE SECTION
-    ================================ */
-
-    .package-section{
-        margin-top:25px;
-    }
-
-    .package-options{
-        display:grid;
-        grid-template-columns:1fr;
-        gap:10px;
-        margin-top:12px;
-    }
-
-    .package-card{
-        padding:17px;
-        border-radius:12px;
-        min-height:0;
-    }
-
-    .package-card h4{
-        font-size:16px;
-        margin:0;
-        padding-right:55px;
-    }
-
-    .package-card p{
-        font-size:13px;
-        line-height:1.5;
-        margin:7px 0 0;
-    }
-
-    .package-card:hover{
-        transform:none;
-    }
-
-    .badge{
-        top:10px;
-        right:10px;
-        padding:4px 8px;
-        font-size:10px;
-    }
-
-    .package-details{
-        margin-top:12px;
-        padding:14px;
-        border-radius:10px;
-        font-size:13px;
-    }
-
-
-    /* ================================
-       BUTTONS
-    ================================ */
-
-    .gps-btn,
-    .submit-btn{
-        width:100%;
-        min-height:50px;
-        padding:14px 16px;
-        border-radius:11px;
-        font-size:14px;
-    }
-
-    .gps-btn{
-        margin-top:10px;
-    }
-
-    .submit-btn{
-        margin-top:20px;
-    }
-
-
-    /* ================================
-       CHECKBOX
-    ================================ */
-
-    .checkbox{
-        display:flex;
-        align-items:flex-start;
-        gap:10px;
-        font-size:13px;
-        line-height:1.5;
-    }
-
-    .checkbox input{
-        width:20px;
-        height:20px;
-        min-width:20px;
-        margin:1px 0 0;
-        flex-shrink:0;
-    }
-
-
-    /* ================================
-       PROGRESS
-    ================================ */
-
-    .progress-bar{
-        height:6px;
-        margin-bottom:20px;
-    }
-
-
-    /* ================================
-       HELP SECTION
-    ================================ */
-
-    .help-section{
-        margin-top:28px;
-        padding-top:20px;
-    }
-
-    .help-section h3{
-        font-size:17px;
-        margin:0 0 8px;
-    }
-
-    .help-section p{
-        font-size:13px;
-        line-height:1.6;
-        margin:0 0 16px;
-    }
-
-
-    /* ================================
-       SUCCESS POPUP
-    ================================ */
-
-    .success-popup{
-        top:12px;
-        left:10px;
-        right:10px;
-        width:auto;
-        max-width:none;
-        padding:14px 16px;
-        border-radius:11px;
-        text-align:center;
-        font-size:13px;
-        line-height:1.4;
-        box-sizing:border-box;
-    }
-
-
-    /* ================================
-       FOOTER
-    ================================ */
-
-    .booking-footer{
-        margin-top:25px;
-        padding:0 5px;
-        font-size:12px;
-        line-height:1.5;
-    }
-}
-
-
-/* =========================================================
-   SMALL PHONES
-========================================================= */
-
-@media(max-width:480px){
-
-    .booking-section{
-        padding:15px 8px 30px;
-    }
-
-    .container{
-        padding:22px 14px;
-        border-radius:13px;
-    }
-
-    h1{
-        font-size:24px;
-    }
-
-    h3{
-        font-size:17px;
-        margin-top:27px;
-    }
-
-    .date-time-row{
-        padding:13px;
-    }
-
-    .time-row{
-        grid-template-columns:1fr;
-        gap:8px;
     }
 
     .package-card{
         padding:16px;
     }
-
-    .gps-btn,
-    .submit-btn{
-        min-height:48px;
-    }
 }
 
-
-/* =========================================================
-   VERY SMALL PHONES
-========================================================= */
-
-@media(max-width:380px){
-
-    .booking-section{
-        padding:10px 6px 25px;
-    }
-
-    .container{
-        padding:20px 12px;
-        border-radius:12px;
-    }
-
-    h1{
-        font-size:22px;
-    }
-
-    p{
-        font-size:12.5px;
-    }
-
-    h3{
-        font-size:16px;
-        margin-top:25px;
-    }
-
-    input,
-    select,
-    textarea{
-        min-height:46px;
-        padding:12px;
-        font-size:16px;
-    }
-
-    .date-time-row{
-        padding:12px;
-    }
-
-    .package-card{
-        padding:15px;
-    }
-
-    .gps-btn,
-    .submit-btn{
-        min-height:47px;
-        padding:12px;
-    }
-
-    .success-popup{
-        left:8px;
-        right:8px;
-        top:8px;
-        padding:12px 13px;
-    }
-}
-
-
-/* =========================================================
+/* ================================
    REDUCED MOTION
-========================================================= */
+================================ */
 
 @media(prefers-reduced-motion:reduce){
 
