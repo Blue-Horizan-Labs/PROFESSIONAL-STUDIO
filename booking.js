@@ -1107,7 +1107,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     "Unable to clear saved field:",
                     field.id
                 );
-            }
+            } 
         });
     }
 
