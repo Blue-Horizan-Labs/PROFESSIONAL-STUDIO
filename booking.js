@@ -11,9 +11,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const form = document.getElementById("bookingForm");
     const serviceSelect = document.getElementById("serviceSelect");
+    const serviceCardsContainer = document.getElementById("serviceCards");
+    const serviceCards = document.querySelectorAll(".service-card");
+    const changeServiceBtn = document.getElementById("changeServiceBtn");
+
     const packageSection = document.getElementById("packageSection");
     const packageDetails = document.getElementById("packageDetails");
+    const packageOptions = document.getElementById("packageOptions");
     const selectedPackage = document.getElementById("selectedPackage");
+
     const durationBox = document.getElementById("durationBox");
     const durationText = document.getElementById("durationText");
     const locationInput = document.getElementById("location");
@@ -24,12 +30,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const multiDateInput = document.getElementById("multiDate");
     const progressFill = document.getElementById("progressFill");
 
-    const packageCards = document.querySelectorAll(".package-card");
-
     if (!form) {
         console.error("Booking form not found.");
         return;
     }
+
 
     // ============================================================
     // PACKAGE DATA
@@ -38,6 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const packageData = {
 
         wedding: {
+
             basic: {
                 name: "Wedding Basic",
                 price: "₹20,000",
@@ -75,7 +81,9 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         },
 
+
         event: {
+
             basic: {
                 name: "Event Basic",
                 price: "₹12,000",
@@ -98,7 +106,9 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         },
 
+
         portrait: {
+
             basic: {
                 name: "Portrait Standard",
                 price: "₹3,000",
@@ -120,7 +130,9 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         },
 
+
         prewedding: {
+
             basic: {
                 name: "Pre-Wedding Basic",
                 price: "₹10,000",
@@ -143,138 +155,257 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     };
 
+
+    // ============================================================
+    // SERVICE DURATION
+    // ============================================================
+
+    const serviceDuration = {
+
+        wedding:
+            "Expected duration: 3–5 days. Extra 1–2 days may be required depending on the event.",
+
+        event:
+            "Expected duration: 1 day event coverage.",
+
+        portrait:
+            "Expected duration: Few hours, usually a single-day session.",
+
+        prewedding:
+            "Expected duration: 1–2 days depending on the selected shoot plan."
+    };
+
+
     // ============================================================
     // MULTI DATE PICKER
     // ============================================================
 
     let datePicker = null;
 
-    if (multiDateInput && typeof flatpickr === "function") {
+    if (
+        multiDateInput &&
+        typeof flatpickr === "function"
+    ) {
 
-        datePicker = flatpickr(multiDateInput, {
+        datePicker = flatpickr(
+            multiDateInput,
+            {
 
-            mode: "multiple",
-            dateFormat: "d-m-Y",
-            allowInput: false,
+                mode: "multiple",
 
-            onChange: function (selectedDates) {
+                dateFormat: "d-m-Y",
 
-                dateContainer.innerHTML = "";
+                allowInput: false,
 
-                selectedDates.forEach(function (date) {
 
-                    const day = String(date.getDate()).padStart(2, "0");
-                    const month = String(date.getMonth() + 1).padStart(2, "0");
-                    const year = date.getFullYear();
+                onChange: function (selectedDates) {
 
-                    const formattedDate = `${day}-${month}-${year}`;
+                    dateContainer.innerHTML = "";
 
-                    const row = document.createElement("div");
 
-                    row.className = "date-time-row";
+                    selectedDates.forEach(function (date) {
 
-                    row.innerHTML = `
-                        <h4>${formattedDate}</h4>
+                        const day =
+                            String(
+                                date.getDate()
+                            ).padStart(2, "0");
 
-                        <div class="time-row">
 
-                            <div class="time-field">
-                                <label>Start Time</label>
-                                <input type="time"
-                                       class="start-time"
-                                       required>
+                        const month =
+                            String(
+                                date.getMonth() + 1
+                            ).padStart(2, "0");
+
+
+                        const year =
+                            date.getFullYear();
+
+
+                        const formattedDate =
+                            `${day}-${month}-${year}`;
+
+
+                        const row =
+                            document.createElement("div");
+
+
+                        row.className =
+                            "date-time-row";
+
+
+                        row.innerHTML = `
+
+                            <h4>
+                                ${formattedDate}
+                            </h4>
+
+                            <div class="time-row">
+
+                                <div class="time-field">
+
+                                    <label>
+                                        Start Time
+                                    </label>
+
+                                    <input
+                                        type="time"
+                                        class="start-time"
+                                        required>
+
+                                </div>
+
+
+                                <div class="time-field">
+
+                                    <label>
+                                        End Time
+                                    </label>
+
+                                    <input
+                                        type="time"
+                                        class="end-time"
+                                        required>
+
+                                </div>
+
                             </div>
 
-                            <div class="time-field">
-                                <label>End Time</label>
-                                <input type="time"
-                                       class="end-time"
-                                       required>
+
+                            <div class="hours-box">
+
+                                Total Hours:
+
+                                <span class="hours">
+                                    0
+                                </span>
+
                             </div>
+                        `;
 
-                        </div>
 
-                        <div class="hours-box">
-                            Total Hours:
-                            <span class="hours">0</span>
-                        </div>
-                    `;
+                        dateContainer.appendChild(row);
 
-                    dateContainer.appendChild(row);
 
-                    const startInput =
-                        row.querySelector(".start-time");
+                        const startInput =
+                            row.querySelector(
+                                ".start-time"
+                            );
 
-                    const endInput =
-                        row.querySelector(".end-time");
 
-                    const hours =
-                        row.querySelector(".hours");
+                        const endInput =
+                            row.querySelector(
+                                ".end-time"
+                            );
 
-                    function calculateHours() {
 
-                        if (!startInput.value || !endInput.value) {
-                            hours.innerText = "0";
+                        const hours =
+                            row.querySelector(
+                                ".hours"
+                            );
+
+
+                        function calculateHours() {
+
+                            if (
+                                !startInput.value ||
+                                !endInput.value
+                            ) {
+
+                                hours.innerText =
+                                    "0";
+
+                                updateTotalHours();
+
+                                return;
+                            }
+
+
+                            const startParts =
+                                startInput.value.split(":");
+
+
+                            const endParts =
+                                endInput.value.split(":");
+
+
+                            let startMinutes =
+                                parseInt(startParts[0]) * 60 +
+                                parseInt(startParts[1]);
+
+
+                            let endMinutes =
+                                parseInt(endParts[0]) * 60 +
+                                parseInt(endParts[1]);
+
+
+                            let difference =
+                                endMinutes -
+                                startMinutes;
+
+
+                            // Allow overnight sessions
+                            if (difference < 0) {
+
+                                difference +=
+                                    24 * 60;
+                            }
+
+
+                            if (difference === 0) {
+
+                                hours.innerText =
+                                    "Invalid";
+
+                                updateTotalHours();
+
+                                return;
+                            }
+
+
+                            const calculatedHours =
+                                difference / 60;
+
+
+                            hours.innerText =
+                                calculatedHours.toFixed(1);
+
+
                             updateTotalHours();
-                            return;
                         }
 
-                        const startParts = startInput.value.split(":");
-                        const endParts = endInput.value.split(":");
 
-                        let startMinutes =
-                            parseInt(startParts[0]) * 60 +
-                            parseInt(startParts[1]);
+                        startInput.addEventListener(
+                            "change",
+                            calculateHours
+                        );
 
-                        let endMinutes =
-                            parseInt(endParts[0]) * 60 +
-                            parseInt(endParts[1]);
 
-                        let difference =
-                            endMinutes - startMinutes;
+                        endInput.addEventListener(
+                            "change",
+                            calculateHours
+                        );
 
-                        // Allow overnight sessions
-                        if (difference < 0) {
-                            difference += 24 * 60;
-                        }
+                    });
 
-                        if (difference === 0) {
-                            hours.innerText = "Invalid";
-                            updateTotalHours();
-                            return;
-                        }
 
-                        const calculatedHours =
-                            difference / 60;
+                    updateTotalHours();
 
-                        hours.innerText =
-                            calculatedHours.toFixed(1);
-
-                        updateTotalHours();
-                    }
-
-                    startInput.addEventListener(
-                        "change",
-                        calculateHours
-                    );
-
-                    endInput.addEventListener(
-                        "change",
-                        calculateHours
-                    );
-                });
-
-                updateTotalHours();
-                updateProgress();
+                    updateProgress();
+                }
             }
-        });
+        );
 
     } else if (multiDateInput) {
 
-        console.error("Flatpickr is not loaded.");
+        console.error(
+            "Flatpickr is not loaded."
+        );
 
-        multiDateInput.removeAttribute("readonly");
+        multiDateInput.removeAttribute(
+            "readonly"
+        );
     }
+
 
     // ============================================================
     // TOTAL HOURS
@@ -282,179 +413,432 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function updateTotalHours() {
 
-        if (!totalHoursElement) return;
+        if (!totalHoursElement) {
+            return;
+        }
+
 
         let total = 0;
 
-        document.querySelectorAll(".hours").forEach(function (hour) {
 
-            const value = parseFloat(hour.innerText);
+        document
+            .querySelectorAll(".hours")
+            .forEach(function (hour) {
 
-            if (!isNaN(value)) {
-                total += value;
-            }
-        });
+                const value =
+                    parseFloat(
+                        hour.innerText
+                    );
 
-        totalHoursElement.innerText = total.toFixed(1);
+
+                if (!isNaN(value)) {
+
+                    total += value;
+                }
+            });
+
+
+        totalHoursElement.innerText =
+            total.toFixed(1);
     }
 
+
     // ============================================================
-    // PACKAGE DISPLAY
+    // LOAD PACKAGES
     // ============================================================
 
     function loadPackages(service) {
 
-        if (!packageSection) return;
-
-        packageSection.style.display = "none";
-
-        if (packageDetails) {
-            packageDetails.innerHTML = "";
-        }
-
-        if (selectedPackage) {
-            selectedPackage.value = "";
-        }
-
-        packageCards.forEach(function (card) {
-            card.classList.remove("active");
-        });
-
-        if (!packageData[service]) {
+        if (
+            !packageSection ||
+            !packageOptions
+        ) {
             return;
         }
 
-        const packages = packageData[service];
 
-        const packageOptions =
-            packageSection.querySelector(".package-options");
+        packageSection.style.display =
+            "none";
 
-        if (!packageOptions) return;
 
-        packageOptions.innerHTML = "";
+        packageOptions.innerHTML =
+            "";
 
-        Object.keys(packages).forEach(function (key, index) {
 
-            const pkg = packages[key];
+        if (packageDetails) {
 
-            const card = document.createElement("div");
+            packageDetails.innerHTML =
+                "";
+        }
 
-            card.className = "package-card";
 
-            card.dataset.package = key;
+        if (selectedPackage) {
 
-            card.innerHTML = `
+            selectedPackage.value =
+                "";
+        }
 
-                ${index === 1 ? `
-                    <span class="badge">
-                        Most Popular
-                    </span>
-                ` : ""}
 
-                <h4>${pkg.name}</h4>
+        if (!packageData[service]) {
 
-                <div class="package-price">
-                    ${pkg.price}
-                </div>
+            updateProgress();
 
-                <p>
-                    ${pkg.features.slice(0, 2).join(" • ")}
-                </p>
-            `;
+            return;
+        }
 
-            packageOptions.appendChild(card);
 
-            card.addEventListener("click", function () {
+        const packages =
+            packageData[service];
 
-                packageOptions
-                    .querySelectorAll(".package-card")
-                    .forEach(function (c) {
-                        c.classList.remove("active");
-                    });
 
-                card.classList.add("active");
+        Object.keys(packages).forEach(
+            function (key, index) {
 
-                selectedPackage.value = key;
+                const pkg =
+                    packages[key];
 
-                packageDetails.innerHTML = `
 
-                    <h4>${pkg.name}</h4>
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                card.className =
+                    "package-card";
+
+
+                card.dataset.package =
+                    key;
+
+
+                card.setAttribute(
+                    "role",
+                    "button"
+                );
+
+
+                card.setAttribute(
+                    "tabindex",
+                    "0"
+                );
+
+
+                card.innerHTML = `
+
+                    ${
+                        index === 1
+                            ? `
+                                <span class="badge">
+                                    Most Popular
+                                </span>
+                              `
+                            : ""
+                    }
+
+                    <h4>
+                        ${pkg.name}
+                    </h4>
+
+
+                    <div class="package-price">
+                        ${pkg.price}
+                    </div>
+
 
                     <p>
-                        <strong>Price:</strong> ${pkg.price}
+                        ${
+                            pkg.features
+                                .slice(0, 2)
+                                .join(" • ")
+                        }
                     </p>
-
-                    <ul>
-                        ${pkg.features.map(function (feature) {
-                            return `<li>✔ ${feature}</li>`;
-                        }).join("")}
-                    </ul>
                 `;
 
-                updateProgress();
-            });
-        });
 
-        packageSection.style.display = "block";
+                packageOptions.appendChild(
+                    card
+                );
+
+
+                function selectPackage() {
+
+                    packageOptions
+                        .querySelectorAll(
+                            ".package-card"
+                        )
+                        .forEach(function (c) {
+
+                            c.classList.remove(
+                                "active"
+                            );
+                        });
+
+
+                    card.classList.add(
+                        "active"
+                    );
+
+
+                    if (selectedPackage) {
+
+                        selectedPackage.value =
+                            key;
+                    }
+
+
+                    if (packageDetails) {
+
+                        packageDetails.innerHTML = `
+
+                            <h4>
+                                ${pkg.name}
+                            </h4>
+
+
+                            <p>
+                                <strong>
+                                    Price:
+                                </strong>
+
+                                ${pkg.price}
+                            </p>
+
+
+                            <ul>
+
+                                ${
+                                    pkg.features
+                                        .map(function (feature) {
+
+                                            return `
+                                                <li>
+                                                    ✔ ${feature}
+                                                </li>
+                                            `;
+
+                                        })
+                                        .join("")
+                                }
+
+                            </ul>
+                        `;
+                    }
+
+
+                    updateProgress();
+                }
+
+
+                card.addEventListener(
+                    "click",
+                    selectPackage
+                );
+
+
+                card.addEventListener(
+                    "keydown",
+                    function (event) {
+
+                        if (
+                            event.key === "Enter" ||
+                            event.key === " "
+                        ) {
+
+                            event.preventDefault();
+
+                            selectPackage();
+                        }
+                    }
+                );
+
+            }
+        );
+
+
+        packageSection.style.display =
+            "block";
+
+
+        updateProgress();
     }
+
 
     // ============================================================
     // SERVICE SELECTION
     // ============================================================
 
-    if (serviceSelect) {
+    function selectService(service) {
 
-        serviceSelect.addEventListener("change", function () {
+        if (
+            !serviceSelect ||
+            !service
+        ) {
+            return;
+        }
 
-            const service = serviceSelect.value;
 
-            if (durationBox) {
-                durationBox.style.display = "none";
+        serviceSelect.value =
+            service;
+
+
+        serviceCards.forEach(
+            function (card) {
+
+                const isSelected =
+                    card.dataset.service ===
+                    service;
+
+
+                card.classList.toggle(
+                    "selected",
+                    isSelected
+                );
             }
+        );
 
-            if (service === "") {
-                loadPackages("");
-                updateProgress();
-                return;
-            }
 
-            loadPackages(service);
+        if (serviceCardsContainer) {
 
-            let message = "";
+            serviceCardsContainer.classList.add(
+                "has-selection"
+            );
+        }
 
-            switch (service) {
 
-                case "wedding":
-                    message =
-                        "Expected duration: 3–5 days. Extra 1–2 days may be required depending on the event.";
-                    break;
+        if (changeServiceBtn) {
 
-                case "event":
-                    message =
-                        "Expected duration: 1 day event coverage.";
-                    break;
+            changeServiceBtn.hidden =
+                false;
+        }
 
-                case "portrait":
-                    message =
-                        "Expected duration: Few hours, usually a single-day session.";
-                    break;
 
-                case "prewedding":
-                    message =
-                        "Expected duration: 1–2 days depending on the selected shoot plan.";
-                    break;
-            }
+        if (durationBox) {
 
-            if (message && durationText && durationBox) {
+            durationBox.style.display =
+                "none";
+        }
 
-                durationText.innerText = message;
 
-                durationBox.style.display = "block";
-            }
+        loadPackages(service);
 
-            updateProgress();
-        });
+
+        if (
+            serviceDuration[service] &&
+            durationText &&
+            durationBox
+        ) {
+
+            durationText.innerText =
+                serviceDuration[service];
+
+
+            durationBox.style.display =
+                "block";
+        }
+
+
+        updateProgress();
     }
+
+
+    // ============================================================
+    // RESET SERVICE
+    // ============================================================
+
+    function resetServiceSelection() {
+
+        if (serviceSelect) {
+
+            serviceSelect.value =
+                "";
+        }
+
+
+        serviceCards.forEach(
+            function (card) {
+
+                card.classList.remove(
+                    "selected"
+                );
+            }
+        );
+
+
+        if (serviceCardsContainer) {
+
+            serviceCardsContainer.classList.remove(
+                "has-selection"
+            );
+        }
+
+
+        if (changeServiceBtn) {
+
+            changeServiceBtn.hidden =
+                true;
+        }
+
+
+        if (durationBox) {
+
+            durationBox.style.display =
+                "none";
+        }
+
+
+        loadPackages("");
+
+
+        updateProgress();
+    }
+
+
+    // ============================================================
+    // SERVICE CARD CLICK
+    // ============================================================
+
+    serviceCards.forEach(
+        function (card) {
+
+            card.addEventListener(
+                "click",
+                function () {
+
+                    const service =
+                        card.dataset.service;
+
+
+                    selectService(
+                        service
+                    );
+                }
+            );
+        }
+    );
+
+
+    // ============================================================
+    // CHANGE SERVICE
+    // ============================================================
+
+    if (changeServiceBtn) {
+
+        changeServiceBtn.addEventListener(
+            "click",
+            function () {
+
+                resetServiceSelection();
+
+
+                if (serviceCards[0]) {
+
+                    serviceCards[0].focus();
+                }
+            }
+        );
+    }
+
 
     // ============================================================
     // GPS LOCATION
@@ -463,29 +847,42 @@ document.addEventListener("DOMContentLoaded", function () {
     window.getLocation = function () {
 
         if (!locationInput) {
-            alert("Location field was not found.");
+
+            alert(
+                "Location field was not found."
+            );
+
             return;
         }
 
+
         if (!("geolocation" in navigator)) {
+
             alert(
                 "Geolocation is not supported by this browser."
             );
+
             return;
         }
+
 
         if (
             window.location.protocol !== "https:" &&
             window.location.hostname !== "localhost" &&
             window.location.hostname !== "127.0.0.1"
         ) {
+
             alert(
                 "GPS requires a secure HTTPS connection."
             );
+
             return;
         }
 
-        locationInput.value = "Fetching location...";
+
+        locationInput.value =
+            "Fetching location...";
+
 
         navigator.geolocation.getCurrentPosition(
 
@@ -494,45 +891,62 @@ document.addEventListener("DOMContentLoaded", function () {
                 const latitude =
                     position.coords.latitude;
 
+
                 const longitude =
                     position.coords.longitude;
+
 
                 locationInput.value =
                     `${latitude}, ${longitude}`;
 
+
                 updateProgress();
             },
 
+
             function (error) {
 
-                locationInput.value = "";
+                locationInput.value =
+                    "";
+
 
                 switch (error.code) {
 
                     case error.PERMISSION_DENIED:
+
                         alert(
                             "Location permission was denied. Please allow location access."
                         );
+
                         break;
 
+
                     case error.POSITION_UNAVAILABLE:
+
                         alert(
                             "Your current location could not be determined."
                         );
+
                         break;
 
+
                     case error.TIMEOUT:
+
                         alert(
                             "Location request timed out. Please try again."
                         );
+
                         break;
 
+
                     default:
+
                         alert(
                             "Unable to fetch your location. Please enter it manually."
                         );
                 }
             },
+
 
             {
                 enableHighAccuracy: true,
@@ -542,548 +956,816 @@ document.addEventListener("DOMContentLoaded", function () {
         );
     };
 
+
     // ============================================================
     // FORM SUBMIT
     // ============================================================
 
-    form.addEventListener("submit", function (e) {
+    form.addEventListener(
+        "submit",
+        function (e) {
 
-        e.preventDefault();
+            e.preventDefault();
 
-        const nameElement =
-            document.getElementById("fullName");
 
-        const phoneElement =
-            document.getElementById("phone");
+            const nameElement =
+                document.getElementById(
+                    "fullName"
+                );
 
-        const emailElement =
-            document.getElementById("email");
 
-        const name =
-            nameElement
-                ? nameElement.value.trim()
-                : "";
+            const phoneElement =
+                document.getElementById(
+                    "phone"
+                );
 
-        const phone =
-            phoneElement
-                ? phoneElement.value.trim()
-                : "";
 
-        const email =
-            emailElement
-                ? emailElement.value.trim()
-                : "";
+            const emailElement =
+                document.getElementById(
+                    "email"
+                );
 
-        const location =
-            locationInput
-                ? locationInput.value.trim()
-                : "";
 
-        // ========================================================
-        // REQUIRED DETAILS
-        // ========================================================
+            const name =
+                nameElement
+                    ? nameElement.value.trim()
+                    : "";
 
-        if (!name) {
-            alert("Please enter your full name.");
-            return;
-        }
 
-        // ========================================================
-        // PHONE VALIDATION
-        // ========================================================
+            const phone =
+                phoneElement
+                    ? phoneElement.value.trim()
+                    : "";
 
-        const cleanPhone =
-            phone.replace(/\D/g, "");
 
-        if (
-            cleanPhone.length < 10 ||
-            cleanPhone.length > 15
-        ) {
-            alert("Please enter a valid phone number.");
-            return;
-        }
+            const email =
+                emailElement
+                    ? emailElement.value.trim()
+                    : "";
 
-        // ========================================================
-        // EMAIL VALIDATION
-        // ========================================================
 
-        const emailRegex =
-            /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const location =
+                locationInput
+                    ? locationInput.value.trim()
+                    : "";
 
-        if (!emailRegex.test(email)) {
-            alert("Please enter a valid email address.");
-            return;
-        }
 
-        // ========================================================
-        // LOCATION
-        // ========================================================
+            // ========================================================
+            // REQUIRED DETAILS
+            // ========================================================
 
-        if (!location) {
-            alert("Please enter your event location.");
-            return;
-        }
+            if (!name) {
 
-        // ========================================================
-        // SERVICE
-        // ========================================================
+                alert(
+                    "Please enter your full name."
+                );
 
-        if (!serviceSelect || !serviceSelect.value) {
-            alert("Please select a service.");
-            return;
-        }
-
-        // ========================================================
-        // PACKAGE
-        // ========================================================
-
-        if (
-            selectedPackage &&
-            selectedPackage.value === ""
-        ) {
-            alert("Please select a package.");
-            return;
-        }
-
-        // ========================================================
-        // DATES
-        // ========================================================
-
-        const selectedDateRows =
-            document.querySelectorAll(".date-time-row");
-
-        if (selectedDateRows.length === 0) {
-            alert("Please select at least one date.");
-            return;
-        }
-
-        // ========================================================
-        // TIME VALIDATION
-        // ========================================================
-
-        let invalidTime = false;
-
-        selectedDateRows.forEach(function (row) {
-
-            const start =
-                row.querySelector(".start-time");
-
-            const end =
-                row.querySelector(".end-time");
-
-            if (
-                !start ||
-                !end ||
-                !start.value ||
-                !end.value
-            ) {
-                invalidTime = true;
                 return;
             }
 
-            if (start.value === end.value) {
-                invalidTime = true;
-            }
-        });
 
-        if (invalidTime) {
-            alert(
-                "Please select valid start and end times for every date."
+            // ========================================================
+            // PHONE
+            // ========================================================
+
+            const cleanPhone =
+                phone.replace(
+                    /\D/g,
+                    ""
+                );
+
+
+            if (
+                cleanPhone.length < 10 ||
+                cleanPhone.length > 15
+            ) {
+
+                alert(
+                    "Please enter a valid phone number."
+                );
+
+                return;
+            }
+
+
+            // ========================================================
+            // EMAIL
+            // ========================================================
+
+            const emailRegex =
+                /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+            if (
+                !emailRegex.test(email)
+            ) {
+
+                alert(
+                    "Please enter a valid email address."
+                );
+
+                return;
+            }
+
+
+            // ========================================================
+            // LOCATION
+            // ========================================================
+
+            if (!location) {
+
+                alert(
+                    "Please enter your event location."
+                );
+
+                return;
+            }
+
+
+            // ========================================================
+            // SERVICE
+            // ========================================================
+
+            if (
+                !serviceSelect ||
+                !serviceSelect.value
+            ) {
+
+                alert(
+                    "Please select a service."
+                );
+
+                return;
+            }
+
+
+            // ========================================================
+            // PACKAGE
+            // ========================================================
+
+            if (
+                selectedPackage &&
+                selectedPackage.value === ""
+            ) {
+
+                alert(
+                    "Please select a package."
+                );
+
+                return;
+            }
+
+
+            // ========================================================
+            // DATES
+            // ========================================================
+
+            const selectedDateRows =
+                document.querySelectorAll(
+                    ".date-time-row"
+                );
+
+
+            if (
+                selectedDateRows.length === 0
+            ) {
+
+                alert(
+                    "Please select at least one date."
+                );
+
+                return;
+            }
+
+
+            // ========================================================
+            // TIME VALIDATION
+            // ========================================================
+
+            let invalidTime =
+                false;
+
+
+            selectedDateRows.forEach(
+                function (row) {
+
+                    const start =
+                        row.querySelector(
+                            ".start-time"
+                        );
+
+
+                    const end =
+                        row.querySelector(
+                            ".end-time"
+                        );
+
+
+                    if (
+                        !start ||
+                        !end ||
+                        !start.value ||
+                        !end.value
+                    ) {
+
+                        invalidTime =
+                            true;
+
+                        return;
+                    }
+
+
+                    if (
+                        start.value ===
+                        end.value
+                    ) {
+
+                        invalidTime =
+                            true;
+                    }
+                }
             );
-            return;
-        }
 
-        // ========================================================
-        // PACKAGE INFORMATION
-        // ========================================================
 
-        const service =
-            serviceSelect.value;
+            if (invalidTime) {
 
-        const packageKey =
-            selectedPackage
-                ? selectedPackage.value
-                : "";
+                alert(
+                    "Please select valid start and end times for every date."
+                );
 
-        const selectedPkg =
-            packageData[service] &&
-            packageData[service][packageKey];
-
-        const packageName =
-            selectedPkg
-                ? selectedPkg.name
-                : "";
-
-        const packagePrice =
-            selectedPkg
-                ? selectedPkg.price
-                : "₹0";
-
-        // ========================================================
-        // FIRST DATE
-        // ========================================================
-
-        const firstDate =
-            selectedDateRows[0];
-
-        let bookingDate = "";
-        let bookingTime = "";
-
-        if (firstDate) {
-
-            const dateHeading =
-                firstDate.querySelector("h4");
-
-            const startTime =
-                firstDate.querySelector(".start-time");
-
-            if (dateHeading) {
-                bookingDate =
-                    dateHeading.innerText;
+                return;
             }
 
-            if (startTime) {
-                bookingTime =
-                    startTime.value;
+
+            // ========================================================
+            // PACKAGE INFORMATION
+            // ========================================================
+
+            const service =
+                serviceSelect.value;
+
+
+            const packageKey =
+                selectedPackage
+                    ? selectedPackage.value
+                    : "";
+
+
+            const selectedPkg =
+                packageData[service] &&
+                packageData[service][packageKey];
+
+
+            const packageName =
+                selectedPkg
+                    ? selectedPkg.name
+                    : "";
+
+
+            const packagePrice =
+                selectedPkg
+                    ? selectedPkg.price
+                    : "₹0";
+
+
+            // ========================================================
+            // FIRST DATE
+            // ========================================================
+
+            const firstDate =
+                selectedDateRows[0];
+
+
+            let bookingDate =
+                "";
+
+
+            let bookingTime =
+                "";
+
+
+            if (firstDate) {
+
+                const dateHeading =
+                    firstDate.querySelector(
+                        "h4"
+                    );
+
+
+                const startTime =
+                    firstDate.querySelector(
+                        ".start-time"
+                    );
+
+
+                if (dateHeading) {
+
+                    bookingDate =
+                        dateHeading.innerText;
+                }
+
+
+                if (startTime) {
+
+                    bookingTime =
+                        startTime.value;
+                }
             }
-        }
 
-        // ========================================================
-        // TOTAL HOURS
-        // ========================================================
 
-        const totalHours =
-            totalHoursElement
-                ? totalHoursElement.innerText
-                : "0";
+            // ========================================================
+            // TOTAL HOURS
+            // ========================================================
 
-        // ========================================================
-        // OTHER DETAILS
-        // ========================================================
+            const totalHours =
+                totalHoursElement
+                    ? totalHoursElement.innerText
+                    : "0";
 
-        const instagramElement =
-            document.getElementById("instagram");
 
-        const instagram =
-            instagramElement
-                ? instagramElement.value.trim()
-                : "-";
+            // ========================================================
+            // OTHER DETAILS
+            // ========================================================
 
-        const messageElement =
-            document.getElementById("message");
+            const instagramElement =
+                document.getElementById(
+                    "instagram"
+                );
 
-        const message =
-            messageElement
-                ? messageElement.value.trim()
-                : "";
 
-        const guestsElement =
-            document.querySelector(
-                'input[type="number"]'
-            );
+            const instagram =
+                instagramElement
+                    ? instagramElement.value.trim()
+                    : "-";
 
-        const guests =
-            guestsElement
-                ? guestsElement.value
-                : "";
 
-        // ========================================================
-        // BOOKING OBJECT
-        // ========================================================
+            const messageElement =
+                document.getElementById(
+                    "message"
+                );
 
-        const booking = {
 
-            id: "BK-" + Date.now(),
+            const message =
+                messageElement
+                    ? messageElement.value.trim()
+                    : "";
 
-            client: name,
 
-            clientType: "Photography Client",
+            const guestsElement =
+                document.querySelector(
+                    'input[type="number"]'
+                );
 
-            phone: phone,
 
-            email: email,
+            const guests =
+                guestsElement
+                    ? guestsElement.value
+                    : "";
 
-            instagram: instagram || "-",
 
-            service:
+            // ========================================================
+            // BOOKING OBJECT
+            // ========================================================
+
+            const selectedOption =
                 serviceSelect.options[
                     serviceSelect.selectedIndex
-                ].text,
+                ];
 
-            serviceType: service,
 
-            package: packageName,
+            const booking = {
 
-            packageKey: packageKey,
+                id:
+                    "BK-" +
+                    Date.now(),
 
-            packagePrice: packagePrice,
 
-            date: bookingDate,
+                client:
+                    name,
 
-            time: bookingTime,
 
-            totalHours: totalHours,
+                clientType:
+                    "Photography Client",
 
-            location: location,
 
-            guests: guests,
+                phone:
+                    phone,
 
-            status: "Pending",
 
-            payment: "Pending",
+                email:
+                    email,
 
-            advance: "₹0",
 
-            remaining: packagePrice,
+                instagram:
+                    instagram || "-",
 
-            image: "images/profile.jpg",
 
-            equipment: "",
+                service:
+                    selectedOption
+                        ? selectedOption.text
+                        : service,
 
-            notes: message
 
-        };
+                serviceType:
+                    service,
 
-        // ========================================================
-        // SAVE BOOKING
-        // ========================================================
 
-        let bookings = [];
+                package:
+                    packageName,
 
-        try {
 
-            bookings =
-                JSON.parse(
-                    localStorage.getItem("bookings")
-                ) || [];
+                packageKey:
+                    packageKey,
 
-            if (!Array.isArray(bookings)) {
-                bookings = [];
+
+                packagePrice:
+                    packagePrice,
+
+
+                date:
+                    bookingDate,
+
+
+                time:
+                    bookingTime,
+
+
+                totalHours:
+                    totalHours,
+
+
+                location:
+                    location,
+
+
+                guests:
+                    guests,
+
+
+                status:
+                    "Pending",
+
+
+                payment:
+                    "Pending",
+
+
+                advance:
+                    "₹0",
+
+
+                remaining:
+                    packagePrice,
+
+
+                image:
+                    "images/profile.jpg",
+
+
+                equipment:
+                    "",
+
+
+                notes:
+                    message
+            };
+
+
+            // ========================================================
+            // SAVE BOOKING
+            // ========================================================
+
+            let bookings =
+                [];
+
+
+            try {
+
+                bookings =
+                    JSON.parse(
+                        localStorage.getItem(
+                            "bookings"
+                        )
+                    ) || [];
+
+
+                if (
+                    !Array.isArray(
+                        bookings
+                    )
+                ) {
+
+                    bookings =
+                        [];
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Unable to read bookings:",
+                    error
+                );
+
+
+                bookings =
+                    [];
             }
 
-        } catch (error) {
 
-            console.error(
-                "Unable to read bookings:",
-                error
+            bookings.unshift(
+                booking
             );
 
-            bookings = [];
-        }
 
-        bookings.unshift(booking);
+            try {
 
-        try {
+                localStorage.setItem(
+                    "bookings",
+                    JSON.stringify(
+                        bookings
+                    )
+                );
 
-            localStorage.setItem(
-                "bookings",
-                JSON.stringify(bookings)
-            );
+            } catch (error) {
 
-        } catch (error) {
+                console.error(
+                    "Unable to save booking:",
+                    error
+                );
 
-            console.error(
-                "Unable to save booking:",
-                error
-            );
 
-            alert(
-                "Unable to save booking. Please try again."
-            );
+                alert(
+                    "Unable to save booking. Please try again."
+                );
 
-            return;
-        }
 
-        // ========================================================
-        // SUCCESS
-        // ========================================================
-
-        if (submitBtn) {
-
-            submitBtn.disabled = true;
-
-            submitBtn.innerText =
-                "Booking Submitted ✓";
-        }
-
-        if (successPopup) {
-
-            successPopup.style.display =
-                "block";
-        }
-
-        setTimeout(function () {
-
-            if (successPopup) {
-                successPopup.style.display =
-                    "none";
+                return;
             }
+
+
+            // ========================================================
+            // SUCCESS
+            // ========================================================
 
             if (submitBtn) {
 
-                submitBtn.disabled = false;
+                submitBtn.disabled =
+                    true;
+
 
                 submitBtn.innerText =
-                    "Submit Booking Request";
+                    "Booking Submitted ✓";
             }
 
-            form.reset();
 
-            if (datePicker) {
-                datePicker.clear();
+            if (successPopup) {
+
+                successPopup.style.display =
+                    "block";
             }
 
-            dateContainer.innerHTML = "";
 
-            packageSection.style.display = "none";
+            setTimeout(
+                function () {
 
-            packageDetails.innerHTML = "";
+                    if (successPopup) {
 
-            durationBox.style.display = "none";
+                        successPopup.style.display =
+                            "none";
+                    }
 
-            selectedPackage.value = "";
 
-            updateTotalHours();
+                    if (submitBtn) {
 
-            updateProgress();
+                        submitBtn.disabled =
+                            false;
 
-            clearFormStorage();
 
-            // IMPORTANT:
-            // Stay on booking page.
-            // Do NOT redirect to client.html.
+                        submitBtn.innerText =
+                            "Submit Booking Request";
+                    }
 
-        }, 1500);
-    });
+
+                    form.reset();
+
+
+                    if (datePicker) {
+
+                        datePicker.clear();
+                    }
+
+
+                    dateContainer.innerHTML =
+                        "";
+
+
+                    resetServiceSelection();
+
+
+                    if (packageDetails) {
+
+                        packageDetails.innerHTML =
+                            "";
+                    }
+
+
+                    if (durationBox) {
+
+                        durationBox.style.display =
+                            "none";
+                    }
+
+
+                    if (selectedPackage) {
+
+                        selectedPackage.value =
+                            "";
+                    }
+
+
+                    updateTotalHours();
+
+                    updateProgress();
+
+                    clearFormStorage();
+
+                },
+                1500
+            );
+        }
+    );
+
 
     // ============================================================
     // PROGRESS BAR
     // ============================================================
 
-    const formFields =
-        document.querySelectorAll(
-            "#bookingForm input, #bookingForm select, #bookingForm textarea"
+    let formFields =
+        Array.from(
+            document.querySelectorAll(
+                "#bookingForm input, #bookingForm select, #bookingForm textarea"
+            )
         );
+
 
     function updateProgress() {
 
-        if (!progressFill) return;
+        if (!progressFill) {
+            return;
+        }
 
-        let filled = 0;
-        let total = 0;
 
-        formFields.forEach(function (field) {
+        let filled =
+            0;
 
-            if (
-                field.type === "hidden" ||
-                field.type === "button" ||
-                field.disabled
-            ) {
-                return;
+
+        let total =
+            0;
+
+
+        formFields.forEach(
+            function (field) {
+
+                if (
+                    field.type === "hidden" ||
+                    field.type === "button" ||
+                    field.disabled
+                ) {
+
+                    return;
+                }
+
+
+                total++;
+
+
+                if (
+                    typeof field.value ===
+                    "string" &&
+                    field.value.trim() !== ""
+                ) {
+
+                    filled++;
+                }
             }
+        );
 
-            total++;
-
-            if (
-                typeof field.value === "string" &&
-                field.value.trim() !== ""
-            ) {
-                filled++;
-            }
-        });
 
         const percentage =
             total > 0
                 ? (filled / total) * 100
                 : 0;
 
+
         progressFill.style.width =
-            Math.min(percentage, 100) + "%";
+            Math.min(
+                percentage,
+                100
+            ) + "%";
     }
 
-    formFields.forEach(function (field) {
 
-        field.addEventListener(
-            "input",
-            updateProgress
-        );
+    formFields.forEach(
+        function (field) {
 
-        field.addEventListener(
-            "change",
-            updateProgress
-        );
-    });
+            field.addEventListener(
+                "input",
+                updateProgress
+            );
+
+
+            field.addEventListener(
+                "change",
+                updateProgress
+            );
+        }
+    );
+
 
     // ============================================================
     // AUTO SAVE
     // ============================================================
 
-    formFields.forEach(function (field) {
+    formFields.forEach(
+        function (field) {
 
-        if (!field.id) return;
-
-        try {
-
-            const savedValue =
-                localStorage.getItem(field.id);
-
-            if (
-                savedValue !== null &&
-                field.type !== "date"
-            ) {
-                field.value = savedValue;
+            if (!field.id) {
+                return;
             }
 
-        } catch (error) {
 
-            console.error(
-                "Unable to load saved field:",
-                field.id
+            try {
+
+              const savedValue =
+    localStorage.getItem(
+        field.id
+    );
+
+
+if (
+    savedValue !== null &&
+    field.type !== "date" &&
+    field.id !== "serviceSelect"
+) {
+
+    field.value =
+        savedValue;
+}
+
+            } catch (error) {
+
+                console.error(
+                    "Unable to load saved field:",
+                    field.id
+                );
+            }
+
+
+            field.addEventListener(
+                "input",
+                function () {
+
+                    try {
+
+                        localStorage.setItem(
+                            field.id,
+                            field.value
+                        );
+
+                    } catch (error) {
+
+                        console.error(
+                            "Unable to save field:",
+                            field.id
+                        );
+                    }
+                }
+            );
+
+
+            field.addEventListener(
+                "change",
+                function () {
+
+                    try {
+
+                        localStorage.setItem(
+                            field.id,
+                            field.value
+                        );
+
+                    } catch (error) {
+
+                        console.error(
+                            "Unable to save field:",
+                            field.id
+                        );
+                    }
+                }
             );
         }
+    );
 
-        field.addEventListener(
-            "input",
-            function () {
-
-                try {
-
-                    localStorage.setItem(
-                        field.id,
-                        field.value
-                    );
-
-                } catch (error) {
-
-                    console.error(
-                        "Unable to save field:",
-                        field.id
-                    );
-                }
-            }
-        );
-
-        field.addEventListener(
-            "change",
-            function () {
-
-                try {
-
-                    localStorage.setItem(
-                        field.id,
-                        field.value
-                    );
-
-                } catch (error) {
-
-                    console.error(
-                        "Unable to save field:",
-                        field.id
-                    );
-                }
-            }
-        );
-    });
 
     // ============================================================
     // CLEAR AUTOSAVE
@@ -1091,31 +1773,38 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function clearFormStorage() {
 
-        formFields.forEach(function (field) {
+        formFields.forEach(
+            function (field) {
 
-            if (!field.id) return;
+                if (!field.id) {
+                    return;
+                }
 
-            try {
 
-                localStorage.removeItem(
-                    field.id
-                );
+                try {
 
-            } catch (error) {
+                    localStorage.removeItem(
+                        field.id
+                    );
 
-                console.error(
-                    "Unable to clear saved field:",
-                    field.id
-                );
-            } 
-        });
+                } catch (error) {
+
+                    console.error(
+                        "Unable to clear saved field:",
+                        field.id
+                    );
+                }
+            }
+        );
     }
+
 
     // ============================================================
     // INITIAL LOAD
     // ============================================================
 
-    updateProgress();
-    updateTotalHours();
+resetServiceSelection();
 
-});
+updateProgress();
+
+updateTotalHours(); })

@@ -43,16 +43,146 @@
 
             <!-- SERVICE -->
 
-            <label for="serviceSelect">
-                Type of Service
-            </label>
+            <div class="service-selection">
 
-            <div class="custom-select">
+                <label class="service-label">
+                    Type of Service
+                </label>
 
+                <p class="service-help">
+                    Choose the photography service that best fits your event.
+                </p>
+
+                <div
+                    id="serviceCards"
+                    class="service-cards">
+
+                    <button
+                        type="button"
+                        class="service-card"
+                        data-service="wedding"
+                        aria-label="Select Wedding Photography">
+
+                        <span class="service-image-wrap">
+                            <img
+                                src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=900&q=85"
+                                alt="Wedding photography"
+                                class="service-image"
+                                loading="lazy">
+                        </span>
+
+                        <span class="service-card-content">
+                            <strong>Wedding Photography</strong>
+                            <span>
+                                Candid, traditional and cinematic coverage for your special day.
+                            </span>
+                        </span>
+
+                        <span class="service-check" aria-hidden="true">✓</span>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="service-card"
+                        data-service="event"
+                        aria-label="Select Event Photography">
+
+                        <span class="service-image-wrap">
+                            <img
+                                src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=900&q=85"
+                                alt="Event photography"
+                                class="service-image"
+                                loading="lazy">
+                        </span>
+
+                        <span class="service-card-content">
+                            <strong>Event Photography</strong>
+                            <span>
+                                Professional coverage for parties, corporate events and celebrations.
+                            </span>
+                        </span>
+
+                        <span class="service-check" aria-hidden="true">✓</span>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="service-card"
+                        data-service="portrait"
+                        aria-label="Select Portrait Session">
+
+                        <span class="service-image-wrap">
+                            <img
+                                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=900&q=85"
+                                alt="Portrait photography"
+                                class="service-image"
+                                loading="lazy">
+                        </span>
+
+                        <span class="service-card-content">
+                            <strong>Portrait Session</strong>
+                            <span>
+                                Studio or outdoor portraits designed around your personal style.
+                            </span>
+                        </span>
+
+                        <span class="service-check" aria-hidden="true">✓</span>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="service-card"
+                        data-service="prewedding"
+                        aria-label="Select Pre-Wedding Shoot">
+
+                        <span class="service-image-wrap">
+                            <img
+                                src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=900&q=85"
+                                alt="Pre-wedding photography"
+                                class="service-image"
+                                loading="lazy">
+                        </span>
+
+                        <span class="service-card-content">
+                            <strong>Pre-Wedding Shoot</strong>
+                            <span>
+                                Romantic location shoots with cinematic and natural storytelling.
+                            </span>
+                        </span>
+
+                        <span class="service-check" aria-hidden="true">✓</span>
+
+                    </button>
+
+                </div>
+
+                <button
+                    type="button"
+                    id="changeServiceBtn"
+                    class="change-service-btn"
+                    hidden>
+
+                    ← Change Service
+
+                </button>
+
+                <!--
+                    Kept as a real form field so the existing booking,
+                    validation, autosave and submission logic continues
+                    to work without changing the booking data structure.
+                -->
                 <select
                     id="serviceSelect"
                     name="service"
-                    required>
+                    required
+                    aria-hidden="true"
+                    tabindex="-1">
 
                     <option value="">
                         Select Service
@@ -85,54 +215,21 @@
                 id="packageSection"
                 class="package-section">
 
-                <label>
-                    Select Package
-                </label>
+                <div class="section-heading-row">
+                    <div>
+                        <label>
+                            Select Package
+                        </label>
 
-                <div class="package-options">
-
-                    <div
-                        class="package-card"
-                        data-package="basic">
-
-                        <h4>Wedding Basic</h4>
-
-                        <p>
-                            Candid + Traditional
+                        <p class="section-subtext">
+                            Choose the package that fits your requirements.
                         </p>
-
                     </div>
+                </div>
 
-
-                    <div
-                        class="package-card recommended"
-                        data-package="premium">
-
-                        <span class="badge">
-                            Most Popular
-                        </span>
-
-                        <h4>Wedding Premium</h4>
-
-                        <p>
-                            Cinematic + Candid + Traditional
-                        </p>
-
-                    </div>
-
-
-                    <div
-                        class="package-card"
-                        data-package="luxury">
-
-                        <h4>Wedding Luxury</h4>
-
-                        <p>
-                            All Included + Pre-Wedding
-                        </p>
-
-                    </div>
-
+                <div
+                    class="package-options"
+                    id="packageOptions">
                 </div>
 
 
