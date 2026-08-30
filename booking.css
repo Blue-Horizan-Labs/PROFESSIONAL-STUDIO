@@ -1,3 +1,4 @@
+
 /* ============================================================
    GLOBAL
 ============================================================ */
@@ -116,117 +117,168 @@ textarea:focus{
 
 .service-help{
     text-align:left;
-    margin:7px 0 16px;
+    margin:7px 0 14px;
     font-size:13px;
     line-height:1.5;
     color:#777;
 }
 
+
+/* ============================================================
+   SERVICE CARDS
+============================================================ */
+
 .service-cards{
     display:grid;
     grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:16px;
+    gap:12px;
     width:100%;
 }
 
 .service-card{
     position:relative;
+
     display:flex;
     flex-direction:column;
+
     width:100%;
     min-width:0;
+
     padding:0;
     overflow:hidden;
+
     text-align:left;
-    border:2px solid #e2e2e2;
-    border-radius:18px;
+
+    border:1.5px solid #e2e2e2;
+    border-radius:14px;
+
     background:#fff;
     color:#111;
+
     cursor:pointer;
+
     appearance:none;
     -webkit-appearance:none;
+
     transition:
-        transform .3s ease,
-        border-color .3s ease,
-        box-shadow .3s ease,
-        opacity .35s ease;
+        transform .25s ease,
+        border-color .25s ease,
+        box-shadow .25s ease,
+        opacity .25s ease;
 }
 
 .service-card:hover{
-    transform:translateY(-4px);
+    transform:translateY(-2px);
     border-color:#111;
-    box-shadow:0 12px 28px rgba(0,0,0,.12);
+    box-shadow:0 7px 18px rgba(0,0,0,.09);
 }
 
 .service-card:focus-visible{
     outline:none;
     border-color:#111;
-    box-shadow:0 0 0 4px rgba(17,17,17,.12);
+    box-shadow:0 0 0 3px rgba(17,17,17,.12);
 }
+
+
+/* ============================================================
+   SERVICE IMAGE
+============================================================ */
 
 .service-image-wrap{
     display:block;
     position:relative;
+
     width:100%;
-    aspect-ratio:16 / 10;
+    height:125px;
+
     overflow:hidden;
+
     background:#eee;
 }
 
 .service-image{
     display:block;
+
     width:100%;
     height:100%;
+
     object-fit:cover;
-    transition:transform .45s ease;
+
+    transition:transform .35s ease;
 }
 
 .service-card:hover .service-image{
-    transform:scale(1.05);
+    transform:scale(1.04);
 }
+
+
+/* ============================================================
+   SERVICE CARD CONTENT
+============================================================ */
 
 .service-card-content{
     display:flex;
     flex-direction:column;
-    gap:7px;
-    padding:16px 16px 17px;
+
+    gap:4px;
+
+    padding:11px 12px 12px;
 }
 
 .service-card-content strong{
-    font-size:16px;
+    font-size:15px;
     line-height:1.25;
     color:#111;
 }
 
 .service-card-content span{
-    font-size:13px;
-    line-height:1.5;
+    font-size:11.5px;
+    line-height:1.4;
     color:#6b6b6b;
 }
 
+
+/* ============================================================
+   SERVICE CHECK
+============================================================ */
+
 .service-check{
     position:absolute;
-    top:12px;
-    right:12px;
+
+    top:9px;
+    right:9px;
+
     display:flex;
     align-items:center;
     justify-content:center;
-    width:32px;
-    height:32px;
+
+    width:26px;
+    height:26px;
+
     border-radius:50%;
+
     background:#fff;
     color:#111;
-    font-size:16px;
+
+    font-size:13px;
     font-weight:bold;
+
     opacity:0;
-    transform:scale(.7);
-    box-shadow:0 4px 12px rgba(0,0,0,.18);
-    transition:.25s ease;
+
+    transform:scale(.75);
+
+    box-shadow:0 3px 10px rgba(0,0,0,.16);
+
+    transition:
+        opacity .2s ease,
+        transform .2s ease;
 }
 
 .service-card.selected{
     border-color:#111;
-    box-shadow:0 0 0 3px rgba(17,17,17,.07);
+
+    box-shadow:
+        0 0 0 2px rgba(17,17,17,.07);
 }
 
 .service-card.selected .service-check{
@@ -238,21 +290,38 @@ textarea:focus{
     transform:scale(1.02);
 }
 
-.service-cards.has-selection .service-card:not(.selected){
+
+/* ============================================================
+   HIDE OTHER SERVICES AFTER SELECTION
+============================================================ */
+
+.service-cards.has-selection
+.service-card:not(.selected){
     display:none;
 }
 
+
+/* ============================================================
+   CHANGE SERVICE
+============================================================ */
+
 .change-service-btn{
-    margin-top:12px;
+    margin-top:10px;
+
     padding:9px 14px;
+
     border:1px solid #ddd;
     border-radius:9px;
+
     background:#f7f7f7;
     color:#222;
+
     font-size:13px;
     font-weight:600;
+
     cursor:pointer;
-    transition:.25s ease;
+
+    transition:.2s ease;
 }
 
 .change-service-btn:hover{
@@ -264,19 +333,27 @@ textarea:focus{
     display:none;
 }
 
+
 /*
     Keep the compatibility select in the DOM for the existing
     booking logic, autosave and submitted booking object.
 */
+
 #serviceSelect{
     position:absolute;
+
     width:1px;
     height:1px;
+
     padding:0;
     margin:-1px;
+
     overflow:hidden;
+
     clip:rect(0,0,0,0);
+
     white-space:nowrap;
+
     border:0;
 }
 
@@ -621,26 +698,61 @@ textarea:focus{
         margin-top:28px;
     }
 
+
+    /* ================================
+       MOBILE SERVICE CARDS
+    ================================= */
+
+    .service-selection{
+        margin-top:22px;
+    }
+
+    .service-help{
+        font-size:12px;
+        margin:6px 0 12px;
+    }
+
     .service-cards{
-        grid-template-columns:1fr;
-        gap:13px;
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:9px;
+    }
+
+    .service-card{
+        border-radius:12px;
+        border-width:1.5px;
     }
 
     .service-image-wrap{
-        aspect-ratio:16 / 9;
+        height:100px;
+        aspect-ratio:auto;
     }
 
     .service-card-content{
-        padding:14px 14px 15px;
+        padding:9px 9px 10px;
+        gap:3px;
     }
 
     .service-card-content strong{
-        font-size:15px;
+        font-size:13px;
     }
 
     .service-card-content span{
-        font-size:12.5px;
+        font-size:10.5px;
+        line-height:1.35;
     }
+
+    .service-check{
+        width:22px;
+        height:22px;
+        top:7px;
+        right:7px;
+        font-size:11px;
+    }
+
+
+    /* ================================
+       TIME
+    ================================= */
 
     .time-row{
         flex-direction:column;
@@ -651,6 +763,11 @@ textarea:focus{
         width:100%;
     }
 
+
+    /* ================================
+       PACKAGES
+    ================================= */
+
     .package-options{
         grid-template-columns:1fr;
     }
@@ -659,10 +776,20 @@ textarea:focus{
         padding:18px;
     }
 
+
+    /* ================================
+       BUTTONS
+    ================================= */
+
     .gps-btn,
     .submit-btn{
         padding:13px;
     }
+
+
+    /* ================================
+       SUCCESS POPUP
+    ================================= */
 
     .success-popup{
         top:12px;
@@ -672,6 +799,7 @@ textarea:focus{
         text-align:center;
         padding:14px 16px;
     }
+
 }
 
 
@@ -701,20 +829,45 @@ textarea:focus{
         font-size:14px;
     }
 
+
+    /* ================================
+       VERY SMALL SERVICE CARDS
+    ================================= */
+
+    .service-cards{
+        gap:7px;
+    }
+
+    .service-image-wrap{
+        height:88px;
+    }
+
     .service-card-content{
-        padding:13px;
+        padding:8px;
+        gap:2px;
+    }
+
+    .service-card-content strong{
+        font-size:12px;
+    }
+
+    .service-card-content span{
+        font-size:10px;
     }
 
     .service-check{
-        width:29px;
-        height:29px;
-        top:10px;
-        right:10px;
+        width:21px;
+        height:21px;
+        top:6px;
+        right:6px;
+        font-size:10px;
     }
+
 
     .package-card{
         padding:16px;
     }
+
 }
 
 
