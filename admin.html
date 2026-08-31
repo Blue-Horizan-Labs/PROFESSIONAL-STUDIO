@@ -1,704 +1,2137 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
 
+```
 <meta charset="UTF-8">
 
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-<title>Admin Dashboard</title>
+<meta
+    name="description"
+    content="Professional Studio Admin Dashboard"
+>
 
-<link rel="stylesheet"
-href="admin.css">
+<title>Admin Dashboard | Professional Studio</title>
+
+<link
+    rel="stylesheet"
+    href="admin.css"
+>
+```
 
 </head>
 
 <body>
 
-<!-- ================= NAVBAR ================= -->
+```
+<!-- =========================================================
+     SIDEBAR
+========================================================== -->
+
+<aside class="sidebar" id="sidebar">
+
+    <div class="sidebar-brand">
+
+        <div class="brand-icon">
+            PS
+        </div>
+
+        <div class="brand-text">
+
+            <strong>
+                Professional Studio
+            </strong>
+
+            <span>
+                Admin Console
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <nav class="sidebar-nav">
+
+        <div class="nav-label">
+            OVERVIEW
+        </div>
+
+        <a
+            href="#dashboard"
+            class="nav-link active"
+        >
+            <span class="nav-icon">⌂</span>
+            <span>Dashboard</span>
+        </a>
 
-<header class="navbar">
 
-<div class="logo">
+        <div class="nav-label">
+            MANAGEMENT
+        </div>
+
+        <a
+            href="#photographers"
+            class="nav-link"
+        >
+            <span class="nav-icon">◎</span>
+            <span>Photographers</span>
+            <span class="nav-count">286</span>
+        </a>
 
-PhotoSaaS Admin
+        <a
+            href="#subscriptions"
+            class="nav-link"
+        >
+            <span class="nav-icon">◇</span>
+            <span>Subscriptions</span>
+        </a>
 
-</div>
+        <a
+            href="#payments"
+            class="nav-link"
+        >
+            <span class="nav-icon">₹</span>
+            <span>Payments</span>
+        </a>
 
-<nav>
 
-<a href="#dashboard">Dashboard</a>
+        <div class="nav-label">
+            INSIGHTS
+        </div>
 
-<a href="#photographers">Photographers</a>
+        <a
+            href="#analytics"
+            class="nav-link"
+        >
+            <span class="nav-icon">◫</span>
+            <span>Analytics</span>
+        </a>
 
-<a href="#subscriptions">Subscriptions</a>
+        <a
+            href="#support"
+            class="nav-link"
+        >
+            <span class="nav-icon">?</span>
+            <span>Support</span>
+            <span class="nav-count alert">17</span>
+        </a>
 
-<a href="#payments">Payments</a>
 
-<a href="#analytics">Analytics</a>
+        <div class="nav-label">
+            SYSTEM
+        </div>
 
-<a href="#support">Support</a>
+        <a
+            href="#announcements"
+            class="nav-link"
+        >
+            <span class="nav-icon">◌</span>
+            <span>Announcements</span>
+        </a>
 
-<a href="#settings">Settings</a>
+        <a
+            href="#settings"
+            class="nav-link"
+        >
+            <span class="nav-icon">⚙</span>
+            <span>Settings</span>
+        </a>
 
-</nav>
+    </nav>
 
-</header>
 
-<!-- ================= HERO ================= -->
+    <div class="sidebar-bottom">
 
-<section class="hero">
+        <div class="admin-mini-profile">
 
-<div class="hero-content">
+            <div class="profile-avatar">
+                A
+            </div>
 
-<h1>
+            <div>
 
-Welcome Admin 👋
+                <strong>
+                    Administrator
+                </strong>
 
-</h1>
+                <span>
+                    Super Admin
+                </span>
 
-<p>
+            </div>
 
-Manage photographers, subscriptions, payments and your entire platform.
+        </div>
 
-</p>
+        <a
+            href="index.html"
+            class="back-site"
+        >
+            ← View Website
+        </a>
 
-</div>
+    </div>
 
-</section>
+</aside>
 
-<!-- ================= DASHBOARD ================= -->
 
-<section
-class="section"
-id="dashboard">
+<!-- =========================================================
+     MAIN
+========================================================== -->
 
-<h2>
+<main class="main">
 
-Platform Overview
 
-</h2>
+    <!-- =====================================================
+         TOPBAR
+    ====================================================== -->
 
-<div class="stats-grid">
+    <header class="topbar">
 
-<div class="stat-card">
+        <button
+            class="menu-toggle"
+            id="menuToggle"
+            aria-label="Open navigation"
+        >
+            ☰
+        </button>
 
-<h3>
 
-Total Photographers
+        <div class="breadcrumb">
 
-</h3>
+            <span>
+                Admin
+            </span>
 
-<h1
-class="counter"
-data-target="286">
+            <span class="breadcrumb-separator">
+                /
+            </span>
 
-0
+            <strong>
+                Dashboard
+            </strong>
 
-</h1>
+        </div>
 
-<p>
 
-+12 this month
+        <div class="topbar-actions">
 
-</p>
+            <button
+                class="icon-button"
+                title="Notifications"
+            >
+                ♢
+                <span class="notification-dot"></span>
+            </button>
 
-</div>
+            <div class="topbar-divider"></div>
 
-<div class="stat-card">
+            <div class="top-profile">
 
-<h3>
+                <div class="top-avatar">
+                    A
+                </div>
 
-Active Subscriptions
+                <div class="top-profile-text">
 
-</h3>
+                    <strong>
+                        Administrator
+                    </strong>
 
-<h1
-class="counter"
-data-target="214">
+                    <span>
+                        Super Admin
+                    </span>
 
-0
+                </div>
 
-</h1>
+            </div>
 
-<p>
+        </div>
 
-74.8% Active
+    </header>
 
-</p>
 
-</div>
+    <!-- =====================================================
+         DASHBOARD
+    ====================================================== -->
 
-<div class="stat-card">
+    <section
+        class="page-content"
+        id="dashboard"
+    >
 
-<h3>
 
-Bookings This Month
+        <!-- PAGE HEADER -->
 
-</h3>
+        <div class="page-header">
 
-<h1
-class="counter"
-data-target="1648">
+            <div>
 
-0
+                <div class="page-eyebrow">
+                    PLATFORM OVERVIEW
+                </div>
 
-</h1>
+                <h1>
+                    Dashboard
+                </h1>
 
-<p>
+                <p>
+                    Monitor your platform, photographers,
+                    subscriptions and business activity.
+                </p>
 
-Across all photographers
+            </div>
 
-</p>
+            <div class="header-date">
 
-</div>
+                <span>
+                    Last updated
+                </span>
 
-<div class="stat-card">
+                <strong>
+                    August 31, 2026
+                </strong>
 
-<h3>
+            </div>
 
-Monthly Revenue
+        </div>
 
-</h3>
 
-<h1>
+        <!-- =================================================
+             KPI CARDS
+        ================================================== -->
 
-₹4.82L
+        <div class="stats-grid">
 
-</h1>
 
-<p>
+            <article class="stat-card">
 
-Estimated Revenue
+                <div class="stat-top">
 
-</p>
+                    <span>
+                        Total Photographers
+                    </span>
 
-</div>
+                    <div class="stat-icon">
+                        ◎
+                    </div>
 
-<div class="stat-card">
+                </div>
 
-<h3>
+                <div class="stat-value counter"
+                     data-target="286">
+                    0
+                </div>
 
-Pending Support Tickets
+                <div class="stat-footer positive">
+                    <span>↑ 4.3%</span>
+                    <span>vs last month</span>
+                </div>
 
-</h3>
+            </article>
 
-<h1
-class="counter"
-data-target="17">
 
-0
+            <article class="stat-card">
 
-</h1>
+                <div class="stat-top">
 
-<p>
+                    <span>
+                        Active Subscriptions
+                    </span>
 
-Needs Attention
+                    <div class="stat-icon">
+                        ◇
+                    </div>
 
-</p>
+                </div>
 
-</div>
+                <div class="stat-value counter"
+                     data-target="214">
+                    0
+                </div>
 
-<div class="stat-card">
+                <div class="stat-footer positive">
+                    <span>↑ 7.1%</span>
+                    <span>vs last month</span>
+                </div>
 
-<h3>
+            </article>
 
-Referral Signups
 
-</h3>
+            <article class="stat-card">
 
-<h1
-class="counter"
-data-target="89">
+                <div class="stat-top">
 
-0
+                    <span>
+                        Bookings This Month
+                    </span>
 
-</h1>
+                    <div class="stat-icon">
+                        □
+                    </div>
 
-<p>
+                </div>
 
-This Month
+                <div class="stat-value counter"
+                     data-target="1648">
+                    0
+                </div>
 
-</p>
+                <div class="stat-footer positive">
+                    <span>↑ 12.8%</span>
+                    <span>vs last month</span>
+                </div>
 
-</div>
+            </article>
 
-</div>
 
-</section>
+            <article class="stat-card">
 
-<!-- ================= PHOTOGRAPHERS ================= -->
+                <div class="stat-top">
 
-<section
-class="section"
-id="photographers">
+                    <span>
+                        Monthly Revenue
+                    </span>
 
-<h2>
+                    <div class="stat-icon">
+                        ₹
+                    </div>
 
-Photographer Management
+                </div>
 
-</h2>
+                <div class="stat-value">
+                    ₹4.82L
+                </div>
 
-<table>
+                <div class="stat-footer positive">
+                    <span>↑ 9.4%</span>
+                    <span>vs last month</span>
+                </div>
 
-<thead>
+            </article>
 
-<tr>
 
-<th>Name</th>
+        </div>
 
-<th>City</th>
 
-<th>Plan</th>
+        <!-- =================================================
+             OVERVIEW GRID
+        ================================================== -->
 
-<th>Status</th>
+        <div class="overview-grid">
 
-<th>Action</th>
 
-</tr>
+            <!-- REVENUE -->
 
-</thead>
+            <article class="panel revenue-panel">
 
-<tbody>
+                <div class="panel-header">
 
-<tr>
+                    <div>
 
-<td>Rahul Photography</td>
+                        <span class="panel-label">
+                            REVENUE
+                        </span>
 
-<td>Nagpur</td>
+                        <h2>
+                            Revenue Overview
+                        </h2>
 
-<td>Pro</td>
+                    </div>
 
-<td>Active</td>
+                    <select class="period-select">
+                        <option>Last 6 months</option>
+                        <option>Last 12 months</option>
+                        <option>This year</option>
+                    </select>
 
-<td>
+                </div>
 
-<button>
 
-View
+                <div class="revenue-summary">
 
-</button>
+                    <strong>
+                        ₹24.6L
+                    </strong>
 
-</td>
+                    <span class="positive">
+                        +18.6%
+                    </span>
 
-</tr>
+                </div>
 
-<tr>
 
-<td>Dream Studio</td>
+                <div class="chart">
 
-<td>Pune</td>
+                    <div class="chart-grid-lines">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
 
-<td>Studio</td>
+                    <div class="chart-bars">
 
-<td>Pending</td>
+                        <div class="bar-column">
+                            <div class="bar"
+                                 style="height:42%">
+                            </div>
+                            <span>Mar</span>
+                        </div>
 
-<td>
+                        <div class="bar-column">
+                            <div class="bar"
+                                 style="height:55%">
+                            </div>
+                            <span>Apr</span>
+                        </div>
 
-<button>
+                        <div class="bar-column">
+                            <div class="bar"
+                                 style="height:48%">
+                            </div>
+                            <span>May</span>
+                        </div>
 
-Approve
+                        <div class="bar-column">
+                            <div class="bar"
+                                 style="height:68%">
+                            </div>
+                            <span>Jun</span>
+                        </div>
 
-</button>
+                        <div class="bar-column">
+                            <div class="bar"
+                                 style="height:76%">
+                            </div>
+                            <span>Jul</span>
+                        </div>
 
-</td>
+                        <div class="bar-column active-bar">
+                            <div class="bar"
+                                 style="height:91%">
+                            </div>
+                            <span>Aug</span>
+                        </div>
 
-</tr>
+                    </div>
 
-<tr>
+                </div>
 
-<td>Pixel Memories</td>
+            </article>
 
-<td>Mumbai</td>
 
-<td>Free</td>
+            <!-- SUBSCRIPTION MIX -->
 
-<td>Suspended</td>
+            <article class="panel">
 
-<td>
+                <div class="panel-header">
 
-<button>
+                    <div>
 
-Review
+                        <span class="panel-label">
+                            SUBSCRIPTIONS
+                        </span>
 
-</button>
+                        <h2>
+                            Plan Distribution
+                        </h2>
 
-</td>
+                    </div>
 
-</tr>
+                </div>
 
-</tbody>
 
-</table>
+                <div class="plan-list">
 
-</section>
 
-<!-- ================= SUBSCRIPTIONS ================= -->
+                    <div class="plan-row">
 
-<section class="section" id="subscriptions">
+                        <div class="plan-info">
 
-<h2>Subscription Management</h2>
+                            <span class="plan-dot free"></span>
 
-<div class="subscription-grid">
+                            <div>
+                                <strong>Free</strong>
+                                <span>72 users</span>
+                            </div>
 
-<div class="subscription-card">
+                        </div>
 
-<h3>Free Plan</h3>
+                        <strong>
+                            25.2%
+                        </strong>
 
-<p>Users : <strong>72</strong></p>
+                    </div>
 
-<p>Limited Features</p>
 
-<button>View Details</button>
+                    <div class="plan-row">
 
-</div>
+                        <div class="plan-info">
 
-<div class="subscription-card">
+                            <span class="plan-dot pro"></span>
 
-<h3>Pro Plan</h3>
+                            <div>
+                                <strong>Pro</strong>
+                                <span>164 users</span>
+                            </div>
 
-<p>Users : <strong>164</strong></p>
+                        </div>
 
-<p>₹999 / Month</p>
+                        <strong>
+                            57.3%
+                        </strong>
 
-<button>Manage</button>
+                    </div>
 
-</div>
 
-<div class="subscription-card">
+                    <div class="plan-row">
 
-<h3>Studio Plan</h3>
+                        <div class="plan-info">
 
-<p>Users : <strong>50</strong></p>
+                            <span class="plan-dot studio"></span>
 
-<p>₹2499 / Month</p>
+                            <div>
+                                <strong>Studio</strong>
+                                <span>50 users</span>
+                            </div>
 
-<button>Manage</button>
+                        </div>
 
-</div>
+                        <strong>
+                            17.5%
+                        </strong>
 
-</div>
+                    </div>
 
-</section>
+                </div>
 
-<!-- ================= PAYMENTS ================= -->
 
-<section class="section" id="payments">
+                <div class="plan-total">
 
-<h2>Recent Payments</h2>
+                    <span>
+                        Total accounts
+                    </span>
 
-<table>
+                    <strong>
+                        286
+                    </strong>
 
-<thead>
+                </div>
 
-<tr>
+            </article>
 
-<th>Photographer</th>
+        </div>
 
-<th>Plan</th>
 
-<th>Amount</th>
+        <!-- =================================================
+             RECENT ACTIVITY + SUPPORT
+        ================================================== -->
 
-<th>Status</th>
+        <div class="dashboard-grid">
 
-</tr>
 
-</thead>
+            <article class="panel">
 
-<tbody>
+                <div class="panel-header">
 
-<tr>
+                    <div>
 
-<td>Rahul Photography</td>
+                        <span class="panel-label">
+                            ACTIVITY
+                        </span>
 
-<td>Pro</td>
+                        <h2>
+                            Recent Activity
+                        </h2>
 
-<td>₹999</td>
+                    </div>
 
-<td>Paid</td>
+                    <a href="#photographers"
+                       class="panel-link">
+                        View all →
+                    </a>
 
-</tr>
+                </div>
 
-<tr>
 
-<td>Dream Studio</td>
+                <div class="activity-list">
 
-<td>Studio</td>
 
-<td>₹2499</td>
+                    <div class="activity-item">
 
-<td>Paid</td>
+                        <div class="activity-icon">
+                            +
+                        </div>
 
-</tr>
+                        <div class="activity-content">
 
-<tr>
+                            <strong>
+                                New photographer registered
+                            </strong>
 
-<td>Pixel Memories</td>
+                            <span>
+                                Rahul Photography joined the platform
+                            </span>
 
-<td>Pro</td>
+                        </div>
 
-<td>₹999</td>
+                        <time>
+                            12m
+                        </time>
 
-<td>Pending</td>
+                    </div>
 
-</tr>
 
-</tbody>
+                    <div class="activity-item">
 
-</table>
+                        <div class="activity-icon">
+                            ₹
+                        </div>
 
-</section>
+                        <div class="activity-content">
 
-<!-- ================= ANALYTICS ================= -->
+                            <strong>
+                                Subscription upgraded
+                            </strong>
 
-<section class="section" id="analytics">
+                            <span>
+                                Dream Studio upgraded to Studio
+                            </span>
 
-<h2>Platform Analytics</h2>
+                        </div>
 
-<div class="analytics-grid">
+                        <time>
+                            48m
+                        </time>
 
-<div class="analytics-card">
+                    </div>
 
-<h3>Monthly Growth</h3>
 
-<div class="progress">
+                    <div class="activity-item">
 
-<div class="progress-fill"
+                        <div class="activity-icon">
+                            □
+                        </div>
 
-data-width="82">
+                        <div class="activity-content">
 
-</div>
+                            <strong>
+                                Booking milestone reached
+                            </strong>
 
-</div>
+                            <span>
+                                Platform crossed 1,600 bookings this month
+                            </span>
 
-<p>82%</p>
+                        </div>
 
-</div>
+                        <time>
+                            2h
+                        </time>
 
-<div class="analytics-card">
+                    </div>
 
-<h3>Conversion Rate</h3>
 
-<div class="progress">
+                    <div class="activity-item">
 
-<div class="progress-fill"
+                        <div class="activity-icon">
+                            ✓
+                        </div>
 
-data-width="68">
+                        <div class="activity-content">
 
-</div>
+                            <strong>
+                                Payment received
+                            </strong>
 
-</div>
+                            <span>
+                                ₹2,499 payment from Dream Studio
+                            </span>
 
-<p>68%</p>
+                        </div>
 
-</div>
+                        <time>
+                            3h
+                        </time>
 
-<div class="analytics-card">
+                    </div>
 
-<h3>User Retention</h3>
+                </div>
 
-<div class="progress">
+            </article>
 
-<div class="progress-fill"
 
-data-width="91">
+            <article class="panel">
 
-</div>
+                <div class="panel-header">
 
-</div>
+                    <div>
 
-<p>91%</p>
+                        <span class="panel-label">
+                            ATTENTION
+                        </span>
 
-</div>
+                        <h2>
+                            Support
+                        </h2>
 
-</div>
+                    </div>
 
-</section>
+                    <span class="status-badge warning">
+                        17 Open
+                    </span>
 
-<!-- ================= REFERRALS ================= -->
+                </div>
 
-<section class="section">
 
-<h2>Referral Program</h2>
+                <div class="support-summary">
 
-<div class="referral-box">
+                    <div class="support-number">
+                        17
+                    </div>
 
-<h3>Top Referrer</h3>
+                    <div>
 
-<p>Rahul Photography</p>
+                        <strong>
+                            Pending tickets
+                        </strong>
 
-<p>18 Successful Referrals</p>
+                        <span>
+                            4 require immediate attention
+                        </span>
 
-<button>View Leaderboard</button>
+                    </div>
 
-</div>
+                </div>
 
-</section>
 
-<!-- ================= SUPPORT ================= -->
+                <div class="support-progress">
 
-<section class="section" id="support">
+                    <div>
+                        <span>Resolution rate</span>
+                        <strong>91%</strong>
+                    </div>
 
-<h2>Support Tickets</h2>
+                    <div class="progress">
+                        <div
+                            class="progress-fill"
+                            data-width="91"
+                        ></div>
+                    </div>
 
-<table>
+                </div>
 
-<thead>
 
-<tr>
+                <a
+                    href="#support"
+                    class="primary-button"
+                >
+                    Open Support Center
+                </a>
 
-<th>Ticket</th>
+            </article>
 
-<th>User</th>
+        </div>
 
-<th>Status</th>
 
-<th>Priority</th>
+        <!-- =================================================
+             PHOTOGRAPHERS
+        ================================================== -->
 
-</tr>
+        <section
+            class="content-section"
+            id="photographers"
+        >
 
-</thead>
+            <div class="section-heading">
 
-<tbody>
+                <div>
 
-<tr>
+                    <span class="panel-label">
+                        MANAGEMENT
+                    </span>
 
-<td>#1023</td>
+                    <h2>
+                        Photographers
+                    </h2>
 
-<td>Dream Studio</td>
+                    <p>
+                        Manage photographer accounts and platform access.
+                    </p>
 
-<td>Open</td>
+                </div>
 
-<td>High</td>
+                <button class="secondary-button">
+                    + Add Photographer
+                </button>
 
-</tr>
+            </div>
 
-<tr>
 
-<td>#1024</td>
+            <div class="table-panel">
 
-<td>Pixel Memories</td>
+                <div class="table-toolbar">
 
-<td>Resolved</td>
+                    <div class="search-box">
 
-<td>Low</td>
+                        <span>
+                            ⌕
+                        </span>
 
-</tr>
+                        <input
+                            type="search"
+                            placeholder="Search photographers..."
+                        >
 
-<tr>
+                    </div>
 
-<td>#1025</td>
+                    <select>
+                        <option>All Plans</option>
+                        <option>Free</option>
+                        <option>Pro</option>
+                        <option>Studio</option>
+                    </select>
 
-<td>Rahul Photography</td>
+                    <select>
+                        <option>All Status</option>
+                        <option>Active</option>
+                        <option>Pending</option>
+                        <option>Suspended</option>
+                    </select>
 
-<td>Pending</td>
+                </div>
 
-<td>Medium</td>
 
-</tr>
+                <div class="table-wrapper">
 
-</tbody>
+                    <table>
 
-</table>
+                        <thead>
 
-</section>
+                            <tr>
 
-<!-- ================= ANNOUNCEMENTS ================= -->
+                                <th>
+                                    Photographer
+                                </th>
 
-<section class="section">
+                                <th>
+                                    Location
+                                </th>
 
-<h2>Announcements</h2>
+                                <th>
+                                    Plan
+                                </th>
 
-<div class="announcement">
+                                <th>
+                                    Status
+                                </th>
 
-<p>
+                                <th>
+                                    Joined
+                                </th>
 
-✔ New AI Gallery feature launching next month.
+                                <th>
+                                    Action
+                                </th>
 
-</p>
+                            </tr>
 
-</div>
+                        </thead>
 
-<div class="announcement">
 
-<p>
+                        <tbody>
 
-✔ Scheduled maintenance on Sunday 2:00 AM.
+                            <tr>
 
-</p>
+                                <td>
 
-</div>
+                                    <div class="user-cell">
 
-</section>
+                                        <div class="table-avatar">
+                                            RP
+                                        </div>
 
-<!-- ================= SETTINGS ================= -->
+                                        <div>
+                                            <strong>
+                                                Rahul Photography
+                                            </strong>
+                                            <span>
+                                                rahul@example.com
+                                            </span>
+                                        </div>
 
-<section class="section"
+                                    </div>
 
-id="settings">
+                                </td>
 
-<h2>Platform Settings</h2>
+                                <td>
+                                    Nagpur
+                                </td>
 
-<div class="settings-grid">
+                                <td>
+                                    <span class="plan-badge pro-badge">
+                                        Pro
+                                    </span>
+                                </td>
 
-<div class="setting-card">
+                                <td>
+                                    <span class="status active">
+                                        Active
+                                    </span>
+                                </td>
 
-Logo
+                                <td>
+                                    Aug 12, 2026
+                                </td>
 
-</div>
+                                <td>
+                                    <button class="table-action">
+                                        View
+                                    </button>
+                                </td>
 
-<div class="setting-card">
+                            </tr>
 
-Payment Gateway
 
-</div>
+                            <tr>
 
-<div class="setting-card">
+                                <td>
 
-Email Settings
+                                    <div class="user-cell">
 
-</div>
+                                        <div class="table-avatar">
+                                            DS
+                                        </div>
 
-<div class="setting-card">
+                                        <div>
+                                            <strong>
+                                                Dream Studio
+                                            </strong>
+                                            <span>
+                                                studio@example.com
+                                            </span>
+                                        </div>
 
-GST & Taxes
+                                    </div>
 
-</div>
+                                </td>
 
-<div class="setting-card">
+                                <td>
+                                    Pune
+                                </td>
 
-Security
+                                <td>
+                                    <span class="plan-badge studio-badge">
+                                        Studio
+                                    </span>
+                                </td>
 
-</div>
+                                <td>
+                                    <span class="status pending">
+                                        Pending
+                                    </span>
+                                </td>
 
-<div class="setting-card">
+                                <td>
+                                    Aug 28, 2026
+                                </td>
 
-Admin Profile
+                                <td>
+                                    <button class="table-action">
+                                        Approve
+                                    </button>
+                                </td>
 
-</div>
+                            </tr>
 
-</div>
 
-</section>
+                            <tr>
 
-<!-- ================= FOOTER ================= -->
+                                <td>
 
-<footer>
+                                    <div class="user-cell">
+
+                                        <div class="table-avatar">
+                                            PM
+                                        </div>
+
+                                        <div>
+                                            <strong>
+                                                Pixel Memories
+                                            </strong>
+                                            <span>
+                                                pixel@example.com
+                                            </span>
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+                                <td>
+                                    Mumbai
+                                </td>
+
+                                <td>
+                                    <span class="plan-badge free-badge">
+                                        Free
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="status suspended">
+                                        Suspended
+                                    </span>
+                                </td>
+
+                                <td>
+                                    Aug 05, 2026
+                                </td>
+
+                                <td>
+                                    <button class="table-action">
+                                        Review
+                                    </button>
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SUBSCRIPTIONS
+        ================================================== -->
+
+        <section
+            class="content-section"
+            id="subscriptions"
+        >
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="panel-label">
+                        BILLING
+                    </span>
+
+                    <h2>
+                        Subscription Plans
+                    </h2>
+
+                    <p>
+                        Monitor plan adoption and recurring subscriptions.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="subscription-grid">
+
+
+                <article class="subscription-card">
+
+                    <div class="subscription-top">
+
+                        <div class="subscription-icon">
+                            F
+                        </div>
+
+                        <span class="plan-badge free-badge">
+                            FREE
+                        </span>
+
+                    </div>
+
+                    <h3>
+                        Free Plan
+                    </h3>
+
+                    <strong class="subscription-users">
+                        72
+                    </strong>
+
+                    <span>
+                        active users
+                    </span>
+
+                    <div class="subscription-line"></div>
+
+                    <p>
+                        Limited platform features
+                    </p>
+
+                    <button>
+                        View Details
+                    </button>
+
+                </article>
+
+
+                <article class="subscription-card featured">
+
+                    <div class="subscription-top">
+
+                        <div class="subscription-icon">
+                            P
+                        </div>
+
+                        <span class="plan-badge pro-badge">
+                            PRO
+                        </span>
+
+                    </div>
+
+                    <h3>
+                        Pro Plan
+                    </h3>
+
+                    <strong class="subscription-users">
+                        164
+                    </strong>
+
+                    <span>
+                        active users
+                    </span>
+
+                    <div class="subscription-line"></div>
+
+                    <p>
+                        ₹999 / month
+                    </p>
+
+                    <button>
+                        Manage Plan
+                    </button>
+
+                </article>
+
+
+                <article class="subscription-card">
+
+                    <div class="subscription-top">
+
+                        <div class="subscription-icon">
+                            S
+                        </div>
+
+                        <span class="plan-badge studio-badge">
+                            STUDIO
+                        </span>
+
+                    </div>
+
+                    <h3>
+                        Studio Plan
+                    </h3>
+
+                    <strong class="subscription-users">
+                        50
+                    </strong>
+
+                    <span>
+                        active users
+                    </span>
+
+                    <div class="subscription-line"></div>
+
+                    <p>
+                        ₹2,499 / month
+                    </p>
+
+                    <button>
+                        Manage Plan
+                    </button>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             PAYMENTS
+        ================================================== -->
+
+        <section
+            class="content-section"
+            id="payments"
+        >
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="panel-label">
+                        FINANCE
+                    </span>
+
+                    <h2>
+                        Recent Payments
+                    </h2>
+
+                    <p>
+                        Review recent subscription transactions.
+                    </p>
+
+                </div>
+
+                <button class="secondary-button">
+                    Export Report
+                </button>
+
+            </div>
+
+
+            <div class="table-panel">
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Photographer
+                                </th>
+
+                                <th>
+                                    Plan
+                                </th>
+
+                                <th>
+                                    Amount
+                                </th>
+
+                                <th>
+                                    Date
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            <tr>
+
+                                <td>
+                                    Rahul Photography
+                                </td>
+
+                                <td>
+                                    Pro
+                                </td>
+
+                                <td>
+                                    <strong>
+                                        ₹999
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    Aug 31, 2026
+                                </td>
+
+                                <td>
+                                    <span class="status active">
+                                        Paid
+                                    </span>
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>
+                                    Dream Studio
+                                </td>
+
+                                <td>
+                                    Studio
+                                </td>
+
+                                <td>
+                                    <strong>
+                                        ₹2,499
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    Aug 31, 2026
+                                </td>
+
+                                <td>
+                                    <span class="status active">
+                                        Paid
+                                    </span>
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>
+                                    Pixel Memories
+                                </td>
+
+                                <td>
+                                    Pro
+                                </td>
+
+                                <td>
+                                    <strong>
+                                        ₹999
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    Aug 30, 2026
+                                </td>
+
+                                <td>
+                                    <span class="status pending">
+                                        Pending
+                                    </span>
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             ANALYTICS
+        ================================================== -->
+
+        <section
+            class="content-section"
+            id="analytics"
+        >
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="panel-label">
+                        INSIGHTS
+                    </span>
+
+                    <h2>
+                        Platform Analytics
+                    </h2>
+
+                    <p>
+                        Key indicators showing platform health.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="analytics-grid">
+
+
+                <article class="analytics-card">
+
+                    <div class="analytics-card-top">
+
+                        <span>
+                            Monthly Growth
+                        </span>
+
+                        <strong>
+                            82%
+                        </strong>
+
+                    </div>
+
+                    <div class="progress">
+                        <div
+                            class="progress-fill"
+                            data-width="82"
+                        ></div>
+                    </div>
+
+                    <p>
+                        Strong user acquisition this month.
+                    </p>
+
+                </article>
+
+
+                <article class="analytics-card">
+
+                    <div class="analytics-card-top">
+
+                        <span>
+                            Conversion Rate
+                        </span>
+
+                        <strong>
+                            68%
+                        </strong>
+
+                    </div>
+
+                    <div class="progress">
+                        <div
+                            class="progress-fill"
+                            data-width="68"
+                        ></div>
+                    </div>
+
+                    <p>
+                        Free users converting to paid plans.
+                    </p>
+
+                </article>
+
+
+                <article class="analytics-card">
+
+                    <div class="analytics-card-top">
+
+                        <span>
+                            User Retention
+                        </span>
+
+                        <strong>
+                            91%
+                        </strong>
+
+                    </div>
+
+                    <div class="progress">
+                        <div
+                            class="progress-fill"
+                            data-width="91"
+                        ></div>
+                    </div>
+
+                    <p>
+                        Healthy monthly active retention.
+                    </p>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             REFERRALS
+        ================================================== -->
+
+        <section class="content-section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="panel-label">
+                        GROWTH
+                    </span>
+
+                    <h2>
+                        Referral Program
+                    </h2>
+
+                    <p>
+                        Track photographer-driven platform growth.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="referral-panel">
+
+                <div class="referral-rank">
+                    #1
+                </div>
+
+                <div class="referral-content">
+
+                    <span>
+                        TOP REFERRER
+                    </span>
+
+                    <h3>
+                        Rahul Photography
+                    </h3>
+
+                    <p>
+                        18 successful referrals this month
+                    </p>
+
+                </div>
+
+                <button class="secondary-button">
+                    View Leaderboard
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SUPPORT
+        ================================================== -->
+
+        <section
+            class="content-section"
+            id="support"
+        >
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="panel-label">
+                        SUPPORT
+                    </span>
+
+                    <h2>
+                        Support Tickets
+                    </h2>
+
+                    <p>
+                        Review and resolve photographer requests.
+                    </p>
+
+                </div>
+
+                <span class="status-badge warning">
+                    17 Pending
+                </span>
+
+            </div>
+
+
+            <div class="table-panel">
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Ticket
+                                </th>
+
+                                <th>
+                                    User
+                                </th>
+
+                                <th>
+                                    Issue
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                                <th>
+                                    Priority
+                                </th>
+
+                                <th>
+                                    Action
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            <tr>
+
+                                <td>
+                                    <strong>
+                                        #1023
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    Dream Studio
+                                </td>
+
+                                <td>
+                                    Payment verification
+                                </td>
+
+                                <td>
+                                    <span class="status pending">
+                                        Open
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="priority high">
+                                        High
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <button class="table-action">
+                                        Open
+                                    </button>
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>
+                                    <strong>
+                                        #1024
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    Pixel Memories
+                                </td>
+
+                                <td>
+                                    Account access
+                                </td>
+
+                                <td>
+                                    <span class="status active">
+                                        Resolved
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="priority low">
+                                        Low
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <button class="table-action">
+                                        View
+                                    </button>
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>
+                                    <strong>
+                                        #1025
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    Rahul Photography
+                                </td>
+
+                                <td>
+                                    Booking issue
+                                </td>
+
+                                <td>
+                                    <span class="status pending">
+                                        Pending
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="priority medium">
+                                        Medium
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <button class="table-action">
+                                        Open
+                                    </button>
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             ANNOUNCEMENTS
+        ================================================== -->
+
+        <section
+            class="content-section"
+            id="announcements"
+        >
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="panel-label">
+                        PLATFORM
+                    </span>
+
+                    <h2>
+                        Announcements
+                    </h2>
+
+                    <p>
+                        Important platform updates and notices.
+                    </p>
+
+                </div>
+
+                <button class="secondary-button">
+                    + New Announcement
+                </button>
+
+            </div>
+
+
+            <div class="announcement-list">
+
+
+                <article class="announcement">
+
+                    <div class="announcement-icon">
+                        !
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            AI Gallery feature
+                        </strong>
+
+                        <p>
+                            New AI Gallery capabilities are scheduled
+                            for the next platform release.
+                        </p>
+
+                    </div>
+
+                    <span>
+                        Scheduled
+                    </span>
+
+                </article>
+
+
+                <article class="announcement">
+
+                    <div class="announcement-icon">
+                        ◷
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Scheduled maintenance
+                        </strong>
+
+                        <p>
+                            Platform maintenance is scheduled for
+                            Sunday at 2:00 AM.
+                        </p>
+
+                    </div>
+
+                    <span>
+                        System
+                    </span>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SETTINGS
+        ================================================== -->
+
+        <section
+            class="content-section"
+            id="settings"
+        >
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="panel-label">
+                        SYSTEM
+                    </span>
+
+                    <h2>
+                        Platform Settings
+                    </h2>
+
+                    <p>
+                        Configure core Professional Studio services.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="settings-grid">
+
+
+                <button class="setting-card">
+
+                    <span class="setting-icon">
+                        ◈
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            Branding
+                        </strong>
+
+                        <span>
+                            Logo and platform identity
+                        </span>
+
+                    </div>
+
+                    <b>
+                        →
+                    </b>
+
+                </button>
+
+
+                <button class="setting-card">
+
+                    <span class="setting-icon">
+                        ₹
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            Payment Gateway
+                        </strong>
+
+                        <span>
+                            Payments and billing configuration
+                        </span>
+
+                    </div>
+
+                    <b>
+                        →
+                    </b>
+
+                </button>
+
+
+                <button class="setting-card">
+
+                    <span class="setting-icon">
+                        @
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            Email Settings
+                        </strong>
+
+                        <span>
+                            Notifications and email delivery
+                        </span>
+
+                    </div>
+
+                    <b>
+                        →
+                    </b>
+
+                </button>
+
+
+                <button class="setting-card">
+
+                    <span class="setting-icon">
+                        %
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            GST & Taxes
+                        </strong>
+
+                        <span>
+                            Tax and invoice configuration
+                        </span>
+
+                    </div>
+
+                    <b>
+                        →
+                    </b>
+
+                </button>
+
+
+                <button class="setting-card">
+
+                    <span class="setting-icon">
+                        #
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            Security
+                        </strong>
+
+                        <span>
+                            Access and platform security
+                        </span>
+
+                    </div>
+
+                    <b>
+                        →
+                    </b>
+
+                </button>
+
+
+                <button class="setting-card">
+
+                    <span class="setting-icon">
+                        A
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            Admin Profile
+                        </strong>
+
+                        <span>
+                            Administrator account settings
+                        </span>
+
+                    </div>
+
+                    <b>
+                        →
+                    </b>
+
+                </button>
+
+            </div>
+
+        </section>
+
+
+    </section>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <div>
+
+            <strong>
+                Professional Studio
+            </strong>
+
+            <span>
+                Admin Console
+            </span>
+
+        </div>
 
         <p>
-          © 2026  Powered by <a href="https://bluehorizanlabs.vercel.app/" target="_blank"> Bluehorizanlabs</a> 
+            © 2026 Professional Studio · A
+            <a
+                href="https://bluehorizanlabs.vercel.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                BlueHorizalabs
+            </a>
+            product
         </p>
 
-
-Admin Dashboard
-
+    </footer>
 
 
-</footer>
+</main>
+
 
 <script src="admin.js"></script>
+```
 
 </body>
 

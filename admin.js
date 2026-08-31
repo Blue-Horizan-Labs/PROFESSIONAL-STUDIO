@@ -1,208 +1,480 @@
+/* ============================================================
+   PROFESSIONAL STUDIO
+   ADMIN DASHBOARD JAVASCRIPT
+============================================================ */
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    // ===============================
-    // Animated Counters
-    // ===============================
+    /* ========================================================
+       MOBILE NAVIGATION
+    ======================================================== */
+
+    const menuButton = document.querySelector(".menu-toggle");
+    const nav = document.querySelector(".navbar nav");
+
+    if (menuButton && nav) {
+
+        menuButton.addEventListener("click", () => {
+
+            nav.classList.toggle("active");
+
+            const isOpen = nav.classList.contains("active");
+
+            menuButton.setAttribute(
+                "aria-expanded",
+                isOpen ? "true" : "false"
+            );
+
+        });
+
+        nav.querySelectorAll("a").forEach(link => {
+
+            link.addEventListener("click", () => {
+                nav.classList.remove("active");
+
+                menuButton.setAttribute(
+                    "aria-expanded",
+                    "false"
+                );
+            });
+
+        });
+
+    }
+
+
+    /* ========================================================
+       SMOOTH SCROLL
+    ======================================================== */
+
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+
+        link.addEventListener("click", function (event) {
+
+            const targetId = this.getAttribute("href");
+
+            if (!targetId || targetId === "#") return;
+
+            const target = document.querySelector(targetId);
+
+            if (!target) return;
+
+            event.preventDefault();
+
+            target.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+        });
+
+    });
+
+
+    /* ========================================================
+       COUNTER ANIMATION
+    ======================================================== */
 
     const counters = document.querySelectorAll(".counter");
 
-    counters.forEach(counter => {
+    const animateCounter = counter => {
 
         const target = Number(counter.dataset.target);
 
-        let count = 0;
+        if (Number.isNaN(target)) return;
 
-        const speed = Math.max(1, Math.ceil(target / 80));
+        const duration = 1200;
+        const startTime = performance.now();
 
-        const updateCounter = () => {
+        const updateCounter = currentTime => {
 
-            count += speed;
+            const elapsed = currentTime - startTime;
 
-            if (count >= target) {
+            const progress = Math.min(
+                elapsed / duration,
+                1
+            );
 
-                counter.textContent = target;
+            // Smooth ease-out animation
+            const easedProgress =
+                1 - Math.pow(1 - progress, 3);
 
-            } else {
+            const currentValue =
+                Math.floor(target * easedProgress);
 
-                counter.textContent = count;
+            counter.textContent =
+                currentValue.toLocaleString("en-IN");
 
+            if (progress < 1) {
                 requestAnimationFrame(updateCounter);
-
+            } else {
+                counter.textContent =
+                    target.toLocaleString("en-IN");
             }
 
         };
 
-        updateCounter();
+        requestAnimationFrame(updateCounter);
+    };
 
-    });
 
-    // ===============================
-    // Progress Bars
-    // ===============================
+    /* ========================================================
+       INTERSECTION OBSERVER
+       COUNTERS ANIMATE WHEN VISIBLE
+    ======================================================== */
 
-    const progressBars = document.querySelectorAll(".progress-fill");
+    if ("IntersectionObserver" in window) {
 
-    progressBars.forEach(bar => {
+        const counterObserver =
+            new IntersectionObserver(
+                entries => {
 
-        const width = bar.dataset.width;
+                    entries.forEach(entry => {
 
-        setTimeout(() => {
+                        if (entry.isIntersecting) {
 
-            bar.style.width = width + "%";
+                            animateCounter(entry.target);
 
-        }, 300);
+                            counterObserver.unobserve(
+                                entry.target
+                            );
 
-    });
+                        }
 
-    // ===============================
-    // Smooth Scroll Navigation
-    // ===============================
+                    });
 
-    document.querySelectorAll(".navbar a").forEach(link => {
+                },
+                {
+                    threshold: 0.4
+                }
+            );
 
-        link.addEventListener("click", function (e) {
+        counters.forEach(counter => {
+            counterObserver.observe(counter);
+        });
 
-            const target = document.querySelector(this.getAttribute("href"));
+    } else {
 
-            if (target) {
+        counters.forEach(counter => {
+            animateCounter(counter);
+        });
 
-                e.preventDefault();
+    }
 
-                target.scrollIntoView({
 
-                    behavior: "smooth"
+    /* ========================================================
+       PROGRESS BAR ANIMATION
+    ======================================================== */
 
-                });
+    const progressBars =
+        document.querySelectorAll(".progress-fill");
 
+    if ("IntersectionObserver" in window) {
+
+        const progressObserver =
+            new IntersectionObserver(
+                entries => {
+
+                    entries.forEach(entry => {
+
+                        if (entry.isIntersecting) {
+
+                            const bar = entry.target;
+
+                            const width =
+                                bar.dataset.width;
+
+                            if (width) {
+                                requestAnimationFrame(() => {
+                                    bar.style.width =
+                                        `${width}%`;
+                                });
+                            }
+
+                            progressObserver.unobserve(bar);
+                        }
+
+                    });
+
+                },
+                {
+                    threshold: 0.5
+                }
+            );
+
+        progressBars.forEach(bar => {
+            progressObserver.observe(bar);
+        });
+
+    } else {
+
+        progressBars.forEach(bar => {
+
+            const width = bar.dataset.width;
+
+            if (width) {
+                bar.style.width = `${width}%`;
             }
 
         });
 
-    });
+    }
 
-    // ===============================
-    // Active Navigation Highlight
-    // ===============================
 
-    const sections = document.querySelectorAll("section[id]");
+    /* ========================================================
+       ACTIVE NAVIGATION LINK
+    ======================================================== */
 
-    const navLinks = document.querySelectorAll(".navbar nav a");
+    const sections =
+        document.querySelectorAll("section[id]");
 
-    window.addEventListener("scroll", () => {
+    const navLinks =
+        document.querySelectorAll(".navbar nav a");
 
-        let current = "";
+    if (sections.length && navLinks.length) {
+
+        const sectionObserver =
+            new IntersectionObserver(
+                entries => {
+
+                    entries.forEach(entry => {
+
+                        if (!entry.isIntersecting) return;
+
+                        const id =
+                            entry.target.getAttribute("id");
+
+                        navLinks.forEach(link => {
+
+                            link.classList.remove("active");
+
+                            if (
+                                link.getAttribute("href") ===
+                                `#${id}`
+                            ) {
+                                link.classList.add("active");
+                            }
+
+                        });
+
+                    });
+
+                },
+                {
+                    rootMargin: "-25% 0px -65% 0px",
+                    threshold: 0
+                }
+            );
 
         sections.forEach(section => {
-
-            const sectionTop = section.offsetTop - 120;
-
-            const sectionHeight = section.offsetHeight;
-
-            if (window.scrollY >= sectionTop &&
-                window.scrollY < sectionTop + sectionHeight) {
-
-                current = section.getAttribute("id");
-
-            }
-
+            sectionObserver.observe(section);
         });
 
-        navLinks.forEach(link => {
+    }
 
-            link.classList.remove("active");
 
-            if (link.getAttribute("href") === "#" + current) {
-
-                link.classList.add("active");
-
-            }
-
-        });
-
-    });
-
-    // ===============================
-    // Button Click Animation
-    // ===============================
+    /* ========================================================
+       VIEW / APPROVE / REVIEW BUTTONS
+    ======================================================== */
 
     document.querySelectorAll("button").forEach(button => {
 
-        button.addEventListener("click", () => {
+        const text =
+            button.textContent.trim().toLowerCase();
 
-            button.style.transform = "scale(.95)";
+        if (
+            text === "view" ||
+            text === "approve" ||
+            text === "review" ||
+            text === "manage" ||
+            text === "view details" ||
+            text === "view leaderboard"
+        ) {
 
-            setTimeout(() => {
+            button.addEventListener("click", () => {
 
-                button.style.transform = "scale(1)";
+                const originalText =
+                    button.textContent;
 
-            }, 150);
+                button.classList.add("loading");
 
-        });
+                button.textContent = "Loading...";
+
+                setTimeout(() => {
+
+                    button.classList.remove("loading");
+
+                    button.textContent =
+                        originalText;
+
+                    showNotification(
+                        `${originalText} action selected. Backend integration required.`,
+                        "info"
+                    );
+
+                }, 500);
+
+            });
+
+        }
 
     });
 
-    // ===============================
-    // Welcome Notification
-    // ===============================
 
-    setTimeout(() => {
+    /* ========================================================
+       NOTIFICATION SYSTEM
+    ======================================================== */
 
-        console.log("PhotoSaaS Admin Dashboard Loaded Successfully");
+    function showNotification(message, type = "info") {
 
-    }, 500);
+        let container =
+            document.querySelector(".notification-container");
+
+        if (!container) {
+
+            container =
+                document.createElement("div");
+
+            container.className =
+                "notification-container";
+
+            document.body.appendChild(container);
+
+        }
+
+        const notification =
+            document.createElement("div");
+
+        notification.className =
+            `notification notification-${type}`;
+
+        notification.innerHTML = `
+            <span class="notification-icon">
+                ${type === "success" ? "✓" : "i"}
+            </span>
+
+            <span class="notification-message">
+                ${message}
+            </span>
+
+            <button
+                class="notification-close"
+                aria-label="Close notification"
+            >
+                ×
+            </button>
+        `;
+
+        container.appendChild(notification);
+
+        requestAnimationFrame(() => {
+            notification.classList.add("show");
+        });
+
+        const closeButton =
+            notification.querySelector(
+                ".notification-close"
+            );
+
+        closeButton.addEventListener(
+            "click",
+            () => removeNotification(notification)
+        );
+
+        setTimeout(() => {
+            removeNotification(notification);
+        }, 4000);
+
+    }
+
+
+    function removeNotification(notification) {
+
+        if (!notification) return;
+
+        notification.classList.remove("show");
+
+        setTimeout(() => {
+
+            if (notification.parentNode) {
+                notification.remove();
+            }
+
+        }, 300);
+
+    }
+
+
+    /* ========================================================
+       TABLE ROW HOVER / CLICK FEEDBACK
+    ======================================================== */
+
+    document
+        .querySelectorAll("table tbody tr")
+        .forEach(row => {
+
+            row.addEventListener("click", event => {
+
+                if (
+                    event.target.closest("button")
+                ) {
+                    return;
+                }
+
+                document
+                    .querySelectorAll("table tbody tr.selected")
+                    .forEach(selectedRow => {
+                        selectedRow.classList.remove(
+                            "selected"
+                        );
+                    });
+
+                row.classList.add("selected");
+
+            });
+
+        });
+
+
+    /* ========================================================
+       DASHBOARD CARD HOVER ACCESSIBILITY
+    ======================================================== */
+
+    document
+        .querySelectorAll(
+            ".stat-card, .subscription-card, .analytics-card, .setting-card"
+        )
+        .forEach(card => {
+
+            card.addEventListener("mouseenter", () => {
+                card.classList.add("is-hovered");
+            });
+
+            card.addEventListener("mouseleave", () => {
+                card.classList.remove("is-hovered");
+            });
+
+        });
+
+
+    /* ========================================================
+       CURRENT YEAR
+    ======================================================== */
+
+    document
+        .querySelectorAll("[data-current-year]")
+        .forEach(element => {
+
+            element.textContent =
+                new Date().getFullYear();
+
+        });
+
+
+    /* ========================================================
+       INITIAL PAGE STATE
+    ======================================================== */
+
+    document.body.classList.add("dashboard-ready");
 
 });
-
-// ===============================
-// Placeholder Functions
-// (Backend Integration Later)
-// ===============================
-
-function approvePhotographer(id){
-
-    console.log("Approve Photographer :", id);
-
-}
-
-function suspendPhotographer(id){
-
-    console.log("Suspend Photographer :", id);
-
-}
-
-function deletePhotographer(id){
-
-    console.log("Delete Photographer :", id);
-
-}
-
-function updateSubscription(id){
-
-    console.log("Update Subscription :", id);
-
-}
-
-function openSupportTicket(id){
-
-    console.log("Support Ticket :", id);
-
-}
-
-function viewPayment(id){
-
-    console.log("Payment :", id);
-
-}
-
-function createAnnouncement(){
-
-    console.log("Announcement");
-
-}
-
-function savePlatformSettings(){
-
-    console.log("Settings Saved");
-
-}
