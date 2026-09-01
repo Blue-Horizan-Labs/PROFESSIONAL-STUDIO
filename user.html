@@ -1,22 +1,38 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Photographer Dashboard</title>
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-<meta name="theme-color" content="#111111">
-<meta name="description" content="Photographer Dashboard">
+<title>Professional Studio | Dashboard</title>
 
-<link rel="stylesheet" href="user.css">
+<meta
+    name="description"
+    content="Professional Studio photographer dashboard"
+>
+
+<link
+    rel="stylesheet"
+    href="user.css"
+>
+
 
 </head>
+
 <body>
 
-<!-- ==========================
-        NAVBAR
-=========================== -->
+
+<!-- ==========================================
+     NAVBAR
+=========================================== -->
 
 <header class="navbar">
 
@@ -26,30 +42,40 @@
 
     <nav>
 
-        <a href="#dashboard">Dashboard</a>
+        <a href="#dashboard">
+            Dashboard
+        </a>
 
-        <a href="#profile">Profile</a>
+        <a href="#profile">
+            Profile
+        </a>
 
-        <a href="#services">Services</a>
+        <a href="#services">
+            Services
+        </a>
 
-        <a href="#pricing">Pricing</a>
+        <a href="#equipment">
+            Equipment
+        </a>
 
-        <a href="#equipment">Equipment</a>
+        <a href="#bookings">
+            Bookings
+        </a>
 
-       <!-- <a href="#gallery">Gallery</a> -->
-
-        <a href="#settings">Settings</a>
+        <a href="#settings">
+            Settings
+        </a>
 
     </nav>
 
 </header>
 
 
-<!-- ==========================
-        HERO
-=========================== -->
+<!-- ==========================================
+     HERO
+=========================================== -->
 
-<section class="hero" id="dashboard">
+<section class="hero">
 
     <div class="hero-content">
 
@@ -58,381 +84,586 @@
         </h1>
 
         <p>
-            Manage your portfolio, services, gallery and bookings from one place.
+            Manage your portfolio, services, packages, equipment and bookings from one place.
         </p>
 
         <button
-    onclick="openPortfolio()"
-    id="openPortfolioBtn"
-    style="
-        padding: 14px 28px;
-        font-size: 16px;
-        font-weight: 600;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-    "
-    disabled
->
-    Open My Page
-</button>
+            onclick="openPortfolio()"
+            id="openPortfolioBtn"
+            style="
+                padding:14px 28px;
+                font-size:16px;
+                font-weight:600;
+                border:none;
+                border-radius:8px;
+                cursor:pointer;
+            "
+            disabled
+        >
+            Open My Page
+        </button>
 
     </div>
 
-    
-<button
-    onclick="copyProfileLink()"
-    id="copyProfileBtn"
-    class="copy-profile-btn"
-    disabled
->
-    Copy Profile Link
-</button>
 
-</section>
-
-
-
-<section class="section" id="profile">
-
- <a href="setup.html">
-    <button style="
-        padding: 14px 25px;
-        font-size: 25px;
-        font-weight: 600;
-        border-radius: 8px;
-        cursor: pointer;
-    ">
-        Update Profile
+    <button
+        onclick="copyProfileLink()"
+        id="copyProfileBtn"
+        class="copy-profile-btn"
+        disabled
+    >
+        Copy Profile Link
     </button>
-</a>
-
-
- </section>
-
-<!-- ==========================
-      DASHBOARD OVERVIEW
-=========================== -->
-
-<section class="section">
-
-<h2>Dashboard</h2>
-
-<div class="stats-grid">
-
-<div class="stat-card">
-
-<h3>Today's Bookings</h3>
-
-<h1 class="counter" data-target="4">0</h1>
-
-<p>Upcoming sessions today</p>
-
-</div>
-
-<!--
-<div class="stat-card">
-
-<h3>Portfolio Views</h3>
-
-<h1 class="counter" data-target="1268">0</h1>
-
-<p>Last 30 days</p>
-
-</div>
--->
-
-<div class="stat-card">
-
-<h3>Gallery Photos</h3>
-
-<h1 class="counter" data-target="185">0</h1>
-
-<p>Total uploaded</p>
-
-</div>
-
-
-<div class="stat-card">
-
-<h3>Revenue</h3>
-
-<h1>₹82K</h1>
-
-<p>This Month</p>
-
-</div>
-
-</div>
-
 
 </section>
 
 
+<!-- ==========================================
+     DASHBOARD
+=========================================== -->
+
+<section
+    class="section"
+    id="dashboard"
+>
+
+    <h2>
+        Dashboard
+    </h2>
+
+    <div class="stats-grid">
 
 
+        <div class="stat-card">
 
-<!-- ==========================
-        SERVICES
-=========================== -->
+            <h3>
+                Today's Bookings
+            </h3>
 
-<section class="section" id="services">
+            <h1
+                class="counter"
+                data-target="4"
+            >
+                0
+            </h1>
 
-    <h2>Services</h2>
+            <p>
+                Upcoming sessions today
+            </p>
 
-    <div class="service-grid" id="serviceGrid">
+        </div>
 
-        <label class="service-card">
-            <input type="checkbox" checked>
-            Wedding Photography
-        </label>
 
-        <label class="service-card">
-            <input type="checkbox" checked>
-            Pre-Wedding Shoot
-        </label>
+        <div class="stat-card">
 
-        <label class="service-card">
-            <input type="checkbox" checked>
-            Portrait Photography
-        </label>
+            <h3>
+                Gallery Photos
+            </h3>
 
-        <label class="service-card">
-            <input type="checkbox">
-            Commercial Photography
-        </label>
+            <h1
+                class="counter"
+                data-target="185"
+            >
+                0
+            </h1>
 
-        <label class="service-card">
-            <input type="checkbox">
-            Corporate Events
-        </label>
+            <p>
+                Total uploaded
+            </p>
 
-        <label class="service-card">
-            <input type="checkbox">
-            Drone Photography
-        </label>
+        </div>
+
+
+        <div class="stat-card">
+
+            <h3>
+                Active Services
+            </h3>
+
+            <h1
+                class="counter"
+                data-target="3"
+            >
+                0
+            </h1>
+
+            <p>
+                Currently available
+            </p>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <h3>
+                Revenue
+            </h3>
+
+            <h1>
+                ₹82K
+            </h1>
+
+            <p>
+                This Month
+            </p>
+
+        </div>
+
 
     </div>
+
+</section>
+
+
+<!-- ==========================================
+     PROFILE
+=========================================== -->
+
+<section
+    class="section"
+    id="profile"
+>
+
+    <div class="section-header">
+
+        <div>
+
+            <h2>
+                Profile
+            </h2>
+
+            <p>
+                Keep your public photographer profile information updated.
+            </p>
+
+        </div>
+
+        <a href="setup.html">
+
+            <button class="btn-primary">
+                Update Profile
+            </button>
+
+        </a>
+
+    </div>
+
+</section>
+
+
+<!-- ==========================================
+     SERVICES
+=========================================== -->
+
+<section
+    class="section"
+    id="services"
+>
+
+    <div class="section-header">
+
+        <div>
+
+            <h2>
+                Services & Packages
+            </h2>
+
+            <p>
+                Manage your photography services, package pricing and detailed service information.
+            </p>
+
+        </div>
+
+        <a href="services.html">
+
+            <button class="btn-primary">
+                MANAGE SERVICES
+            </button>
+
+        </a>
+
+    </div>
+
+
+    <div
+        class="service-grid"
+        id="serviceGrid"
+    >
+
+
+        <label class="service-card">
+
+            <input
+                type="checkbox"
+                checked
+            >
+
+            <span>
+                Wedding Photography
+            </span>
+
+        </label>
+
+
+        <label class="service-card">
+
+            <input
+                type="checkbox"
+                checked
+            >
+
+            <span>
+                Pre-Wedding Shoot
+            </span>
+
+        </label>
+
+
+        <label class="service-card">
+
+            <input
+                type="checkbox"
+                checked
+            >
+
+            <span>
+                Portrait Photography
+            </span>
+
+        </label>
+
+
+        <label class="service-card">
+
+            <input
+                type="checkbox"
+            >
+
+            <span>
+                Commercial Photography
+            </span>
+
+        </label>
+
+
+        <label class="service-card">
+
+            <input
+                type="checkbox"
+            >
+
+            <span>
+                Corporate Events
+            </span>
+
+        </label>
+
+
+        <label class="service-card">
+
+            <input
+                type="checkbox"
+            >
+
+            <span>
+                Drone Photography
+            </span>
+
+        </label>
+
+
+    </div>
+
 
     <div class="add-service-box">
 
         <input
             type="text"
             id="newService"
-            placeholder="Enter new service">
+            placeholder="Enter new service"
+        >
 
-        <button type="button" id="addServiceBtn">
+        <button
+            type="button"
+            id="addServiceBtn"
+        >
             + Add Service
         </button>
 
     </div>
 
-    <br>
 
-    <button>
+    <button type="button">
         Save Services
     </button>
 
-</section>
 
-<!-- ==========================
-        PRICING
-=========================== -->
+    <!-- SERVICE SYSTEM INFORMATION -->
 
-<section class="section" id="pricing">
+    <div
+        class="form-card"
+        style="margin-top:30px;"
+    >
 
-    <h2>Pricing</h2>
+        <h3>
+            Service Information
+        </h3>
 
-    <div class="pricing-grid" id="pricingGrid">
+        <p style="color:#666;margin-top:10px;">
+
+            Each service can have its own description, coverage duration,
+            expected delivery time and package structure.
+
+        </p>
+
+
+        <div
+            class="stats-grid"
+            style="margin-top:20px;"
+        >
+
+
+            <div class="stat-card">
+
+                <h3>
+                    Service Details
+                </h3>
+
+                <p>
+                    Describe what the photographer provides and what clients should expect.
+                </p>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <h3>
+                    Package Structure
+                </h3>
+
+                <p>
+                    Create Basic, Premium and Luxury packages for each service.
+                </p>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <h3>
+                    Delivery Information
+                </h3>
+
+                <p>
+                    Tell clients approximately how long editing and final delivery will take.
+                </p>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <h3>
+                    Client Visibility
+                </h3>
+
+                <p>
+                    Published information automatically becomes available on the photographer portfolio and booking experience.
+                </p>
+
+            </div>
+
+
+        </div>
+
+
+        <a href="services.html">
+
+            <button type="button">
+                Open Service Manager
+            </button>
+
+        </a>
 
     </div>
 
 </section>
 
-<!-- ==========================
-        EQUIPMENT
-=========================== -->
-<section class="section" id="equipment">
 
-    <h2>Equipment</h2>
+<!-- ==========================================
+     EQUIPMENT
+=========================================== -->
+
+<section
+    class="section"
+    id="equipment"
+>
+
+    <h2>
+        Equipment
+    </h2>
+
 
     <div class="equipment-grid">
 
-        <!-- Cameras -->
+
         <div class="equipment-card">
-            <h3>Cameras</h3>
+
+            <h3>
+                Cameras
+            </h3>
 
             <ul class="equipment-list"></ul>
 
             <div class="equipment-input">
-                <input type="text" placeholder="Enter camera name">
-                <button class="add-item-btn">Add Item</button>
+
+                <input
+                    type="text"
+                    placeholder="Enter camera name"
+                >
+
+                <button class="add-item-btn">
+                    Add Item
+                </button>
+
             </div>
+
         </div>
 
-        <!-- Lenses -->
+
         <div class="equipment-card">
-            <h3>Lenses</h3>
+
+            <h3>
+                Lenses
+            </h3>
 
             <ul class="equipment-list"></ul>
 
             <div class="equipment-input">
-                <input type="text" placeholder="Enter lens name">
-                <button class="add-item-btn">Add Item</button>
+
+                <input
+                    type="text"
+                    placeholder="Enter lens name"
+                >
+
+                <button class="add-item-btn">
+                    Add Item
+                </button>
+
             </div>
+
         </div>
 
-        <!-- Lighting -->
+
         <div class="equipment-card">
-            <h3>Lighting</h3>
+
+            <h3>
+                Lighting
+            </h3>
 
             <ul class="equipment-list"></ul>
 
             <div class="equipment-input">
-                <input type="text" placeholder="Enter lighting equipment">
-                <button class="add-item-btn">Add Item</button>
+
+                <input
+                    type="text"
+                    placeholder="Enter lighting equipment"
+                >
+
+                <button class="add-item-btn">
+                    Add Item
+                </button>
+
             </div>
+
         </div>
 
-        <!-- Drone & Accessories -->
+
         <div class="equipment-card">
-            <h3>Drone & Accessories</h3>
+
+            <h3>
+                Drone & Accessories
+            </h3>
 
             <ul class="equipment-list"></ul>
 
             <div class="equipment-input">
-                <input type="text" placeholder="Enter equipment">
-                <button class="add-item-btn">Add Item</button>
+
+                <input
+                    type="text"
+                    placeholder="Enter equipment"
+                >
+
+                <button class="add-item-btn">
+                    Add Item
+                </button>
+
             </div>
-        </div>
-
-        <!-- Add Equipment Card -->
-        <div class="equipment-card add-equipment-card" id="addEquipment">
-
-            <div class="add-icon">+</div>
-
-            <h3>Add Equipment</h3>
-
-            <p>Create a new equipment category</p>
 
         </div>
+
+
+        <div
+            class="equipment-card add-equipment-card"
+            id="addEquipment"
+        >
+
+            <div class="add-icon">
+                +
+            </div>
+
+            <h3>
+                Add Equipment
+            </h3>
+
+            <p>
+                Create a new equipment category
+            </p>
+
+        </div>
+
 
     </div>
 
 </section>
 
 
-<!-- ==========================
-        GALLERY
-=========================== 
+<!-- ==========================================
+     BOOKINGS
+=========================================== -->
 
-<section class="section" id="gallery">
-
-<h2>Gallery Management</h2>
-
-<div class="gallery-manager">
-
-<label>Album Name</label>
-
-<input
-type="text"
-placeholder="Wedding at Taj Hotel">
-
-<label>Category</label>
-
-<select>
-
-<option>Wedding</option>
-
-<option>Pre-Wedding</option>
-
-<option>Portrait</option>
-
-<option>Events</option>
-
-<option>Commercial</option>
-
-</select>
-
-<label>Location</label>
-
-<input
-type="text"
-placeholder="Nagpur">
-
-<label>Story / Description</label>
-
-<textarea
-rows="5"
-placeholder="Write a short story about this shoot..."></textarea>
-
-<label>Upload Photos</label>
-
-<input
-type="file"
-multiple> 
-
-<br><br>
-
-<button>
-
-Create Album
-
-</button>
-
-</div>
-
-</section>
-
--->
-
-<!-- ================= BOOKING MANAGEMENT ================= -->
-
-<section class="section" id="bookings">
+<section
+    class="section"
+    id="bookings"
+>
 
     <div class="section-header">
+
         <div>
-            <h2>Booking Management</h2>
-            <p>Manage, monitor and compare all your photography bookings.</p>
+
+            <h2>
+                Booking Management
+            </h2>
+
+            <p>
+                Manage, monitor and compare all your photography bookings.
+            </p>
+
         </div>
 
-       <a href="bookMng.html"> <button class="btn-primary">
-            MANAGE BOOKINGS
-        </button>
+
+        <a href="bookMng.html">
+
+            <button class="btn-primary">
+                MANAGE BOOKINGS
+            </button>
+
         </a>
-    </div>
-
-    <!-- Statistics 
-
-    <div class="booking-stats">
-
-        <div class="stat-card">
-            <h4>Total Bookings</h4>
-            <h2 id="totalBookings">128</h2>
-            <span>+12 this month</span>
-        </div>
-
-        <div class="stat-card">
-            <h4>Confirmed</h4>
-            <h2 id="confirmedBookings">82</h2>
-            <span>64%</span>
-        </div>
-
-        <div class="stat-card">
-            <h4>Pending</h4>
-            <h2 id="pendingBookings">24</h2>
-            <span>Waiting Approval</span>
-        </div>
-
-        <div class="stat-card">
-            <h4>Completed</h4>
-            <h2 id="completedBookings">22</h2>
-            <span>Successfully Finished</span>
-        </div>
 
     </div>
--->
-    <!-- Filters -->
+
 
     <div class="booking-toolbar">
 
@@ -442,67 +673,8 @@ Create Album
             placeholder="Search client..."
         >
 
-       <!-- <select id="viewFilter">
-            <option value="week">This Week</option>
-            <option value="month" selected>This Month</option>
-            <option value="year">This Year</option>
-            <option value="all">All Time</option>
-        </select>
-
-        <select id="statusFilter">
-            <option value="all">All Status</option>
-            <option value="Confirmed">Confirmed</option>
-            <option value="Pending">Pending</option>
-            <option value="Completed">Completed</option>
-        </select>
-
-        <select id="compareFilter">
-            <option value="month">Compare Last Month</option>
-            <option value="week">Compare Last Week</option>
-            <option value="year">Compare Last Year</option>
-            <option value="none">No Comparison</option>
-        </select>
-
     </div>
 
-     Comparison 
-
-    <div class="comparison-cards">
-
-        <div class="compare-card">
-
-            <h5>Current Period</h5>
-
-            <h2 id="currentValue">18</h2>
-
-            <p>Bookings</p>
-
-        </div>
-
-        <div class="compare-card">
-
-            <h5>Previous Period</h5>
-
-            <h2 id="previousValue">14</h2>
-
-            <p>Bookings</p>
-
-        </div>
-
-        <div class="compare-card positive">
-
-            <h5>Growth</h5>
-
-            <h2 id="growthValue">+28%</h2>
-
-            <p>Compared to Previous</p>
-
-        </div>
-
-    </div>
--->
-
-    <!-- Table -->
 
     <div class="table-container">
 
@@ -512,75 +684,203 @@ Create Album
 
                 <tr>
 
-                    <th>Client</th>
-                    <th>Service</th>
-                    <th>Date</th>
-                    <th>Amount</th>
-                    <th>Status</th>
+                    <th>
+                        Client
+                    </th>
+
+                    <th>
+                        Service
+                    </th>
+
+                    <th>
+                        Date
+                    </th>
+
+                    <th>
+                        Amount
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
 
                 </tr>
 
             </thead>
 
+
             <tbody id="bookingTable">
 
                 <tr>
 
-                    <td>Rahul Patil</td>
-                    <td>Wedding</td>
-                    <td>15 Aug 2026</td>
-                    <td>₹45,000</td>
-                    <td><span class="status active">Confirmed</span></td>
+                    <td>
+                        Rahul Patil
+                    </td>
+
+                    <td>
+                        Wedding
+                    </td>
+
+                    <td>
+                        15 Aug 2026
+                    </td>
+
+                    <td>
+                        ₹45,000
+                    </td>
+
+                    <td>
+
+                        <span class="status active">
+                            Confirmed
+                        </span>
+
+                    </td>
 
                 </tr>
 
+
                 <tr>
 
-                    <td>Neha Sharma</td>
-                    <td>Pre-Wedding</td>
-                    <td>22 Aug 2026</td>
-                    <td>₹18,000</td>
-                    <td><span class="status pending">Pending</span></td>
+                    <td>
+                        Neha Sharma
+                    </td>
+
+                    <td>
+                        Pre-Wedding
+                    </td>
+
+                    <td>
+                        22 Aug 2026
+                    </td>
+
+                    <td>
+                        ₹18,000
+                    </td>
+
+                    <td>
+
+                        <span class="status pending">
+                            Pending
+                        </span>
+
+                    </td>
 
                 </tr>
 
+
                 <tr>
 
-                    <td>Aryan Mehta</td>
-                    <td>Portrait</td>
-                    <td>30 Aug 2026</td>
-                    <td>₹9,000</td>
-                    <td><span class="status completed">Completed</span></td>
+                    <td>
+                        Aryan Mehta
+                    </td>
+
+                    <td>
+                        Portrait
+                    </td>
+
+                    <td>
+                        30 Aug 2026
+                    </td>
+
+                    <td>
+                        ₹9,000
+                    </td>
+
+                    <td>
+
+                        <span class="status completed">
+                            Completed
+                        </span>
+
+                    </td>
 
                 </tr>
 
+
                 <tr>
 
-                    <td>Priya Deshmukh</td>
-                    <td>Maternity</td>
-                    <td>4 Sep 2026</td>
-                    <td>₹12,500</td>
-                    <td><span class="status active">Confirmed</span></td>
+                    <td>
+                        Priya Deshmukh
+                    </td>
+
+                    <td>
+                        Maternity
+                    </td>
+
+                    <td>
+                        4 Sep 2026
+                    </td>
+
+                    <td>
+                        ₹12,500
+                    </td>
+
+                    <td>
+
+                        <span class="status active">
+                            Confirmed
+                        </span>
+
+                    </td>
 
                 </tr>
 
+
                 <tr>
 
-                    <td>Karan Joshi</td>
-                    <td>Birthday</td>
-                    <td>12 Sep 2026</td>
-                    <td>₹15,000</td>
-                    <td><span class="status pending">Pending</span></td>
+                    <td>
+                        Karan Joshi
+                    </td>
+
+                    <td>
+                        Birthday
+                    </td>
+
+                    <td>
+                        12 Sep 2026
+                    </td>
+
+                    <td>
+                        ₹15,000
+                    </td>
+
+                    <td>
+
+                        <span class="status pending">
+                            Pending
+                        </span>
+
+                    </td>
 
                 </tr>
 
+
                 <tr>
 
-                    <td>Sneha Kulkarni</td>
-                    <td>Corporate</td>
-                    <td>18 Sep 2026</td>
-                    <td>₹32,000</td>
-                    <td><span class="status completed">Completed</span></td>
+                    <td>
+                        Sneha Kulkarni
+                    </td>
+
+                    <td>
+                        Corporate
+                    </td>
+
+                    <td>
+                        18 Sep 2026
+                    </td>
+
+                    <td>
+                        ₹32,000
+                    </td>
+
+                    <td>
+
+                        <span class="status completed">
+                            Completed
+                        </span>
+
+                    </td>
 
                 </tr>
 
@@ -591,236 +891,327 @@ Create Album
     </div>
 
 </section>
-<!-- ==========================
-        REVIEWS
-=========================== -->
-
-<section class="section" id="reviews">
-
-<h2>Customer Reviews</h2>
-
-<div class="review-grid">
-
-<div class="review-card">
-
-<h3>⭐⭐⭐⭐⭐</h3>
-
-<p>
-
-Amazing photography and very professional.
-
-</p>
-
-<h4>- Rahul Patil</h4>
-
-</div>
-
-<div class="review-card">
-
-<h3>⭐⭐⭐⭐⭐</h3>
-
-<p>
-
-Photos exceeded our expectations.
-
-</p>
-
-<h4>- Neha Sharma</h4>
-
-</div>
-
-<div class="review-card">
-
-<h3>⭐⭐⭐⭐☆</h3>
-
-<p>
-
-Great service and timely delivery.
-
-</p>
-
-<h4>- Aryan Mehta</h4>
-
-</div>
-
-</div>
-
-</section>
 
 
-<!-- ==========================
-        ANALYTICS
-=========================== -->
+<!-- ==========================================
+     REVIEWS
+=========================================== -->
 
-<section class="section" id="analytics">
+<section class="section">
 
-<h2>Analytics</h2>
+    <h2>
+        Customer Reviews
+    </h2>
 
-<div class="stats-grid">
 
-<div class="stat-card">
+    <div class="review-grid">
 
-<h3>Portfolio Views</h3>
 
-<h1 class="counter" data-target="1245">0</h1>
+        <div class="review-card">
 
-<p>Last 30 Days</p>
+            <h3>
+                ⭐⭐⭐⭐⭐
+            </h3>
 
-</div>
+            <p>
+                Amazing photography and very professional.
+            </p>
 
-<div class="stat-card">
+            <h4>
+                - Rahul Patil
+            </h4>
 
-<h3>Total Bookings</h3>
+        </div>
 
-<h1 class="counter" data-target="87">0</h1>
 
-<p>This Year</p>
+        <div class="review-card">
 
-</div>
+            <h3>
+                ⭐⭐⭐⭐⭐
+            </h3>
 
-<div class="stat-card">
+            <p>
+                Photos exceeded our expectations.
+            </p>
 
-<h3>Total Revenue</h3>
+            <h4>
+                - Neha Sharma
+            </h4>
 
-<h1>₹4.8L</h1>
+        </div>
 
-<p>Current Year</p>
 
-</div>
+        <div class="review-card">
 
-<div class="stat-card">
+            <h3>
+                ⭐⭐⭐⭐☆
+            </h3>
 
-<h3>Albums</h3>
+            <p>
+                Great service and timely delivery.
+            </p>
 
-<h1 class="counter" data-target="42">0</h1>
+            <h4>
+                - Aryan Mehta
+            </h4>
 
-<p>Published</p>
+        </div>
 
-</div>
 
-</div>
+    </div>
 
 </section>
 
 
-<!-- ==========================
-        SUBSCRIPTION
-=========================== -->
+<!-- ==========================================
+     ANALYTICS
+=========================================== -->
 
-<section class="section" id="subscription">
+<section class="section">
 
-<h2>Subscription</h2>
-
-<div class="subscription-card">
-
-<h3>Current Plan</h3>
-
-<h1>Professional</h1>
-
-<p>
-
-Renewal Date:
-<strong>12 January 2027</strong>
-
-</p>
-
-<button>
-
-Upgrade Plan
-
-</button>
-
-</div>
-
-</section>
+    <h2>
+        Analytics
+    </h2>
 
 
-<!-- ==========================
-        SETTINGS
-=========================== -->
+    <div class="stats-grid">
 
-<section class="section" id="settings">
 
-<h2>Settings</h2>
+        <div class="stat-card">
 
-<div class="settings-grid">
+            <h3>
+                Portfolio Views
+            </h3>
 
-<div class="setting-card">
+            <h1
+                class="counter"
+                data-target="1245"
+            >
+                0
+            </h1>
 
-<h3>Change Password</h3>
+            <p>
+                Last 30 Days
+            </p>
 
-<p>
+        </div>
 
-Update your account password.
 
-</p>
-<a href="change-pass.html">    
-<button >
+        <div class="stat-card">
 
-Update
+            <h3>
+                Total Bookings
+            </h3>
 
-</button>
+            <h1
+                class="counter"
+                data-target="87"
+            >
+                0
+            </h1>
 
-</a>
+            <p>
+                This Year
+            </p>
 
-</div>
+        </div>
 
-<div class="setting-card">
 
-<h3>Notifications</h3>
+        <div class="stat-card">
 
-<p>
+            <h3>
+                Total Revenue
+            </h3>
 
-Manage booking notifications.
+            <h1>
+                ₹4.8L
+            </h1>
 
-</p>
-<a href="notification.html">
-<button>
+            <p>
+                Current Year
+            </p>
 
-Manage
+        </div>
 
-</button>
-</a>
-</div>
 
-<div class="setting-card">
+        <div class="stat-card">
 
-<h3>Delete Account</h3>
+            <h3>
+                Albums
+            </h3>
 
-<p>
+            <h1
+                class="counter"
+                data-target="42"
+            >
+                0
+            </h1>
 
-Remove your account permanently.
+            <p>
+                Published
+            </p>
 
-</p>
+        </div>
 
-<a href="del-acc.html">
-    <button>
 
-Delete
-
-    </button>
-</a>
-
-</div>
-
-</div>
+    </div>
 
 </section>
 
 
-<!-- ==========================
-        FOOTER
-=========================== -->
+<!-- ==========================================
+     SUBSCRIPTION
+=========================================== -->
+
+<section class="section">
+
+    <h2>
+        Subscription
+    </h2>
+
+
+    <div class="subscription-card">
+
+        <h3>
+            Current Plan
+        </h3>
+
+        <h1>
+            Professional
+        </h1>
+
+        <p>
+
+            Renewal Date:
+
+            <strong>
+                12 January 2027
+            </strong>
+
+        </p>
+
+        <button>
+            Upgrade Plan
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- ==========================================
+     SETTINGS
+=========================================== -->
+
+<section
+    class="section"
+    id="settings"
+>
+
+    <h2>
+        Settings
+    </h2>
+
+
+    <div class="settings-grid">
+
+
+        <div class="setting-card">
+
+            <h3>
+                Change Password
+            </h3>
+
+            <p>
+                Update your account password.
+            </p>
+
+            <a href="change-pass.html">
+
+                <button>
+                    Update
+                </button>
+
+            </a>
+
+        </div>
+
+
+        <div class="setting-card">
+
+            <h3>
+                Notifications
+            </h3>
+
+            <p>
+                Manage booking notifications.
+            </p>
+
+            <a href="notification.html">
+
+                <button>
+                    Manage
+                </button>
+
+            </a>
+
+        </div>
+
+
+        <div class="setting-card">
+
+            <h3>
+                Delete Account
+            </h3>
+
+            <p>
+                Remove your account permanently.
+            </p>
+
+            <a href="del-acc.html">
+
+                <button>
+                    Delete
+                </button>
+
+            </a>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+<!-- ==========================================
+     FOOTER
+=========================================== -->
 
 <footer>
 
- <p>
-          © 2026   Powered by <a href="https://bluehorizanlabs.vercel.app/" target="_blank"> Bluehorizanlabs</a> 
-        </p>
+    <p>
+
+        © 2026 Powered by
+
+        <a
+            href="https://bluehorizanlabs.vercel.app/"
+            target="_blank"
+        >
+            Bluehorizanlabs
+        </a>
+
+    </p>
 
 </footer>
 
+
+<!-- ==========================================
+     JAVASCRIPT
+=========================================== -->
+
 <script src="user.js"></script>
+
 
 </body>
 
