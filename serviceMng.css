@@ -1,0 +1,1346 @@
+/* =========================================================
+   PROFESSIONAL STUDIO
+   SERVICES & PACKAGES
+   COMPLETE CSS
+========================================================= */
+
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background: #f8f8f8;
+    color: #111;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+
+/* =========================================================
+   NAVBAR
+========================================================= */
+
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 18px 8%;
+
+    background: #fff;
+    border-bottom: 1px solid #e6e6e6;
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.navbar nav {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.navbar nav a {
+    color: #111;
+    font-size: 15px;
+    font-weight: 500;
+
+    transition:
+        color 0.2s ease;
+}
+
+.navbar nav a:hover {
+    color: #666;
+}
+
+.navbar nav a[aria-current="page"] {
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+.services-page {
+    width: 100%;
+}
+
+.services-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+}
+
+
+/* =========================================================
+   SERVICES HEADER
+========================================================= */
+
+.services-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 30px;
+
+    padding: 55px 0 40px;
+
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.services-header-content {
+    min-width: 0;
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    margin-bottom: 16px;
+
+    color: #777;
+    font-size: 13px;
+}
+
+.breadcrumb a {
+    color: #555;
+}
+
+.breadcrumb a:hover {
+    color: #111;
+}
+
+.services-header h1 {
+    margin-bottom: 10px;
+
+    font-size: 38px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+}
+
+.services-header p {
+    max-width: 650px;
+
+    color: #666;
+    font-size: 16px;
+}
+
+.services-header .btn-primary {
+    flex-shrink: 0;
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.btn-primary,
+.btn-secondary,
+.btn-danger {
+    min-height: 46px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 12px 22px;
+
+    border-radius: 10px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.btn-primary {
+    border: 1px solid #111;
+
+    background: #111;
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: #333;
+    border-color: #333;
+}
+
+.btn-primary:active,
+.btn-secondary:active,
+.btn-danger:active {
+    transform: translateY(1px);
+}
+
+.btn-secondary {
+    border: 1px solid #ddd;
+
+    background: #fff;
+    color: #111;
+}
+
+.btn-secondary:hover {
+    border-color: #111;
+    background: #fafafa;
+}
+
+.btn-danger {
+    border: 1px solid #d7d7d7;
+
+    background: #fff;
+    color: #111;
+}
+
+.btn-danger:hover {
+    border-color: #111;
+    background: #f5f5f5;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    outline: 2px solid #111;
+    outline-offset: 2px;
+}
+
+
+/* =========================================================
+   SERVICES OVERVIEW
+========================================================= */
+
+.services-overview {
+    padding: 45px 0 20px;
+}
+
+.services-overview-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    margin-bottom: 20px;
+}
+
+.services-overview-header h2 {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.services-count {
+    margin-top: 4px;
+
+    color: #777;
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   SERVICE LIST
+========================================================= */
+
+.services-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+
+/* =========================================================
+   SERVICE SUMMARY CARD
+========================================================= */
+
+.service-summary-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+
+    width: 100%;
+
+    padding: 24px;
+
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 14px;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.service-summary-card:hover {
+    border-color: #ccc;
+
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+
+    transform: translateY(-1px);
+}
+
+.service-summary-main {
+    min-width: 0;
+    flex: 1;
+}
+
+.service-summary-top {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+
+    margin-bottom: 7px;
+}
+
+.service-summary-top h3 {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.service-summary-description {
+    max-width: 700px;
+
+    margin-bottom: 17px;
+
+    color: #666;
+    font-size: 14px;
+}
+
+.service-summary-details {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 25px;
+}
+
+.service-summary-details span {
+    display: flex;
+    flex-direction: column;
+
+    color: #333;
+    font-size: 14px;
+}
+
+.service-summary-details strong {
+    margin-bottom: 2px;
+
+    color: #888;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.service-summary-actions {
+    flex-shrink: 0;
+}
+
+
+/* =========================================================
+   STATUS BADGE
+========================================================= */
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 26px;
+
+    padding: 4px 9px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-badge.active {
+    background: #f0f0f0;
+    color: #111;
+}
+
+.status-badge.inactive {
+    background: #e7e7e7;
+    color: #666;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.services-empty {
+    padding: 60px 25px;
+
+    text-align: center;
+
+    background: #fff;
+    border: 1px dashed #d8d8d8;
+    border-radius: 14px;
+}
+
+.services-empty h3 {
+    margin-bottom: 7px;
+
+    font-size: 20px;
+}
+
+.services-empty p {
+    max-width: 500px;
+    margin: 0 auto;
+
+    color: #666;
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   SERVICE EDITOR
+========================================================= */
+
+.service-editor {
+    padding: 45px 0 20px;
+}
+
+.service-editor[hidden],
+.services-overview[hidden],
+.services-empty[hidden],
+.delete-dialog[hidden],
+.notification[hidden] {
+    display: none;
+}
+
+.service-editor-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 25px;
+
+    padding-bottom: 30px;
+
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.service-editor-title {
+    min-width: 0;
+}
+
+.breadcrumb-back {
+    padding: 0;
+
+    border: 0;
+    background: transparent;
+
+    color: #555;
+
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.breadcrumb-back:hover {
+    color: #111;
+}
+
+.service-editor-title h2 {
+    margin-bottom: 7px;
+
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.service-editor-title p {
+    color: #666;
+    font-size: 14px;
+}
+
+.service-editor-status {
+    flex-shrink: 0;
+}
+
+
+/* =========================================================
+   EDITOR SECTIONS
+========================================================= */
+
+.service-info-section,
+.packages-section,
+.client-preview-section {
+    padding: 40px 0;
+
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.section-heading {
+    margin-bottom: 22px;
+}
+
+.section-heading h3 {
+    margin-bottom: 5px;
+
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.section-heading p {
+    color: #666;
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   FORMS
+========================================================= */
+
+.form-card {
+    padding: 28px;
+
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 14px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px 20px;
+}
+
+.form-group {
+    min-width: 0;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #222;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+
+    padding: 12px 15px;
+
+    border: 1px solid #ddd;
+    border-radius: 10px;
+
+    background: #fff;
+    color: #111;
+
+    font-size: 15px;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.form-group input {
+    min-height: 46px;
+}
+
+.form-group textarea {
+    min-height: 110px;
+
+    resize: vertical;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+
+    border-color: #111;
+
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: #999;
+}
+
+
+/* =========================================================
+   SERVICE TOGGLE
+========================================================= */
+
+.toggle-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    padding: 17px 18px;
+
+    background: #fafafa;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+}
+
+.toggle-content {
+    min-width: 0;
+}
+
+.toggle-content label {
+    margin-bottom: 3px;
+}
+
+.toggle-content p {
+    color: #777;
+    font-size: 13px;
+}
+
+.toggle {
+    position: relative;
+
+    width: 48px;
+    height: 27px;
+
+    flex-shrink: 0;
+}
+
+.toggle input {
+    position: absolute;
+
+    width: 1px;
+    height: 1px;
+
+    opacity: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    inset: 0;
+
+    background: #d6d6d6;
+
+    border-radius: 30px;
+
+    cursor: pointer;
+
+    transition: background 0.2s ease;
+}
+
+.toggle-slider::before {
+    content: "";
+
+    position: absolute;
+
+    width: 21px;
+    height: 21px;
+
+    top: 3px;
+    left: 3px;
+
+    background: #fff;
+
+    border-radius: 50%;
+
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+
+    transition: transform 0.2s ease;
+}
+
+.toggle input:checked + .toggle-slider {
+    background: #111;
+}
+
+.toggle input:checked + .toggle-slider::before {
+    transform: translateX(21px);
+}
+
+
+/* =========================================================
+   PACKAGES
+========================================================= */
+
+.package-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 18px;
+}
+
+.package-card {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+
+    padding: 22px;
+
+    background: #fafafa;
+    border: 1px solid #e5e5e5;
+    border-radius: 14px;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.package-card:hover {
+    background: #fff;
+    border-color: #ccc;
+
+    box-shadow: 0 7px 22px rgba(0, 0, 0, 0.05);
+}
+
+.package-card-header {
+    margin-bottom: 18px;
+}
+
+.package-card-header h4 {
+    margin-bottom: 3px;
+
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.package-card-header p {
+    color: #777;
+    font-size: 13px;
+}
+
+.package-field {
+    margin-bottom: 16px;
+}
+
+.package-field:last-child {
+    margin-bottom: 0;
+}
+
+.package-field label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #555;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.package-field input,
+.package-field textarea {
+    width: 100%;
+
+    padding: 11px 13px;
+
+    border: 1px solid #ddd;
+    border-radius: 9px;
+
+    background: #fff;
+    color: #111;
+
+    font-size: 14px;
+}
+
+.package-field input {
+    min-height: 44px;
+}
+
+.package-field textarea {
+    min-height: 100px;
+
+    resize: vertical;
+}
+
+.package-field input:focus,
+.package-field textarea:focus {
+    outline: none;
+
+    border-color: #111;
+
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+
+/* =========================================================
+   CLIENT PREVIEW
+========================================================= */
+
+.client-preview {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+
+    padding: 24px;
+
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 14px;
+}
+
+.client-preview-content {
+    min-width: 0;
+}
+
+.preview-label {
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #777;
+
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.client-preview h3 {
+    margin-bottom: 5px;
+
+    font-size: 20px;
+    line-height: 1.3;
+}
+
+.client-preview p {
+    color: #666;
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   EDITOR ACTIONS
+========================================================= */
+
+.service-editor-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    padding: 30px 0;
+}
+
+.editor-actions-left,
+.editor-actions-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.editor-actions-right {
+    justify-content: flex-end;
+}
+
+
+/* =========================================================
+   DELETE DIALOG
+========================================================= */
+
+.delete-dialog {
+    position: fixed;
+    inset: 0;
+
+    z-index: 2000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background: rgba(0, 0, 0, 0.45);
+}
+
+.delete-dialog-content {
+    width: 100%;
+    max-width: 430px;
+
+    padding: 30px;
+
+    background: #fff;
+    border-radius: 14px;
+
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+}
+
+.delete-dialog-content h3 {
+    margin-bottom: 8px;
+
+    font-size: 22px;
+}
+
+.delete-dialog-content p {
+    margin-bottom: 25px;
+
+    color: #666;
+    font-size: 14px;
+}
+
+.delete-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+
+/* =========================================================
+   NOTIFICATION
+========================================================= */
+
+.notification {
+    position: fixed;
+
+    right: 25px;
+    bottom: 25px;
+
+    z-index: 3000;
+
+    max-width: 380px;
+
+    padding: 14px 18px;
+
+    background: #111;
+    color: #fff;
+
+    border-radius: 10px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 992px) {
+
+    .navbar {
+        padding-left: 5%;
+        padding-right: 5%;
+    }
+
+    .services-container {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .services-header {
+        align-items: flex-start;
+    }
+
+    .package-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .package-card {
+        width: 100%;
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    body {
+        font-size: 14px;
+    }
+
+
+    /* NAVBAR */
+
+    .navbar {
+        padding: 14px 16px;
+
+        align-items: flex-start;
+        gap: 14px;
+
+        flex-direction: column;
+    }
+
+    .logo {
+        font-size: 22px;
+    }
+
+    .navbar nav {
+        width: 100%;
+
+        gap: 20px;
+
+        overflow-x: auto;
+        white-space: nowrap;
+
+        padding-bottom: 2px;
+
+        scrollbar-width: none;
+    }
+
+    .navbar nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    .navbar nav a {
+        font-size: 14px;
+    }
+
+
+    /* PAGE */
+
+    .services-container {
+        padding: 0 16px 50px;
+    }
+
+
+    /* HEADER */
+
+    .services-header {
+        flex-direction: column;
+        align-items: stretch;
+
+        gap: 22px;
+
+        padding: 40px 0 30px;
+    }
+
+    .services-header h1 {
+        font-size: 30px;
+    }
+
+    .services-header p {
+        font-size: 14px;
+    }
+
+    .services-header .btn-primary {
+        width: 100%;
+    }
+
+
+    /* OVERVIEW */
+
+    .services-overview {
+        padding: 35px 0 10px;
+    }
+
+    .services-overview-header h2 {
+        font-size: 25px;
+    }
+
+
+    /* SERVICE CARD */
+
+    .service-summary-card {
+        flex-direction: column;
+        align-items: stretch;
+
+        gap: 20px;
+
+        padding: 20px;
+    }
+
+    .service-summary-top h3 {
+        font-size: 18px;
+    }
+
+    .service-summary-description {
+        font-size: 14px;
+    }
+
+    .service-summary-details {
+        gap: 18px;
+    }
+
+    .service-summary-actions {
+        width: 100%;
+    }
+
+    .service-summary-actions .btn-secondary {
+        width: 100%;
+    }
+
+
+    /* EDITOR */
+
+    .service-editor {
+        padding: 35px 0 10px;
+    }
+
+    .service-editor-header {
+        flex-direction: column;
+
+        gap: 15px;
+
+        padding-bottom: 25px;
+    }
+
+    .service-editor-title h2 {
+        font-size: 26px;
+    }
+
+
+    /* FORM */
+
+    .service-info-section,
+    .packages-section,
+    .client-preview-section {
+        padding: 32px 0;
+    }
+
+    .form-card {
+        padding: 20px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+
+        gap: 18px;
+    }
+
+    .form-group.full-width {
+        grid-column: auto;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        font-size: 16px;
+    }
+
+
+    /* TOGGLE */
+
+    .toggle-group {
+        align-items: flex-start;
+    }
+
+
+    /* PACKAGE */
+
+    .package-grid {
+        grid-template-columns: 1fr;
+
+        gap: 14px;
+    }
+
+    .package-card {
+        padding: 20px;
+    }
+
+    .package-field input,
+    .package-field textarea {
+        font-size: 16px;
+    }
+
+
+    /* CLIENT PREVIEW */
+
+    .client-preview {
+        flex-direction: column;
+        align-items: stretch;
+
+        gap: 18px;
+
+        padding: 20px;
+    }
+
+    .client-preview .btn-secondary {
+        width: 100%;
+    }
+
+
+    /* ACTIONS */
+
+    .service-editor-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+
+        gap: 15px;
+    }
+
+    .editor-actions-left,
+    .editor-actions-right {
+        width: 100%;
+    }
+
+    .editor-actions-left,
+    .editor-actions-right {
+        flex-direction: column;
+    }
+
+    .editor-actions-left button,
+    .editor-actions-right button {
+        width: 100%;
+    }
+
+
+    /* DELETE DIALOG */
+
+    .delete-dialog {
+        align-items: flex-end;
+
+        padding: 12px;
+    }
+
+    .delete-dialog-content {
+        max-width: none;
+
+        padding: 24px;
+
+        border-radius: 14px;
+    }
+
+    .delete-dialog-actions {
+        flex-direction: column-reverse;
+    }
+
+    .delete-dialog-actions button {
+        width: 100%;
+    }
+
+
+    /* NOTIFICATION */
+
+    .notification {
+        right: 15px;
+        bottom: 15px;
+        left: 15px;
+
+        max-width: none;
+
+        text-align: center;
+    }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 380px) {
+
+    .services-container {
+        padding-left: 13px;
+        padding-right: 13px;
+    }
+
+    .navbar {
+        padding-left: 13px;
+        padding-right: 13px;
+    }
+
+    .logo {
+        font-size: 20px;
+    }
+
+    .services-header {
+        padding-top: 35px;
+    }
+
+    .services-header h1 {
+        font-size: 27px;
+    }
+
+    .services-overview-header h2 {
+        font-size: 23px;
+    }
+
+    .service-summary-card {
+        padding: 17px;
+    }
+
+    .form-card,
+    .package-card,
+    .client-preview {
+        padding: 17px;
+    }
+
+    .service-summary-details {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+
+        gap: 14px;
+    }
+
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger {
+        min-height: 46px;
+    }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        transition: none !important;
+    }
+}

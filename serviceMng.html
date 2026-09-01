@@ -1,0 +1,802 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Services & Packages | Professional Studio</title>
+
+    <meta
+        name="description"
+        content="Manage photography services and packages."
+    >
+
+    <link rel="stylesheet" href="serviceMng.css">
+</head>
+
+<body>
+
+    <!-- =====================================================
+         NAVBAR
+    ====================================================== -->
+
+    <header class="navbar">
+
+        <div class="logo">
+            Professional Studio
+        </div>
+
+        <nav aria-label="Main navigation">
+            <a href="user.html">Dashboard</a>
+            <a href="serviceMng.html" aria-current="page">Services</a>
+            <a href="client.html">Portfolio</a>
+            <a href="booking.html">Bookings</a>
+        </nav>
+
+    </header>
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="services-page">
+
+        <div class="services-container">
+
+
+            <!-- =================================================
+                 PAGE HEADER
+            ================================================== -->
+
+            <header class="services-header">
+
+                <div class="services-header-content">
+
+                    <div class="breadcrumb">
+                        <a href="user.html">Dashboard</a>
+                        <span>/</span>
+                        <span>Services</span>
+                    </div>
+
+                    <h1>Services & Packages</h1>
+
+                    <p>
+                        Manage the photography services you offer
+                        and the packages your clients can choose from.
+                    </p>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="btn-primary"
+                    id="addServiceBtn"
+                >
+                    + Add New Service
+                </button>
+
+            </header>
+
+
+            <!-- =================================================
+                 SERVICES LIST
+            ================================================== -->
+
+            <section
+                class="services-overview"
+                aria-labelledby="servicesOverviewTitle"
+            >
+
+                <div class="services-overview-header">
+
+                    <div>
+                        <h2 id="servicesOverviewTitle">
+                            Your Services
+                        </h2>
+
+                        <p class="services-count">
+                            <span id="serviceCount">0</span>
+                            services
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <!-- Service cards are inserted here by JS -->
+
+                <div
+                    class="services-list"
+                    id="servicesList"
+                ></div>
+
+
+                <!-- Empty state -->
+
+                <div
+                    class="services-empty"
+                    id="servicesEmpty"
+                    hidden
+                >
+
+                    <h3>No services yet</h3>
+
+                    <p>
+                        Add your first photography service to
+                        start creating packages for your clients.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 SERVICE EDITOR
+            ================================================== -->
+
+            <section
+                class="service-editor"
+                id="serviceEditor"
+                hidden
+                aria-labelledby="editorTitle"
+            >
+
+                <!-- Editor Header -->
+
+                <div class="service-editor-header">
+
+                    <div class="service-editor-title">
+
+                        <div class="breadcrumb">
+                            <button
+                                type="button"
+                                class="breadcrumb-back"
+                                id="backToServicesBtn"
+                            >
+                                ← Services
+                            </button>
+
+                            <span>/</span>
+
+                            <span id="editorBreadcrumb">
+                                Service
+                            </span>
+                        </div>
+
+                        <h2 id="editorTitle">
+                            Edit Service
+                        </h2>
+
+                        <p id="editorSubtitle">
+                            Update the information your clients will see.
+                        </p>
+
+                    </div>
+
+                    <div
+                        class="service-editor-status"
+                        id="editorStatus"
+                    >
+                        <span class="service-status active">
+                            Active
+                        </span>
+                    </div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     SERVICE INFORMATION
+                ================================================== -->
+
+                <section class="form-section">
+
+                    <div class="form-section-header">
+
+                        <h3>Service Information</h3>
+
+                        <p>
+                            Tell clients what this service includes.
+                        </p>
+
+                    </div>
+
+
+                    <div class="form-grid">
+
+                        <!-- Service Name -->
+
+                        <div class="form-group full-width">
+
+                            <label for="serviceName">
+                                Service Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="serviceName"
+                                name="serviceName"
+                                placeholder="e.g. Wedding Photography"
+                                autocomplete="off"
+                            >
+
+                        </div>
+
+
+                        <!-- Description -->
+
+                        <div class="form-group full-width">
+
+                            <label for="serviceDescription">
+                                Description
+                            </label>
+
+                            <textarea
+                                id="serviceDescription"
+                                name="serviceDescription"
+                                placeholder="Describe what this photography service includes..."
+                            ></textarea>
+
+                        </div>
+
+
+                        <!-- Duration -->
+
+                        <div class="form-group">
+
+                            <label for="coverageDuration">
+                                Service Duration
+                            </label>
+
+                            <input
+                                type="text"
+                                id="coverageDuration"
+                                name="coverageDuration"
+                                placeholder="e.g. 8 hours"
+                            >
+
+                        </div>
+
+
+                        <!-- Delivery -->
+
+                        <div class="form-group">
+
+                            <label for="deliveryTime">
+                                Delivery Time
+                            </label>
+
+                            <input
+                                type="text"
+                                id="deliveryTime"
+                                name="deliveryTime"
+                                placeholder="e.g. 7 days"
+                            >
+
+                        </div>
+
+
+                        <!-- Location -->
+
+                        <div class="form-group full-width">
+
+                            <label for="coverageType">
+                                Location
+                            </label>
+
+                            <input
+                                type="text"
+                                id="coverageType"
+                                name="coverageType"
+                                placeholder="e.g. Within city / Travel available"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- Active Service -->
+
+                    <div class="service-active-control">
+
+                        <div class="service-active-content">
+
+                            <h4>Available for clients</h4>
+
+                            <p>
+                                Turn this off if you don't want clients
+                                to book this service right now.
+                            </p>
+
+                        </div>
+
+                        <label class="toggle-label">
+
+                            <input
+                                type="checkbox"
+                                id="serviceActive"
+                                checked
+                            >
+
+                            <span>Active</span>
+
+                        </label>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =================================================
+                     PACKAGES
+                ================================================== -->
+
+                <section class="form-section">
+
+                    <div class="form-section-header">
+
+                        <h3>Your Packages</h3>
+
+                        <p>
+                            Give clients different options to choose from.
+                        </p>
+
+                    </div>
+
+
+                    <div class="package-grid">
+
+
+                        <!-- ================= BASIC ================= -->
+
+                        <article class="package-card">
+
+                            <div class="package-card-header">
+
+                                <h4>Basic</h4>
+
+                                <span class="package-label">
+                                    Starter
+                                </span>
+
+                            </div>
+
+
+                            <div class="package-field">
+
+                                <label for="basicPrice">
+                                    Price
+                                </label>
+
+                                <input
+                                    type="number"
+                                    id="basicPrice"
+                                    min="0"
+                                    step="1"
+                                    placeholder="15000"
+                                >
+
+                            </div>
+
+
+                            <div class="package-field">
+
+                                <label for="basicCoverage">
+                                    Coverage
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="basicCoverage"
+                                    placeholder="e.g. 4 hours"
+                                >
+
+                            </div>
+
+
+                            <div class="package-field">
+
+                                <label for="basicPhotos">
+                                    Edited Photos
+                                </label>
+
+                                <input
+                                    type="number"
+                                    id="basicPhotos"
+                                    min="0"
+                                    step="1"
+                                    placeholder="100"
+                                >
+
+                            </div>
+
+
+                            <div class="package-field">
+
+                                <label for="basicDelivery">
+                                    Delivery Time
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="basicDelivery"
+                                    placeholder="e.g. 5 days"
+                                >
+
+                            </div>
+
+
+                            <div class="package-field">
+
+                                <label for="basicDescription">
+                                    What's Included?
+                                </label>
+
+                                <textarea
+                                    id="basicDescription"
+                                    placeholder="Describe what the client gets..."
+                                ></textarea>
+
+                            </div>
+
+                        </article>
+
+
+
+                        <!-- ================= PREMIUM ================= -->
+
+                        <article class="package-card">
+
+                            <div class="package-card-header">
+
+                                <h4>Premium</h4>
+
+                                <span class="package-label">
+                                    Popular
+                                </span>
+
+                            </div>
+
+
+                            <div class="package-field">
+
+                                <label for="premiumPrice">
+                                    Price
+                                </label>
+
+                                <input
+                                    type="number"
+                                    id="premiumPrice"
+                                    min="0"
+                                    step="1"
+                                    placeholder="25000"
+                                >
+
+                            </div>
+
+
+                            <div class="package-field">
+
+                                <label for="premiumCoverage">
+                                    Coverage
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="premiumCoverage"
+                                    placeholder="e.g. 8 hours"
+                                >
+
+                            </div>
+
+
+                            <div class="package-field">
+
+                                <label for="premiumPhotos">
+                                    Edited Photos
+                                </label>
+
+                                <input
+                                    type="number"
+                                    id="premiumPhotos"
+                                    min="0"
+                                    step="1"
+                                    placeholder="250"
+                                >
+
+                            </div>
+
+
+                            <div class="package-field">
+
+                                <label for="premiumDelivery">
+                                    Delivery Time
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="premiumDelivery"
+                                    placeholder="e.g. 7 days"
+                                >
+
+                            </div>
+
+
+                            <div class="package-field">
+
+                                <label for="premiumDescription">
+                                    What's Included?
+                                </label>
+
+                                <textarea
+                                    id="premiumDescription"
+                                    placeholder="Describe what the client gets..."
+                                ></textarea>
+
+                            </div>
+
+                        </article>
+
+
+
+                        <!-- ================= LUXURY ================= -->
+
+                        <article class="package-card">
+
+                            <div class="package-card-header">
+
+                                <h4>Luxury</h4>
+
+                                <span class="package-label">
+                                    Complete
+                                </span>
+
+                            </div>
+
+
+                            <div class="package-field">
+
+                                <label for="luxuryPrice">
+                                    Price
+                                </label>
+
+                                <input
+                                    type="number"
+                                    id="luxuryPrice"
+                                    min="0"
+                                    step="1"
+                                    placeholder="40000"
+                                >
+
+                            </div>
+
+
+                            <div class="package-field">
+
+                                <label for="luxuryCoverage">
+                                    Coverage
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="luxuryCoverage"
+                                    placeholder="e.g. Full day"
+                                >
+
+                            </div>
+
+
+                            <div class="package-field">
+
+                                <label for="luxuryPhotos">
+                                    Edited Photos
+                                </label>
+
+                                <input
+                                    type="number"
+                                    id="luxuryPhotos"
+                                    min="0"
+                                    step="1"
+                                    placeholder="500"
+                                >
+
+                            </div>
+
+
+                            <div class="package-field">
+
+                                <label for="luxuryDelivery">
+                                    Delivery Time
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="luxuryDelivery"
+                                    placeholder="e.g. 10 days"
+                                >
+
+                            </div>
+
+
+                            <div class="package-field">
+
+                                <label for="luxuryDescription">
+                                    What's Included?
+                                </label>
+
+                                <textarea
+                                    id="luxuryDescription"
+                                    placeholder="Describe what the client gets..."
+                                ></textarea>
+
+                            </div>
+
+                        </article>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =================================================
+                     CLIENT PREVIEW
+                ================================================== -->
+
+                <section class="client-preview-section">
+
+                    <div class="client-preview">
+
+                        <div class="client-preview-content">
+
+                            <span class="preview-label">
+                                CLIENT PREVIEW
+                            </span>
+
+                            <h3>
+                                See what your clients will see
+                            </h3>
+
+                            <p>
+                                Your service and package information
+                                will also appear on your portfolio
+                                and booking page.
+                            </p>
+
+                        </div>
+
+                        <button
+                            type="button"
+                            class="btn-secondary"
+                            id="previewServiceBtn"
+                        >
+                            View Client Preview
+                        </button>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =================================================
+                     ACTIONS
+                ================================================== -->
+
+                <div class="editor-actions">
+
+                    <div class="editor-actions-left">
+
+                        <button
+                            type="button"
+                            class="btn-danger"
+                            id="deleteServiceBtn"
+                        >
+                            Delete Service
+                        </button>
+
+                    </div>
+
+
+                    <div class="editor-actions-right">
+
+                        <button
+                            type="button"
+                            class="btn-secondary"
+                            id="cancelServiceBtn"
+                        >
+                            Cancel
+                        </button>
+
+                        <button
+                            type="button"
+                            class="btn-primary"
+                            id="saveServiceBtn"
+                        >
+                            Save Changes
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+
+
+    <!-- =====================================================
+         DELETE CONFIRMATION
+    ====================================================== -->
+
+    <dialog id="deleteDialog">
+
+        <div class="dialog-content">
+
+            <h3>Delete this service?</h3>
+
+            <p>
+                This will remove the service and its packages.
+                You can create it again later, but the saved
+                information will be removed.
+            </p>
+
+            <div class="dialog-actions">
+
+                <button
+                    type="button"
+                    class="btn-secondary"
+                    id="cancelDeleteBtn"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="button"
+                    class="btn-danger"
+                    id="confirmDeleteBtn"
+                >
+                    Delete Service
+                </button>
+
+            </div>
+
+        </div>
+
+    </dialog>
+
+
+
+    <!-- =====================================================
+         NOTIFICATION
+    ====================================================== -->
+
+    <div
+        class="notification"
+        id="notification"
+        role="status"
+        aria-live="polite"
+        hidden
+    ></div>
+
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script src="serviceMng.js"></script>
+
+</body>
+</html>
