@@ -1438,3 +1438,102 @@ footer {
         animation-duration: 0.01ms !important;
     }
 }
+
+/* =========================================================
+   SERVICE PREVIEW ACTIONS
+========================================================= */
+
+.service-preview-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.service-preview-actions .book-btn {
+    flex: 1;
+    margin-top: 0;
+}
+
+
+/* =========================================================
+   SERVICE PREVIEW DESCRIPTION
+========================================================= */
+
+.service-preview-description {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin: 10px 0;
+}
+
+
+/* =========================================================
+   SERVICE EMPTY STATE
+========================================================= */
+
+.service-empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 30px 20px;
+    border: 1px solid #ddd;
+    border-radius: 13px;
+    background: #fff;
+}
+
+.service-empty-state h3 {
+    margin-bottom: 8px;
+}
+
+.service-empty-state p {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+
+/* =========================================================
+   SERVICE PREVIEW MOBILE
+========================================================= */
+
+@media (max-width: 599px) {
+
+    .service-preview-actions {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .service-preview-actions .book-btn {
+        width: 100%;
+    }
+
+    .service-preview-description {
+        font-size: 0.8rem;
+        line-height: 1.5;
+    }
+
+}
+
+
+/* =========================================================
+   SERVICE PREVIEW TABLET
+========================================================= */
+
+@media (min-width: 600px) and (max-width: 900px) {
+
+    .service-preview-actions {
+        flex-direction: column;
+    }
+
+}
+
+
+/* =========================================================
+   SERVICE PREVIEW DESKTOP
+========================================================= */
+
+@media (min-width: 901px) {
+
+    .service-preview-description {
+        font-size: 1rem;
+    }
+
+}
