@@ -1,552 +1,402 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <title>Book Session | Professional Studio</title>
 
-    <title>Book Photography Session</title>
+    <meta name="theme-color" content="#111111">
+    <meta name="description" content="Book a photography session with Professional Studio">
 
-    <meta name="theme-color"
-          content="#111111">
+    <link rel="stylesheet" href="booking.css">
 
-    <meta name="description"
-          content="Book photography sessions easily">
-
-    <meta name="robots"
-          content="index,follow">
-
-    <link rel="stylesheet"
-          href="booking.css">
-
-    <!-- FLATPICKR CSS -->
+    <!-- FLATPICKR -->
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-
 </head>
 
 <body>
 
-<section class="booking-section">
+    <!-- =========================================================
+         BOOKING HEADER
+    ========================================================== -->
 
-    <div class="container">
+    <header class="booking-header">
+        <div class="booking-header-inner">
 
-        <h1>Book Your Photography Session</h1>
+            <a href="client.html" class="brand">
+                Professional Studio
+            </a>
 
-        <p>
-            Select your service and fill in the details below.
-        </p>
-
-        <form id="bookingForm">
-
-            <!-- SERVICE -->
-
-<div class="service-selection">
-
-    <label class="service-label">
-        Type of Service
-    </label>
-
-    <p class="service-help">
-        Choose the type of photography you need.
-    </p>
-
-    <div
-        id="serviceCards"
-        class="service-cards">
-
-        <!-- WEDDING -->
-
-        <button
-            type="button"
-            class="service-card"
-            data-service="wedding"
-            aria-label="Select Wedding Photography">
-
-            <span class="service-image-wrap">
-
-                <img
-                    src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=700&q=80"
-                    alt="Wedding Photography"
-                    class="service-image"
-                    loading="lazy">
-
+            <span class="header-title">
+                Booking
             </span>
 
-            <span class="service-card-content">
+        </div>
+    </header>
 
-                <strong>
-                    Wedding
-                </strong>
 
-                <span>
-                    Your special day
-                </span>
+    <!-- =========================================================
+         MAIN
+    ========================================================== -->
 
-                <span class="service-select-text">
-                    Select
-                </span>
+    <main class="booking-section">
 
-            </span>
+        <div class="container">
 
-            <span
-                class="service-check"
-                aria-hidden="true">
-                ✓
-            </span>
+            <!-- BACK -->
+            <a href="#" id="backToService" class="back-link">
+                ← Back to Service
+            </a>
 
-        </button>
 
+            <!-- TITLE -->
+            <div class="booking-intro">
+                <p class="eyebrow">BOOK YOUR SESSION</p>
 
-        <!-- EVENT -->
+                <h1>Book Your Session</h1>
 
-        <button
-            type="button"
-            class="service-card"
-            data-service="event"
-            aria-label="Select Event Photography">
+                <p>
+                    Complete the details below to send your booking request.
+                </p>
+            </div>
 
-            <span class="service-image-wrap">
 
-                <img
-                    src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=700&q=80"
-                    alt="Event Photography"
-                    class="service-image"
-                    loading="lazy">
+            <!-- =====================================================
+                 SELECTED SERVICE / PACKAGE
+            ====================================================== -->
 
-            </span>
+            <section class="selected-package-section">
 
-            <span class="service-card-content">
+                <div id="selectedPackageCard"
+                     class="selected-package-card">
 
-                <strong>
-                    Events
-                </strong>
+                    <div class="package-loading">
+                        Loading selected package...
+                    </div>
 
-                <span>
-                    Parties & celebrations
-                </span>
+                </div>
 
-                <span class="service-select-text">
-                    Select
-                </span>
+            </section>
 
-            </span>
 
-            <span
-                class="service-check"
-                aria-hidden="true">
-                ✓
-            </span>
+            <!-- =====================================================
+                 BOOKING FORM
+            ====================================================== -->
 
-        </button>
+            <form id="bookingForm" novalidate>
 
 
-        <!-- PORTRAIT -->
+                <!-- =================================================
+                     CLIENT DETAILS
+                ================================================== -->
 
-        <button
-            type="button"
-            class="service-card"
-            data-service="portrait"
-            aria-label="Select Portrait Session">
+                <section class="form-section">
 
-            <span class="service-image-wrap">
+                    <div class="section-heading">
+                        <span class="section-number">01</span>
 
-                <img
-                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=700&q=80"
-                    alt="Portrait Photography"
-                    class="service-image"
-                    loading="lazy">
+                        <div>
+                            <h2>Client Details</h2>
 
-            </span>
+                            <p>
+                                Tell us how we can contact you.
+                            </p>
+                        </div>
+                    </div>
 
-            <span class="service-card-content">
 
-                <strong>
-                    Portraits
-                </strong>
+                    <div class="form-grid">
 
-                <span>
-                    Individual portraits
-                </span>
+                        <div class="form-group form-group-full">
 
-                <span class="service-select-text">
-                    Select
-                </span>
+                            <label for="fullName">
+                                Full Name
+                            </label>
 
-            </span>
+                            <input
+                                type="text"
+                                id="fullName"
+                                name="fullName"
+                                placeholder="Enter your full name"
+                                autocomplete="name"
+                                required>
 
-            <span
-                class="service-check"
-                aria-hidden="true">
-                ✓
-            </span>
+                        </div>
 
-        </button>
 
+                        <div class="form-group">
 
-        <!-- PRE-WEDDING -->
+                            <label for="email">
+                                Email Address
+                            </label>
 
-        <button
-            type="button"
-            class="service-card"
-            data-service="prewedding"
-            aria-label="Select Pre-Wedding Shoot">
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="you@example.com"
+                                autocomplete="email"
+                                required>
 
-            <span class="service-image-wrap">
+                        </div>
 
-                <img
-                    src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=700&q=80"
-                    alt="Pre-Wedding Photography"
-                    class="service-image"
-                    loading="lazy">
 
-            </span>
+                        <div class="form-group">
 
-            <span class="service-card-content">
+                            <label for="phone">
+                                Phone Number
+                            </label>
 
-                <strong>
-                    Pre-Wedding
-                </strong>
+                            <input
+                                type="tel"
+                                id="phone"
+                                name="phone"
+                                placeholder="Enter your phone number"
+                                autocomplete="tel"
+                                required>
 
-                <span>
-                    Couple photoshoot
-                </span>
+                        </div>
 
-                <span class="service-select-text">
-                    Select
-                </span>
+                    </div>
 
-            </span>
+                </section>
 
-            <span
-                class="service-check"
-                aria-hidden="true">
-                ✓
-            </span>
 
-        </button>
+                <!-- =================================================
+                     SESSION DETAILS
+                ================================================== -->
 
-    </div>
+                <section class="form-section">
 
+                    <div class="section-heading">
+                        <span class="section-number">02</span>
 
-    <!-- CHANGE SERVICE -->
+                        <div>
+                            <h2>Session Details</h2>
 
-    <button
-        type="button"
-        id="changeServiceBtn"
-        class="change-service-btn"
-        hidden>
+                            <p>
+                                Choose your dates, times and location.
+                            </p>
+                        </div>
+                    </div>
 
-        ← Change Service
 
-    </button>
+                    <!-- DATES -->
 
+                    <div class="form-group">
 
-    <!-- HIDDEN SERVICE FIELD -->
-
-    <select
-        id="serviceSelect"
-        name="service"
-        required
-        aria-hidden="true"
-        tabindex="-1"
-        class="service-hidden-select">
-
-        <option value="">
-            Select your service type
-        </option>
-
-        <option value="wedding">
-            Wedding Photography
-        </option>
-
-        <option value="event">
-            Event Photography
-        </option>
-
-        <option value="portrait">
-            Portrait Session
-        </option>
-
-        <option value="prewedding">
-            Pre-Wedding Shoot
-        </option>
-
-    </select>
-
-</div>
-
-            <!-- PACKAGE -->
-
-            <div
-                id="packageSection"
-                class="package-section">
-
-                <div class="section-heading-row">
-                    <div>
-                        <label>
-                            Select Package
+                        <label for="multiDate">
+                            Event Dates
                         </label>
 
-                        <p class="section-subtext">
-                            Choose the package that fits your requirements.
+                        <p class="field-help">
+                            Select one or multiple dates for your session.
                         </p>
+
+                        <input
+                            type="text"
+                            id="multiDate"
+                            name="eventDates"
+                            placeholder="Select event dates"
+                            autocomplete="off"
+                            required>
+
                     </div>
-                </div>
-
-                <div
-                    class="package-options"
-                    id="packageOptions">
-                </div>
 
 
-                <div
-                    id="packageDetails"
-                    class="package-details">
-                </div>
+                    <!-- DATE / TIME ROWS -->
 
+                    <div id="dateTimeContainer"
+                         class="date-time-container">
+                    </div>
+
+
+                    <!-- TOTAL HOURS -->
+
+                    <div class="total-hours-card">
+
+                        <span>
+                            Total Combined Hours
+                        </span>
+
+                        <strong id="totalHours">
+                            0
+                        </strong>
+
+                    </div>
+
+
+                    <!-- LOCATION -->
+
+                    <div class="form-group location-group">
+
+                        <label for="location">
+                            Location
+                        </label>
+
+                        <p class="field-help">
+                            Enter the location where the photography session will take place.
+                        </p>
+
+                        <input
+                            type="text"
+                            id="location"
+                            name="location"
+                            placeholder="Enter event or session location"
+                            autocomplete="street-address"
+                            required>
+
+                    </div>
+
+
+                    <!-- NOTES -->
+
+                    <div class="form-group">
+
+                        <label for="message">
+                            Additional Notes
+                        </label>
+
+                        <textarea
+                            id="message"
+                            name="message"
+                            rows="5"
+                            placeholder="Tell us anything important about your session, event or requirements."></textarea>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================================
+                     BOOKING SUMMARY
+                ================================================== -->
+
+                <section class="booking-summary">
+
+                    <div class="summary-row">
+
+                        <span>Service</span>
+
+                        <strong id="summaryService">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="summary-row">
+
+                        <span>Package</span>
+
+                        <strong id="summaryPackage">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="summary-divider"></div>
+
+
+                    <div class="summary-total">
+
+                        <span>Total</span>
+
+                        <strong id="summaryPrice">
+                            —
+                        </strong>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================================
+                     HONEYPOT
+                ================================================== -->
 
                 <input
-                    type="hidden"
-                    id="selectedPackage"
-                    name="package">
+                    type="text"
+                    id="website"
+                    name="website"
+                    tabindex="-1"
+                    autocomplete="off"
+                    class="honeypot">
 
-            </div>
 
+                <!-- =================================================
+                     SUBMIT
+                ================================================== -->
 
-            <!-- DURATION -->
+                <button
+                    type="submit"
+                    id="submitBtn"
+                    class="submit-btn">
 
-            <div
-                id="durationBox"
-                class="duration-box">
+                    Submit Booking Request
 
-                <p id="durationText"></p>
+                </button>
 
-            </div>
 
+                <p class="booking-note">
+                    Your request will be marked as pending until the photographer confirms availability.
+                </p>
 
-            <!-- DATES -->
+            </form>
 
-            <label for="multiDate">
-                Select Event Dates
-            </label>
+        </div>
 
-            <input
-                type="text"
-                id="multiDate"
-                name="eventDates"
-                placeholder="Select event dates"
-                autocomplete="off"
-                required>
+    </main>
 
 
-            <div id="dateTimeContainer"></div>
-
-
-            <div class="hours-box">
-
-                Total Combined Hours:
-
-                <span id="totalHours">
-                    0
-                </span>
-
-            </div>
-
-
-            <!-- LOCATION -->
-
-            <label for="location">
-                Event Location
-            </label>
-
-            <input
-                type="text"
-                id="location"
-                name="location"
-                placeholder="Enter location manually"
-                autocomplete="street-address"
-                required>
-
-
-            <button
-                type="button"
-                class="gps-btn"
-                onclick="getLocation()">
-
-                Use Current Location (GPS)
-
-            </button>
-
-
-            <!-- CUSTOMER DETAILS -->
-
-            <h3>
-                Customer Details
-            </h3>
-
-
-            <label for="guests">
-                Expected Guests
-            </label>
-
-            <input
-                type="number"
-                id="guests"
-                name="guests"
-                min="1"
-                placeholder="Approx guest count">
-
-
-            <label for="fullName">
-                Full Name
-            </label>
-
-            <input
-                type="text"
-                id="fullName"
-                name="fullName"
-                autocomplete="name"
-                required>
-
-
-            <label for="phone">
-                Phone Number
-            </label>
-
-            <input
-                type="tel"
-                id="phone"
-                name="phone"
-                autocomplete="tel"
-                required>
-
-
-            <label for="email">
-                Email Address
-            </label>
-
-            <input
-                type="email"
-                id="email"
-                name="email"
-                autocomplete="email"
-                required>
-
-
-            <label for="message">
-                Additional Details / Message
-            </label>
-
-            <textarea
-                id="message"
-                name="message"
-                rows="4"
-                placeholder="Tell us anything important about your session">
-            </textarea>
-
-
-            <!-- HONEYPOT -->
-
-            <input
-                type="text"
-                name="website"
-                tabindex="-1"
-                autocomplete="off"
-                style="display:none">
-
-
-            <!-- SUBMIT -->
-
-            <button
-                type="submit"
-                class="submit-btn">
-
-                Submit Booking Request
-
-            </button>
-
-        </form>
-
-    </div>
-
-</section>
-
-
-<!-- HELP -->
-
-<section class="help-section">
-
-    <h3>
-        Need Help With Booking?
-    </h3>
-
-    <p>
-        Having trouble selecting dates, packages, or booking your session?
-        Contact us and we'll help you choose the perfect photography plan.
-    </p>
-
-</section>
-
-
-<!-- SUCCESS POPUP -->
-
-<div
-    id="successPopup"
-    class="success-popup">
-
-    Booking request submitted successfully 🎉
-
-</div>
-
-
-<!-- PROGRESS -->
-
-<div class="progress-bar">
+    <!-- =========================================================
+         SUCCESS MESSAGE
+    ========================================================== -->
 
     <div
-        class="progress-fill"
-        id="progressFill">
+        id="successPopup"
+        class="success-popup"
+        role="status"
+        aria-live="polite">
+
+        Booking request submitted successfully.
+
     </div>
 
-</div>
+
+    <!-- =========================================================
+         FOOTER
+    ========================================================== -->
+
+    <footer class="booking-footer">
+
+        <p>
+            © 2026 Professional Studio. All rights reserved.
+        </p>
+
+        <p>
+            Powered by
+            <a
+                href="https://bluehorizanlabs.vercel.app/"
+                target="_blank"
+                rel="noopener noreferrer">
+                Bluehorizanlabs
+            </a>
+        </p>
+
+    </footer>
 
 
-<!-- FOOTER -->
+    <!-- =========================================================
+         FLATPICKR
+    ========================================================== -->
 
-<footer class="booking-footer">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-    <p>
-        Secure Booking • Fast Response • Instant Confirmation
-    </p>
-
-    <p>
-        © 2026 Professional Studio. All rights reserved.
-    </p>
-
-    <p>
-        Powered by
-
-        <a
-            href="https://bluehorizanlabs.vercel.app/"
-            target="_blank"
-            rel="noopener noreferrer">
-
-            Bluehorizanlabs
-
-        </a>
-    </p>
-
-</footer>
-
-
-<!-- FLATPICKR -->
-
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
-<script src="booking.js"></script>
+    <script src="booking.js"></script>
 
 </body>
 </html>

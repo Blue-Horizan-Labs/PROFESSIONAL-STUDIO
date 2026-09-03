@@ -1,34 +1,72 @@
-// ============================================================
-// BOOKING FORM JAVASCRIPT
-// Professional Studio
-// ============================================================
+/* ============================================================
+   PROFESSIONAL STUDIO
+   BOOKING PAGE JAVASCRIPT
+============================================================ */
 
 document.addEventListener("DOMContentLoaded", function () {
 
-    // ============================================================
-    // DOM ELEMENTS
-    // ============================================================
+    /* =========================================================
+       STORAGE
+    ========================================================= */
+
+    const SERVICE_STORAGE_KEY = "professionalStudio.services";
+    const BOOKING_STORAGE_KEY = "bookings";
+
+
+    /* =========================================================
+       DOM
+    ========================================================= */
 
     const form = document.getElementById("bookingForm");
-    const serviceSelect = document.getElementById("serviceSelect");
-    const serviceCardsContainer = document.getElementById("serviceCards");
-    const serviceCards = document.querySelectorAll(".service-card");
-    const changeServiceBtn = document.getElementById("changeServiceBtn");
 
-    const packageSection = document.getElementById("packageSection");
-    const packageDetails = document.getElementById("packageDetails");
-    const packageOptions = document.getElementById("packageOptions");
-    const selectedPackage = document.getElementById("selectedPackage");
+    const selectedPackageCard =
+        document.getElementById("selectedPackageCard");
 
-    const durationBox = document.getElementById("durationBox");
-    const durationText = document.getElementById("durationText");
-    const locationInput = document.getElementById("location");
-    const dateContainer = document.getElementById("dateTimeContainer");
-    const totalHoursElement = document.getElementById("totalHours");
-    const submitBtn = document.querySelector(".submit-btn");
-    const successPopup = document.getElementById("successPopup");
-    const multiDateInput = document.getElementById("multiDate");
-    const progressFill = document.getElementById("progressFill");
+    const backToService =
+        document.getElementById("backToService");
+
+    const multiDateInput =
+        document.getElementById("multiDate");
+
+    const dateTimeContainer =
+        document.getElementById("dateTimeContainer");
+
+    const totalHoursElement =
+        document.getElementById("totalHours");
+
+    const locationInput =
+        document.getElementById("location");
+
+    const submitBtn =
+        document.getElementById("submitBtn");
+
+    const successPopup =
+        document.getElementById("successPopup");
+
+    const summaryService =
+        document.getElementById("summaryService");
+
+    const summaryPackage =
+        document.getElementById("summaryPackage");
+
+    const summaryPrice =
+        document.getElementById("summaryPrice");
+
+    const fullNameInput =
+        document.getElementById("fullName");
+
+    const emailInput =
+        document.getElementById("email");
+
+    const phoneInput =
+        document.getElementById("phone");
+
+    const messageInput =
+        document.getElementById("message");
+
+    const honeypotInput =
+        document.getElementById("website");
+
 
     if (!form) {
         console.error("Booking form not found.");
@@ -36,364 +74,359 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // ============================================================
-    // PACKAGE DATA
-    // ============================================================
+    /* =========================================================
+       URL PARAMETERS
+    ========================================================= */
 
-    const packageData = {
+    const urlParams =
+        new URLSearchParams(window.location.search);
 
-        wedding: {
+    const serviceId =
+        urlParams.get("service");
 
-            basic: {
-                name: "Wedding Basic",
-                price: "₹20,000",
-                features: [
-                    "Candid Photography",
-                    "Traditional Photography",
-                    "100 Edited Photos",
-                    "Online Gallery"
-                ]
-            },
-
-            premium: {
-                name: "Wedding Premium",
-                price: "₹45,000",
-                features: [
-                    "Cinematic Video",
-                    "Candid Photography",
-                    "Traditional Photography",
-                    "Drone Coverage",
-                    "300 Edited Photos"
-                ]
-            },
-
-            luxury: {
-                name: "Wedding Luxury",
-                price: "₹80,000",
-                features: [
-                    "Cinematic Video",
-                    "Candid Photography",
-                    "Traditional Photography",
-                    "Premium Album",
-                    "Pre-Wedding Shoot",
-                    "Unlimited Edited Photos"
-                ]
-            }
-        },
+    const packageId =
+        urlParams.get("package");
 
 
-        event: {
+    /* =========================================================
+       HELPERS
+    ========================================================= */
 
-            basic: {
-                name: "Event Basic",
-                price: "₹12,000",
-                features: [
-                    "4 Hours Coverage",
-                    "150 Edited Photos",
-                    "Online Gallery"
-                ]
-            },
+    function escapeHTML(value) {
 
-            premium: {
-                name: "Event Premium",
-                price: "₹25,000",
-                features: [
-                    "8 Hours Coverage",
-                    "Drone Coverage",
-                    "300 Edited Photos",
-                    "Online Gallery"
-                ]
-            }
-        },
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
 
 
-        portrait: {
+    function formatPrice(price) {
 
-            basic: {
-                name: "Portrait Standard",
-                price: "₹3,000",
-                features: [
-                    "1 Hour Session",
-                    "20 Edited Photos",
-                    "Studio Lighting"
-                ]
-            },
+        const numericPrice =
+            Number(
+                String(price ?? "")
+                    .replace(/[₹,\s]/g, "")
+            );
 
-            premium: {
-                name: "Portrait Premium",
-                price: "₹6,000",
-                features: [
-                    "2 Hour Session",
-                    "50 Edited Photos",
-                    "Outdoor + Studio"
-                ]
-            }
-        },
-
-
-        prewedding: {
-
-            basic: {
-                name: "Pre-Wedding Basic",
-                price: "₹10,000",
-                features: [
-                    "2 Hours Coverage",
-                    "50 Edited Photos",
-                    "Outdoor Shoot"
-                ]
-            },
-
-            premium: {
-                name: "Pre-Wedding Premium",
-                price: "₹18,000",
-                features: [
-                    "4 Hours Coverage",
-                    "Drone Coverage",
-                    "120 Edited Photos"
-                ]
-            }
+        if (Number.isNaN(numericPrice)) {
+            return price || "₹0";
         }
-    };
+
+        return new Intl.NumberFormat("en-IN", {
+            style: "currency",
+            currency: "INR",
+            maximumFractionDigits: 0
+        }).format(numericPrice);
+
+    }
 
 
-    // ============================================================
-    // SERVICE DURATION
-    // ============================================================
+    function getServices() {
 
-    const serviceDuration = {
+        try {
 
-        wedding:
-            "Expected duration: 3–5 days. Extra 1–2 days may be required depending on the event.",
+            const stored =
+                localStorage.getItem(
+                    SERVICE_STORAGE_KEY
+                );
 
-        event:
-            "Expected duration: 1 day event coverage.",
+            const services =
+                stored
+                    ? JSON.parse(stored)
+                    : [];
 
-        portrait:
-            "Expected duration: Few hours, usually a single-day session.",
+            return Array.isArray(services)
+                ? services
+                : [];
 
-        prewedding:
-            "Expected duration: 1–2 days depending on the selected shoot plan."
-    };
+        } catch (error) {
+
+            console.error(
+                "Unable to load services:",
+                error
+            );
+
+            return [];
+
+        }
+
+    }
 
 
-    // ============================================================
-    // MULTI DATE PICKER
-    // ============================================================
+    /* =========================================================
+       LOAD SELECTED SERVICE
+    ========================================================= */
+
+    const services = getServices();
+
+    const service =
+        services.find(function (item) {
+
+            return String(item.id) ===
+                String(serviceId);
+
+        });
+
+
+    let selectedPackage = null;
+
+
+    if (service && Array.isArray(service.packages)) {
+
+        selectedPackage =
+            service.packages.find(function (item) {
+
+                return String(item.id) ===
+                    String(packageId);
+
+            });
+
+    }
+
+
+    /* =========================================================
+       INVALID BOOKING
+    ========================================================= */
+
+    function showBookingError(title, message) {
+
+        if (!selectedPackageCard) {
+            return;
+        }
+
+        selectedPackageCard.innerHTML = `
+            <div class="package-error">
+
+                <h2>
+                    ${escapeHTML(title)}
+                </h2>
+
+                <p>
+                    ${escapeHTML(message)}
+                </p>
+
+                <a href="client.html#services">
+                    Back to Services
+                </a>
+
+            </div>
+        `;
+
+        form.style.display = "none";
+
+    }
+
+
+    if (!service) {
+
+        showBookingError(
+            "Service Not Found",
+            "The selected photography service could not be found."
+        );
+
+        return;
+
+    }
+
+
+    if (!service.active) {
+
+        showBookingError(
+            "Service Unavailable",
+            "This service is currently unavailable for booking."
+        );
+
+        return;
+
+    }
+
+
+    if (!selectedPackage) {
+
+        showBookingError(
+            "Package Not Found",
+            "The selected package could not be found."
+        );
+
+        return;
+
+    }
+
+
+    /* =========================================================
+       BACK TO SERVICE
+    ========================================================= */
+
+    if (backToService) {
+
+        backToService.href =
+            "service.html?id=" +
+            encodeURIComponent(service.id);
+
+    }
+
+
+    /* =========================================================
+       SELECTED PACKAGE CARD
+    ========================================================= */
+
+    const packageName =
+        selectedPackage.name || "Selected Package";
+
+    const packagePrice =
+        formatPrice(selectedPackage.price);
+
+    const packageDescription =
+        selectedPackage.description || "";
+
+    const coverage =
+        selectedPackage.coverage || "";
+
+    const photos =
+        selectedPackage.photos || "";
+
+    const delivery =
+        selectedPackage.delivery || "";
+
+
+    let packageMeta = "";
+
+
+    if (coverage) {
+
+        packageMeta += `
+            <span class="package-meta-item">
+                ${escapeHTML(coverage)}
+            </span>
+        `;
+
+    }
+
+
+    if (photos) {
+
+        packageMeta += `
+            <span class="package-meta-item">
+                ${escapeHTML(photos)} Photos
+            </span>
+        `;
+
+    }
+
+
+    if (delivery) {
+
+        packageMeta += `
+            <span class="package-meta-item">
+                ${escapeHTML(delivery)}
+            </span>
+        `;
+
+    }
+
+
+    selectedPackageCard.innerHTML = `
+
+        <div class="package-topline">
+
+            <div>
+
+                <p class="package-service">
+                    ${escapeHTML(service.name)}
+                </p>
+
+                <h2 class="package-name">
+                    ${escapeHTML(packageName)}
+                </h2>
+
+            </div>
+
+            <div class="package-price">
+                ${escapeHTML(packagePrice)}
+            </div>
+
+        </div>
+
+        ${
+            packageDescription
+                ? `
+                    <p class="package-description">
+                        ${escapeHTML(packageDescription)}
+                    </p>
+                  `
+                : ""
+        }
+
+        ${
+            packageMeta
+                ? `
+                    <div class="package-meta">
+                        ${packageMeta}
+                    </div>
+                  `
+                : ""
+        }
+
+    `;
+
+
+    /* =========================================================
+       SUMMARY
+    ========================================================= */
+
+    if (summaryService) {
+        summaryService.textContent =
+            service.name || "—";
+    }
+
+    if (summaryPackage) {
+        summaryPackage.textContent =
+            packageName;
+    }
+
+    if (summaryPrice) {
+        summaryPrice.textContent =
+            packagePrice;
+    }
+
+
+    /* =========================================================
+       MULTI DATE PICKER
+    ========================================================= */
 
     let datePicker = null;
+
 
     if (
         multiDateInput &&
         typeof flatpickr === "function"
     ) {
 
-        datePicker = flatpickr(
-            multiDateInput,
-            {
+        datePicker =
+            flatpickr(
+                multiDateInput,
+                {
+                    mode: "multiple",
+                    dateFormat: "d-m-Y",
+                    allowInput: false,
+                    minDate: "today",
 
-                mode: "multiple",
+                    onChange:
+                        function (selectedDates) {
 
-                dateFormat: "d-m-Y",
-
-                allowInput: false,
-
-
-                onChange: function (selectedDates) {
-
-                    dateContainer.innerHTML = "";
-
-
-                    selectedDates.forEach(function (date) {
-
-                        const day =
-                            String(
-                                date.getDate()
-                            ).padStart(2, "0");
-
-
-                        const month =
-                            String(
-                                date.getMonth() + 1
-                            ).padStart(2, "0");
-
-
-                        const year =
-                            date.getFullYear();
-
-
-                        const formattedDate =
-                            `${day}-${month}-${year}`;
-
-
-                        const row =
-                            document.createElement("div");
-
-
-                        row.className =
-                            "date-time-row";
-
-
-                        row.innerHTML = `
-
-                            <h4>
-                                ${formattedDate}
-                            </h4>
-
-                            <div class="time-row">
-
-                                <div class="time-field">
-
-                                    <label>
-                                        Start Time
-                                    </label>
-
-                                    <input
-                                        type="time"
-                                        class="start-time"
-                                        required>
-
-                                </div>
-
-
-                                <div class="time-field">
-
-                                    <label>
-                                        End Time
-                                    </label>
-
-                                    <input
-                                        type="time"
-                                        class="end-time"
-                                        required>
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="hours-box">
-
-                                Total Hours:
-
-                                <span class="hours">
-                                    0
-                                </span>
-
-                            </div>
-                        `;
-
-
-                        dateContainer.appendChild(row);
-
-
-                        const startInput =
-                            row.querySelector(
-                                ".start-time"
+                            renderDateRows(
+                                selectedDates
                             );
-
-
-                        const endInput =
-                            row.querySelector(
-                                ".end-time"
-                            );
-
-
-                        const hours =
-                            row.querySelector(
-                                ".hours"
-                            );
-
-
-                        function calculateHours() {
-
-                            if (
-                                !startInput.value ||
-                                !endInput.value
-                            ) {
-
-                                hours.innerText =
-                                    "0";
-
-                                updateTotalHours();
-
-                                return;
-                            }
-
-
-                            const startParts =
-                                startInput.value.split(":");
-
-
-                            const endParts =
-                                endInput.value.split(":");
-
-
-                            let startMinutes =
-                                parseInt(startParts[0]) * 60 +
-                                parseInt(startParts[1]);
-
-
-                            let endMinutes =
-                                parseInt(endParts[0]) * 60 +
-                                parseInt(endParts[1]);
-
-
-                            let difference =
-                                endMinutes -
-                                startMinutes;
-
-
-                            // Allow overnight sessions
-                            if (difference < 0) {
-
-                                difference +=
-                                    24 * 60;
-                            }
-
-
-                            if (difference === 0) {
-
-                                hours.innerText =
-                                    "Invalid";
-
-                                updateTotalHours();
-
-                                return;
-                            }
-
-
-                            const calculatedHours =
-                                difference / 60;
-
-
-                            hours.innerText =
-                                calculatedHours.toFixed(1);
-
 
                             updateTotalHours();
+
                         }
-
-
-                        startInput.addEventListener(
-                            "change",
-                            calculateHours
-                        );
-
-
-                        endInput.addEventListener(
-                            "change",
-                            calculateHours
-                        );
-
-                    });
-
-
-                    updateTotalHours();
-
-                    updateProgress();
                 }
-            }
-        );
+            );
 
     } else if (multiDateInput) {
 
@@ -404,12 +437,253 @@ document.addEventListener("DOMContentLoaded", function () {
         multiDateInput.removeAttribute(
             "readonly"
         );
+
     }
 
 
-    // ============================================================
-    // TOTAL HOURS
-    // ============================================================
+    /* =========================================================
+       FORMAT DATE
+    ========================================================= */
+
+    function formatDate(date) {
+
+        const day =
+            String(
+                date.getDate()
+            ).padStart(2, "0");
+
+        const month =
+            String(
+                date.getMonth() + 1
+            ).padStart(2, "0");
+
+        const year =
+            date.getFullYear();
+
+        return `${day}-${month}-${year}`;
+
+    }
+
+
+    /* =========================================================
+       RENDER DATE ROWS
+    ========================================================= */
+
+    function renderDateRows(selectedDates) {
+
+        if (!dateTimeContainer) {
+            return;
+        }
+
+        dateTimeContainer.innerHTML = "";
+
+
+        selectedDates.forEach(
+            function (date, index) {
+
+                const row =
+                    document.createElement("div");
+
+                row.className =
+                    "date-time-row";
+
+                row.dataset.date =
+                    formatDate(date);
+
+
+                row.innerHTML = `
+
+                    <div class="date-heading">
+
+                        <h3>
+                            ${escapeHTML(
+                                formatDate(date)
+                            )}
+                        </h3>
+
+                        <span class="date-label">
+                            Date ${index + 1}
+                        </span>
+
+                    </div>
+
+
+                    <div class="time-grid">
+
+                        <div class="time-field">
+
+                            <label>
+                                Start Time
+                            </label>
+
+                            <input
+                                type="time"
+                                class="start-time"
+                                aria-label="Start time for ${escapeHTML(formatDate(date))}"
+                                required>
+
+                        </div>
+
+
+                        <div class="time-field">
+
+                            <label>
+                                End Time
+                            </label>
+
+                            <input
+                                type="time"
+                                class="end-time"
+                                aria-label="End time for ${escapeHTML(formatDate(date))}"
+                                required>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="date-hours">
+
+                        <span>
+                            Hours for this date
+                        </span>
+
+                        <strong class="hours">
+                            0
+                        </strong>
+
+                    </div>
+
+                `;
+
+
+                dateTimeContainer.appendChild(row);
+
+
+                const startInput =
+                    row.querySelector(
+                        ".start-time"
+                    );
+
+                const endInput =
+                    row.querySelector(
+                        ".end-time"
+                    );
+
+
+                function calculateHours() {
+
+                    const hoursElement =
+                        row.querySelector(
+                            ".hours"
+                        );
+
+
+                    if (
+                        !startInput.value ||
+                        !endInput.value
+                    ) {
+
+                        hoursElement.textContent =
+                            "0";
+
+                        updateTotalHours();
+
+                        return;
+
+                    }
+
+
+                    const startParts =
+                        startInput.value.split(":");
+
+                    const endParts =
+                        endInput.value.split(":");
+
+
+                    let startMinutes =
+                        parseInt(
+                            startParts[0],
+                            10
+                        ) * 60 +
+                        parseInt(
+                            startParts[1],
+                            10
+                        );
+
+
+                    let endMinutes =
+                        parseInt(
+                            endParts[0],
+                            10
+                        ) * 60 +
+                        parseInt(
+                            endParts[1],
+                            10
+                        );
+
+
+                    let difference =
+                        endMinutes -
+                        startMinutes;
+
+
+                    if (difference < 0) {
+
+                        difference +=
+                            24 * 60;
+
+                    }
+
+
+                    if (difference === 0) {
+
+                        hoursElement.textContent =
+                            "Invalid";
+
+                        updateTotalHours();
+
+                        return;
+
+                    }
+
+
+                    const calculatedHours =
+                        difference / 60;
+
+
+                    hoursElement.textContent =
+                        calculatedHours
+                            .toFixed(1);
+
+
+                    updateTotalHours();
+
+                }
+
+
+                startInput.addEventListener(
+                    "change",
+                    calculateHours
+                );
+
+                endInput.addEventListener(
+                    "change",
+                    calculateHours
+                );
+
+            }
+        );
+
+
+        updateTotalHours();
+
+    }
+
+
+    /* =========================================================
+       TOTAL HOURS
+    ========================================================= */
 
     function updateTotalHours() {
 
@@ -422,597 +696,324 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         document
-            .querySelectorAll(".hours")
-            .forEach(function (hour) {
+            .querySelectorAll(
+                ".date-time-row .hours"
+            )
+            .forEach(
+                function (hourElement) {
 
-                const value =
-                    parseFloat(
-                        hour.innerText
-                    );
+                    const value =
+                        parseFloat(
+                            hourElement.textContent
+                        );
 
 
-                if (!isNaN(value)) {
+                    if (!Number.isNaN(value)) {
 
-                    total += value;
+                        total += value;
+
+                    }
+
                 }
-            });
+            );
 
 
-        totalHoursElement.innerText =
+        totalHoursElement.textContent =
             total.toFixed(1);
+
     }
 
 
-    // ============================================================
-    // LOAD PACKAGES
-    // ============================================================
+    /* =========================================================
+       AUTOSAVE
+    ========================================================= */
 
-    function loadPackages(service) {
-
-        if (
-            !packageSection ||
-            !packageOptions
-        ) {
-            return;
-        }
-
-
-        packageSection.style.display =
-            "none";
+    const autosaveFields = [
+        fullNameInput,
+        emailInput,
+        phoneInput,
+        locationInput,
+        messageInput
+    ];
 
 
-        packageOptions.innerHTML =
-            "";
+    autosaveFields.forEach(
+        function (field) {
+
+            if (!field || !field.id) {
+                return;
+            }
 
 
-        if (packageDetails) {
+            try {
 
-            packageDetails.innerHTML =
-                "";
-        }
-
-
-        if (selectedPackage) {
-
-            selectedPackage.value =
-                "";
-        }
-
-
-        if (!packageData[service]) {
-
-            updateProgress();
-
-            return;
-        }
-
-
-        const packages =
-            packageData[service];
-
-
-        Object.keys(packages).forEach(
-            function (key, index) {
-
-                const pkg =
-                    packages[key];
-
-
-                const card =
-                    document.createElement(
-                        "div"
+                const savedValue =
+                    localStorage.getItem(
+                        "booking." + field.id
                     );
 
 
-                card.className =
-                    "package-card";
+                if (savedValue !== null) {
 
+                    field.value =
+                        savedValue;
 
-                card.dataset.package =
-                    key;
-
-
-                card.setAttribute(
-                    "role",
-                    "button"
-                );
-
-
-                card.setAttribute(
-                    "tabindex",
-                    "0"
-                );
-
-
-                card.innerHTML = `
-
-                    ${
-                        index === 1
-                            ? `
-                                <span class="badge">
-                                    Most Popular
-                                </span>
-                              `
-                            : ""
-                    }
-
-                    <h4>
-                        ${pkg.name}
-                    </h4>
-
-
-                    <div class="package-price">
-                        ${pkg.price}
-                    </div>
-
-
-                    <p>
-                        ${
-                            pkg.features
-                                .slice(0, 2)
-                                .join(" • ")
-                        }
-                    </p>
-                `;
-
-
-                packageOptions.appendChild(
-                    card
-                );
-
-
-                function selectPackage() {
-
-                    packageOptions
-                        .querySelectorAll(
-                            ".package-card"
-                        )
-                        .forEach(function (c) {
-
-                            c.classList.remove(
-                                "active"
-                            );
-                        });
-
-
-                    card.classList.add(
-                        "active"
-                    );
-
-
-                    if (selectedPackage) {
-
-                        selectedPackage.value =
-                            key;
-                    }
-
-
-                    if (packageDetails) {
-
-                        packageDetails.innerHTML = `
-
-                            <h4>
-                                ${pkg.name}
-                            </h4>
-
-
-                            <p>
-                                <strong>
-                                    Price:
-                                </strong>
-
-                                ${pkg.price}
-                            </p>
-
-
-                            <ul>
-
-                                ${
-                                    pkg.features
-                                        .map(function (feature) {
-
-                                            return `
-                                                <li>
-                                                    ✔ ${feature}
-                                                </li>
-                                            `;
-
-                                        })
-                                        .join("")
-                                }
-
-                            </ul>
-                        `;
-                    }
-
-
-                    updateProgress();
                 }
 
+            } catch (error) {
 
-                card.addEventListener(
-                    "click",
-                    selectPackage
-                );
-
-
-                card.addEventListener(
-                    "keydown",
-                    function (event) {
-
-                        if (
-                            event.key === "Enter" ||
-                            event.key === " "
-                        ) {
-
-                            event.preventDefault();
-
-                            selectPackage();
-                        }
-                    }
+                console.error(
+                    "Unable to load saved field:",
+                    field.id
                 );
 
             }
-        );
 
 
-        packageSection.style.display =
-            "block";
+            function saveField() {
 
+                try {
 
-        updateProgress();
-    }
-
-
-    // ============================================================
-    // SERVICE SELECTION
-    // ============================================================
-
-    function selectService(service) {
-
-        if (
-            !serviceSelect ||
-            !service
-        ) {
-            return;
-        }
-
-
-        serviceSelect.value =
-            service;
-
-
-        serviceCards.forEach(
-            function (card) {
-
-                const isSelected =
-                    card.dataset.service ===
-                    service;
-
-
-                card.classList.toggle(
-                    "selected",
-                    isSelected
-                );
-            }
-        );
-
-
-        if (serviceCardsContainer) {
-
-            serviceCardsContainer.classList.add(
-                "has-selection"
-            );
-        }
-
-
-        if (changeServiceBtn) {
-
-            changeServiceBtn.hidden =
-                false;
-        }
-
-
-        if (durationBox) {
-
-            durationBox.style.display =
-                "none";
-        }
-
-
-        loadPackages(service);
-
-
-        if (
-            serviceDuration[service] &&
-            durationText &&
-            durationBox
-        ) {
-
-            durationText.innerText =
-                serviceDuration[service];
-
-
-            durationBox.style.display =
-                "block";
-        }
-
-
-        updateProgress();
-    }
-
-
-    // ============================================================
-    // RESET SERVICE
-    // ============================================================
-
-    function resetServiceSelection() {
-
-        if (serviceSelect) {
-
-            serviceSelect.value =
-                "";
-        }
-
-
-        serviceCards.forEach(
-            function (card) {
-
-                card.classList.remove(
-                    "selected"
-                );
-            }
-        );
-
-
-        if (serviceCardsContainer) {
-
-            serviceCardsContainer.classList.remove(
-                "has-selection"
-            );
-        }
-
-
-        if (changeServiceBtn) {
-
-            changeServiceBtn.hidden =
-                true;
-        }
-
-
-        if (durationBox) {
-
-            durationBox.style.display =
-                "none";
-        }
-
-
-        loadPackages("");
-
-
-        updateProgress();
-    }
-
-
-    // ============================================================
-    // SERVICE CARD CLICK
-    // ============================================================
-
-    serviceCards.forEach(
-        function (card) {
-
-            card.addEventListener(
-                "click",
-                function () {
-
-                    const service =
-                        card.dataset.service;
-
-
-                    selectService(
-                        service
+                    localStorage.setItem(
+                        "booking." + field.id,
+                        field.value
                     );
+
+                } catch (error) {
+
+                    console.error(
+                        "Unable to save field:",
+                        field.id
+                    );
+
                 }
+
+            }
+
+
+            field.addEventListener(
+                "input",
+                saveField
             );
+
+            field.addEventListener(
+                "change",
+                saveField
+            );
+
         }
     );
 
 
-    // ============================================================
-    // CHANGE SERVICE
-    // ============================================================
+    /* =========================================================
+       CLEAR AUTOSAVE
+    ========================================================= */
 
-    if (changeServiceBtn) {
+    function clearFormStorage() {
 
-        changeServiceBtn.addEventListener(
-            "click",
-            function () {
+        autosaveFields.forEach(
+            function (field) {
 
-                resetServiceSelection();
-
-
-                if (serviceCards[0]) {
-
-                    serviceCards[0].focus();
+                if (!field || !field.id) {
+                    return;
                 }
+
+
+                try {
+
+                    localStorage.removeItem(
+                        "booking." + field.id
+                    );
+
+                } catch (error) {
+
+                    console.error(
+                        "Unable to clear saved field:",
+                        field.id
+                    );
+
+                }
+
             }
         );
+
     }
 
 
-    // ============================================================
-    // GPS LOCATION
-    // ============================================================
+    /* =========================================================
+       GET DATE DATA
+    ========================================================= */
 
-    window.getLocation = function () {
+    function getDateData() {
 
-        if (!locationInput) {
-
-            alert(
-                "Location field was not found."
+        const rows =
+            document.querySelectorAll(
+                ".date-time-row"
             );
 
-            return;
-        }
+
+        const dates = [];
 
 
-        if (!("geolocation" in navigator)) {
+        rows.forEach(
+            function (row) {
 
-            alert(
-                "Geolocation is not supported by this browser."
-            );
+                const startInput =
+                    row.querySelector(
+                        ".start-time"
+                    );
 
-            return;
-        }
-
-
-        if (
-            window.location.protocol !== "https:" &&
-            window.location.hostname !== "localhost" &&
-            window.location.hostname !== "127.0.0.1"
-        ) {
-
-            alert(
-                "GPS requires a secure HTTPS connection."
-            );
-
-            return;
-        }
+                const endInput =
+                    row.querySelector(
+                        ".end-time"
+                    );
 
 
-        locationInput.value =
-            "Fetching location...";
+                dates.push({
 
+                    date:
+                        row.dataset.date || "",
 
-        navigator.geolocation.getCurrentPosition(
+                    startTime:
+                        startInput
+                            ? startInput.value
+                            : "",
 
-            function (position) {
+                    endTime:
+                        endInput
+                            ? endInput.value
+                            : "",
 
-                const latitude =
-                    position.coords.latitude;
+                    hours:
+                        row.querySelector(".hours")
+                            ? row.querySelector(".hours").textContent
+                            : "0"
 
+                });
 
-                const longitude =
-                    position.coords.longitude;
-
-
-                locationInput.value =
-                    `${latitude}, ${longitude}`;
-
-
-                updateProgress();
-            },
-
-
-            function (error) {
-
-                locationInput.value =
-                    "";
-
-
-                switch (error.code) {
-
-                    case error.PERMISSION_DENIED:
-
-                        alert(
-                            "Location permission was denied. Please allow location access."
-                        );
-
-                        break;
-
-
-                    case error.POSITION_UNAVAILABLE:
-
-                        alert(
-                            "Your current location could not be determined."
-                        );
-
-                        break;
-
-
-                    case error.TIMEOUT:
-
-                        alert(
-                            "Location request timed out. Please try again."
-                        );
-
-                        break;
-
-
-                    default:
-
-                        alert(
-                            "Unable to fetch your location. Please enter it manually."
-                        );
-                }
-            },
-
-
-            {
-                enableHighAccuracy: true,
-                timeout: 15000,
-                maximumAge: 0
             }
         );
-    };
 
 
-    // ============================================================
-    // FORM SUBMIT
-    // ============================================================
+        return dates;
+
+    }
+
+
+    /* =========================================================
+       VALIDATE DATES
+    ========================================================= */
+
+    function validateDates() {
+
+        const dateRows =
+            document.querySelectorAll(
+                ".date-time-row"
+            );
+
+
+        if (dateRows.length === 0) {
+
+            alert(
+                "Please select at least one event date."
+            );
+
+            return false;
+
+        }
+
+
+        for (
+            let index = 0;
+            index < dateRows.length;
+            index++
+        ) {
+
+            const row =
+                dateRows[index];
+
+            const startInput =
+                row.querySelector(
+                    ".start-time"
+                );
+
+            const endInput =
+                row.querySelector(
+                    ".end-time"
+                );
+
+
+            if (
+                !startInput ||
+                !endInput ||
+                !startInput.value ||
+                !endInput.value
+            ) {
+
+                alert(
+                    "Please select a start and end time for every date."
+                );
+
+                return false;
+
+            }
+
+
+            if (
+                startInput.value ===
+                endInput.value
+            ) {
+
+                alert(
+                    "Start time and end time cannot be the same."
+                );
+
+                return false;
+
+            }
+
+        }
+
+
+        return true;
+
+    }
+
+
+    /* =========================================================
+       FORM SUBMIT
+    ========================================================= */
 
     form.addEventListener(
         "submit",
-        function (e) {
+        function (event) {
 
-            e.preventDefault();
-
-
-            const nameElement =
-                document.getElementById(
-                    "fullName"
-                );
+            event.preventDefault();
 
 
-            const phoneElement =
-                document.getElementById(
-                    "phone"
-                );
+            /* -----------------------------------------------
+               HONEYPOT
+            ------------------------------------------------ */
+
+            if (
+                honeypotInput &&
+                honeypotInput.value.trim() !== ""
+            ) {
+
+                return;
+
+            }
 
 
-            const emailElement =
-                document.getElementById(
-                    "email"
-                );
-
+            /* -----------------------------------------------
+               NAME
+            ------------------------------------------------ */
 
             const name =
-                nameElement
-                    ? nameElement.value.trim()
+                fullNameInput
+                    ? fullNameInput.value.trim()
                     : "";
 
-
-            const phone =
-                phoneElement
-                    ? phoneElement.value.trim()
-                    : "";
-
-
-            const email =
-                emailElement
-                    ? emailElement.value.trim()
-                    : "";
-
-
-            const location =
-                locationInput
-                    ? locationInput.value.trim()
-                    : "";
-
-
-            // ========================================================
-            // REQUIRED DETAILS
-            // ========================================================
 
             if (!name) {
 
@@ -1020,13 +1021,56 @@ document.addEventListener("DOMContentLoaded", function () {
                     "Please enter your full name."
                 );
 
+                if (fullNameInput) {
+                    fullNameInput.focus();
+                }
+
                 return;
+
             }
 
 
-            // ========================================================
-            // PHONE
-            // ========================================================
+            /* -----------------------------------------------
+               EMAIL
+            ------------------------------------------------ */
+
+            const email =
+                emailInput
+                    ? emailInput.value.trim()
+                    : "";
+
+
+            const emailRegex =
+                /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+            if (
+                !email ||
+                !emailRegex.test(email)
+            ) {
+
+                alert(
+                    "Please enter a valid email address."
+                );
+
+                if (emailInput) {
+                    emailInput.focus();
+                }
+
+                return;
+
+            }
+
+
+            /* -----------------------------------------------
+               PHONE
+            ------------------------------------------------ */
+
+            const phone =
+                phoneInput
+                    ? phoneInput.value.trim()
+                    : "";
+
 
             const cleanPhone =
                 phone.replace(
@@ -1044,294 +1088,76 @@ document.addEventListener("DOMContentLoaded", function () {
                     "Please enter a valid phone number."
                 );
 
+                if (phoneInput) {
+                    phoneInput.focus();
+                }
+
                 return;
+
             }
 
 
-            // ========================================================
-            // EMAIL
-            // ========================================================
+            /* -----------------------------------------------
+               LOCATION
+            ------------------------------------------------ */
 
-            const emailRegex =
-                /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const location =
+                locationInput
+                    ? locationInput.value.trim()
+                    : "";
 
-
-            if (
-                !emailRegex.test(email)
-            ) {
-
-                alert(
-                    "Please enter a valid email address."
-                );
-
-                return;
-            }
-
-
-            // ========================================================
-            // LOCATION
-            // ========================================================
 
             if (!location) {
 
                 alert(
-                    "Please enter your event location."
+                    "Please enter the session location."
                 );
 
-                return;
-            }
-
-
-            // ========================================================
-            // SERVICE
-            // ========================================================
-
-            if (
-                !serviceSelect ||
-                !serviceSelect.value
-            ) {
-
-                alert(
-                    "Please select a service."
-                );
-
-                return;
-            }
-
-
-            // ========================================================
-            // PACKAGE
-            // ========================================================
-
-            if (
-                selectedPackage &&
-                selectedPackage.value === ""
-            ) {
-
-                alert(
-                    "Please select a package."
-                );
-
-                return;
-            }
-
-
-            // ========================================================
-            // DATES
-            // ========================================================
-
-            const selectedDateRows =
-                document.querySelectorAll(
-                    ".date-time-row"
-                );
-
-
-            if (
-                selectedDateRows.length === 0
-            ) {
-
-                alert(
-                    "Please select at least one date."
-                );
-
-                return;
-            }
-
-
-            // ========================================================
-            // TIME VALIDATION
-            // ========================================================
-
-            let invalidTime =
-                false;
-
-
-            selectedDateRows.forEach(
-                function (row) {
-
-                    const start =
-                        row.querySelector(
-                            ".start-time"
-                        );
-
-
-                    const end =
-                        row.querySelector(
-                            ".end-time"
-                        );
-
-
-                    if (
-                        !start ||
-                        !end ||
-                        !start.value ||
-                        !end.value
-                    ) {
-
-                        invalidTime =
-                            true;
-
-                        return;
-                    }
-
-
-                    if (
-                        start.value ===
-                        end.value
-                    ) {
-
-                        invalidTime =
-                            true;
-                    }
-                }
-            );
-
-
-            if (invalidTime) {
-
-                alert(
-                    "Please select valid start and end times for every date."
-                );
-
-                return;
-            }
-
-
-            // ========================================================
-            // PACKAGE INFORMATION
-            // ========================================================
-
-            const service =
-                serviceSelect.value;
-
-
-            const packageKey =
-                selectedPackage
-                    ? selectedPackage.value
-                    : "";
-
-
-            const selectedPkg =
-                packageData[service] &&
-                packageData[service][packageKey];
-
-
-            const packageName =
-                selectedPkg
-                    ? selectedPkg.name
-                    : "";
-
-
-            const packagePrice =
-                selectedPkg
-                    ? selectedPkg.price
-                    : "₹0";
-
-
-            // ========================================================
-            // FIRST DATE
-            // ========================================================
-
-            const firstDate =
-                selectedDateRows[0];
-
-
-            let bookingDate =
-                "";
-
-
-            let bookingTime =
-                "";
-
-
-            if (firstDate) {
-
-                const dateHeading =
-                    firstDate.querySelector(
-                        "h4"
-                    );
-
-
-                const startTime =
-                    firstDate.querySelector(
-                        ".start-time"
-                    );
-
-
-                if (dateHeading) {
-
-                    bookingDate =
-                        dateHeading.innerText;
+                if (locationInput) {
+                    locationInput.focus();
                 }
 
+                return;
 
-                if (startTime) {
-
-                    bookingTime =
-                        startTime.value;
-                }
             }
 
 
-            // ========================================================
-            // TOTAL HOURS
-            // ========================================================
+            /* -----------------------------------------------
+               DATES
+            ------------------------------------------------ */
+
+            if (!validateDates()) {
+                return;
+            }
+
+
+            const dates =
+                getDateData();
+
+
+            /* -----------------------------------------------
+               TOTAL HOURS
+            ------------------------------------------------ */
 
             const totalHours =
                 totalHoursElement
-                    ? totalHoursElement.innerText
+                    ? totalHoursElement.textContent
                     : "0";
 
 
-            // ========================================================
-            // OTHER DETAILS
-            // ========================================================
+            /* -----------------------------------------------
+               NOTES
+            ------------------------------------------------ */
 
-            const instagramElement =
-                document.getElementById(
-                    "instagram"
-                );
-
-
-            const instagram =
-                instagramElement
-                    ? instagramElement.value.trim()
-                    : "-";
-
-
-            const messageElement =
-                document.getElementById(
-                    "message"
-                );
-
-
-            const message =
-                messageElement
-                    ? messageElement.value.trim()
+            const notes =
+                messageInput
+                    ? messageInput.value.trim()
                     : "";
 
 
-            const guestsElement =
-                document.querySelector(
-                    'input[type="number"]'
-                );
-
-
-            const guests =
-                guestsElement
-                    ? guestsElement.value
-                    : "";
-
-
-            // ========================================================
-            // BOOKING OBJECT
-            // ========================================================
-
-            const selectedOption =
-                serviceSelect.options[
-                    serviceSelect.selectedIndex
-                ];
-
+            /* -----------------------------------------------
+               BOOKING OBJECT
+            ------------------------------------------------ */
 
             const booking = {
 
@@ -1339,124 +1165,114 @@ document.addEventListener("DOMContentLoaded", function () {
                     "BK-" +
                     Date.now(),
 
-
                 client:
                     name,
-
 
                 clientType:
                     "Photography Client",
 
-
                 phone:
                     phone,
-
 
                 email:
                     email,
 
-
                 instagram:
-                    instagram || "-",
-
+                    "-",
 
                 service:
-                    selectedOption
-                        ? selectedOption.text
-                        : service,
-
+                    service.name || "",
 
                 serviceType:
-                    service,
-
+                    service.id || "",
 
                 package:
                     packageName,
 
-
                 packageKey:
-                    packageKey,
-
+                    selectedPackage.id || "",
 
                 packagePrice:
                     packagePrice,
 
-
                 date:
-                    bookingDate,
-
+                    dates.length
+                        ? dates[0].date
+                        : "",
 
                 time:
-                    bookingTime,
+                    dates.length
+                        ? dates[0].startTime
+                        : "",
 
+                dates:
+                    dates,
 
                 totalHours:
                     totalHours,
 
-
                 location:
                     location,
 
-
                 guests:
-                    guests,
-
+                    "",
 
                 status:
                     "Pending",
 
-
                 payment:
                     "Pending",
-
 
                 advance:
                     "₹0",
 
-
                 remaining:
                     packagePrice,
-
 
                 image:
                     "images/profile.jpg",
 
-
                 equipment:
                     "",
 
-
                 notes:
-                    message
+                    notes,
+
+                createdAt:
+                    new Date().toISOString()
+
             };
 
 
-            // ========================================================
-            // SAVE BOOKING
-            // ========================================================
+            /* -----------------------------------------------
+               SAVE
+            ------------------------------------------------ */
 
-            let bookings =
-                [];
+            let bookings = [];
 
 
             try {
 
-                bookings =
-                    JSON.parse(
-                        localStorage.getItem(
-                            "bookings"
-                        )
-                    ) || [];
+                const storedBookings =
+                    localStorage.getItem(
+                        BOOKING_STORAGE_KEY
+                    );
 
 
-                if (
-                    !Array.isArray(
-                        bookings
-                    )
-                ) {
+                if (storedBookings) {
 
                     bookings =
-                        [];
+                        JSON.parse(
+                            storedBookings
+                        );
+
+                }
+
+
+                if (!Array.isArray(bookings)) {
+
+                    bookings = [];
+
                 }
 
             } catch (error) {
@@ -1466,9 +1282,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     error
                 );
 
+                bookings = [];
 
-                bookings =
-                    [];
             }
 
 
@@ -1480,10 +1295,8 @@ document.addEventListener("DOMContentLoaded", function () {
             try {
 
                 localStorage.setItem(
-                    "bookings",
-                    JSON.stringify(
-                        bookings
-                    )
+                    BOOKING_STORAGE_KEY,
+                    JSON.stringify(bookings)
                 );
 
             } catch (error) {
@@ -1493,28 +1306,27 @@ document.addEventListener("DOMContentLoaded", function () {
                     error
                 );
 
-
                 alert(
-                    "Unable to save booking. Please try again."
+                    "Unable to save your booking request. Please try again."
                 );
 
-
                 return;
+
             }
 
 
-            // ========================================================
-            // SUCCESS
-            // ========================================================
+            /* -----------------------------------------------
+               SUCCESS
+            ------------------------------------------------ */
 
             if (submitBtn) {
 
                 submitBtn.disabled =
                     true;
 
-
-                submitBtn.innerText =
+                submitBtn.textContent =
                     "Booking Submitted ✓";
+
             }
 
 
@@ -1522,7 +1334,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 successPopup.style.display =
                     "block";
+
             }
+
+
+            clearFormStorage();
 
 
             setTimeout(
@@ -1532,17 +1348,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                         successPopup.style.display =
                             "none";
-                    }
 
-
-                    if (submitBtn) {
-
-                        submitBtn.disabled =
-                            false;
-
-
-                        submitBtn.innerText =
-                            "Submit Booking Request";
                     }
 
 
@@ -1552,259 +1358,36 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (datePicker) {
 
                         datePicker.clear();
+
                     }
 
 
-                    dateContainer.innerHTML =
-                        "";
+                    if (dateTimeContainer) {
 
-
-                    resetServiceSelection();
-
-
-                    if (packageDetails) {
-
-                        packageDetails.innerHTML =
+                        dateTimeContainer.innerHTML =
                             "";
-                    }
 
-
-                    if (durationBox) {
-
-                        durationBox.style.display =
-                            "none";
-                    }
-
-
-                    if (selectedPackage) {
-
-                        selectedPackage.value =
-                            "";
                     }
 
 
                     updateTotalHours();
 
-                    updateProgress();
 
-                    clearFormStorage();
+                    if (submitBtn) {
+
+                        submitBtn.disabled =
+                            false;
+
+                        submitBtn.textContent =
+                            "Submit Booking Request";
+
+                    }
 
                 },
-                1500
+                1800
             );
+
         }
     );
 
-
-    // ============================================================
-    // PROGRESS BAR
-    // ============================================================
-
-    let formFields =
-        Array.from(
-            document.querySelectorAll(
-                "#bookingForm input, #bookingForm select, #bookingForm textarea"
-            )
-        );
-
-
-    function updateProgress() {
-
-        if (!progressFill) {
-            return;
-        }
-
-
-        let filled =
-            0;
-
-
-        let total =
-            0;
-
-
-        formFields.forEach(
-            function (field) {
-
-                if (
-                    field.type === "hidden" ||
-                    field.type === "button" ||
-                    field.disabled
-                ) {
-
-                    return;
-                }
-
-
-                total++;
-
-
-                if (
-                    typeof field.value ===
-                    "string" &&
-                    field.value.trim() !== ""
-                ) {
-
-                    filled++;
-                }
-            }
-        );
-
-
-        const percentage =
-            total > 0
-                ? (filled / total) * 100
-                : 0;
-
-
-        progressFill.style.width =
-            Math.min(
-                percentage,
-                100
-            ) + "%";
-    }
-
-
-    formFields.forEach(
-        function (field) {
-
-            field.addEventListener(
-                "input",
-                updateProgress
-            );
-
-
-            field.addEventListener(
-                "change",
-                updateProgress
-            );
-        }
-    );
-
-
-    // ============================================================
-    // AUTO SAVE
-    // ============================================================
-
-    formFields.forEach(
-        function (field) {
-
-            if (!field.id) {
-                return;
-            }
-
-
-            try {
-
-              const savedValue =
-    localStorage.getItem(
-        field.id
-    );
-
-
-if (
-    savedValue !== null &&
-    field.type !== "date" &&
-    field.id !== "serviceSelect"
-) {
-
-    field.value =
-        savedValue;
-}
-
-            } catch (error) {
-
-                console.error(
-                    "Unable to load saved field:",
-                    field.id
-                );
-            }
-
-
-            field.addEventListener(
-                "input",
-                function () {
-
-                    try {
-
-                        localStorage.setItem(
-                            field.id,
-                            field.value
-                        );
-
-                    } catch (error) {
-
-                        console.error(
-                            "Unable to save field:",
-                            field.id
-                        );
-                    }
-                }
-            );
-
-
-            field.addEventListener(
-                "change",
-                function () {
-
-                    try {
-
-                        localStorage.setItem(
-                            field.id,
-                            field.value
-                        );
-
-                    } catch (error) {
-
-                        console.error(
-                            "Unable to save field:",
-                            field.id
-                        );
-                    }
-                }
-            );
-        }
-    );
-
-
-    // ============================================================
-    // CLEAR AUTOSAVE
-    // ============================================================
-
-    function clearFormStorage() {
-
-        formFields.forEach(
-            function (field) {
-
-                if (!field.id) {
-                    return;
-                }
-
-
-                try {
-
-                    localStorage.removeItem(
-                        field.id
-                    );
-
-                } catch (error) {
-
-                    console.error(
-                        "Unable to clear saved field:",
-                        field.id
-                    );
-                }
-            }
-        );
-    }
-
-
-    // ============================================================
-    // INITIAL LOAD
-    // ============================================================
-
-resetServiceSelection();
-
-updateProgress();
-
-updateTotalHours(); })
+});
