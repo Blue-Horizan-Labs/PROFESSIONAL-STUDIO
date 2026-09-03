@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#111111"
+    >
+
+    <meta
+        name="description"
+        content="View photography service details and packages."
+    >
+
+    <title>Professional Studio | Service</title>
+
+    <link
+        rel="stylesheet"
+        href="service.css"
+    >
+</head>
+
+<body>
+
+    <!-- =====================================================
+         NAVIGATION
+    ====================================================== -->
+
+    <header class="navbar">
+
+        <div class="nav-container">
+
+            <a
+                href="client.html"
+                class="brand"
+            >
+                Professional Studio
+            </a>
+
+            <nav class="nav-links">
+
+                <a href="client.html">
+                    Portfolio
+                </a>
+
+                <a
+                    href="client.html#services"
+                    class="active"
+                >
+                    Services
+                </a>
+
+                <a href="client.html#portfolio">
+                    Previous Work
+                </a>
+
+                <a href="client.html#contact">
+                    Contact
+                </a>
+
+            </nav>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         SERVICE PAGE
+    ====================================================== -->
+
+    <main>
+
+        <!-- Service Hero -->
+
+        <section class="service-hero">
+
+            <div class="service-container">
+
+                <a
+                    href="client.html#services"
+                    class="back-link"
+                >
+                    ← Back to Services
+                </a>
+
+                <div
+                    id="serviceHeroContent"
+                    class="service-hero-content"
+                >
+
+                    <p class="service-label">
+                        PHOTOGRAPHY SERVICE
+                    </p>
+
+                    <h1 id="serviceName">
+                        Loading Service...
+                    </h1>
+
+                    <p
+                        id="serviceDescription"
+                        class="service-description"
+                    >
+                        Please wait while the service information is loaded.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Service Information -->
+
+        <section class="service-section">
+
+            <div class="service-container">
+
+                <div
+                    id="serviceInfo"
+                    class="service-info-grid"
+                >
+
+                    <div class="info-card">
+
+                        <span class="info-label">
+                            Coverage
+                        </span>
+
+                        <strong id="coverageDuration">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-card">
+
+                        <span class="info-label">
+                            Delivery
+                        </span>
+
+                        <strong id="deliveryTime">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-card">
+
+                        <span class="info-label">
+                            Location
+                        </span>
+
+                        <strong id="coverageType">
+                            -
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Packages -->
+
+        <section class="service-section packages-section">
+
+            <div class="service-container">
+
+                <div class="section-heading">
+
+                    <p class="section-label">
+                        PACKAGES
+                    </p>
+
+                    <h2>
+                        Choose Your Package
+                    </h2>
+
+                    <p>
+                        Select the package that best fits your photography needs.
+                    </p>
+
+                </div>
+
+
+                <div
+                    id="packagesContainer"
+                    class="packages-grid"
+                >
+
+                    <!-- Packages are loaded dynamically -->
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Error State -->
+
+        <section
+            id="serviceError"
+            class="service-error"
+            hidden
+        >
+
+            <div class="service-container">
+
+                <div class="error-card">
+
+                    <h2>
+                        Service Not Available
+                    </h2>
+
+                    <p id="serviceErrorMessage">
+                        This service could not be found.
+                    </p>
+
+                    <a
+                        href="client.html#services"
+                        class="primary-button"
+                    >
+                        VIEW SERVICES
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer class="footer">
+
+        <div class="footer-container">
+
+            <p>
+                © 2026 Professional Studio. All rights reserved.
+            </p>
+
+            <a href="client.html">
+                Back to Portfolio
+            </a>
+
+        </div>
+
+    </footer>
+
+
+    <script src="service.js"></script>
+
+</body>
+
+</html>
