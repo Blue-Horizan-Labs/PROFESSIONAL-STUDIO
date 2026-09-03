@@ -7,7 +7,7 @@
 ========================================== */
 
 var userName = "Rahul Photography";
-var link = "https://rahulphotography.com/portfolio";
+var link = "https://professionalstudio.vercel.app/client";
 
 /*
    Shared service storage.
@@ -47,7 +47,7 @@ var link = "https://rahulphotography.com/portfolio";
    ]
 */
 
-var SERVICE_STORAGE_KEY = "photographerServices";
+var SERVICE_STORAGE_KEY = "professionalStudio.services";
 
 
 /* ==========================================
@@ -191,7 +191,9 @@ function ensurePackageStructure(service) {
             typeof packageData.price ===
             "undefined"
         ) {
+
             packageData.price = "";
+
         }
 
 
@@ -199,7 +201,9 @@ function ensurePackageStructure(service) {
             typeof packageData.duration ===
             "undefined"
         ) {
+
             packageData.duration = "";
+
         }
 
 
@@ -207,7 +211,9 @@ function ensurePackageStructure(service) {
             typeof packageData.delivery ===
             "undefined"
         ) {
+
             packageData.delivery = "";
+
         }
 
 
@@ -215,7 +221,9 @@ function ensurePackageStructure(service) {
             typeof packageData.description ===
             "undefined"
         ) {
+
             packageData.description = "";
+
         }
 
     });
@@ -235,6 +243,14 @@ function ensurePackageStructure(service) {
 
 }
 
+/* ==========================================
+   PUBLIC CLIENT PAGE
+========================================== */
+
+var link =
+    window.location.origin +
+    "/client.html";
+
 
 /* ==========================================
    SERVER REQUEST
@@ -251,6 +267,12 @@ fetch("/api/dashboard-data", {
 })
 .then(function(response) {
 
+    if (!response.ok) {
+        throw new Error(
+            "Dashboard data request failed"
+        );
+    }
+
     return response.json();
 
 })
@@ -260,7 +282,7 @@ fetch("/api/dashboard-data", {
         document.getElementById("name");
 
 
-    if (nameElement) {
+    if (nameElement && data.name) {
 
         nameElement.textContent =
             data.name;
@@ -271,38 +293,6 @@ fetch("/api/dashboard-data", {
     userName =
         data.name ||
         "Rahul Photography";
-
-
-    link =
-        window.location.origin +
-        "/api/user?id=" +
-        data.link;
-
-
-    var openButton =
-        document.getElementById(
-            "openPortfolioBtn"
-        );
-
-
-    var copyButton =
-        document.getElementById(
-            "copyProfileBtn"
-        );
-
-
-    if (openButton) {
-
-        openButton.disabled = false;
-
-    }
-
-
-    if (copyButton) {
-
-        copyButton.disabled = false;
-
-    }
 
 })
 .catch(function(error) {
@@ -316,16 +306,52 @@ fetch("/api/dashboard-data", {
 
 
 /* ==========================================
-   OPEN PUBLIC PROFILE
+   ENABLE PUBLIC PAGE BUTTONS
+========================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        var openButton =
+            document.getElementById(
+                "openPortfolioBtn"
+            );
+
+
+        var copyButton =
+            document.getElementById(
+                "copyProfileBtn"
+            );
+
+
+        if (openButton) {
+
+            openButton.disabled =
+                false;
+
+        }
+
+
+        if (copyButton) {
+
+            copyButton.disabled =
+                false;
+
+        }
+
+    }
+);
+
+
+/* ==========================================
+   OPEN CLIENT PAGE
 ========================================== */
 
 function openPortfolio() {
 
-    var portfolioLink =
-        link;
-
     window.open(
-        portfolioLink,
+        link,
         "_blank"
     );
 
@@ -333,15 +359,10 @@ function openPortfolio() {
 
 
 /* ==========================================
-   COPY PUBLIC PROFILE LINK
+   COPY CLIENT PAGE LINK
 ========================================== */
 
 function copyProfileLink() {
-
-    if (!link) {
-        return;
-    }
-
 
     var button =
         document.getElementById(
@@ -349,47 +370,161 @@ function copyProfileLink() {
         );
 
 
-    navigator.clipboard.writeText(link)
-
-        .then(function() {
-
-            if (!button) {
-                return;
-            }
+    if (!link) {
+        return;
+    }
 
 
-            button.textContent =
-                "✓ COPIED";
+    /*
+       Use the Clipboard API when available.
+    */
+
+    if (
+        navigator.clipboard &&
+        window.isSecureContext
+    ) {
+
+        navigator.clipboard
+            .writeText(link)
+            .then(function() {
+
+                if (!button) {
+                    return;
+                }
 
 
-            button.disabled =
-                true;
+                var originalText =
+                    button.textContent;
 
-
-            setTimeout(function() {
 
                 button.textContent =
-                    "Copy Profile Link";
+                    "✓ COPIED";
 
 
                 button.disabled =
-                    false;
+                    true;
 
-            }, 2500);
 
-        })
+                setTimeout(
+                    function() {
 
-        .catch(function(error) {
+                        button.textContent =
+                            originalText;
+
+
+                        button.disabled =
+                            false;
+
+                    },
+                    2000
+                );
+
+            })
+            .catch(function(error) {
+
+                console.error(
+                    "Could not copy profile link:",
+                    error
+                );
+
+                fallbackCopyLink();
+
+            });
+
+        return;
+
+    }
+
+
+    fallbackCopyLink();
+
+
+    function fallbackCopyLink() {
+
+        var textarea =
+            document.createElement(
+                "textarea"
+            );
+
+
+        textarea.value =
+            link;
+
+
+        textarea.style.position =
+            "fixed";
+
+
+        textarea.style.left =
+            "-9999px";
+
+
+        document.body.appendChild(
+            textarea
+        );
+
+
+        textarea.focus();
+
+
+        textarea.select();
+
+
+        try {
+
+            document.execCommand(
+                "copy"
+            );
+
+
+            if (button) {
+
+                var originalText =
+                    button.textContent;
+
+
+                button.textContent =
+                    "✓ COPIED";
+
+
+                button.disabled =
+                    true;
+
+
+                setTimeout(
+                    function() {
+
+                        button.textContent =
+                            originalText;
+
+
+                        button.disabled =
+                            false;
+
+                    },
+                    2000
+                );
+
+            }
+
+        }
+        catch (error) {
 
             console.error(
                 "Could not copy profile link:",
                 error
             );
 
-        });
+        }
+
+
+        document.body.removeChild(
+            textarea
+        );
+
+    }
 
 }
-
 
 /* ==========================================
    DOM CONTENT LOADED
@@ -457,6 +592,7 @@ document.addEventListener(
 
             var current = 0;
 
+
             var speed =
                 target / 80;
 
@@ -470,6 +606,7 @@ document.addEventListener(
 
                     counter.textContent =
                         Math.floor(current);
+
 
                     requestAnimationFrame(
                         updateCounter
@@ -670,11 +807,8 @@ document.addEventListener(
 
 
                         target.scrollIntoView({
-
                             behavior: "smooth",
-
                             block: "start"
-
                         });
 
                     }
@@ -1033,7 +1167,7 @@ document.addEventListener(
 
 
         /* ==========================================
-           SERVICE PACKAGE MANAGEMENT
+           DASHBOARD SERVICE CONTROLS
         ========================================== */
 
         var serviceGrid =
@@ -1042,1093 +1176,310 @@ document.addEventListener(
             );
 
 
-        var pricingGrid =
-            document.getElementById(
-                "pricingGrid"
-            );
+        function getSharedServices() {
+
+            try {
+
+                var stored =
+                    localStorage.getItem(
+                        SERVICE_STORAGE_KEY
+                    );
 
 
-        var addServiceBtn =
-            document.getElementById(
-                "addServiceBtn"
-            );
+                if (!stored) {
+                    return [];
+                }
 
 
-        var newService =
-            document.getElementById(
-                "newService"
-            );
+                var services =
+                    JSON.parse(stored);
 
 
-        /*
-           Load existing services.
+                return Array.isArray(services)
+                    ? services
+                    : [];
 
-           Existing dashboard service checkboxes
-           are used as the source for service names.
-        */
+            }
+            catch (error) {
 
-        function getServiceNamesFromDashboard() {
+                console.error(
+                    "Could not read shared service data:",
+                    error
+                );
+
+
+                return [];
+
+            }
+
+        }
+
+
+        function saveSharedServices(services) {
+
+            try {
+
+                localStorage.setItem(
+                    SERVICE_STORAGE_KEY,
+                    JSON.stringify(services)
+                );
+
+            }
+            catch (error) {
+
+                console.error(
+                    "Could not save shared service data:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        function updateActiveServiceCounter(services) {
+
+            var counter =
+                document.getElementById(
+                    "activeServicesCounter"
+                );
+
+
+            if (!counter) {
+                return;
+            }
+
+
+            var activeCount =
+                services.filter(function(service) {
+
+                    return service.active === true;
+
+                }).length;
+
+
+            counter.dataset.target =
+                activeCount;
+
+
+            counter.textContent =
+                activeCount;
+
+        }
+
+
+        function getServiceName(service) {
+
+            return service && service.name
+                ? String(service.name).trim()
+                : "";
+
+        }
+
+
+        function renderDashboardServices() {
 
             if (!serviceGrid) {
-                return [];
+                return;
             }
 
 
-            var labels =
-                serviceGrid.querySelectorAll(
-                    "label"
+            var services =
+                getSharedServices();
+
+
+            serviceGrid.innerHTML =
+                "";
+
+
+            if (!services.length) {
+
+                var empty =
+                    document.createElement("p");
+
+
+                empty.textContent =
+                    "No services have been created yet. Open Manage Services to add your services.";
+
+
+                empty.style.color =
+                    "#666";
+
+
+                serviceGrid.appendChild(
+                    empty
                 );
 
 
-            var names = [];
-
-
-            labels.forEach(
-                function(label) {
-
-                    var checkbox =
-                        label.querySelector(
-                            "input"
-                        );
-
-
-                    if (!checkbox) {
-                        return;
-                    }
-
-
-                    var name =
-                        "";
-
-
-                    label.childNodes.forEach(
-                        function(node) {
-
-                            if (
-                                node.nodeType ===
-                                3
-                            ) {
-
-                                name +=
-                                    node.textContent;
-
-                            }
-
-                        }
-                    );
-
-
-                    name =
-                        name.trim();
-
-
-                    if (!name) {
-
-                        name =
-                            label.textContent
-                                .replace(
-                                    checkbox
-                                        .outerHTML,
-                                    ""
-                                )
-                                .trim();
-
-                    }
-
-
-                    if (name) {
-
-                        names.push(name);
-
-                    }
-
-                }
-            );
-
-
-            return names;
-
-        }
-
-
-        function findService(
-            services,
-            name
-        ) {
-
-            var result = null;
-
-
-            services.forEach(
-                function(service) {
-
-                    if (
-                        service.name
-                            .toLowerCase() ===
-                        name
-                            .toLowerCase()
-                    ) {
-
-                        result =
-                            ensurePackageStructure(
-                                service
-                            );
-
-                    }
-
-                }
-            );
-
-
-            return result;
-
-        }
-
-
-        function createNewServiceData(name) {
-
-            return {
-
-                name: name,
-
-                description:
-                    "Describe this service for your clients.",
-
-                packages: {
-
-                    basic: {
-
-                        price: "",
-
-                        duration:
-                            "1 Day",
-
-                        delivery:
-                            "15-20 Days",
-
-                        description:
-                            "Essential coverage."
-
-                    },
-
-                    premium: {
-
-                        price: "",
-
-                        duration:
-                            "2 Days",
-
-                        delivery:
-                            "12-15 Days",
-
-                        description:
-                            "Extended coverage with additional services."
-
-                    },
-
-                    luxury: {
-
-                        price: "",
-
-                        duration:
-                            "3 Days",
-
-                        delivery:
-                            "10-12 Days",
-
-                        description:
-                            "Complete premium experience."
-
-                    }
-
-                }
-
-            };
-
-        }
-
-
-        function getCurrentServiceData() {
-
-            var stored =
-                getStoredServices();
-
-
-            var names =
-                getServiceNamesFromDashboard();
-
-
-            names.forEach(
-                function(name) {
-
-                    var existing =
-                        findService(
-                            stored,
-                            name
-                        );
-
-
-                    if (!existing) {
-
-                        stored.push(
-                            createNewServiceData(
-                                name
-                            )
-                        );
-
-                    }
-
-                }
-            );
-
-
-            stored.forEach(
-                function(service) {
-
-                    ensurePackageStructure(
-                        service
-                    );
-
-                }
-            );
-
-
-            return stored;
-
-        }
-
-
-        function createField(
-            labelText,
-            className,
-            type,
-            value,
-            placeholder
-        ) {
-
-            var wrapper =
-                document.createElement(
-                    "div"
+                updateActiveServiceCounter(
+                    services
                 );
 
 
-            wrapper.className =
-                "package-field";
+                return;
+
+            }
 
 
-            var label =
-                document.createElement(
-                    "label"
-                );
+            services.forEach(function(service) {
+
+                var name =
+                    getServiceName(service);
 
 
-            label.textContent =
-                labelText;
+                if (!name) {
+                    return;
+                }
 
 
-            var input;
-
-
-            if (type === "textarea") {
-
-                input =
+                var label =
                     document.createElement(
-                        "textarea"
+                        "label"
                     );
 
-                input.rows = 4;
 
-            }
-            else {
+                label.className =
+                    "service-card";
 
-                input =
+
+                label.dataset.serviceId =
+                    service.id || "";
+
+
+                var checkbox =
                     document.createElement(
                         "input"
                     );
 
-                input.type =
-                    type || "text";
 
-            }
+                checkbox.type =
+                    "checkbox";
 
 
-            input.className =
-                className;
+                checkbox.checked =
+                    service.active === true;
 
 
-            input.value =
-                value || "";
+                checkbox.dataset.serviceId =
+                    service.id || "";
 
 
-            input.placeholder =
-                placeholder || "";
+                checkbox.dataset.serviceName =
+                    name;
 
 
-            wrapper.appendChild(
-                label
-            );
-
-
-            wrapper.appendChild(
-                input
-            );
-
-
-            return wrapper;
-
-        }
-
-
-        function createPackageCard(
-            packageName,
-            packageKey,
-            packageData
-        ) {
-
-            var card =
-                document.createElement(
-                    "div"
-                );
-
-
-            card.className =
-                "package-card";
-
-
-            var heading =
-                document.createElement(
-                    "h4"
-                );
-
-
-            heading.textContent =
-                packageName;
-
-
-            card.appendChild(
-                heading
-            );
-
-
-            var priceField =
-                createField(
-                    "Price",
-                    "package-price",
-                    "text",
-                    packageData.price,
-                    "₹"
-                );
-
-
-            var durationField =
-                createField(
-                    "Approx. Service Duration",
-                    "package-duration",
-                    "text",
-                    packageData.duration,
-                    "Example: 2 Days"
-                );
-
-
-            var deliveryField =
-                createField(
-                    "Approx. Delivery Time",
-                    "package-delivery",
-                    "text",
-                    packageData.delivery,
-                    "Example: 10-15 Days"
-                );
-
-
-            var descriptionField =
-                createField(
-                    "Package Description",
-                    "package-description",
-                    "textarea",
-                    packageData.description,
-                    "Explain what the client receives..."
-                );
-
-
-            priceField.dataset.field =
-                "price";
-
-
-            durationField.dataset.field =
-                "duration";
-
-
-            deliveryField.dataset.field =
-                "delivery";
-
-
-            descriptionField.dataset.field =
-                "description";
-
-
-            card.appendChild(
-                priceField
-            );
-
-
-            card.appendChild(
-                durationField
-            );
-
-
-            card.appendChild(
-                deliveryField
-            );
-
-
-            card.appendChild(
-                descriptionField
-            );
-
-
-            return card;
-
-        }
-
-
-        function createPricingCard(
-            service
-        ) {
-
-            ensurePackageStructure(
-                service
-            );
-
-
-            var card =
-                document.createElement(
-                    "div"
-                );
-
-
-            card.className =
-                "pricing-card service-pricing-card";
-
-
-            card.dataset.service =
-                service.name;
-
-
-            var heading =
-                document.createElement(
-                    "h3"
-                );
-
-
-            heading.textContent =
-                service.name;
-
-
-            card.appendChild(
-                heading
-            );
-
-
-            var serviceDescription =
-                createField(
-                    "Service Description",
-                    "service-description",
-                    "textarea",
-                    service.description,
-                    "Explain this service in general..."
-                );
-
-
-            card.appendChild(
-                serviceDescription
-            );
-
-
-            var packageGrid =
-                document.createElement(
-                    "div"
-                );
-
-
-            packageGrid.className =
-                "package-grid";
-
-
-            packageGrid.appendChild(
-                createPackageCard(
-                    "Basic Package",
-                    "basic",
-                    service.packages.basic
-                )
-            );
-
-
-            packageGrid.appendChild(
-                createPackageCard(
-                    "Premium Package",
-                    "premium",
-                    service.packages.premium
-                )
-            );
-
-
-            packageGrid.appendChild(
-                createPackageCard(
-                    "Luxury Package",
-                    "luxury",
-                    service.packages.luxury
-                )
-            );
-
-
-            card.appendChild(
-                packageGrid
-            );
-
-
-            var saveButton =
-                document.createElement(
-                    "button"
-                );
-
-
-            saveButton.type =
-                "button";
-
-
-            saveButton.className =
-                "service-save-btn";
-
-
-            saveButton.textContent =
-                "Save Service Details";
-
-
-            saveButton.addEventListener(
-                "click",
-                function() {
-
-                    saveServiceCard(
-                        card
-                    );
-
-                }
-            );
-
-
-            card.appendChild(
-                saveButton
-            );
-
-
-            return card;
-
-        }
-
-
-        function saveServiceCard(card) {
-
-            var serviceName =
-                card.dataset.service;
-
-
-            if (!serviceName) {
-                return;
-            }
-
-
-            var services =
-                getStoredServices();
-
-
-            var service =
-                findService(
-                    services,
-                    serviceName
-                );
-
-
-            if (!service) {
-
-                service =
-                    createNewServiceData(
-                        serviceName
-                    );
-
-                services.push(
-                    service
-                );
-
-            }
-
-
-            var serviceDescription =
-                card.querySelector(
-                    ".service-description"
-                );
-
-
-            if (serviceDescription) {
-
-                service.description =
-                    serviceDescription.value.trim();
-
-            }
-
-
-            var packageKeys = [
-                "basic",
-                "premium",
-                "luxury"
-            ];
-
-
-            packageKeys.forEach(
-                function(packageKey) {
-
-                    var packageCard =
-                        card.querySelector(
-                            ".package-card:nth-child(" +
-                            (
-                                packageKey ===
-                                "basic"
-                                    ? "1"
-                                    : packageKey ===
-                                      "premium"
-                                        ? "2"
-                                        : "3"
-                            ) +
-                            ")"
-                        );
-
-
-                    if (!packageCard) {
-                        return;
-                    }
-
-
-                    ensurePackageStructure(
-                        service
+                var span =
+                    document.createElement(
+                        "span"
                     );
 
 
-                    var price =
-                        packageCard.querySelector(
-                            ".package-price"
-                        );
+                span.textContent =
+                    name;
 
 
-                    var duration =
-                        packageCard.querySelector(
-                            ".package-duration"
-                        );
+                label.appendChild(
+                    checkbox
+                );
 
 
-                    var delivery =
-                        packageCard.querySelector(
-                            ".package-delivery"
-                        );
+                label.appendChild(
+                    span
+                );
 
 
-                    var description =
-                        packageCard.querySelector(
-                            ".package-description"
-                        );
+                serviceGrid.appendChild(
+                    label
+                );
+
+            });
 
 
-                    service.packages[
-                        packageKey
-                    ].price =
-                        price
-                            ? price.value.trim()
-                            : "";
+            attachServiceCheckboxEvents();
 
 
-                    service.packages[
-                        packageKey
-                    ].duration =
-                        duration
-                            ? duration.value.trim()
-                            : "";
-
-
-                    service.packages[
-                        packageKey
-                    ].delivery =
-                        delivery
-                            ? delivery.value.trim()
-                            : "";
-
-
-                    service.packages[
-                        packageKey
-                    ].description =
-                        description
-                            ? description.value.trim()
-                            : "";
-
-                }
-            );
-
-
-            saveServices(
+            updateActiveServiceCounter(
                 services
             );
 
-
-            card.classList.add(
-                "service-saved"
-            );
-
-
-            var button =
-                card.querySelector(
-                    ".service-save-btn"
-                );
-
-
-            if (button) {
-
-                var original =
-                    button.textContent;
-
-
-                button.textContent =
-                    "Saved ✓";
-
-
-                button.disabled =
-                    true;
-
-
-                setTimeout(
-                    function() {
-
-                        button.textContent =
-                            original;
-
-
-                        button.disabled =
-                            false;
-
-
-                        card.classList.remove(
-                            "service-saved"
-                        );
-
-                    },
-                    1800
-                );
-
-            }
-
-
-            /*
-               Notify other dashboard components
-               and same-origin pages that service
-               information has changed.
-            */
-
-            window.dispatchEvent(
-                new StorageEvent(
-                    "storage",
-                    {
-                        key:
-                            SERVICE_STORAGE_KEY,
-
-                        newValue:
-                            JSON.stringify(
-                                services
-                            )
-                    }
-                )
-            );
-
         }
 
 
-        function updatePricing() {
+        function attachServiceCheckboxEvents() {
 
-            if (
-                !pricingGrid ||
-                !serviceGrid
-            ) {
-
+            if (!serviceGrid) {
                 return;
-
             }
-
-
-            var services =
-                getCurrentServiceData();
-
-
-            var selectedNames = [];
 
 
             serviceGrid
                 .querySelectorAll(
                     "input[type='checkbox']"
                 )
-                .forEach(
-                    function(checkbox) {
+                .forEach(function(checkbox) {
 
-                        if (
-                            checkbox.checked
-                        ) {
+                    checkbox.addEventListener(
+                        "change",
+                        function() {
 
-                            var label =
-                                checkbox.closest(
-                                    "label"
-                                );
+                            var services =
+                                getSharedServices();
 
 
-                            if (!label) {
+                            var serviceId =
+                                checkbox.dataset.serviceId;
+
+
+                            var serviceName =
+                                checkbox.dataset.serviceName;
+
+
+                            var service =
+                                services.find(function(item) {
+
+                                    if (serviceId) {
+
+                                        return String(item.id) ===
+                                            String(serviceId);
+
+                                    }
+
+
+                                    return (
+                                        getServiceName(item).toLowerCase() ===
+                                        serviceName.toLowerCase()
+                                    );
+
+                                });
+
+
+                            if (!service) {
                                 return;
                             }
 
 
-                            var name =
-                                "";
+                            service.active =
+                                checkbox.checked;
 
 
-                            label.childNodes.forEach(
-                                function(node) {
-
-                                    if (
-                                        node.nodeType ===
-                                        3
-                                    ) {
-
-                                        name +=
-                                            node.textContent;
-
-                                    }
-
-                                }
+                            saveSharedServices(
+                                services
                             );
 
 
-                            name =
-                                name.trim();
-
-
-                            if (!name) {
-
-                                name =
-                                    label.textContent.trim();
-
-                            }
-
-
-                            if (name) {
-
-                                selectedNames.push(
-                                    name
-                                );
-
-                            }
+                            updateActiveServiceCounter(
+                                services
+                            );
 
                         }
-
-                    }
-                );
-
-
-            pricingGrid.innerHTML =
-                "";
-
-
-            selectedNames.forEach(
-                function(name) {
-
-                    var service =
-                        findService(
-                            services,
-                            name
-                        );
-
-
-                    if (!service) {
-
-                        service =
-                            createNewServiceData(
-                                name
-                            );
-
-                    }
-
-
-                    pricingGrid.appendChild(
-                        createPricingCard(
-                            service
-                        )
                     );
 
-                }
-            );
-
-
-            saveServices(
-                services
-            );
+                });
 
         }
 
 
-        function attachCheckboxEvents() {
-
-            if (!serviceGrid) {
-                return;
-            }
-
-
-            var checkboxes =
-                serviceGrid.querySelectorAll(
-                    "input[type='checkbox']"
-                );
-
-
-            checkboxes.forEach(
-                function(box) {
-
-                    box.onchange =
-                        updatePricing;
-
-                }
-            );
-
-        }
-
-
-        /* ==========================
-           ADD SERVICE
-        ========================== */
-
-        if (
-            addServiceBtn &&
-            newService &&
-            serviceGrid
-        ) {
-
-            addServiceBtn.onclick =
-                function() {
-
-                    var name =
-                        newService.value.trim();
-
-
-                    if (name === "") {
-                        return;
-                    }
-
-
-                    var exists =
-                        Array
-                            .from(
-                                serviceGrid
-                                    .querySelectorAll(
-                                        "label"
-                                    )
-                            )
-                            .some(
-                                function(s) {
-
-                                    return (
-                                        s.textContent
-                                            .trim()
-                                            .toLowerCase() ===
-                                        name.toLowerCase()
-                                    );
-
-                                }
-                            );
-
-
-                    if (exists) {
-
-                        alert(
-                            "Service already exists."
-                        );
-
-                        return;
-
-                    }
-
-
-                    var label =
-                        document.createElement(
-                            "label"
-                        );
-
-
-                    label.className =
-                        "service-card";
-
-
-                    var checkbox =
-                        document.createElement(
-                            "input"
-                        );
-
-
-                    checkbox.type =
-                        "checkbox";
-
-
-                    checkbox.checked =
-                        true;
-
-
-                    label.appendChild(
-                        checkbox
-                    );
-
-
-                    label.appendChild(
-                        document.createTextNode(
-                            " " + name
-                        )
-                    );
-
-
-                    serviceGrid.appendChild(
-                        label
-                    );
-
-
-                    var services =
-                        getStoredServices();
-
-
-                    services.push(
-                        createNewServiceData(
-                            name
-                        )
-                    );
-
-
-                    saveServices(
-                        services
-                    );
-
-
-                    newService.value =
-                        "";
-
-
-                    attachCheckboxEvents();
-
-                    updatePricing();
-
-                };
-
-        }
-
-
-        attachCheckboxEvents();
-
-        updatePricing();
+        renderDashboardServices();
 
 
         /* ==========================
@@ -2803,7 +2154,6 @@ function updateComparison() {
 
 
     var current = 0;
-
     var previous = 0;
 
 
@@ -2812,7 +2162,6 @@ function updateComparison() {
         case "week":
 
             current = 5;
-
             previous = 4;
 
             break;
@@ -2821,7 +2170,6 @@ function updateComparison() {
         case "month":
 
             current = 18;
-
             previous = 14;
 
             break;
@@ -2830,7 +2178,6 @@ function updateComparison() {
         case "year":
 
             current = 132;
-
             previous = 115;
 
             break;
@@ -2839,7 +2186,6 @@ function updateComparison() {
         default:
 
             current = 584;
-
             previous = 530;
 
     }
@@ -2936,6 +2282,7 @@ if (compareFilter) {
 
 renderTable();
 
+
 updateComparison();
 
 
@@ -2952,43 +2299,7 @@ window.addEventListener(
             SERVICE_STORAGE_KEY
         ) {
 
-            var pricingGrid =
-                document.getElementById(
-                    "pricingGrid"
-                );
-
-
-            if (pricingGrid) {
-
-                var serviceGrid =
-                    document.getElementById(
-                        "serviceGrid"
-                    );
-
-
-                if (serviceGrid) {
-
-                    var checkboxes =
-                        serviceGrid.querySelectorAll(
-                            "input[type='checkbox']"
-                        );
-
-
-                    checkboxes.forEach(
-                        function(box) {
-
-                            box.dispatchEvent(
-                                new Event(
-                                    "change"
-                                )
-                            );
-
-                        }
-                    );
-
-                }
-
-            }
+            renderDashboardServices();
 
         }
 

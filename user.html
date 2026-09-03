@@ -12,7 +12,7 @@
     content="width=device-width, initial-scale=1.0"
 >
 
-<title>Professional Studio | Dashboard</title>
+<title>Professional Studio | User</title>
 
 <meta
     name="description"
@@ -182,7 +182,8 @@
 
             <h1
                 class="counter"
-                data-target="3"
+                id="activeServicesCounter"
+                data-target="0"
             >
                 0
             </h1>
@@ -266,18 +267,21 @@
         <div>
 
             <h2>
-                Services & Packages
+                Services
             </h2>
 
             <p>
-                Manage your photography services, package pricing and detailed service information.
+                Choose which photography services are currently available to clients.
             </p>
 
         </div>
 
         <a href="serviceMng.html">
 
-            <button class="btn-primary">
+            <button
+                class="btn-primary"
+                type="button"
+            >
                 MANAGE SERVICES
             </button>
 
@@ -291,203 +295,10 @@
         id="serviceGrid"
     >
 
-
-        <label class="service-card">
-
-            <input
-                type="checkbox"
-                checked
-            >
-
-            <span>
-                Wedding Photography
-            </span>
-
-        </label>
-
-
-        <label class="service-card">
-
-            <input
-                type="checkbox"
-                checked
-            >
-
-            <span>
-                Pre-Wedding Shoot
-            </span>
-
-        </label>
-
-
-        <label class="service-card">
-
-            <input
-                type="checkbox"
-                checked
-            >
-
-            <span>
-                Portrait Photography
-            </span>
-
-        </label>
-
-
-        <label class="service-card">
-
-            <input
-                type="checkbox"
-            >
-
-            <span>
-                Commercial Photography
-            </span>
-
-        </label>
-
-
-        <label class="service-card">
-
-            <input
-                type="checkbox"
-            >
-
-            <span>
-                Corporate Events
-            </span>
-
-        </label>
-
-
-        <label class="service-card">
-
-            <input
-                type="checkbox"
-            >
-
-            <span>
-                Drone Photography
-            </span>
-
-        </label>
-
+        <!-- Services are loaded from professionalStudio.services -->
 
     </div>
 
-
-    <div class="add-service-box">
-
-        <input
-            type="text"
-            id="newService"
-            placeholder="Enter new service"
-        >
-
-        <button
-            type="button"
-            id="addServiceBtn"
-        >
-            + Add Service
-        </button>
-
-    </div>
-
-
-    <button type="button">
-        Save Services
-    </button>
-
-
-    <!-- SERVICE SYSTEM INFORMATION -->
-
-    <div
-        class="form-card"
-        style="margin-top:30px;"
-    >
-
-        <h3>
-            Service Information
-        </h3>
-
-        <p style="color:#666;margin-top:10px;">
-
-            Each service can have its own description, coverage duration,
-            expected delivery time and package structure.
-
-        </p>
-
-
-        <div
-            class="stats-grid"
-            style="margin-top:20px;"
-        >
-
-
-            <div class="stat-card">
-
-                <h3>
-                    Service Details
-                </h3>
-
-                <p>
-                    Describe what the photographer provides and what clients should expect.
-                </p>
-
-            </div>
-
-
-            <div class="stat-card">
-
-                <h3>
-                    Package Structure
-                </h3>
-
-                <p>
-                    Create Basic, Premium and Luxury packages for each service.
-                </p>
-
-            </div>
-
-
-            <div class="stat-card">
-
-                <h3>
-                    Delivery Information
-                </h3>
-
-                <p>
-                    Tell clients approximately how long editing and final delivery will take.
-                </p>
-
-            </div>
-
-
-            <div class="stat-card">
-
-                <h3>
-                    Client Visibility
-                </h3>
-
-                <p>
-                    Published information automatically becomes available on the photographer portfolio and booking experience.
-                </p>
-
-            </div>
-
-
-        </div>
-
-
-        <a href="services.html">
-
-            <button type="button">
-                Open Service Manager
-            </button>
-
-        </a>
-
-    </div>
 
 </section>
 
@@ -883,6 +694,7 @@
                     </td>
 
                 </tr>
+
 
             </tbody>
 
