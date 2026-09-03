@@ -1,11 +1,4 @@
 /* =========================================================
-   PROFESSIONAL STUDIO
-   SERVICES & PACKAGES
-   COMPLETE CSS
-========================================================= */
-
-
-/* =========================================================
    GLOBAL
 ========================================================= */
 
@@ -13,7 +6,6 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: Arial, sans-serif;
 }
 
 html {
@@ -21,17 +13,17 @@ html {
 }
 
 body {
+    font-family: Arial, Helvetica, sans-serif;
     background: #f8f8f8;
     color: #111;
-    line-height: 1.6;
+    line-height: 1.5;
     min-height: 100vh;
     overflow-x: hidden;
 }
 
 button,
 input,
-textarea,
-select {
+textarea {
     font: inherit;
 }
 
@@ -44,6 +36,10 @@ a {
     text-decoration: none;
 }
 
+[hidden] {
+    display: none !important;
+}
+
 
 /* =========================================================
    NAVBAR
@@ -52,48 +48,60 @@ a {
 .navbar {
     position: sticky;
     top: 0;
-    z-index: 1000;
+    z-index: 100;
 
-    width: 100%;
+    min-height: 72px;
+    padding: 0 42px;
 
     display: flex;
     align-items: center;
     justify-content: space-between;
 
-    padding: 18px 8%;
-
     background: #fff;
-    border-bottom: 1px solid #e6e6e6;
+    border-bottom: 1px solid #e8e8e8;
 }
 
 .logo {
-    font-size: 28px;
+    font-size: 20px;
     font-weight: 700;
-    line-height: 1.2;
-    white-space: nowrap;
+    letter-spacing: -0.3px;
 }
 
 .navbar nav {
     display: flex;
     align-items: center;
-    gap: 25px;
+    gap: 30px;
 }
 
 .navbar nav a {
-    color: #111;
-    font-size: 15px;
+    position: relative;
+
+    padding: 25px 0;
+
+    color: #666;
+    font-size: 14px;
     font-weight: 500;
 
     transition:
         color 0.2s ease;
 }
 
-.navbar nav a:hover {
-    color: #666;
+.navbar nav a:hover,
+.navbar nav a.active {
+    color: #111;
 }
 
-.navbar nav a[aria-current="page"] {
-    font-weight: 700;
+.navbar nav a.active::after {
+    content: "";
+
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 17px;
+
+    height: 2px;
+
+    background: #111;
 }
 
 
@@ -101,34 +109,35 @@ a {
    PAGE
 ========================================================= */
 
-.services-page {
+.page {
     width: 100%;
 }
 
-.services-container {
+.page-container {
     width: 100%;
-    max-width: 1200px;
+    max-width: 1180px;
+
     margin: 0 auto;
-    padding: 0 24px 80px;
+    padding: 48px 28px 70px;
 }
 
 
 /* =========================================================
-   SERVICES HEADER
+   PAGE HEADER
 ========================================================= */
 
-.services-header {
+.page-header,
+.editor-header {
     display: flex;
-    align-items: flex-end;
+    align-items: flex-start;
     justify-content: space-between;
     gap: 30px;
 
-    padding: 55px 0 40px;
-
-    border-bottom: 1px solid #e5e5e5;
+    margin-bottom: 42px;
 }
 
-.services-header-content {
+.page-header-content,
+.editor-header > div:first-child {
     min-width: 0;
 }
 
@@ -138,339 +147,36 @@ a {
     flex-wrap: wrap;
     gap: 8px;
 
-    margin-bottom: 16px;
+    margin-bottom: 14px;
 
-    color: #777;
+    color: #888;
     font-size: 13px;
 }
 
 .breadcrumb a {
-    color: #555;
+    color: #666;
 }
 
 .breadcrumb a:hover {
     color: #111;
 }
 
-.services-header h1 {
-    margin-bottom: 10px;
+.page-header h1,
+.editor-header h1 {
+    margin-bottom: 8px;
 
-    font-size: 38px;
+    font-size: 34px;
+    line-height: 1.15;
     font-weight: 700;
-    line-height: 1.2;
-    letter-spacing: -0.5px;
+    letter-spacing: -0.8px;
 }
 
-.services-header p {
+.page-header p,
+.editor-header p {
     max-width: 650px;
 
     color: #666;
-    font-size: 16px;
-}
-
-.services-header .btn-primary {
-    flex-shrink: 0;
-}
-
-
-/* =========================================================
-   BUTTONS
-========================================================= */
-
-.btn-primary,
-.btn-secondary,
-.btn-danger {
-    min-height: 46px;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 12px 22px;
-
-    border-radius: 10px;
-
-    font-size: 14px;
-    font-weight: 600;
-
-    transition:
-        background 0.2s ease,
-        color 0.2s ease,
-        border-color 0.2s ease,
-        box-shadow 0.2s ease,
-        transform 0.2s ease;
-}
-
-.btn-primary {
-    border: 1px solid #111;
-
-    background: #111;
-    color: #fff;
-}
-
-.btn-primary:hover {
-    background: #333;
-    border-color: #333;
-}
-
-.btn-primary:active,
-.btn-secondary:active,
-.btn-danger:active {
-    transform: translateY(1px);
-}
-
-.btn-secondary {
-    border: 1px solid #ddd;
-
-    background: #fff;
-    color: #111;
-}
-
-.btn-secondary:hover {
-    border-color: #111;
-    background: #fafafa;
-}
-
-.btn-danger {
-    border: 1px solid #d7d7d7;
-
-    background: #fff;
-    color: #111;
-}
-
-.btn-danger:hover {
-    border-color: #111;
-    background: #f5f5f5;
-}
-
-button:focus-visible,
-a:focus-visible,
-input:focus-visible,
-textarea:focus-visible,
-select:focus-visible {
-    outline: 2px solid #111;
-    outline-offset: 2px;
-}
-
-
-/* =========================================================
-   SERVICES OVERVIEW
-========================================================= */
-
-.services-overview {
-    padding: 45px 0 20px;
-}
-
-.services-overview-header {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-
-    margin-bottom: 20px;
-}
-
-.services-overview-header h2 {
-    font-size: 28px;
-    font-weight: 700;
-    line-height: 1.3;
-}
-
-.services-count {
-    margin-top: 4px;
-
-    color: #777;
-    font-size: 14px;
-}
-
-
-/* =========================================================
-   SERVICE LIST
-========================================================= */
-
-.services-list {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
-
-
-/* =========================================================
-   SERVICE SUMMARY CARD
-========================================================= */
-
-.service-summary-card {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 25px;
-
-    width: 100%;
-
-    padding: 24px;
-
-    background: #fff;
-    border: 1px solid #e5e5e5;
-    border-radius: 14px;
-
-    transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease,
-        transform 0.2s ease;
-}
-
-.service-summary-card:hover {
-    border-color: #ccc;
-
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
-
-    transform: translateY(-1px);
-}
-
-.service-summary-main {
-    min-width: 0;
-    flex: 1;
-}
-
-.service-summary-top {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-
-    margin-bottom: 7px;
-}
-
-.service-summary-top h3 {
-    font-size: 20px;
-    font-weight: 700;
-    line-height: 1.3;
-}
-
-.service-summary-description {
-    max-width: 700px;
-
-    margin-bottom: 17px;
-
-    color: #666;
-    font-size: 14px;
-}
-
-.service-summary-details {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 25px;
-}
-
-.service-summary-details span {
-    display: flex;
-    flex-direction: column;
-
-    color: #333;
-    font-size: 14px;
-}
-
-.service-summary-details strong {
-    margin-bottom: 2px;
-
-    color: #888;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.service-summary-actions {
-    flex-shrink: 0;
-}
-
-
-/* =========================================================
-   STATUS BADGE
-========================================================= */
-
-.status-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    min-height: 26px;
-
-    padding: 4px 9px;
-
-    border-radius: 20px;
-
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.status-badge.active {
-    background: #f0f0f0;
-    color: #111;
-}
-
-.status-badge.inactive {
-    background: #e7e7e7;
-    color: #666;
-}
-
-
-/* =========================================================
-   EMPTY STATE
-========================================================= */
-
-.services-empty {
-    padding: 60px 25px;
-
-    text-align: center;
-
-    background: #fff;
-    border: 1px dashed #d8d8d8;
-    border-radius: 14px;
-}
-
-.services-empty h3 {
-    margin-bottom: 7px;
-
-    font-size: 20px;
-}
-
-.services-empty p {
-    max-width: 500px;
-    margin: 0 auto;
-
-    color: #666;
-    font-size: 14px;
-}
-
-
-/* =========================================================
-   SERVICE EDITOR
-========================================================= */
-
-.service-editor {
-    padding: 45px 0 20px;
-}
-
-.service-editor[hidden],
-.services-overview[hidden],
-.services-empty[hidden],
-.delete-dialog[hidden],
-.notification[hidden] {
-    display: none;
-}
-
-.service-editor-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 25px;
-
-    padding-bottom: 30px;
-
-    border-bottom: 1px solid #e5e5e5;
-}
-
-.service-editor-title {
-    min-width: 0;
+    font-size: 15px;
 }
 
 .breadcrumb-back {
@@ -479,79 +185,340 @@ select:focus-visible {
     border: 0;
     background: transparent;
 
-    color: #555;
-
+    color: #666;
     font-size: 13px;
-    cursor: pointer;
 }
 
 .breadcrumb-back:hover {
     color: #111;
 }
 
-.service-editor-title h2 {
-    margin-bottom: 7px;
-
-    font-size: 30px;
-    font-weight: 700;
-    line-height: 1.25;
-}
-
-.service-editor-title p {
-    color: #666;
-    font-size: 14px;
-}
-
-.service-editor-status {
-    flex-shrink: 0;
-}
-
 
 /* =========================================================
-   EDITOR SECTIONS
+   BUTTONS
 ========================================================= */
 
-.service-info-section,
-.packages-section,
-.client-preview-section {
-    padding: 40px 0;
+.btn {
+    min-height: 44px;
 
-    border-bottom: 1px solid #e5e5e5;
+    padding: 0 20px;
+
+    border: 1px solid transparent;
+    border-radius: 8px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    white-space: nowrap;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease;
 }
 
-.section-heading {
-    margin-bottom: 22px;
+.btn-primary {
+    background: #111;
+    border-color: #111;
+    color: #fff;
 }
 
-.section-heading h3 {
-    margin-bottom: 5px;
+.btn-primary:hover {
+    background: #2a2a2a;
+    border-color: #2a2a2a;
+}
 
-    font-size: 22px;
+.btn-secondary {
+    background: #fff;
+    border-color: #d8d8d8;
+    color: #111;
+}
+
+.btn-secondary:hover {
+    background: #f5f5f5;
+    border-color: #c8c8c8;
+}
+
+.btn-danger {
+    background: #111;
+    border-color: #111;
+    color: #fff;
+}
+
+.btn-danger:hover {
+    background: #333;
+}
+
+
+/* =========================================================
+   SECTION
+========================================================= */
+
+.services-section,
+.editor-section {
+    margin-bottom: 42px;
+}
+
+.section-heading,
+.section-title {
+    margin-bottom: 18px;
+}
+
+.section-heading h2,
+.section-title h2 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.2px;
+}
+
+.section-heading p,
+.section-title p {
+    margin-top: 4px;
+
+    color: #777;
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   SERVICES LIST
+========================================================= */
+
+.services-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.service-card {
+    padding: 24px 26px;
+
+    background: #fff;
+    border: 1px solid #e4e4e4;
+    border-radius: 12px;
+
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 20px;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.service-card:hover {
+    border-color: #cfcfcf;
+    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.04);
+}
+
+.service-card-main {
+    min-width: 0;
+}
+
+.service-card-top {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+
+    margin-bottom: 8px;
+}
+
+.service-card h3 {
+    font-size: 18px;
     font-weight: 700;
 }
 
-.section-heading p {
+.service-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 4px 9px;
+
+    border-radius: 20px;
+
+    background: #f1f1f1;
+
+    color: #555;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.service-status::before {
+    content: "";
+
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+    background: #777;
+}
+
+.service-status.active::before {
+    background: #222;
+}
+
+.service-description {
+    max-width: 720px;
+
+    margin-bottom: 18px;
+
     color: #666;
+    font-size: 14px;
+}
+
+.service-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 24px;
+}
+
+.service-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.service-meta-label {
+    color: #999;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.service-meta-value {
+    color: #111;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.service-card-action {
+    align-self: center;
+}
+
+.text-button {
+    padding: 8px 0;
+
+    border: 0;
+    background: transparent;
+
+    color: #111;
+    font-size: 14px;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+.text-button:hover {
+    text-decoration: underline;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.empty-state {
+    padding: 70px 25px;
+
+    background: #fff;
+    border: 1px solid #e4e4e4;
+    border-radius: 12px;
+
+    text-align: center;
+}
+
+.empty-icon {
+    width: 46px;
+    height: 46px;
+
+    margin: 0 auto 18px;
+
+    border: 1px solid #ddd;
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #555;
+    font-size: 24px;
+}
+
+.empty-state h3 {
+    margin-bottom: 7px;
+
+    font-size: 18px;
+}
+
+.empty-state p {
+    margin-bottom: 22px;
+
+    color: #777;
     font-size: 14px;
 }
 
 
 /* =========================================================
-   FORMS
+   EDITOR
+========================================================= */
+
+.editor-view {
+    max-width: 980px;
+    margin: 0 auto;
+}
+
+.editor-header {
+    margin-bottom: 38px;
+}
+
+.status-indicator {
+    flex-shrink: 0;
+
+    padding: 7px 12px;
+
+    border-radius: 20px;
+
+    background: #eee;
+
+    color: #555;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.status-indicator.active {
+    background: #ededed;
+    color: #222;
+}
+
+.status-indicator.inactive {
+    background: #f3f3f3;
+    color: #888;
+}
+
+
+/* =========================================================
+   FORM CARD
 ========================================================= */
 
 .form-card {
     padding: 28px;
 
     background: #fff;
-    border: 1px solid #e5e5e5;
-    border-radius: 14px;
+    border: 1px solid #e4e4e4;
+    border-radius: 12px;
 }
 
 .form-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 22px 20px;
+    gap: 22px;
 }
 
 .form-group {
@@ -559,7 +526,7 @@ select:focus-visible {
 }
 
 .form-group.full-width {
-    grid-column: 1 / -1;
+    margin-bottom: 22px;
 }
 
 .form-group label {
@@ -568,24 +535,25 @@ select:focus-visible {
     margin-bottom: 8px;
 
     color: #222;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
 }
 
 .form-group input,
-.form-group textarea,
-.form-group select {
+.form-group textarea {
     width: 100%;
 
-    padding: 12px 15px;
+    padding: 12px 13px;
 
-    border: 1px solid #ddd;
-    border-radius: 10px;
+    border: 1px solid #d8d8d8;
+    border-radius: 7px;
 
     background: #fff;
-    color: #111;
 
-    font-size: 15px;
+    color: #111;
+    font-size: 14px;
+
+    outline: none;
 
     transition:
         border-color 0.2s ease,
@@ -597,114 +565,28 @@ select:focus-visible {
 }
 
 .form-group textarea {
-    min-height: 110px;
-
     resize: vertical;
+    min-height: 110px;
 }
 
 .form-group input:focus,
-.form-group textarea:focus,
-.form-group select:focus {
-    outline: none;
-
+.form-group textarea:focus {
     border-color: #111;
-
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 0 0 2px rgba(17, 17, 17, 0.08);
 }
 
 .form-group input::placeholder,
 .form-group textarea::placeholder {
+    color: #aaa;
+}
+
+.field-hint {
+    display: block;
+
+    margin-top: 6px;
+
     color: #999;
-}
-
-
-/* =========================================================
-   SERVICE TOGGLE
-========================================================= */
-
-.toggle-group {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-
-    padding: 17px 18px;
-
-    background: #fafafa;
-    border: 1px solid #e5e5e5;
-    border-radius: 12px;
-}
-
-.toggle-content {
-    min-width: 0;
-}
-
-.toggle-content label {
-    margin-bottom: 3px;
-}
-
-.toggle-content p {
-    color: #777;
-    font-size: 13px;
-}
-
-.toggle {
-    position: relative;
-
-    width: 48px;
-    height: 27px;
-
-    flex-shrink: 0;
-}
-
-.toggle input {
-    position: absolute;
-
-    width: 1px;
-    height: 1px;
-
-    opacity: 0;
-}
-
-.toggle-slider {
-    position: absolute;
-    inset: 0;
-
-    background: #d6d6d6;
-
-    border-radius: 30px;
-
-    cursor: pointer;
-
-    transition: background 0.2s ease;
-}
-
-.toggle-slider::before {
-    content: "";
-
-    position: absolute;
-
-    width: 21px;
-    height: 21px;
-
-    top: 3px;
-    left: 3px;
-
-    background: #fff;
-
-    border-radius: 50%;
-
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-
-    transition: transform 0.2s ease;
-}
-
-.toggle input:checked + .toggle-slider {
-    background: #111;
-}
-
-.toggle input:checked + .toggle-slider::before {
-    transform: translateX(21px);
+    font-size: 12px;
 }
 
 
@@ -712,153 +594,210 @@ select:focus-visible {
    PACKAGES
 ========================================================= */
 
-.package-grid {
-    display: grid;
+.package-section-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+}
 
-    grid-template-columns:
-        repeat(3, minmax(0, 1fr));
-
-    gap: 18px;
+.packages-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .package-card {
-    display: flex;
-    flex-direction: column;
+    padding: 22px 24px;
 
-    min-width: 0;
+    background: #fff;
+    border: 1px solid #e4e4e4;
+    border-radius: 10px;
 
-    padding: 22px;
-
-    background: #fafafa;
-    border: 1px solid #e5e5e5;
-    border-radius: 14px;
-
-    transition:
-        background 0.2s ease,
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 20px;
 }
 
 .package-card:hover {
-    background: #fff;
-    border-color: #ccc;
-
-    box-shadow: 0 7px 22px rgba(0, 0, 0, 0.05);
+    border-color: #cfcfcf;
 }
 
-.package-card-header {
-    margin-bottom: 18px;
+.package-card-content {
+    min-width: 0;
 }
 
-.package-card-header h4 {
-    margin-bottom: 3px;
+.package-card-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 
-    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+.package-card h3 {
+    font-size: 16px;
     font-weight: 700;
 }
 
-.package-card-header p {
+.package-price {
+    margin-bottom: 10px;
+
+    font-size: 21px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+}
+
+.package-details {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+
+    color: #666;
+    font-size: 13px;
+}
+
+.package-detail {
+    position: relative;
+}
+
+.package-detail:not(:last-child)::after {
+    content: "";
+
+    position: absolute;
+    right: -10px;
+    top: 50%;
+
+    width: 3px;
+    height: 3px;
+
+    transform: translateY(-50%);
+
+    border-radius: 50%;
+    background: #aaa;
+}
+
+.package-description {
+    max-width: 650px;
+
+    margin-top: 10px;
+
     color: #777;
     font-size: 13px;
 }
 
-.package-field {
-    margin-bottom: 16px;
+.package-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
-.package-field:last-child {
-    margin-bottom: 0;
-}
+.package-empty {
+    padding: 25px;
 
-.package-field label {
-    display: block;
-
-    margin-bottom: 7px;
-
-    color: #555;
-
-    font-size: 13px;
-    font-weight: 600;
-}
-
-.package-field input,
-.package-field textarea {
-    width: 100%;
-
-    padding: 11px 13px;
-
-    border: 1px solid #ddd;
-    border-radius: 9px;
+    border: 1px dashed #ccc;
+    border-radius: 10px;
 
     background: #fff;
-    color: #111;
 
+    color: #777;
     font-size: 14px;
-}
-
-.package-field input {
-    min-height: 44px;
-}
-
-.package-field textarea {
-    min-height: 100px;
-
-    resize: vertical;
-}
-
-.package-field input:focus,
-.package-field textarea:focus {
-    outline: none;
-
-    border-color: #111;
-
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+    text-align: center;
 }
 
 
 /* =========================================================
-   CLIENT PREVIEW
+   PACKAGE EDITOR
 ========================================================= */
 
-.client-preview {
+.package-editor-section {
+    margin-bottom: 42px;
+
+    border: 1px solid #dcdcdc;
+    border-radius: 12px;
+
+    background: #fdfdfd;
+}
+
+.package-editor-header {
+    padding: 20px 24px;
+
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 25px;
 
-    padding: 24px;
-
-    background: #fff;
-    border: 1px solid #e5e5e5;
-    border-radius: 14px;
+    border-bottom: 1px solid #e5e5e5;
 }
 
-.client-preview-content {
-    min-width: 0;
-}
-
-.preview-label {
+.small-label {
     display: block;
 
-    margin-bottom: 6px;
+    margin-bottom: 4px;
 
-    color: #777;
-
-    font-size: 11px;
+    color: #999;
+    font-size: 10px;
     font-weight: 700;
     letter-spacing: 1px;
 }
 
-.client-preview h3 {
-    margin-bottom: 5px;
-
-    font-size: 20px;
-    line-height: 1.3;
+.package-editor-header h2 {
+    font-size: 18px;
 }
 
-.client-preview p {
-    color: #666;
+.close-editor {
+    width: 34px;
+    height: 34px;
+
+    border: 1px solid #ddd;
+    border-radius: 7px;
+
+    background: #fff;
+
+    color: #555;
+    font-size: 22px;
+    line-height: 1;
+}
+
+.close-editor:hover {
+    background: #f4f4f4;
+    color: #111;
+}
+
+.input-prefix {
+    position: relative;
+}
+
+.input-prefix > span {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    color: #555;
     font-size: 14px;
+    pointer-events: none;
+}
+
+.input-prefix input {
+    padding-left: 30px;
+}
+
+.package-editor-section .form-card {
+    border: 0;
+    border-radius: 0;
+}
+
+.package-editor-actions {
+    padding-top: 22px;
+
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+
+    border-top: 1px solid #eee;
 }
 
 
@@ -866,72 +805,85 @@ select:focus-visible {
    EDITOR ACTIONS
 ========================================================= */
 
-.service-editor-actions {
+.editor-actions {
+    padding-top: 25px;
+
+    border-top: 1px solid #ddd;
+
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 20px;
-
-    padding: 30px 0;
 }
 
-.editor-actions-left,
 .editor-actions-right {
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.editor-actions-right {
-    justify-content: flex-end;
+.delete-button {
+    padding: 8px 0;
+
+    border: 0;
+    background: transparent;
+
+    color: #777;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.delete-button:hover {
+    color: #111;
+    text-decoration: underline;
 }
 
 
 /* =========================================================
-   DELETE DIALOG
+   DIALOG
 ========================================================= */
 
-.delete-dialog {
+.dialog-overlay {
     position: fixed;
     inset: 0;
+    z-index: 300;
 
-    z-index: 2000;
+    padding: 20px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    padding: 20px;
-
     background: rgba(0, 0, 0, 0.45);
 }
 
-.delete-dialog-content {
+.dialog {
     width: 100%;
     max-width: 430px;
 
-    padding: 30px;
+    padding: 28px;
+
+    border-radius: 12px;
 
     background: #fff;
-    border-radius: 14px;
 
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
 }
 
-.delete-dialog-content h3 {
-    margin-bottom: 8px;
+.dialog h2 {
+    margin-bottom: 10px;
 
-    font-size: 22px;
+    font-size: 20px;
 }
 
-.delete-dialog-content p {
-    margin-bottom: 25px;
+.dialog p {
+    margin-bottom: 24px;
 
     color: #666;
     font-size: 14px;
 }
 
-.delete-dialog-actions {
+.dialog-actions {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
@@ -944,25 +896,37 @@ select:focus-visible {
 
 .notification {
     position: fixed;
-
-    right: 25px;
+    left: 50%;
     bottom: 25px;
+    z-index: 400;
 
-    z-index: 3000;
+    min-width: 250px;
+    max-width: calc(100vw - 40px);
 
-    max-width: 380px;
+    padding: 13px 18px;
 
-    padding: 14px 18px;
+    transform: translate(-50%, 120px);
+
+    border-radius: 8px;
 
     background: #111;
     color: #fff;
 
-    border-radius: 10px;
+    font-size: 13px;
+    text-align: center;
 
-    font-size: 14px;
-    font-weight: 600;
+    opacity: 0;
 
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    transition:
+        transform 0.25s ease,
+        opacity 0.25s ease;
+
+    pointer-events: none;
+}
+
+.notification.show {
+    transform: translate(-50%, 0);
+    opacity: 1;
 }
 
 
@@ -970,29 +934,26 @@ select:focus-visible {
    TABLET
 ========================================================= */
 
-@media (max-width: 992px) {
+@media (max-width: 900px) {
 
     .navbar {
-        padding-left: 5%;
-        padding-right: 5%;
+        padding: 0 25px;
     }
 
-    .services-container {
-        padding-left: 20px;
-        padding-right: 20px;
+    .page-container {
+        padding: 40px 22px 60px;
     }
 
-    .services-header {
-        align-items: flex-start;
+    .page-header,
+    .editor-header {
+        flex-direction: column;
+        align-items: stretch;
     }
 
-    .package-grid {
-        grid-template-columns: 1fr;
+    .page-header > .btn {
+        align-self: flex-start;
     }
 
-    .package-card {
-        width: 100%;
-    }
 }
 
 
@@ -1000,38 +961,22 @@ select:focus-visible {
    MOBILE
 ========================================================= */
 
-@media (max-width: 768px) {
-
-    body {
-        font-size: 14px;
-    }
-
-
-    /* NAVBAR */
+@media (max-width: 700px) {
 
     .navbar {
-        padding: 14px 16px;
-
-        align-items: flex-start;
-        gap: 14px;
+        min-height: auto;
+        padding: 18px 20px;
 
         flex-direction: column;
-    }
-
-    .logo {
-        font-size: 22px;
+        align-items: flex-start;
+        gap: 15px;
     }
 
     .navbar nav {
         width: 100%;
-
-        gap: 20px;
+        gap: 22px;
 
         overflow-x: auto;
-        white-space: nowrap;
-
-        padding-bottom: 2px;
-
         scrollbar-width: none;
     }
 
@@ -1040,109 +985,52 @@ select:focus-visible {
     }
 
     .navbar nav a {
+        padding: 4px 0;
+
+        font-size: 13px;
+        white-space: nowrap;
+    }
+
+    .navbar nav a.active::after {
+        bottom: -4px;
+    }
+
+    .page-container {
+        padding: 32px 16px 50px;
+    }
+
+    .page-header,
+    .editor-header {
+        margin-bottom: 30px;
+    }
+
+    .page-header h1,
+    .editor-header h1 {
+        font-size: 28px;
+    }
+
+    .page-header p,
+    .editor-header p {
         font-size: 14px;
     }
 
-
-    /* PAGE */
-
-    .services-container {
-        padding: 0 16px 50px;
-    }
-
-
-    /* HEADER */
-
-    .services-header {
-        flex-direction: column;
-        align-items: stretch;
-
-        gap: 22px;
-
-        padding: 40px 0 30px;
-    }
-
-    .services-header h1 {
-        font-size: 30px;
-    }
-
-    .services-header p {
-        font-size: 14px;
-    }
-
-    .services-header .btn-primary {
+    .page-header > .btn {
         width: 100%;
     }
 
-
-    /* OVERVIEW */
-
-    .services-overview {
-        padding: 35px 0 10px;
-    }
-
-    .services-overview-header h2 {
-        font-size: 25px;
-    }
-
-
-    /* SERVICE CARD */
-
-    .service-summary-card {
-        flex-direction: column;
-        align-items: stretch;
-
-        gap: 20px;
-
-        padding: 20px;
-    }
-
-    .service-summary-top h3 {
-        font-size: 18px;
-    }
-
-    .service-summary-description {
-        font-size: 14px;
-    }
-
-    .service-summary-details {
+    .service-card {
+        grid-template-columns: 1fr;
         gap: 18px;
+
+        padding: 21px;
     }
 
-    .service-summary-actions {
-        width: 100%;
+    .service-card-action {
+        align-self: flex-start;
     }
 
-    .service-summary-actions .btn-secondary {
-        width: 100%;
-    }
-
-
-    /* EDITOR */
-
-    .service-editor {
-        padding: 35px 0 10px;
-    }
-
-    .service-editor-header {
-        flex-direction: column;
-
-        gap: 15px;
-
-        padding-bottom: 25px;
-    }
-
-    .service-editor-title h2 {
-        font-size: 26px;
-    }
-
-
-    /* FORM */
-
-    .service-info-section,
-    .packages-section,
-    .client-preview-section {
-        padding: 32px 0;
+    .service-meta {
+        gap: 16px 22px;
     }
 
     .form-card {
@@ -1151,123 +1039,63 @@ select:focus-visible {
 
     .form-grid {
         grid-template-columns: 1fr;
-
         gap: 18px;
     }
 
-    .form-group.full-width {
-        grid-column: auto;
-    }
-
-    .form-group input,
-    .form-group textarea,
-    .form-group select {
-        font-size: 16px;
-    }
-
-
-    /* TOGGLE */
-
-    .toggle-group {
+    .package-section-heading {
         align-items: flex-start;
+        flex-direction: column;
     }
 
-
-    /* PACKAGE */
-
-    .package-grid {
-        grid-template-columns: 1fr;
-
-        gap: 14px;
+    .package-section-heading .btn {
+        width: 100%;
     }
 
     .package-card {
-        padding: 20px;
-    }
-
-    .package-field input,
-    .package-field textarea {
-        font-size: 16px;
-    }
-
-
-    /* CLIENT PREVIEW */
-
-    .client-preview {
-        flex-direction: column;
-        align-items: stretch;
-
-        gap: 18px;
+        grid-template-columns: 1fr;
+        gap: 17px;
 
         padding: 20px;
     }
 
-    .client-preview .btn-secondary {
-        width: 100%;
+    .package-actions {
+        justify-content: flex-start;
     }
 
+    .package-editor-header {
+        padding: 18px 20px;
+    }
 
-    /* ACTIONS */
+    .package-editor-section .form-card {
+        padding: 20px;
+    }
 
-    .service-editor-actions {
+    .package-editor-actions {
         flex-direction: column-reverse;
-        align-items: stretch;
-
-        gap: 15px;
     }
 
-    .editor-actions-left,
-    .editor-actions-right {
+    .package-editor-actions .btn {
         width: 100%;
     }
 
-    .editor-actions-left,
-    .editor-actions-right {
+    .editor-actions {
+        align-items: stretch;
         flex-direction: column;
     }
 
-    .editor-actions-left button,
-    .editor-actions-right button {
+    .editor-actions-right {
         width: 100%;
-    }
-
-
-    /* DELETE DIALOG */
-
-    .delete-dialog {
-        align-items: flex-end;
-
-        padding: 12px;
-    }
-
-    .delete-dialog-content {
-        max-width: none;
-
-        padding: 24px;
-
-        border-radius: 14px;
-    }
-
-    .delete-dialog-actions {
         flex-direction: column-reverse;
     }
 
-    .delete-dialog-actions button {
+    .editor-actions-right .btn {
         width: 100%;
     }
 
-
-    /* NOTIFICATION */
-
-    .notification {
-        right: 15px;
-        bottom: 15px;
-        left: 15px;
-
-        max-width: none;
-
-        text-align: center;
+    .delete-button {
+        align-self: flex-start;
     }
+
 }
 
 
@@ -1277,70 +1105,26 @@ select:focus-visible {
 
 @media (max-width: 380px) {
 
-    .services-container {
+    .page-container {
         padding-left: 13px;
         padding-right: 13px;
     }
 
-    .navbar {
-        padding-left: 13px;
-        padding-right: 13px;
+    .page-header h1,
+    .editor-header h1 {
+        font-size: 25px;
     }
 
-    .logo {
-        font-size: 20px;
-    }
-
-    .services-header {
-        padding-top: 35px;
-    }
-
-    .services-header h1 {
-        font-size: 27px;
-    }
-
-    .services-overview-header h2 {
-        font-size: 23px;
-    }
-
-    .service-summary-card {
+    .form-card {
         padding: 17px;
     }
 
-    .form-card,
-    .package-card,
-    .client-preview {
-        padding: 17px;
+    .service-card {
+        padding: 18px;
     }
 
-    .service-summary-details {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-
-        gap: 14px;
+    .package-card {
+        padding: 18px;
     }
 
-    .btn-primary,
-    .btn-secondary,
-    .btn-danger {
-        min-height: 46px;
-    }
-}
-
-
-/* =========================================================
-   REDUCED MOTION
-========================================================= */
-
-@media (prefers-reduced-motion: reduce) {
-
-    html {
-        scroll-behavior: auto;
-    }
-
-    *,
-    *::before,
-    *::after {
-        transition: none !important;
-    }
 }
