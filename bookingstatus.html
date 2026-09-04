@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Booking Status | Professional Studio</title>
+
+    <meta
+        name="description"
+        content="Track your photography booking status."
+    >
+
+    <link
+        rel="stylesheet"
+        href="bookingStatus.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- ==========================================
+         HEADER
+    =========================================== -->
+
+    <header class="status-header">
+
+        <div class="status-header-inner">
+
+            <a
+                href="client.html"
+                class="brand"
+            >
+                Professional Studio
+            </a>
+
+            <span class="page-label">
+                Booking Status
+            </span>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- ==========================================
+         MAIN
+    =========================================== -->
+
+    <main class="status-page">
+
+        <a
+            href="client.html"
+            class="back-link"
+        >
+            ← Back to Portfolio
+        </a>
+
+
+        <!-- ======================================
+             INTRO
+        ======================================= -->
+
+        <section class="status-intro">
+
+            <p class="eyebrow">
+                BOOKING REQUEST
+            </p>
+
+            <h1>
+                Track Your Booking
+            </h1>
+
+            <p>
+                Your booking request is shown below.
+                The photographer will review your request
+                before any advance payment is required.
+            </p>
+
+        </section>
+
+
+
+        <!-- ======================================
+             ERROR
+        ======================================= -->
+
+        <section
+            class="status-card error-card"
+            id="errorCard"
+            hidden
+        >
+
+            <div class="error-icon">
+                !
+            </div>
+
+            <h2>
+                Booking Not Found
+            </h2>
+
+            <p id="errorMessage">
+                We could not find this booking.
+            </p>
+
+            <a
+                href="client.html"
+                class="primary-button"
+            >
+                Back to Portfolio
+            </a>
+
+        </section>
+
+
+
+        <!-- ======================================
+             BOOKING CONTENT
+        ======================================= -->
+
+        <div id="bookingContent" hidden>
+
+
+            <!-- ==================================
+                 BOOKING SUMMARY
+            =================================== -->
+
+            <section class="status-card booking-summary">
+
+                <div class="booking-summary-top">
+
+                    <div>
+
+                        <p class="small-label">
+                            BOOKING ID
+                        </p>
+
+                        <h2 id="bookingId">
+                            —
+                        </h2>
+
+                    </div>
+
+                    <span
+                        class="status-badge"
+                        id="statusBadge"
+                    >
+                        Pending
+                    </span>
+
+                </div>
+
+
+                <div class="summary-divider"></div>
+
+
+                <div class="booking-info-grid">
+
+                    <div class="info-item">
+
+                        <span>
+                            Client
+                        </span>
+
+                        <strong id="clientName">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <span>
+                            Service
+                        </span>
+
+                        <strong id="serviceName">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <span>
+                            Package
+                        </span>
+
+                        <strong id="packageName">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <span>
+                            Package Price
+                        </span>
+
+                        <strong id="packagePrice">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <span>
+                            Location
+                        </span>
+
+                        <strong id="location">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <span>
+                            Total Hours
+                        </span>
+
+                        <strong id="totalHours">
+                            —
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- ==================================
+                 BOOKING DATES
+            =================================== -->
+
+            <section class="status-card">
+
+                <div class="section-heading">
+
+                    <p class="small-label">
+                        SESSION DETAILS
+                    </p>
+
+                    <h2>
+                        Requested Dates
+                    </h2>
+
+                </div>
+
+
+                <div
+                    class="date-list"
+                    id="dateList"
+                >
+                </div>
+
+            </section>
+
+
+
+            <!-- ==================================
+                 STATUS TRACKER
+            =================================== -->
+
+            <section class="status-card">
+
+                <div class="section-heading">
+
+                    <p class="small-label">
+                        BOOKING PROGRESS
+                    </p>
+
+                    <h2>
+                        Request Status
+                    </h2>
+
+                </div>
+
+
+                <div class="status-timeline">
+
+                    <div
+                        class="timeline-step"
+                        id="stepRequest"
+                    >
+
+                        <div class="timeline-dot">
+                            1
+                        </div>
+
+                        <div class="timeline-content">
+
+                            <strong>
+                                Request Sent
+                            </strong>
+
+                            <span>
+                                Your booking request has been submitted.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="timeline-line"
+                        id="lineReview"
+                    ></div>
+
+
+                    <div
+                        class="timeline-step"
+                        id="stepReview"
+                    >
+
+                        <div class="timeline-dot">
+                            2
+                        </div>
+
+                        <div class="timeline-content">
+
+                            <strong>
+                                Photographer Review
+                            </strong>
+
+                            <span id="reviewText">
+                                Waiting for the photographer to review your request.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="timeline-line"
+                        id="linePayment"
+                    ></div>
+
+
+                    <div
+                        class="timeline-step"
+                        id="stepPayment"
+                    >
+
+                        <div class="timeline-dot">
+                            3
+                        </div>
+
+                        <div class="timeline-content">
+
+                            <strong>
+                                Advance Payment
+                            </strong>
+
+                            <span id="paymentText">
+                                Payment becomes available after approval.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="timeline-line"
+                        id="lineConfirmed"
+                    ></div>
+
+
+                    <div
+                        class="timeline-step"
+                        id="stepConfirmed"
+                    >
+
+                        <div class="timeline-dot">
+                            4
+                        </div>
+
+                        <div class="timeline-content">
+
+                            <strong>
+                                Booking Confirmed
+                            </strong>
+
+                            <span id="confirmedText">
+                                Your session will be confirmed after the advance payment.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- ==================================
+                 CURRENT STATUS MESSAGE
+            =================================== -->
+
+            <section
+                class="status-message-card"
+                id="statusMessageCard"
+            >
+
+                <div class="message-icon">
+                    <span id="messageIcon">
+                        2
+                    </span>
+                </div>
+
+
+                <div class="message-content">
+
+                    <p
+                        class="message-label"
+                        id="messageLabel"
+                    >
+                        WAITING FOR PHOTOGRAPHER
+                    </p>
+
+                    <h2 id="messageTitle">
+                        Your request is being reviewed
+                    </h2>
+
+                    <p id="messageText">
+                        Your booking request has been sent to the
+                        photographer. No payment is required at this stage.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- ==================================
+                 PAYMENT AREA
+            =================================== -->
+
+            <section
+                class="status-card payment-card"
+                id="paymentCard"
+                hidden
+            >
+
+                <div class="section-heading">
+
+                    <p class="small-label">
+                        PAYMENT
+                    </p>
+
+                    <h2>
+                        Complete Your Advance Payment
+                    </h2>
+
+                    <p>
+                        Your booking has been accepted.
+                        You can now proceed with the advance payment.
+                    </p>
+
+                </div>
+
+
+                <div class="payment-summary">
+
+                    <div>
+
+                        <span>
+                            Package Price
+                        </span>
+
+                        <strong id="paymentPackagePrice">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Advance
+                        </span>
+
+                        <strong id="advanceAmount">
+                            Payment amount will be shown here
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!--
+                    IMPORTANT:
+                    This button is intentionally not connected
+                    to any payment gateway yet.
+
+                    The existing gateway must be connected here
+                    only after its current implementation is identified.
+                -->
+
+                <button
+                    type="button"
+                    class="primary-button payment-button"
+                    id="payAdvanceButton"
+                >
+                    Proceed to Advance Payment
+                </button>
+
+
+                <p class="payment-note">
+                    Your payment will be processed through
+                    the existing payment system.
+                </p>
+
+            </section>
+
+
+
+            <!-- ==================================
+                 CANCELLED
+            =================================== -->
+
+            <section
+                class="status-message-card cancelled-card"
+                id="cancelledCard"
+                hidden
+            >
+
+                <div class="message-icon">
+                    ×
+                </div>
+
+                <div class="message-content">
+
+                    <p class="message-label">
+                        BOOKING NOT ACCEPTED
+                    </p>
+
+                    <h2>
+                        This booking request was not accepted
+                    </h2>
+
+                    <p>
+                        No payment is required for this booking.
+                        You can return to the portfolio and choose
+                        another service or date.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- ==================================
+                 CONFIRMED
+            =================================== -->
+
+            <section
+                class="status-message-card confirmed-card"
+                id="confirmedCard"
+                hidden
+            >
+
+                <div class="message-icon">
+                    ✓
+                </div>
+
+                <div class="message-content">
+
+                    <p class="message-label">
+                        BOOKING CONFIRMED
+                    </p>
+
+                    <h2>
+                        Your photography session is confirmed
+                    </h2>
+
+                    <p>
+                        Your advance payment has been received
+                        and your booking is now confirmed.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- ==================================
+                 AUTO REFRESH
+            =================================== -->
+
+            <p class="refresh-note">
+                This page checks for booking updates automatically.
+            </p>
+
+
+        </div>
+
+    </main>
+
+
+
+    <!-- ==========================================
+         FOOTER
+    =========================================== -->
+
+    <footer class="status-footer">
+
+        <p>
+            © 2026 Professional Studio.
+            All rights reserved.
+        </p>
+
+    </footer>
+
+
+    <script src="bookingStatus.js"></script>
+
+</body>
+
+</html>

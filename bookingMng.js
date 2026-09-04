@@ -416,6 +416,22 @@ function createBookingCard(booking) {
     }
 
 
+    if (status === "Accepted") {
+
+        actionButtons += `
+            <button
+                type="button"
+                class="action-btn danger"
+                data-action="cancel"
+                data-id="${escapeAttribute(getBookingId(booking))}"
+            >
+                Cancel
+            </button>
+        `;
+
+    }
+
+
     if (status === "Confirmed") {
 
         actionButtons += `
@@ -590,7 +606,7 @@ document.addEventListener("click", (event) => {
 
         updateBookingStatus(
             bookingId,
-            "Confirmed"
+            "Accepted"
         );
 
         return;
@@ -651,6 +667,14 @@ function updateBookingStatus(bookingId, newStatus) {
 
 
     bookings[bookingIndex].status = newStatus;
+
+
+    if (newStatus === "Accepted") {
+
+        bookings[bookingIndex].acceptedAt =
+            new Date().toISOString();
+
+    }
 
 
     if (newStatus === "Confirmed") {
@@ -934,6 +958,24 @@ function openBookingModal(bookingId) {
                 data-id="${escapeAttribute(bookingId)}"
             >
                 Accept Booking
+            </button>
+
+        `;
+
+    }
+
+
+    if (status === "Accepted") {
+
+        modalActions.innerHTML = `
+
+            <button
+                type="button"
+                class="action-btn danger"
+                data-action="cancel"
+                data-id="${escapeAttribute(bookingId)}"
+            >
+                Cancel Booking
             </button>
 
         `;
@@ -1460,13 +1502,20 @@ function normalizeStatus(status) {
             .toLowerCase();
 
 
+    if (value === "accepted") {
+        return "Accepted";
+    }
+
+
     if (value === "confirmed") {
         return "Confirmed";
     }
 
+
     if (value === "completed") {
         return "Completed";
     }
+
 
     if (
         value === "cancelled" ||
@@ -1475,6 +1524,7 @@ function normalizeStatus(status) {
     ) {
         return "Cancelled";
     }
+
 
     return "Pending";
 
