@@ -2,84 +2,27 @@
    Dashboard Core
 ========================================== */
 
+
 /* ==========================================
    GLOBAL VARIABLES
 ========================================== */
 
 var userName = "Rahul Photography";
-var link = "https://professionalstudio.vercel.app/client";
 
-/*
-   Shared service storage.
+var SERVICE_STORAGE_KEY =
+    "professionalStudio.services";
 
-   Portfolio and booking page should read from
-   the same localStorage key:
-
-   photographerServices
-
-   Structure:
-
-   [
-       {
-           name: "Wedding",
-           description: "...",
-           packages: {
-               basic: {
-                   price: "...",
-                   duration: "...",
-                   delivery: "...",
-                   description: "..."
-               },
-               premium: {
-                   price: "...",
-                   duration: "...",
-                   delivery: "...",
-                   description: "..."
-               },
-               luxury: {
-                   price: "...",
-                   duration: "...",
-                   delivery: "...",
-                   description: "..."
-               }
-           }
-       }
-   ]
-*/
-
-var SERVICE_STORAGE_KEY = "professionalStudio.services";
+var BOOKING_STORAGE_KEY =
+    "bookings";
 
 
 /* ==========================================
-   DEFAULT SERVICE DATA
+   PUBLIC CLIENT PAGE
 ========================================== */
 
-var defaultServices = [
-    {
-        name: "Wedding",
-        description: "Complete wedding photography coverage tailored to your event.",
-        packages: {
-            basic: {
-                price: "",
-                duration: "1 Day",
-                delivery: "15-20 Days",
-                description: "Essential wedding photography coverage."
-            },
-            premium: {
-                price: "",
-                duration: "2 Days",
-                delivery: "12-15 Days",
-                description: "Extended wedding coverage with additional moments."
-            },
-            luxury: {
-                price: "",
-                duration: "3 Days",
-                delivery: "10-12 Days",
-                description: "Full wedding experience with complete multi-day coverage."
-            }
-        }
-    }
-];
+var link =
+    window.location.origin +
+    "/client.html";
 
 
 /* ==========================================
@@ -91,7 +34,9 @@ function getStoredServices() {
     try {
 
         var stored =
-            localStorage.getItem(SERVICE_STORAGE_KEY);
+            localStorage.getItem(
+                SERVICE_STORAGE_KEY
+            );
 
         if (!stored) {
             return [];
@@ -147,109 +92,13 @@ function saveServices(services) {
 }
 
 
-function ensurePackageStructure(service) {
+function getServiceName(service) {
 
-    if (!service.packages) {
-
-        service.packages = {};
-
-    }
-
-    if (!service.packages.basic) {
-
-        service.packages.basic = {};
-
-    }
-
-    if (!service.packages.premium) {
-
-        service.packages.premium = {};
-
-    }
-
-    if (!service.packages.luxury) {
-
-        service.packages.luxury = {};
-
-    }
-
-
-    var packageNames = [
-        "basic",
-        "premium",
-        "luxury"
-    ];
-
-
-    packageNames.forEach(function(packageName) {
-
-        var packageData =
-            service.packages[packageName];
-
-
-        if (
-            typeof packageData.price ===
-            "undefined"
-        ) {
-
-            packageData.price = "";
-
-        }
-
-
-        if (
-            typeof packageData.duration ===
-            "undefined"
-        ) {
-
-            packageData.duration = "";
-
-        }
-
-
-        if (
-            typeof packageData.delivery ===
-            "undefined"
-        ) {
-
-            packageData.delivery = "";
-
-        }
-
-
-        if (
-            typeof packageData.description ===
-            "undefined"
-        ) {
-
-            packageData.description = "";
-
-        }
-
-    });
-
-
-    if (
-        typeof service.description ===
-        "undefined"
-    ) {
-
-        service.description = "";
-
-    }
-
-
-    return service;
+    return service && service.name
+        ? String(service.name).trim()
+        : "";
 
 }
-
-/* ==========================================
-   PUBLIC CLIENT PAGE
-========================================== */
-
-var link =
-    window.location.origin +
-    "/client.html";
 
 
 /* ==========================================
@@ -268,9 +117,11 @@ fetch("/api/dashboard-data", {
 .then(function(response) {
 
     if (!response.ok) {
+
         throw new Error(
             "Dashboard data request failed"
         );
+
     }
 
     return response.json();
@@ -281,14 +132,15 @@ fetch("/api/dashboard-data", {
     var nameElement =
         document.getElementById("name");
 
-
-    if (nameElement && data.name) {
+    if (
+        nameElement &&
+        data.name
+    ) {
 
         nameElement.textContent =
             data.name;
 
     }
-
 
     userName =
         data.name ||
@@ -306,7 +158,7 @@ fetch("/api/dashboard-data", {
 
 
 /* ==========================================
-   ENABLE PUBLIC PAGE BUTTONS
+   PUBLIC PAGE BUTTONS
 ========================================== */
 
 document.addEventListener(
@@ -318,12 +170,10 @@ document.addEventListener(
                 "openPortfolioBtn"
             );
 
-
         var copyButton =
             document.getElementById(
                 "copyProfileBtn"
             );
-
 
         if (openButton) {
 
@@ -331,7 +181,6 @@ document.addEventListener(
                 false;
 
         }
-
 
         if (copyButton) {
 
@@ -369,15 +218,10 @@ function copyProfileLink() {
             "copyProfileBtn"
         );
 
-
     if (!link) {
         return;
     }
 
-
-    /*
-       Use the Clipboard API when available.
-    */
 
     if (
         navigator.clipboard &&
@@ -388,36 +232,7 @@ function copyProfileLink() {
             .writeText(link)
             .then(function() {
 
-                if (!button) {
-                    return;
-                }
-
-
-                var originalText =
-                    button.textContent;
-
-
-                button.textContent =
-                    "✓ COPIED";
-
-
-                button.disabled =
-                    true;
-
-
-                setTimeout(
-                    function() {
-
-                        button.textContent =
-                            originalText;
-
-
-                        button.disabled =
-                            false;
-
-                    },
-                    2000
-                );
+                showCopiedState(button);
 
             })
             .catch(function(error) {
@@ -446,29 +261,22 @@ function copyProfileLink() {
                 "textarea"
             );
 
-
         textarea.value =
             link;
-
 
         textarea.style.position =
             "fixed";
 
-
         textarea.style.left =
             "-9999px";
-
 
         document.body.appendChild(
             textarea
         );
 
-
         textarea.focus();
 
-
         textarea.select();
-
 
         try {
 
@@ -476,36 +284,7 @@ function copyProfileLink() {
                 "copy"
             );
 
-
-            if (button) {
-
-                var originalText =
-                    button.textContent;
-
-
-                button.textContent =
-                    "✓ COPIED";
-
-
-                button.disabled =
-                    true;
-
-
-                setTimeout(
-                    function() {
-
-                        button.textContent =
-                            originalText;
-
-
-                        button.disabled =
-                            false;
-
-                    },
-                    2000
-                );
-
-            }
+            showCopiedState(button);
 
         }
         catch (error) {
@@ -517,7 +296,6 @@ function copyProfileLink() {
 
         }
 
-
         document.body.removeChild(
             textarea
         );
@@ -525,6 +303,38 @@ function copyProfileLink() {
     }
 
 }
+
+
+function showCopiedState(button) {
+
+    if (!button) {
+        return;
+    }
+
+    var originalText =
+        button.textContent;
+
+    button.textContent =
+        "✓ COPIED";
+
+    button.disabled =
+        true;
+
+    setTimeout(
+        function() {
+
+            button.textContent =
+                originalText;
+
+            button.disabled =
+                false;
+
+        },
+        2000
+    );
+
+}
+
 
 /* ==========================================
    DOM CONTENT LOADED
@@ -544,32 +354,32 @@ document.addEventListener(
                 ".menu a"
             );
 
+        menuLinks.forEach(
+            function(menuLink) {
 
-        menuLinks.forEach(function(menuLink) {
+                menuLink.addEventListener(
+                    "click",
+                    function() {
 
-            menuLink.addEventListener(
-                "click",
-                function() {
+                        menuLinks.forEach(
+                            function(item) {
 
-                    menuLinks.forEach(
-                        function(item) {
+                                item.classList.remove(
+                                    "active"
+                                );
 
-                            item.classList.remove(
-                                "active"
-                            );
+                            }
+                        );
 
-                        }
-                    );
+                        menuLink.classList.add(
+                            "active"
+                        );
 
+                    }
+                );
 
-                    menuLink.classList.add(
-                        "active"
-                    );
-
-                }
-            );
-
-        });
+            }
+        );
 
 
         /* ==========================
@@ -581,51 +391,50 @@ document.addEventListener(
                 ".counter"
             );
 
+        counters.forEach(
+            function(counter) {
 
-        counters.forEach(function(counter) {
-
-            var target =
-                Number(
-                    counter.dataset.target
-                );
-
-
-            var current = 0;
-
-
-            var speed =
-                target / 80;
-
-
-            function updateCounter() {
-
-                current += speed;
-
-
-                if (current < target) {
-
-                    counter.textContent =
-                        Math.floor(current);
-
-
-                    requestAnimationFrame(
-                        updateCounter
+                var target =
+                    Number(
+                        counter.dataset.target
                     );
 
-                }
-                else {
+                var current =
+                    0;
 
-                    counter.textContent =
-                        target;
+                var speed =
+                    target / 80;
+
+
+                function updateCounter() {
+
+                    current += speed;
+
+                    if (
+                        current < target
+                    ) {
+
+                        counter.textContent =
+                            Math.floor(current);
+
+                        requestAnimationFrame(
+                            updateCounter
+                        );
+
+                    }
+                    else {
+
+                        counter.textContent =
+                            target;
+
+                    }
 
                 }
+
+                updateCounter();
 
             }
-
-
-            updateCounter();
-
-        });
+        );
 
 
         /* ==========================
@@ -634,75 +443,70 @@ document.addEventListener(
 
         document
             .querySelectorAll("button")
-            .forEach(function(button) {
+            .forEach(
+                function(button) {
 
-                button.addEventListener(
-                    "click",
-                    function(e) {
+                    button.addEventListener(
+                        "click",
+                        function() {
 
-                        if (
-                            button.id ===
-                            "openPortfolioBtn" ||
-                            button.id ===
-                            "copyProfileBtn"
-                        ) {
+                            if (
+                                button.id ===
+                                "openPortfolioBtn" ||
+                                button.id ===
+                                "copyProfileBtn"
+                            ) {
 
-                            return;
+                                return;
+
+                            }
+
+                            if (
+                                button.type ===
+                                "submit"
+                            ) {
+
+                                return;
+
+                            }
+
+                            if (
+                                button.classList.contains(
+                                    "service-save-btn"
+                                )
+                            ) {
+
+                                return;
+
+                            }
+
+                            var original =
+                                button.innerText;
+
+                            button.innerText =
+                                "Saved ✓";
+
+                            button.disabled =
+                                true;
+
+                            setTimeout(
+                                function() {
+
+                                    button.innerText =
+                                        original;
+
+                                    button.disabled =
+                                        false;
+
+                                },
+                                1500
+                            );
 
                         }
+                    );
 
-
-                        if (
-                            button.type ===
-                            "submit"
-                        ) {
-
-                            return;
-
-                        }
-
-
-                        if (
-                            button.classList.contains(
-                                "service-save-btn"
-                            )
-                        ) {
-
-                            return;
-
-                        }
-
-
-                        var original =
-                            button.innerText;
-
-
-                        button.innerText =
-                            "Saved ✓";
-
-
-                        button.disabled =
-                            true;
-
-
-                        setTimeout(
-                            function() {
-
-                                button.innerText =
-                                    original;
-
-
-                                button.disabled =
-                                    false;
-
-                            },
-                            1500
-                        );
-
-                    }
-                );
-
-            });
+                }
+            );
 
 
         /* ==========================
@@ -714,7 +518,6 @@ document.addEventListener(
                 "input[type=file]"
             );
 
-
         if (upload) {
 
             upload.addEventListener(
@@ -724,15 +527,12 @@ document.addEventListener(
                     var file =
                         this.files[0];
 
-
                     if (!file) {
                         return;
                     }
 
-
                     var reader =
                         new FileReader();
-
 
                     reader.onload =
                         function(e) {
@@ -742,7 +542,6 @@ document.addEventListener(
                                     ".preview-image"
                                 );
 
-
                             if (!preview) {
 
                                 preview =
@@ -750,10 +549,8 @@ document.addEventListener(
                                         "img"
                                     );
 
-
                                 preview.className =
                                     "preview-image";
-
 
                                 upload.parentNode.appendChild(
                                     preview
@@ -761,14 +558,14 @@ document.addEventListener(
 
                             }
 
-
                             preview.src =
                                 e.target.result;
 
                         };
 
-
-                    reader.readAsDataURL(file);
+                    reader.readAsDataURL(
+                        file
+                    );
 
                 }
             );
@@ -784,37 +581,36 @@ document.addEventListener(
             .querySelectorAll(
                 'a[href^="#"]'
             )
-            .forEach(function(anchor) {
+            .forEach(
+                function(anchor) {
 
-                anchor.addEventListener(
-                    "click",
-                    function(e) {
+                    anchor.addEventListener(
+                        "click",
+                        function(e) {
 
-                        var target =
-                            document.querySelector(
-                                this.getAttribute(
-                                    "href"
-                                )
-                            );
+                            var target =
+                                document.querySelector(
+                                    this.getAttribute(
+                                        "href"
+                                    )
+                                );
 
+                            if (!target) {
+                                return;
+                            }
 
-                        if (!target) {
-                            return;
+                            e.preventDefault();
+
+                            target.scrollIntoView({
+                                behavior: "smooth",
+                                block: "start"
+                            });
+
                         }
+                    );
 
-
-                        e.preventDefault();
-
-
-                        target.scrollIntoView({
-                            behavior: "smooth",
-                            block: "start"
-                        });
-
-                    }
-                );
-
-            });
+                }
+            );
 
 
         /* ==========================
@@ -826,13 +622,12 @@ document.addEventListener(
                 "section"
             );
 
-
         window.addEventListener(
             "scroll",
             function() {
 
-                var current = "";
-
+                var current =
+                    "";
 
                 sections.forEach(
                     function(section) {
@@ -840,7 +635,6 @@ document.addEventListener(
                         var top =
                             section.offsetTop -
                             120;
-
 
                         if (
                             pageYOffset >=
@@ -855,14 +649,12 @@ document.addEventListener(
                     }
                 );
 
-
                 menuLinks.forEach(
                     function(menuLink) {
 
                         menuLink.classList.remove(
                             "active"
                         );
-
 
                         if (
                             menuLink.getAttribute(
@@ -882,7 +674,6 @@ document.addEventListener(
 
             }
         );
-
 
     }
 );
@@ -908,18 +699,15 @@ document.addEventListener(
                     ".equipment-input input"
                 );
 
-
             var button =
                 card.querySelector(
                     ".add-item-btn"
                 );
 
-
             var list =
                 card.querySelector(
                     ".equipment-list"
                 );
-
 
             if (
                 !input ||
@@ -937,30 +725,24 @@ document.addEventListener(
                 var value =
                     input.value.trim();
 
-
                 if (!value) {
                     return;
                 }
-
 
                 var li =
                     document.createElement(
                         "li"
                     );
 
-
                 li.textContent =
                     value;
-
 
                 list.appendChild(
                     li
                 );
 
-
                 input.value =
                     "";
-
 
                 input.focus();
 
@@ -977,7 +759,10 @@ document.addEventListener(
                 "keydown",
                 function(e) {
 
-                    if (e.key === "Enter") {
+                    if (
+                        e.key ===
+                        "Enter"
+                    ) {
 
                         e.preventDefault();
 
@@ -995,20 +780,21 @@ document.addEventListener(
             .querySelectorAll(
                 ".equipment-card"
             )
-            .forEach(function(card) {
+            .forEach(
+                function(card) {
 
-                attachEquipmentEvents(
-                    card
-                );
+                    attachEquipmentEvents(
+                        card
+                    );
 
-            });
+                }
+            );
 
 
         var equipmentGrid =
             document.querySelector(
                 ".equipment-grid"
             );
-
 
         var addEquipment =
             document.getElementById(
@@ -1041,10 +827,8 @@ document.addEventListener(
                             "div"
                         );
 
-
                     createCard.className =
                         "equipment-card create-equipment-card";
-
 
                     createCard.innerHTML =
                         "<h3>New Equipment Category</h3>" +
@@ -1066,7 +850,6 @@ document.addEventListener(
                             "#newEquipmentName"
                         );
 
-
                     input.focus();
 
 
@@ -1074,7 +857,6 @@ document.addEventListener(
 
                         var category =
                             input.value.trim();
-
 
                         if (!category) {
                             return;
@@ -1086,10 +868,8 @@ document.addEventListener(
                                 "div"
                             );
 
-
                         card.className =
                             "equipment-card";
-
 
                         card.innerHTML =
                             "<h3>" +
@@ -1166,9 +946,9 @@ document.addEventListener(
         }
 
 
-        /* ==========================================
+        /* ==========================
            DASHBOARD SERVICE CONTROLS
-        ========================================== */
+        ========================== */
 
         var serviceGrid =
             document.getElementById(
@@ -1178,72 +958,30 @@ document.addEventListener(
 
         function getSharedServices() {
 
-            try {
-
-                var stored =
-                    localStorage.getItem(
-                        SERVICE_STORAGE_KEY
-                    );
-
-
-                if (!stored) {
-                    return [];
-                }
-
-
-                var services =
-                    JSON.parse(stored);
-
-
-                return Array.isArray(services)
-                    ? services
-                    : [];
-
-            }
-            catch (error) {
-
-                console.error(
-                    "Could not read shared service data:",
-                    error
-                );
-
-
-                return [];
-
-            }
+            return getStoredServices();
 
         }
 
 
-        function saveSharedServices(services) {
+        function saveSharedServices(
+            services
+        ) {
 
-            try {
-
-                localStorage.setItem(
-                    SERVICE_STORAGE_KEY,
-                    JSON.stringify(services)
-                );
-
-            }
-            catch (error) {
-
-                console.error(
-                    "Could not save shared service data:",
-                    error
-                );
-
-            }
+            saveServices(
+                services
+            );
 
         }
 
 
-        function updateActiveServiceCounter(services) {
+        function updateActiveServiceCounter(
+            services
+        ) {
 
             var counter =
                 document.getElementById(
                     "activeServicesCounter"
                 );
-
 
             if (!counter) {
                 return;
@@ -1251,28 +989,20 @@ document.addEventListener(
 
 
             var activeCount =
-                services.filter(function(service) {
+                services.filter(
+                    function(service) {
 
-                    return service.active === true;
+                        return service.active === true;
 
-                }).length;
+                    }
+                ).length;
 
 
             counter.dataset.target =
                 activeCount;
 
-
             counter.textContent =
                 activeCount;
-
-        }
-
-
-        function getServiceName(service) {
-
-            return service && service.name
-                ? String(service.name).trim()
-                : "";
 
         }
 
@@ -1295,108 +1025,98 @@ document.addEventListener(
             if (!services.length) {
 
                 var empty =
-                    document.createElement("p");
-
+                    document.createElement(
+                        "p"
+                    );
 
                 empty.textContent =
                     "No services have been created yet. Open Manage Services to add your services.";
 
-
                 empty.style.color =
                     "#666";
-
 
                 serviceGrid.appendChild(
                     empty
                 );
 
-
                 updateActiveServiceCounter(
                     services
                 );
-
 
                 return;
 
             }
 
 
-            services.forEach(function(service) {
+            services.forEach(
+                function(service) {
 
-                var name =
-                    getServiceName(service);
+                    var name =
+                        getServiceName(
+                            service
+                        );
+
+                    if (!name) {
+                        return;
+                    }
 
 
-                if (!name) {
-                    return;
+                    var label =
+                        document.createElement(
+                            "label"
+                        );
+
+                    label.className =
+                        "service-card";
+
+                    label.dataset.serviceId =
+                        service.id || "";
+
+
+                    var checkbox =
+                        document.createElement(
+                            "input"
+                        );
+
+                    checkbox.type =
+                        "checkbox";
+
+                    checkbox.checked =
+                        service.active === true;
+
+                    checkbox.dataset.serviceId =
+                        service.id || "";
+
+                    checkbox.dataset.serviceName =
+                        name;
+
+
+                    var span =
+                        document.createElement(
+                            "span"
+                        );
+
+                    span.textContent =
+                        name;
+
+
+                    label.appendChild(
+                        checkbox
+                    );
+
+                    label.appendChild(
+                        span
+                    );
+
+                    serviceGrid.appendChild(
+                        label
+                    );
+
                 }
-
-
-                var label =
-                    document.createElement(
-                        "label"
-                    );
-
-
-                label.className =
-                    "service-card";
-
-
-                label.dataset.serviceId =
-                    service.id || "";
-
-
-                var checkbox =
-                    document.createElement(
-                        "input"
-                    );
-
-
-                checkbox.type =
-                    "checkbox";
-
-
-                checkbox.checked =
-                    service.active === true;
-
-
-                checkbox.dataset.serviceId =
-                    service.id || "";
-
-
-                checkbox.dataset.serviceName =
-                    name;
-
-
-                var span =
-                    document.createElement(
-                        "span"
-                    );
-
-
-                span.textContent =
-                    name;
-
-
-                label.appendChild(
-                    checkbox
-                );
-
-
-                label.appendChild(
-                    span
-                );
-
-
-                serviceGrid.appendChild(
-                    label
-                );
-
-            });
+            );
 
 
             attachServiceCheckboxEvents();
-
 
             updateActiveServiceCounter(
                 services
@@ -1416,65 +1136,75 @@ document.addEventListener(
                 .querySelectorAll(
                     "input[type='checkbox']"
                 )
-                .forEach(function(checkbox) {
+                .forEach(
+                    function(checkbox) {
 
-                    checkbox.addEventListener(
-                        "change",
-                        function() {
+                        checkbox.addEventListener(
+                            "change",
+                            function() {
 
-                            var services =
-                                getSharedServices();
+                                var services =
+                                    getSharedServices();
 
+                                var serviceId =
+                                    checkbox.dataset.serviceId;
 
-                            var serviceId =
-                                checkbox.dataset.serviceId;
-
-
-                            var serviceName =
-                                checkbox.dataset.serviceName;
-
-
-                            var service =
-                                services.find(function(item) {
-
-                                    if (serviceId) {
-
-                                        return String(item.id) ===
-                                            String(serviceId);
-
-                                    }
+                                var serviceName =
+                                    checkbox.dataset.serviceName;
 
 
-                                    return (
-                                        getServiceName(item).toLowerCase() ===
-                                        serviceName.toLowerCase()
+                                var service =
+                                    services.find(
+                                        function(item) {
+
+                                            if (
+                                                serviceId
+                                            ) {
+
+                                                return String(
+                                                    item.id
+                                                ) ===
+                                                String(
+                                                    serviceId
+                                                );
+
+                                            }
+
+
+                                            return (
+                                                getServiceName(
+                                                    item
+                                                ).toLowerCase() ===
+                                                serviceName.toLowerCase()
+                                            );
+
+                                        }
                                     );
 
-                                });
+
+                                if (!service) {
+                                    return;
+                                }
 
 
-                            if (!service) {
-                                return;
+                                service.active =
+                                    checkbox.checked;
+
+
+                                saveSharedServices(
+                                    services
+                                );
+
+
+                                updateActiveServiceCounter(
+                                    services
+                                );
+
                             }
+                        );
 
-
-                            service.active =
-                                checkbox.checked;
-
-
-                            saveSharedServices(
-                                services
-                            );
-
-
-                            updateActiveServiceCounter(
-                                services
-                            );
-
-                        }
-                    );
-
-                });
+                    }
+                );
 
         }
 
@@ -1491,7 +1221,6 @@ document.addEventListener(
                 'input[type="file"]'
             );
 
-
         if (galleryUpload) {
 
             galleryUpload.addEventListener(
@@ -1501,12 +1230,10 @@ document.addEventListener(
                     var count =
                         this.files.length;
 
-
                     var info =
                         document.querySelector(
                             ".upload-count"
                         );
-
 
                     if (!info) {
 
@@ -1515,17 +1242,14 @@ document.addEventListener(
                                 "p"
                             );
 
-
                         info.className =
                             "upload-count";
-
 
                         this.parentNode.appendChild(
                             info
                         );
 
                     }
-
 
                     info.innerHTML =
                         count +
@@ -1557,7 +1281,6 @@ document.addEventListener(
                         localStorage.getItem(
                             field.name
                         );
-
 
                     if (saved) {
 
@@ -1597,7 +1320,6 @@ document.addEventListener(
                     chart.innerHTML =
                         "";
 
-
                     for (
                         var i = 0;
                         i < 7;
@@ -1609,10 +1331,8 @@ document.addEventListener(
                                 "div"
                             );
 
-
                         bar.style.width =
                             "28px";
-
 
                         bar.style.height =
                             (
@@ -1622,26 +1342,20 @@ document.addEventListener(
                             ) +
                             "px";
 
-
                         bar.style.background =
                             "#111";
-
 
                         bar.style.borderRadius =
                             "6px";
 
-
                         bar.style.display =
                             "inline-block";
-
 
                         bar.style.margin =
                             "0 5px";
 
-
                         bar.style.verticalAlign =
                             "bottom";
-
 
                         chart.appendChild(
                             bar
@@ -1661,7 +1375,6 @@ document.addEventListener(
             document.querySelector(
                 ".mobile-toggle"
             );
-
 
         var sidebar =
             document.querySelector(
@@ -1694,7 +1407,6 @@ document.addEventListener(
 
         var hour =
             new Date().getHours();
-
 
         var greeting =
             "Welcome";
@@ -1776,195 +1488,285 @@ document.addEventListener(
    BOOKING DASHBOARD
 ========================================== */
 
-var bookings = [
 
-    {
-        client: "Rahul Patil",
-        service: "Wedding",
-        date: "15 Aug 2026",
-        amount: "₹45,000",
-        status: "Confirmed"
-    },
+/* ==========================================
+   GET STORED BOOKINGS
+========================================== */
 
-    {
-        client: "Neha Sharma",
-        service: "Pre-Wedding",
-        date: "22 Aug 2026",
-        amount: "₹18,000",
-        status: "Pending"
-    },
+function getStoredBookings() {
 
-    {
-        client: "Aryan Mehta",
-        service: "Portrait",
-        date: "30 Aug 2026",
-        amount: "₹9,000",
-        status: "Completed"
-    },
+    try {
 
-    {
-        client: "Priya Deshmukh",
-        service: "Maternity",
-        date: "4 Sep 2026",
-        amount: "₹12,500",
-        status: "Confirmed"
-    },
+        var stored =
+            localStorage.getItem(
+                BOOKING_STORAGE_KEY
+            );
 
-    {
-        client: "Karan Joshi",
-        service: "Birthday",
-        date: "12 Sep 2026",
-        amount: "₹15,000",
-        status: "Pending"
-    },
+        if (!stored) {
+            return [];
+        }
 
-    {
-        client: "Sneha Kulkarni",
-        service: "Corporate",
-        date: "18 Sep 2026",
-        amount: "₹32,000",
-        status: "Completed"
+        var parsed =
+            JSON.parse(stored);
+
+        return Array.isArray(parsed)
+            ? parsed
+            : [];
+
+    }
+    catch (error) {
+
+        console.error(
+            "Could not read booking data:",
+            error
+        );
+
+        return [];
+
     }
 
-];
+}
 
 
-var table =
-    document.getElementById(
-        "bookingTable"
-    );
+/* ==========================================
+   BOOKING HELPERS
+========================================== */
+
+function getBookingClient(
+    booking
+) {
+
+    return booking &&
+        booking.client
+        ? String(booking.client)
+        : "Unknown Client";
+
+}
 
 
-var searchInput =
-    document.getElementById(
-        "searchBooking"
-    );
+function getBookingService(
+    booking
+) {
+
+    return booking &&
+        booking.service
+        ? String(booking.service)
+        : "Photography Service";
+
+}
 
 
-var statusFilter =
-    document.getElementById(
-        "statusFilter"
-    );
+function getBookingDate(
+    booking
+) {
+
+    if (
+        booking &&
+        booking.date
+    ) {
+
+        return String(
+            booking.date
+        );
+
+    }
 
 
-var viewFilter =
-    document.getElementById(
-        "viewFilter"
-    );
+    if (
+        booking &&
+        Array.isArray(booking.dates) &&
+        booking.dates.length
+    ) {
+
+        return booking.dates[0].date ||
+            "Not specified";
+
+    }
 
 
-var compareFilter =
-    document.getElementById(
-        "compareFilter"
-    );
+    return "Not specified";
+
+}
 
 
-var totalBookings =
-    document.getElementById(
-        "totalBookings"
-    );
+function getBookingAmount(
+    booking
+) {
+
+    if (
+        booking &&
+        booking.packagePrice !== undefined &&
+        booking.packagePrice !== null &&
+        booking.packagePrice !== ""
+    ) {
+
+        var price =
+            Number(
+                String(
+                    booking.packagePrice
+                )
+                .replace(
+                    /[^\d.-]/g,
+                    ""
+                )
+            );
 
 
-var confirmedBookings =
-    document.getElementById(
-        "confirmedBookings"
-    );
+        if (!isNaN(price)) {
+
+            return new Intl.NumberFormat(
+                "en-IN",
+                {
+                    style: "currency",
+                    currency: "INR",
+                    maximumFractionDigits: 0
+                }
+            ).format(price);
+
+        }
+
+    }
 
 
-var pendingBookings =
-    document.getElementById(
-        "pendingBookings"
-    );
+    if (
+        booking &&
+        booking.amount
+    ) {
+
+        return String(
+            booking.amount
+        );
+
+    }
 
 
-var completedBookings =
-    document.getElementById(
-        "completedBookings"
-    );
+    return "₹0";
+
+}
 
 
-var currentValue =
-    document.getElementById(
-        "currentValue"
-    );
+function getBookingStatus(
+    booking
+) {
+
+    return booking &&
+        booking.status
+        ? String(booking.status)
+        : "Pending";
+
+}
 
 
-var previousValue =
-    document.getElementById(
-        "previousValue"
-    );
+function getBookingStatusClass(
+    status
+) {
 
-
-var growthValue =
-    document.getElementById(
-        "growthValue"
-    );
-
-
-function statusClass(status) {
-
-    if (status === "Confirmed") {
+    if (
+        status ===
+        "Confirmed"
+    ) {
 
         return "active";
 
     }
 
 
-    if (status === "Pending") {
+    if (
+        status ===
+        "Completed"
+    ) {
 
-        return "pending";
+        return "completed";
 
     }
 
 
-    return "completed";
+    return "pending";
 
 }
 
 
-function renderTable() {
+/* ==========================================
+   RENDER BOOKING TABLE
+========================================== */
 
-    if (
-        !table ||
-        !searchInput ||
-        !statusFilter
-    ) {
+function renderBookingTable() {
 
+    var table =
+        document.getElementById(
+            "bookingTable"
+        );
+
+
+    if (!table) {
         return;
-
     }
 
 
+    var searchInput =
+        document.getElementById(
+            "searchBooking"
+        );
+
+
+    var statusFilter =
+        document.getElementById(
+            "statusFilter"
+        );
+
+
     var search =
-        searchInput.value.toLowerCase();
+        searchInput
+        ? searchInput.value
+            .trim()
+            .toLowerCase()
+        : "";
 
 
-    var status =
-        statusFilter.value;
+    var selectedStatus =
+        statusFilter
+        ? statusFilter.value
+        : "all";
+
+
+    var bookings =
+        getStoredBookings();
 
 
     var filtered =
         bookings.filter(
             function(booking) {
 
-                var matchSearch =
-                    booking.client
-                        .toLowerCase()
-                        .includes(search) ||
+                var client =
+                    getBookingClient(
+                        booking
+                    ).toLowerCase();
 
-                    booking.service
-                        .toLowerCase()
-                        .includes(search);
+                var service =
+                    getBookingService(
+                        booking
+                    ).toLowerCase();
+
+                var status =
+                    getBookingStatus(
+                        booking
+                    );
 
 
-                var matchStatus =
-                    status === "all" ||
-                    booking.status === status;
+                var matchesSearch =
+                    !search ||
+                    client.includes(search) ||
+                    service.includes(search);
+
+
+                var matchesStatus =
+                    selectedStatus === "all" ||
+                    status === selectedStatus;
 
 
                 return (
-                    matchSearch &&
-                    matchStatus
+                    matchesSearch &&
+                    matchesStatus
                 );
 
             }
@@ -1973,6 +1775,54 @@ function renderTable() {
 
     table.innerHTML =
         "";
+
+
+    if (!filtered.length) {
+
+        var emptyRow =
+            document.createElement(
+                "tr"
+            );
+
+        var emptyCell =
+            document.createElement(
+                "td"
+            );
+
+        emptyCell.colSpan =
+            5;
+
+        emptyCell.textContent =
+            bookings.length
+                ? "No bookings match your search."
+                : "No bookings have been received yet.";
+
+        emptyCell.style.textAlign =
+            "center";
+
+        emptyCell.style.padding =
+            "30px 20px";
+
+        emptyCell.style.color =
+            "#666";
+
+
+        emptyRow.appendChild(
+            emptyCell
+        );
+
+        table.appendChild(
+            emptyRow
+        );
+
+
+        updateBookingStats(
+            filtered
+        );
+
+        return;
+
+    }
 
 
     filtered.forEach(
@@ -1989,9 +1839,10 @@ function renderTable() {
                     "td"
                 );
 
-
             client.textContent =
-                booking.client;
+                getBookingClient(
+                    booking
+                );
 
 
             var service =
@@ -1999,9 +1850,10 @@ function renderTable() {
                     "td"
                 );
 
-
             service.textContent =
-                booking.service;
+                getBookingService(
+                    booking
+                );
 
 
             var date =
@@ -2009,9 +1861,10 @@ function renderTable() {
                     "td"
                 );
 
-
             date.textContent =
-                booking.date;
+                getBookingDate(
+                    booking
+                );
 
 
             var amount =
@@ -2019,9 +1872,10 @@ function renderTable() {
                     "td"
                 );
 
-
             amount.textContent =
-                booking.amount;
+                getBookingAmount(
+                    booking
+                );
 
 
             var statusCell =
@@ -2036,15 +1890,21 @@ function renderTable() {
                 );
 
 
+            var status =
+                getBookingStatus(
+                    booking
+                );
+
+
             statusBadge.className =
                 "status " +
-                statusClass(
-                    booking.status
+                getBookingStatusClass(
+                    status
                 );
 
 
             statusBadge.textContent =
-                booking.status;
+                status;
 
 
             statusCell.appendChild(
@@ -2056,21 +1916,17 @@ function renderTable() {
                 client
             );
 
-
             row.appendChild(
                 service
             );
-
 
             row.appendChild(
                 date
             );
 
-
             row.appendChild(
                 amount
             );
-
 
             row.appendChild(
                 statusCell
@@ -2085,60 +1941,134 @@ function renderTable() {
     );
 
 
-    updateStats(
+    updateBookingStats(
         filtered
     );
 
 }
 
 
-function updateStats(list) {
+/* ==========================================
+   BOOKING STATISTICS
+========================================== */
 
-    if (!totalBookings) {
-        return;
+function updateBookingStats(
+    list
+) {
+
+    var totalBookings =
+        document.getElementById(
+            "totalBookings"
+        );
+
+    var confirmedBookings =
+        document.getElementById(
+            "confirmedBookings"
+        );
+
+    var pendingBookings =
+        document.getElementById(
+            "pendingBookings"
+        );
+
+    var completedBookings =
+        document.getElementById(
+            "completedBookings"
+        );
+
+
+    if (totalBookings) {
+
+        totalBookings.textContent =
+            list.length;
+
     }
 
 
-    totalBookings.textContent =
-        list.length;
+    if (confirmedBookings) {
 
+        confirmedBookings.textContent =
+            list.filter(
+                function(booking) {
 
-    confirmedBookings.textContent =
-        list.filter(
-            function(b) {
-
-                return b.status ===
+                    return getBookingStatus(
+                        booking
+                    ) ===
                     "Confirmed";
 
-            }
-        ).length;
+                }
+            ).length;
+
+    }
 
 
-    pendingBookings.textContent =
-        list.filter(
-            function(b) {
+    if (pendingBookings) {
 
-                return b.status ===
+        pendingBookings.textContent =
+            list.filter(
+                function(booking) {
+
+                    return getBookingStatus(
+                        booking
+                    ) ===
                     "Pending";
 
-            }
-        ).length;
+                }
+            ).length;
+
+    }
 
 
-    completedBookings.textContent =
-        list.filter(
-            function(b) {
+    if (completedBookings) {
 
-                return b.status ===
+        completedBookings.textContent =
+            list.filter(
+                function(booking) {
+
+                    return getBookingStatus(
+                        booking
+                    ) ===
                     "Completed";
 
-            }
-        ).length;
+                }
+            ).length;
+
+    }
 
 }
 
 
+/* ==========================================
+   BOOKING COMPARISON
+========================================== */
+
 function updateComparison() {
+
+    var viewFilter =
+        document.getElementById(
+            "viewFilter"
+        );
+
+    var compareFilter =
+        document.getElementById(
+            "compareFilter"
+        );
+
+    var currentValue =
+        document.getElementById(
+            "currentValue"
+        );
+
+    var previousValue =
+        document.getElementById(
+            "previousValue"
+        );
+
+    var growthValue =
+        document.getElementById(
+            "growthValue"
+        );
+
 
     if (
         !viewFilter ||
@@ -2153,68 +2083,191 @@ function updateComparison() {
     }
 
 
-    var current = 0;
-    var previous = 0;
-
-
-    switch (viewFilter.value) {
-
-        case "week":
-
-            current = 5;
-            previous = 4;
-
-            break;
-
-
-        case "month":
-
-            current = 18;
-            previous = 14;
-
-            break;
-
-
-        case "year":
-
-            current = 132;
-            previous = 115;
-
-            break;
-
-
-        default:
-
-            current = 584;
-            previous = 530;
-
-    }
-
-
     if (
         compareFilter.value ===
         "none"
     ) {
 
+        currentValue.textContent =
+            "--";
+
         previousValue.textContent =
             "--";
 
-
         growthValue.textContent =
             "--";
-
 
         return;
 
     }
 
 
+    var bookings =
+        getStoredBookings();
+
+
+    var now =
+        new Date();
+
+
+    var current =
+        0;
+
+    var previous =
+        0;
+
+
+    bookings.forEach(
+        function(booking) {
+
+            if (!booking.createdAt) {
+                return;
+            }
+
+
+            var created =
+                new Date(
+                    booking.createdAt
+                );
+
+
+            if (
+                isNaN(
+                    created.getTime()
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            var difference =
+                now.getTime() -
+                created.getTime();
+
+
+            var days =
+                difference /
+                (
+                    1000 *
+                    60 *
+                    60 *
+                    24
+                );
+
+
+            if (
+                viewFilter.value ===
+                "week"
+            ) {
+
+                if (
+                    days >= 0 &&
+                    days < 7
+                ) {
+
+                    current++;
+
+                }
+                else if (
+                    days >= 7 &&
+                    days < 14
+                ) {
+
+                    previous++;
+
+                }
+
+            }
+
+
+            else if (
+                viewFilter.value ===
+                "month"
+            ) {
+
+                if (
+                    created.getMonth() ===
+                    now.getMonth() &&
+                    created.getFullYear() ===
+                    now.getFullYear()
+                ) {
+
+                    current++;
+
+                }
+
+
+                var previousMonth =
+                    new Date(
+                        now.getFullYear(),
+                        now.getMonth() - 1,
+                        1
+                    );
+
+
+                if (
+                    created.getMonth() ===
+                    previousMonth.getMonth() &&
+                    created.getFullYear() ===
+                    previousMonth.getFullYear()
+                ) {
+
+                    previous++;
+
+                }
+
+            }
+
+
+            else if (
+                viewFilter.value ===
+                "year"
+            ) {
+
+                if (
+                    created.getFullYear() ===
+                    now.getFullYear()
+                ) {
+
+                    current++;
+
+                }
+
+
+                if (
+                    created.getFullYear() ===
+                    now.getFullYear() - 1
+                ) {
+
+                    previous++;
+
+                }
+
+            }
+
+        }
+    );
+
+
     currentValue.textContent =
         current;
 
-
     previousValue.textContent =
         previous;
+
+
+    if (previous === 0) {
+
+        growthValue.textContent =
+            current > 0
+                ? "+100%"
+                : "0%";
+
+        return;
+
+    }
 
 
     var growth =
@@ -2230,7 +2283,7 @@ function updateComparison() {
 
     growthValue.textContent =
         (
-            growth >= 0
+            Number(growth) >= 0
                 ? "+"
                 : ""
         ) +
@@ -2240,50 +2293,118 @@ function updateComparison() {
 }
 
 
-if (searchInput) {
+/* ==========================================
+   INITIALIZE BOOKING DASHBOARD
+========================================== */
 
-    searchInput.addEventListener(
-        "keyup",
-        renderTable
-    );
+function initializeBookingDashboard() {
+
+    var searchInput =
+        document.getElementById(
+            "searchBooking"
+        );
+
+
+    var statusFilter =
+        document.getElementById(
+            "statusFilter"
+        );
+
+
+    var viewFilter =
+        document.getElementById(
+            "viewFilter"
+        );
+
+
+    var compareFilter =
+        document.getElementById(
+            "compareFilter"
+        );
+
+
+    if (searchInput) {
+
+        searchInput.addEventListener(
+            "input",
+            renderBookingTable
+        );
+
+    }
+
+
+    if (statusFilter) {
+
+        statusFilter.addEventListener(
+            "change",
+            renderBookingTable
+        );
+
+    }
+
+
+    if (viewFilter) {
+
+        viewFilter.addEventListener(
+            "change",
+            updateComparison
+        );
+
+    }
+
+
+    if (compareFilter) {
+
+        compareFilter.addEventListener(
+            "change",
+            updateComparison
+        );
+
+    }
+
+
+    renderBookingTable();
+
+    updateComparison();
 
 }
 
 
-if (statusFilter) {
+/* ==========================================
+   INITIALIZE BOOKING DASHBOARD
+========================================== */
 
-    statusFilter.addEventListener(
-        "change",
-        renderTable
-    );
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
 
-}
+        initializeBookingDashboard();
 
-
-if (viewFilter) {
-
-    viewFilter.addEventListener(
-        "change",
-        updateComparison
-    );
-
-}
+    }
+);
 
 
-if (compareFilter) {
+/* ==========================================
+   LIVE BOOKING UPDATES
+========================================== */
 
-    compareFilter.addEventListener(
-        "change",
-        updateComparison
-    );
+window.addEventListener(
+    "storage",
+    function(event) {
 
-}
+        if (
+            event.key ===
+            BOOKING_STORAGE_KEY
+        ) {
 
+            renderBookingTable();
 
-renderTable();
+            updateComparison();
 
+        }
 
-updateComparison();
+    }
+);
 
 
 /* ==========================================
@@ -2299,7 +2420,14 @@ window.addEventListener(
             SERVICE_STORAGE_KEY
         ) {
 
-            renderDashboardServices();
+            if (
+                typeof renderDashboardServices ===
+                "function"
+            ) {
+
+                renderDashboardServices();
+
+            }
 
         }
 
