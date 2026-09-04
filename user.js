@@ -688,31 +688,593 @@ document.addEventListener(
     function() {
 
 
-        /* ==========================
-           EQUIPMENT SECTION
-        ========================== */
+       /* ==========================
+   EQUIPMENT SECTION
+========================== */
 
-        function attachEquipmentEvents(card) {
+var EQUIPMENT_STORAGE_KEY =
+    "professionalStudio.equipment";
 
-            var input =
-                card.querySelector(
-                    ".equipment-input input"
+
+/* ==========================
+   DEFAULT EQUIPMENT
+========================== */
+
+var DEFAULT_EQUIPMENT = [
+    {
+        id: "cameras",
+        name: "Cameras",
+        items: []
+    },
+    {
+        id: "lenses",
+        name: "Lenses",
+        items: []
+    },
+    {
+        id: "lighting",
+        name: "Lighting",
+        items: []
+    },
+    {
+        id: "drone-accessories",
+        name: "Drone & Accessories",
+        items: []
+    }
+];
+
+
+/* ==========================
+   GET EQUIPMENT
+========================== */
+
+function getStoredEquipment() {
+
+    try {
+
+        var stored =
+            localStorage.getItem(
+                EQUIPMENT_STORAGE_KEY
+            );
+
+
+        if (!stored) {
+
+            var defaults =
+                JSON.parse(
+                    JSON.stringify(
+                        DEFAULT_EQUIPMENT
+                    )
                 );
 
-            var button =
-                card.querySelector(
-                    ".add-item-btn"
+            localStorage.setItem(
+                EQUIPMENT_STORAGE_KEY,
+                JSON.stringify(defaults)
+            );
+
+            return defaults;
+
+        }
+
+
+        var parsed =
+            JSON.parse(stored);
+
+
+        if (!Array.isArray(parsed)) {
+
+            return [];
+
+        }
+
+
+        return parsed;
+
+    }
+    catch (error) {
+
+        console.error(
+            "Could not read equipment data:",
+            error
+        );
+
+        return [];
+
+    }
+
+}
+
+
+/* ==========================
+   SAVE EQUIPMENT
+========================== */
+
+function saveEquipment(equipment) {
+
+    try {
+
+        localStorage.setItem(
+            EQUIPMENT_STORAGE_KEY,
+            JSON.stringify(equipment)
+        );
+
+        return true;
+
+    }
+    catch (error) {
+
+        console.error(
+            "Could not save equipment data:",
+            error
+        );
+
+        return false;
+
+    }
+
+}
+
+
+/* ==========================
+   CREATE EQUIPMENT CARD
+========================== */
+
+function createEquipmentCard(
+    category
+) {
+
+    var card =
+        document.createElement(
+            "div"
+        );
+
+
+    card.className =
+        "equipment-card";
+
+
+    card.dataset.categoryId =
+        category.id;
+
+
+    var title =
+        document.createElement(
+            "h3"
+        );
+
+    title.textContent =
+        category.name;
+
+
+    var list =
+        document.createElement(
+            "ul"
+        );
+
+    list.className =
+        "equipment-list";
+
+
+    if (
+        Array.isArray(category.items)
+    ) {
+
+        category.items.forEach(
+            function(item) {
+
+                addEquipmentListItem(
+                    list,
+                    item
                 );
 
-            var list =
-                card.querySelector(
-                    ".equipment-list"
+            }
+        );
+
+    }
+
+
+    var inputArea =
+        document.createElement(
+            "div"
+        );
+
+    inputArea.className =
+        "equipment-input";
+
+
+    var input =
+        document.createElement(
+            "input"
+        );
+
+    input.type =
+        "text";
+
+    input.placeholder =
+        "Enter " +
+        category.name.toLowerCase();
+
+
+    var button =
+        document.createElement(
+            "button"
+        );
+
+    button.type =
+        "button";
+
+    button.className =
+        "add-item-btn";
+
+    button.textContent =
+        "Add Item";
+
+
+    inputArea.appendChild(
+        input
+    );
+
+    inputArea.appendChild(
+        button
+    );
+
+
+    card.appendChild(
+        title
+    );
+
+    card.appendChild(
+        list
+    );
+
+    card.appendChild(
+        inputArea
+    );
+
+
+    attachEquipmentEvents(
+        card
+    );
+
+
+    return card;
+
+}
+
+
+/* ==========================
+   ADD LIST ITEM
+========================== */
+
+function addEquipmentListItem(
+    list,
+    item
+) {
+
+    var li =
+        document.createElement(
+            "li"
+        );
+
+
+    var text =
+        document.createElement(
+            "span"
+        );
+
+    text.textContent =
+        item;
+
+
+    var removeButton =
+        document.createElement(
+            "button"
+        );
+
+    removeButton.type =
+        "button";
+
+    removeButton.className =
+        "equipment-remove-btn";
+
+    removeButton.textContent =
+        "×";
+
+
+    removeButton.addEventListener(
+        "click",
+        function() {
+
+            var card =
+                list.closest(
+                    ".equipment-card"
                 );
+
+
+            if (!card) {
+                return;
+            }
+
+
+            var categoryId =
+                card.dataset.categoryId;
+
+
+            var equipment =
+                getStoredEquipment();
+
+
+            var category =
+                equipment.find(
+                    function(item) {
+
+                        return String(
+                            item.id
+                        ) ===
+                        String(
+                            categoryId
+                        );
+
+                    }
+                );
+
+
+            if (!category) {
+                return;
+            }
+
+
+            category.items =
+                category.items.filter(
+                    function(existingItem) {
+
+                        return existingItem !==
+                            item;
+
+                    }
+                );
+
+
+            saveEquipment(
+                equipment
+            );
+
+
+            li.remove();
+
+        }
+    );
+
+
+    li.appendChild(
+        text
+    );
+
+    li.appendChild(
+        removeButton
+    );
+
+
+    list.appendChild(
+        li
+    );
+
+}
+
+
+/* ==========================
+   EQUIPMENT EVENTS
+========================== */
+
+function attachEquipmentEvents(
+    card
+) {
+
+    var input =
+        card.querySelector(
+            ".equipment-input input"
+        );
+
+
+    var button =
+        card.querySelector(
+            ".add-item-btn"
+        );
+
+
+    var list =
+        card.querySelector(
+            ".equipment-list"
+        );
+
+
+    if (
+        !input ||
+        !button ||
+        !list
+    ) {
+
+        return;
+
+    }
+
+
+    function addItem() {
+
+        var value =
+            input.value.trim();
+
+
+        if (!value) {
+            return;
+        }
+
+
+        var categoryId =
+            card.dataset.categoryId;
+
+
+        var equipment =
+            getStoredEquipment();
+
+
+        var category =
+            equipment.find(
+                function(item) {
+
+                    return String(
+                        item.id
+                    ) ===
+                    String(
+                        categoryId
+                    );
+
+                }
+            );
+
+
+        if (!category) {
+            return;
+        }
+
+
+        if (
+            !Array.isArray(
+                category.items
+            )
+        ) {
+
+            category.items = [];
+
+        }
+
+
+        var alreadyExists =
+            category.items.some(
+                function(existingItem) {
+
+                    return existingItem
+                        .toLowerCase() ===
+                        value.toLowerCase();
+
+                }
+            );
+
+
+        if (alreadyExists) {
+
+            input.value = "";
+
+            return;
+
+        }
+
+
+        category.items.push(
+            value
+        );
+
+
+        if (
+            saveEquipment(
+                equipment
+            )
+        ) {
+
+            addEquipmentListItem(
+                list,
+                value
+            );
+
+        }
+
+
+        input.value =
+            "";
+
+        input.focus();
+
+    }
+
+
+    button.addEventListener(
+        "click",
+        addItem
+    );
+
+
+    input.addEventListener(
+        "keydown",
+        function(e) {
 
             if (
-                !input ||
-                !button ||
-                !list
+                e.key ===
+                "Enter"
+            ) {
+
+                e.preventDefault();
+
+                addItem();
+
+            }
+
+        }
+    );
+
+}
+
+
+/* ==========================
+   RENDER EQUIPMENT
+========================== */
+
+function renderDashboardEquipment() {
+
+    var equipmentGrid =
+        document.querySelector(
+            ".equipment-grid"
+        );
+
+
+    var addEquipment =
+        document.getElementById(
+            "addEquipment"
+        );
+
+
+    if (
+        !equipmentGrid ||
+        !addEquipment
+    ) {
+
+        return;
+
+    }
+
+
+    equipmentGrid
+        .querySelectorAll(
+            ".equipment-card:not(#addEquipment)"
+        )
+        .forEach(
+            function(card) {
+
+                card.remove();
+
+            }
+        );
+
+
+    var equipment =
+        getStoredEquipment();
+
+
+    equipment.forEach(
+        function(category) {
+
+            if (
+                !category ||
+                !category.name
             ) {
 
                 return;
@@ -720,39 +1282,190 @@ document.addEventListener(
             }
 
 
-            function addItem() {
-
-                var value =
-                    input.value.trim();
-
-                if (!value) {
-                    return;
-                }
-
-                var li =
-                    document.createElement(
-                        "li"
-                    );
-
-                li.textContent =
-                    value;
-
-                list.appendChild(
-                    li
+            var card =
+                createEquipmentCard(
+                    category
                 );
 
-                input.value =
-                    "";
 
-                input.focus();
+            equipmentGrid.insertBefore(
+                card,
+                addEquipment
+            );
+
+        }
+    );
+
+}
+
+
+/* ==========================
+   ADD EQUIPMENT CATEGORY
+========================== */
+
+function initializeEquipmentCategoryCreation() {
+
+    var equipmentGrid =
+        document.querySelector(
+            ".equipment-grid"
+        );
+
+
+    var addEquipment =
+        document.getElementById(
+            "addEquipment"
+        );
+
+
+    if (
+        !equipmentGrid ||
+        !addEquipment
+    ) {
+
+        return;
+
+    }
+
+
+    addEquipment.addEventListener(
+        "click",
+        function() {
+
+            if (
+                document.querySelector(
+                    ".create-equipment-card"
+                )
+            ) {
+
+                return;
 
             }
 
 
-            button.addEventListener(
-                "click",
-                addItem
+            var createCard =
+                document.createElement(
+                    "div"
+                );
+
+
+            createCard.className =
+                "equipment-card create-equipment-card";
+
+
+            createCard.innerHTML =
+                "<h3>New Equipment Category</h3>" +
+                "<input type=\"text\" id=\"newEquipmentName\" placeholder=\"Category name\">" +
+                "<div class=\"create-actions\">" +
+                "<button type=\"button\" class=\"create-btn\">Create</button>" +
+                "<button type=\"button\" class=\"cancel-btn\">Cancel</button>" +
+                "</div>";
+
+
+            equipmentGrid.insertBefore(
+                createCard,
+                addEquipment
             );
+
+
+            var input =
+                createCard.querySelector(
+                    "#newEquipmentName"
+                );
+
+
+            input.focus();
+
+
+            function createCategory() {
+
+                var categoryName =
+                    input.value.trim();
+
+
+                if (!categoryName) {
+                    return;
+                }
+
+
+                var equipment =
+                    getStoredEquipment();
+
+
+                var exists =
+                    equipment.some(
+                        function(category) {
+
+                            return category.name
+                                .toLowerCase() ===
+                                categoryName.toLowerCase();
+
+                        }
+                    );
+
+
+                if (exists) {
+
+                    input.value = "";
+
+                    input.focus();
+
+                    return;
+
+                }
+
+
+                var category = {
+
+                    id:
+                        "equipment-" +
+                        Date.now(),
+
+                    name:
+                        categoryName,
+
+                    items: []
+
+                };
+
+
+                equipment.push(
+                    category
+                );
+
+
+                if (
+                    saveEquipment(
+                        equipment
+                    )
+                ) {
+
+                    var card =
+                        createEquipmentCard(
+                            category
+                        );
+
+
+                    equipmentGrid.insertBefore(
+                        card,
+                        createCard
+                    );
+
+
+                    createCard.remove();
+
+                }
+
+            }
+
+
+            createCard
+                .querySelector(
+                    ".create-btn"
+                )
+                .addEventListener(
+                    "click",
+                    createCategory
+                );
 
 
             input.addEventListener(
@@ -766,185 +1479,40 @@ document.addEventListener(
 
                         e.preventDefault();
 
-                        addItem();
+                        createCategory();
 
                     }
 
                 }
             );
 
-        }
 
-
-        document
-            .querySelectorAll(
-                ".equipment-card"
-            )
-            .forEach(
-                function(card) {
-
-                    attachEquipmentEvents(
-                        card
-                    );
-
-                }
-            );
-
-
-        var equipmentGrid =
-            document.querySelector(
-                ".equipment-grid"
-            );
-
-        var addEquipment =
-            document.getElementById(
-                "addEquipment"
-            );
-
-
-        if (
-            addEquipment &&
-            equipmentGrid
-        ) {
-
-            addEquipment.addEventListener(
-                "click",
-                function() {
-
-                    if (
-                        document.querySelector(
-                            ".create-equipment-card"
-                        )
-                    ) {
-
-                        return;
-
-                    }
-
-
-                    var createCard =
-                        document.createElement(
-                            "div"
-                        );
-
-                    createCard.className =
-                        "equipment-card create-equipment-card";
-
-                    createCard.innerHTML =
-                        "<h3>New Equipment Category</h3>" +
-                        "<input type=\"text\" id=\"newEquipmentName\" placeholder=\"Category name\">" +
-                        "<div class=\"create-actions\">" +
-                        "<button class=\"create-btn\">Create</button>" +
-                        "<button class=\"cancel-btn\">Cancel</button>" +
-                        "</div>";
-
-
-                    equipmentGrid.insertBefore(
-                        createCard,
-                        addEquipment
-                    );
-
-
-                    var input =
-                        createCard.querySelector(
-                            "#newEquipmentName"
-                        );
-
-                    input.focus();
-
-
-                    function createCategory() {
-
-                        var category =
-                            input.value.trim();
-
-                        if (!category) {
-                            return;
-                        }
-
-
-                        var card =
-                            document.createElement(
-                                "div"
-                            );
-
-                        card.className =
-                            "equipment-card";
-
-                        card.innerHTML =
-                            "<h3>" +
-                            category +
-                            "</h3>" +
-                            "<ul class=\"equipment-list\"></ul>" +
-                            "<div class=\"equipment-input\">" +
-                            "<input type=\"text\" placeholder=\"Add " +
-                            category +
-                            "\">" +
-                            "<button class=\"add-item-btn\">Add Item</button>" +
-                            "</div>";
-
-
-                        equipmentGrid.insertBefore(
-                            card,
-                            createCard
-                        );
-
-
-                        attachEquipmentEvents(
-                            card
-                        );
-
+            createCard
+                .querySelector(
+                    ".cancel-btn"
+                )
+                .addEventListener(
+                    "click",
+                    function() {
 
                         createCard.remove();
 
                     }
-
-
-                    createCard
-                        .querySelector(
-                            ".create-btn"
-                        )
-                        .addEventListener(
-                            "click",
-                            createCategory
-                        );
-
-
-                    input.addEventListener(
-                        "keydown",
-                        function(e) {
-
-                            if (
-                                e.key ===
-                                "Enter"
-                            ) {
-
-                                createCategory();
-
-                            }
-
-                        }
-                    );
-
-
-                    createCard
-                        .querySelector(
-                            ".cancel-btn"
-                        )
-                        .addEventListener(
-                            "click",
-                            function() {
-
-                                createCard.remove();
-
-                            }
-                        );
-
-                }
-            );
+                );
 
         }
+    );
 
+}
+
+
+/* ==========================
+   INITIALIZE EQUIPMENT
+========================== */
+
+renderDashboardEquipment();
+
+initializeEquipmentCategoryCreation();
 
         /* ==========================
            DASHBOARD SERVICE CONTROLS
@@ -2332,7 +2900,7 @@ function initializeBookingDashboard() {
 
     }
 
-
+ 
     if (statusFilter) {
 
         statusFilter.addEventListener(
