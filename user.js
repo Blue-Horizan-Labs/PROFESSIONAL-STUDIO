@@ -3155,7 +3155,7 @@ function loadDashboardGalleries(){
                     photos and videos to your clients.
                 </p>
 
-                <a href="galleryShop.html">
+                <a href="galleryshop.html">
 
                     <button
                         class="btn-primary"
