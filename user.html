@@ -60,6 +60,10 @@
             Services
         </a>
 
+        <a href="clientgallery.html">
+            Client Gallery
+        </a>
+
         <a href="#equipment">
             Equipment
         </a>
@@ -305,6 +309,231 @@
 
     </div>
 
+
+</section>
+
+<!-- ==========================================
+     CLIENT GALLERIES
+=========================================== -->
+
+<section
+    class="section"
+    id="client-galleries"
+>
+
+    <div class="section-header">
+
+        <div>
+
+            <h2>
+                Client Galleries
+            </h2>
+
+            <p>
+                Manage your purchased client galleries, uploads, access and expiry.
+            </p>
+
+        </div>
+
+        <div class="gallery-actions">
+
+            <a href="clientgallery.html">
+                <button
+                    class="btn-primary"
+                    type="button"
+                >
+                    MANAGE GALLERIES
+                </button>
+            </a>
+
+            <a href="galleryShop.html">
+                <button
+                    class="btn-secondary"
+                    type="button"
+                >
+                    BUY NEW GALLERY
+                </button>
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="gallery-dashboard-grid">
+
+        <!-- TOTAL GALLERIES -->
+
+        <div class="gallery-stat-card">
+
+            <div class="gallery-stat-icon">
+                📸
+            </div>
+
+            <div>
+
+                <h3>
+                    Total Galleries
+                </h3>
+
+                <h1 id="totalGalleries">
+                    0
+                </h1>
+
+                <p>
+                    Purchased galleries
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- ACTIVE GALLERIES -->
+
+        <div class="gallery-stat-card">
+
+            <div class="gallery-stat-icon">
+                ✓
+            </div>
+
+            <div>
+
+                <h3>
+                    Active Galleries
+                </h3>
+
+                <h1 id="activeGalleries">
+                    0
+                </h1>
+
+                <p>
+                    Currently available
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- STORAGE -->
+
+        <div class="gallery-stat-card">
+
+            <div class="gallery-stat-icon">
+                GB
+            </div>
+
+            <div>
+
+                <h3>
+                    Storage Used
+                </h3>
+
+                <h1 id="galleryStorageUsed">
+                    0 GB
+                </h1>
+
+                <p>
+                    Across all galleries
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- EXPIRING -->
+
+        <div class="gallery-stat-card">
+
+            <div class="gallery-stat-icon">
+                !
+            </div>
+
+            <div>
+
+                <h3>
+                    Expiring Soon
+                </h3>
+
+                <h1 id="expiringGalleries">
+                    0
+                </h1>
+
+                <p>
+                    Within 30 days
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- RECENT GALLERIES -->
+
+    <div class="gallery-preview-wrapper">
+
+        <div class="gallery-preview-header">
+
+            <div>
+
+                <h3>
+                    Your Galleries
+                </h3>
+
+                <p>
+                    Recently purchased and active galleries.
+                </p>
+
+            </div>
+
+            <a href="clientgallery.html">
+                View All
+            </a>
+
+        </div>
+
+
+        <div
+            class="gallery-preview-grid"
+            id="dashboardGalleryList"
+        >
+
+            <!-- Galleries loaded from localStorage -->
+
+            <div class="gallery-empty">
+
+                <div class="gallery-empty-icon">
+                    📷
+                </div>
+
+                <h3>
+                    No galleries yet
+                </h3>
+
+                <p>
+                    Purchase a gallery to start delivering photos and videos to your clients.
+                </p>
+
+                <a href="galleryShop.html">
+
+                    <button
+                        class="btn-primary"
+                        type="button"
+                    >
+                        BUY YOUR FIRST GALLERY
+                    </button>
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </section>
 

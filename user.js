@@ -3001,3 +3001,389 @@ window.addEventListener(
 
     }
 );
+
+/* =========================================================
+   CLIENT GALLERY DASHBOARD
+========================================================= */
+
+function loadDashboardGalleries(){
+
+    const galleryList =
+        document.getElementById("dashboardGalleryList");
+
+    if(!galleryList){
+        return;
+    }
+
+    let galleries = [];
+
+    try{
+
+        galleries =
+            JSON.parse(
+                localStorage.getItem(
+                    "professionalStudioGalleries"
+                )
+            ) || [];
+
+    }catch(error){
+
+        galleries = [];
+
+    }
+
+
+    const totalElement =
+        document.getElementById("totalGalleries");
+
+    const activeElement =
+        document.getElementById("activeGalleries");
+
+    const storageElement =
+        document.getElementById("galleryStorageUsed");
+
+    const expiringElement =
+        document.getElementById("expiringGalleries");
+
+
+    const now = new Date();
+
+    let activeCount = 0;
+    let expiringCount = 0;
+    let totalStorageUsed = 0;
+
+
+    galleries.forEach(gallery => {
+
+        const expiresAt =
+            gallery.expiresAt
+                ? new Date(gallery.expiresAt)
+                : null;
+
+        const isExpired =
+            expiresAt && expiresAt <= now;
+
+        if(!isExpired){
+
+            activeCount++;
+
+            if(expiresAt){
+
+                const daysRemaining =
+                    Math.ceil(
+                        (
+                            expiresAt.getTime() -
+                            now.getTime()
+                        ) /
+                        (1000 * 60 * 60 * 24)
+                    );
+
+                if(daysRemaining <= 30){
+
+                    expiringCount++;
+
+                }
+
+            }
+
+        }
+
+
+        totalStorageUsed +=
+            Number(gallery.storageUsed) || 0;
+
+    });
+
+
+    if(totalElement){
+
+        totalElement.textContent =
+            galleries.length;
+
+    }
+
+
+    if(activeElement){
+
+        activeElement.textContent =
+            activeCount;
+
+    }
+
+
+    if(storageElement){
+
+        totalStorageUsed =
+            Math.round(
+                totalStorageUsed * 100
+            ) / 100;
+
+        storageElement.textContent =
+            `${totalStorageUsed} GB`;
+
+    }
+
+
+    if(expiringElement){
+
+        expiringElement.textContent =
+            expiringCount;
+
+    }
+
+
+    /* =========================
+       EMPTY STATE
+    ========================= */
+
+    if(galleries.length === 0){
+
+        galleryList.innerHTML = `
+
+            <div class="gallery-empty">
+
+                <div class="gallery-empty-icon">
+                    📷
+                </div>
+
+                <h3>
+                    No galleries yet
+                </h3>
+
+                <p>
+                    Purchase a gallery to start delivering
+                    photos and videos to your clients.
+                </p>
+
+                <a href="galleryShop.html">
+
+                    <button
+                        class="btn-primary"
+                        type="button"
+                    >
+                        BUY YOUR FIRST GALLERY
+                    </button>
+
+                </a>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    /* =========================
+       SHOW RECENT GALLERIES
+    ========================= */
+
+    const recentGalleries =
+        galleries.slice(-3).reverse();
+
+
+    galleryList.innerHTML =
+        recentGalleries
+            .map(gallery => {
+
+                const expiresAt =
+                    gallery.expiresAt
+                        ? new Date(gallery.expiresAt)
+                        : null;
+
+                const isExpired =
+                    expiresAt &&
+                    expiresAt <= now;
+
+
+                const storageUsed =
+                    Number(gallery.storageUsed) || 0;
+
+                const storageLimit =
+                    Number(gallery.storageLimit) || 1;
+
+
+                const storagePercentage =
+                    Math.min(
+                        100,
+                        Math.round(
+                            (
+                                storageUsed /
+                                storageLimit
+                            ) * 100
+                        )
+                    );
+
+
+                const expiryText =
+                    expiresAt
+                        ? expiresAt.toLocaleDateString(
+                            "en-IN",
+                            {
+                                day:"2-digit",
+                                month:"short",
+                                year:"numeric"
+                            }
+                        )
+                        : "Not set";
+
+
+                const status =
+                    isExpired
+                        ? "Expired"
+                        : "Active";
+
+
+                const statusClass =
+                    isExpired
+                        ? "expired"
+                        : "";
+
+
+                return `
+
+                    <div class="dashboard-gallery-card">
+
+                        <div class="dashboard-gallery-top">
+
+                            <div>
+
+                                <div class="dashboard-gallery-title">
+                                    ${escapeGalleryText(
+                                        gallery.name ||
+                                        "Untitled Gallery"
+                                    )}
+                                </div>
+
+                                <div class="dashboard-gallery-client">
+                                    ${
+                                        escapeGalleryText(
+                                            gallery.clientName ||
+                                            "No client assigned"
+                                        )
+                                    }
+                                </div>
+
+                            </div>
+
+                            <span
+                                class="dashboard-gallery-status ${statusClass}"
+                            >
+                                ${status}
+                            </span>
+
+                        </div>
+
+
+                        <div class="dashboard-gallery-info">
+
+                            <div>
+
+                                <span>
+                                    Storage
+                                </span>
+
+                                <strong>
+                                    ${storageUsed} /
+                                    ${storageLimit} GB
+                                </strong>
+
+                            </div>
+
+
+                            <div>
+
+                                <span>
+                                    Expires
+                                </span>
+
+                                <strong>
+                                    ${expiryText}
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="dashboard-gallery-progress">
+
+                            <div
+                                class="dashboard-gallery-progress-bar"
+                                style="width:${storagePercentage}%"
+                            ></div>
+
+                        </div>
+
+
+                        <a href="clientgallery.html">
+
+                            <button
+                                class="btn-primary dashboard-gallery-button"
+                                type="button"
+                            >
+                                MANAGE GALLERY
+                            </button>
+
+                        </a>
+
+                    </div>
+
+                `;
+
+            })
+            .join("");
+
+}
+
+
+/* =========================================================
+   SAFE TEXT
+========================================================= */
+
+function escapeGalleryText(value){
+
+    return String(value)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+        loadDashboardGalleries();
+
+    }
+);
+
+
+/* =========================================================
+   REFRESH WHEN RETURNING TO DASHBOARD
+========================================================= */
+
+window.addEventListener(
+    "storage",
+    function(event){
+
+        if(
+            event.key ===
+            "professionalStudioGalleries"
+        ){
+
+            loadDashboardGalleries();
+
+        }
+
+    }
+);
