@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Client Galleries | Professional Studio</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="clientgallery.css">
+</head>
+
+<body>
+
+    <!-- =========================================================
+         NAVBAR
+    ========================================================== -->
+
+    <header class="navbar">
+
+        <div class="nav-container">
+
+            <a href="#" class="brand">
+
+                <span class="brand-mark">PS</span>
+
+                <span class="brand-name">
+                    Professional Studio
+                </span>
+
+            </a>
+
+
+            <nav class="nav-links">
+
+                <a href="#">Dashboard</a>
+
+                <a href="#" class="active">
+                    My Galleries
+                </a>
+
+                <a href="galleryShop.html">
+                    Gallery Shop
+                </a>
+
+                <a href="#">
+                    Clients
+                </a>
+
+                <a href="#">
+                    Analytics
+                </a>
+
+                <a href="#">
+                    Billing
+                </a>
+
+                <a href="#">
+                    Settings
+                </a>
+
+            </nav>
+
+
+            <button
+                type="button"
+                class="mobile-menu-btn"
+                id="mobileMenuBtn"
+                aria-label="Open menu">
+
+                <span></span>
+                <span></span>
+                <span></span>
+
+            </button>
+
+        </div>
+
+
+        <div
+            class="mobile-menu"
+            id="mobileMenu">
+
+            <a href="#">Dashboard</a>
+
+            <a href="#" class="active">
+                My Galleries
+            </a>
+
+            <a href="galleryShop.html">
+                Gallery Shop
+            </a>
+
+            <a href="#">Clients</a>
+
+            <a href="#">Analytics</a>
+
+            <a href="#">Billing</a>
+
+            <a href="#">Settings</a>
+
+        </div>
+
+    </header>
+
+
+    <!-- =========================================================
+         MAIN
+    ========================================================== -->
+
+    <main>
+
+        <!-- =====================================================
+             PAGE HEADER
+        ====================================================== -->
+
+        <section class="page-header">
+
+            <div class="page-header-content">
+
+                <div>
+
+                    <span class="eyebrow">
+                        PROFESSIONAL STUDIO · MY GALLERIES
+                    </span>
+
+                    <h1>
+                        Client galleries.
+                    </h1>
+
+                    <p>
+                        Manage your purchased galleries, upload
+                        client work, organize albums, and control
+                        how your clients access everything.
+                    </p>
+
+                </div>
+
+
+                <a
+                    href="galleryShop.html"
+                    class="primary-btn">
+
+                    <span>+</span>
+                    Buy New Gallery
+
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             GALLERY STATS
+        ====================================================== -->
+
+        <section class="stats-section">
+
+            <div class="stats-grid">
+
+                <div class="stat-card">
+
+                    <span class="stat-label">
+                        TOTAL GALLERIES
+                    </span>
+
+                    <strong id="totalGalleries">
+                        0
+                    </strong>
+
+                    <span class="stat-note">
+                        Purchased galleries
+                    </span>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <span class="stat-label">
+                        ACTIVE
+                    </span>
+
+                    <strong id="activeGalleries">
+                        0
+                    </strong>
+
+                    <span class="stat-note">
+                        Currently available
+                    </span>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <span class="stat-label">
+                        STORAGE USED
+                    </span>
+
+                    <strong id="totalStorage">
+                        0 GB
+                    </strong>
+
+                    <span class="stat-note">
+                        Across all galleries
+                    </span>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <span class="stat-label">
+                        EXPIRING SOON
+                    </span>
+
+                    <strong id="expiringGalleries">
+                        0
+                    </strong>
+
+                    <span class="stat-note">
+                        Within 30 days
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             GALLERY MANAGEMENT
+        ====================================================== -->
+
+        <section class="gallery-section">
+
+            <div class="section-toolbar">
+
+                <div>
+
+                    <span class="section-label">
+                        GALLERY MANAGEMENT
+                    </span>
+
+                    <h2>
+                        Your galleries
+                    </h2>
+
+                </div>
+
+
+                <div class="toolbar-actions">
+
+                    <div class="search-box">
+
+                        <span>⌕</span>
+
+                        <input
+                            type="search"
+                            id="gallerySearch"
+                            placeholder="Search galleries...">
+
+                    </div>
+
+
+                    <select id="statusFilter">
+
+                        <option value="all">
+                            All galleries
+                        </option>
+
+                        <option value="active">
+                            Active
+                        </option>
+
+                        <option value="expiring">
+                            Expiring soon
+                        </option>
+
+                        <option value="expired">
+                            Expired
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 EMPTY STATE
+            ================================================== -->
+
+            <div
+                class="empty-state"
+                id="emptyState">
+
+                <div class="empty-icon">
+                    +
+                </div>
+
+                <h3>
+                    No galleries yet.
+                </h3>
+
+                <p>
+                    Purchase your first client gallery to start
+                    uploading and delivering your work.
+                </p>
+
+                <a
+                    href="galleryShop.html"
+                    class="primary-btn">
+
+                    Open Gallery Shop
+
+                </a>
+
+            </div>
+
+
+            <!-- =================================================
+                 GALLERY GRID
+            ================================================== -->
+
+            <div
+                class="gallery-grid"
+                id="galleryGrid">
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             GALLERY DETAIL PANEL
+        ====================================================== -->
+
+        <div
+            class="modal-overlay"
+            id="galleryModal">
+
+            <div class="gallery-modal">
+
+                <button
+                    type="button"
+                    class="modal-close"
+                    id="closeGalleryModal">
+
+                    ×
+
+                </button>
+
+
+                <!-- =============================================
+                     MODAL HEADER
+                ============================================== -->
+
+                <div class="modal-header">
+
+                    <div>
+
+                        <span class="modal-eyebrow">
+                            GALLERY MANAGEMENT
+                        </span>
+
+                        <h2 id="modalGalleryName">
+                            Wedding Gallery
+                        </h2>
+
+                        <p id="modalClientName">
+                            Client
+                        </p>
+
+                    </div>
+
+
+                    <span
+                        class="status-pill"
+                        id="modalStatus">
+
+                        ACTIVE
+
+                    </span>
+
+                </div>
+
+
+                <!-- =============================================
+                     GALLERY TABS
+                ============================================== -->
+
+                <div class="gallery-tabs">
+
+                    <button
+                        type="button"
+                        class="gallery-tab active"
+                        data-tab="overview">
+
+                        Overview
+
+                    </button>
+
+                    <button
+                        type="button"
+                        class="gallery-tab"
+                        data-tab="media">
+
+                        Media
+
+                    </button>
+
+                    <button
+                        type="button"
+                        class="gallery-tab"
+                        data-tab="albums">
+
+                        Albums
+
+                    </button>
+
+                    <button
+                        type="button"
+                        class="gallery-tab"
+                        data-tab="access">
+
+                        Access
+
+                    </button>
+
+                    <button
+                        type="button"
+                        class="gallery-tab"
+                        data-tab="settings">
+
+                        Settings
+
+                    </button>
+
+                </div>
+
+
+                <!-- =============================================
+                     OVERVIEW TAB
+                ============================================== -->
+
+                <div
+                    class="tab-content active"
+                    id="tab-overview">
+
+                    <div class="overview-grid">
+
+                        <div class="overview-card">
+
+                            <span>
+                                STORAGE
+                            </span>
+
+                            <strong id="modalStorage">
+                                100 GB
+                            </strong>
+
+                            <div class="storage-progress">
+
+                                <div
+                                    class="storage-progress-bar"
+                                    id="modalStorageProgress">
+                                </div>
+
+                            </div>
+
+                            <small id="modalStorageText">
+                                0 GB used of 100 GB
+                            </small>
+
+                        </div>
+
+
+                        <div class="overview-card">
+
+                            <span>
+                                DURATION
+                            </span>
+
+                            <strong id="modalDuration">
+                                6 months
+                            </strong>
+
+                            <small>
+                                Purchased gallery duration
+                            </small>
+
+                        </div>
+
+
+                        <div class="overview-card">
+
+                            <span>
+                                EXPIRES
+                            </span>
+
+                            <strong id="modalExpiry">
+                                —
+                            </strong>
+
+                            <small id="modalExpiryNote">
+                                Gallery availability
+                            </small>
+
+                        </div>
+
+
+                        <div class="overview-card">
+
+                            <span>
+                                CLIENT DOWNLOADS
+                            </span>
+
+                            <strong id="modalDownloads">
+                                Enabled
+                            </strong>
+
+                            <small>
+                                Current access setting
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="overview-section">
+
+                        <div class="overview-section-header">
+
+                            <div>
+
+                                <span class="section-label">
+                                    GALLERY LINK
+                                </span>
+
+                                <h3>
+                                    Share with your client
+                                </h3>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="link-box">
+
+                            <input
+                                type="text"
+                                id="modalGalleryLink"
+                                readonly>
+
+                            <button
+                                type="button"
+                                id="copyLinkBtn">
+
+                                Copy Link
+
+                            </button>
+
+                        </div>
+
+                        <p class="helper-text">
+                            Give this link to your client together
+                            with their gallery password.
+                        </p>
+
+                    </div>
+
+
+                    <div class="quick-actions">
+
+                        <button
+                            type="button"
+                            class="quick-action"
+                            data-open-tab="media">
+
+                            <span>↑</span>
+
+                            <strong>
+                                Upload Media
+                            </strong>
+
+                            <small>
+                                Add photos or videos
+                            </small>
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="quick-action"
+                            data-open-tab="albums">
+
+                            <span>□</span>
+
+                            <strong>
+                                Manage Albums
+                            </strong>
+
+                            <small>
+                                Organize your gallery
+                            </small>
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="quick-action"
+                            data-open-tab="access">
+
+                            <span>⌕</span>
+
+                            <strong>
+                                Client Access
+                            </strong>
+
+                            <small>
+                                Password & permissions
+                            </small>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =============================================
+                     MEDIA TAB
+                ============================================== -->
+
+                <div
+                    class="tab-content"
+                    id="tab-media">
+
+                    <div class="media-header">
+
+                        <div>
+
+                            <span class="section-label">
+                                MEDIA
+                            </span>
+
+                            <h3>
+                                Photos & videos
+                            </h3>
+
+                            <p>
+                                Upload finished work directly
+                                into this client gallery.
+                            </p>
+
+                        </div>
+
+
+                        <label
+                            class="upload-btn">
+
+                            <input
+                                type="file"
+                                id="mediaUpload"
+                                multiple
+                                accept="image/*,video/*">
+
+                            <span>↑</span>
+                            Upload Media
+
+                        </label>
+
+                    </div>
+
+
+                    <div class="upload-zone" id="uploadZone">
+
+                        <div class="upload-zone-icon">
+                            ↑
+                        </div>
+
+                        <h3>
+                            Drop photos and videos here
+                        </h3>
+
+                        <p>
+                            or click to browse files
+                        </p>
+
+                        <small>
+                            Photos and videos are supported.
+                        </small>
+
+                    </div>
+
+
+                    <div class="media-toolbar">
+
+                        <span id="mediaCount">
+                            0 items
+                        </span>
+
+                        <select id="mediaFilter">
+
+                            <option value="all">
+                                All media
+                            </option>
+
+                            <option value="photo">
+                                Photos
+                            </option>
+
+                            <option value="video">
+                                Videos
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div
+                        class="media-grid"
+                        id="mediaGrid">
+
+                    </div>
+
+                </div>
+
+
+                <!-- =============================================
+                     ALBUMS TAB
+                ============================================== -->
+
+                <div
+                    class="tab-content"
+                    id="tab-albums">
+
+                    <div class="albums-header">
+
+                        <div>
+
+                            <span class="section-label">
+                                ALBUMS
+                            </span>
+
+                            <h3>
+                                Organize your gallery
+                            </h3>
+
+                            <p>
+                                Create sections so clients can
+                                easily navigate their photos.
+                            </p>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            class="dark-btn"
+                            id="createAlbumBtn">
+
+                            + New Section
+
+                        </button>
+
+                    </div>
+
+
+                    <div
+                        class="albums-grid"
+                        id="albumsGrid">
+
+                    </div>
+
+                </div>
+
+
+                <!-- =============================================
+                     ACCESS TAB
+                ============================================== -->
+
+                <div
+                    class="tab-content"
+                    id="tab-access">
+
+                    <div class="settings-header">
+
+                        <span class="section-label">
+                            CLIENT ACCESS
+                        </span>
+
+                        <h3>
+                            Control who can view your gallery.
+                        </h3>
+
+                        <p>
+                            Keep the gallery private and decide
+                            what your client can do.
+                        </p>
+
+                    </div>
+
+
+                    <div class="settings-list">
+
+                        <div class="setting-row">
+
+                            <div class="setting-info">
+
+                                <strong>
+                                    Gallery password
+                                </strong>
+
+                                <span>
+                                    Require a password before
+                                    the client can view the gallery.
+                                </span>
+
+                            </div>
+
+                            <label class="toggle">
+
+                                <input
+                                    type="checkbox"
+                                    id="passwordEnabled"
+                                    checked>
+
+                                <span></span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div
+                            class="password-setting"
+                            id="passwordSetting">
+
+                            <label>
+                                Gallery password
+                            </label>
+
+                            <div class="password-input">
+
+                                <input
+                                    type="text"
+                                    id="galleryPassword"
+                                    placeholder="Enter password">
+
+                                <button
+                                    type="button"
+                                    id="generatePassword">
+
+                                    Generate
+
+                                </button>
+
+                            </div>
+
+                            <button
+                                type="button"
+                                class="save-small-btn"
+                                id="savePassword">
+
+                                Save Password
+
+                            </button>
+
+                        </div>
+
+
+                        <div class="setting-row">
+
+                            <div class="setting-info">
+
+                                <strong>
+                                    Client downloads
+                                </strong>
+
+                                <span>
+                                    Allow clients to download
+                                    photos and videos.
+                                </span>
+
+                            </div>
+
+                            <label class="toggle">
+
+                                <input
+                                    type="checkbox"
+                                    id="downloadsEnabled"
+                                    checked>
+
+                                <span></span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="setting-row">
+
+                            <div class="setting-info">
+
+                                <strong>
+                                    Gallery visibility
+                                </strong>
+
+                                <span>
+                                    Keep the gallery accessible
+                                    through its private link.
+                                </span>
+
+                            </div>
+
+                            <label class="toggle">
+
+                                <input
+                                    type="checkbox"
+                                    id="galleryVisible"
+                                    checked>
+
+                                <span></span>
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =============================================
+                     SETTINGS TAB
+                ============================================== -->
+
+                <div
+                    class="tab-content"
+                    id="tab-settings">
+
+                    <div class="settings-header">
+
+                        <span class="section-label">
+                            GALLERY SETTINGS
+                        </span>
+
+                        <h3>
+                            Gallery information
+                        </h3>
+
+                        <p>
+                            Update the information displayed
+                            for this gallery.
+                        </p>
+
+                    </div>
+
+
+                    <form
+                        class="gallery-settings-form"
+                        id="gallerySettingsForm">
+
+                        <div class="form-grid">
+
+                            <div class="form-group">
+
+                                <label for="editGalleryName">
+                                    Gallery name
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="editGalleryName"
+                                    placeholder="Gallery name"
+                                    required>
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="editClientName">
+                                    Client name
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="editClientName"
+                                    placeholder="Client name">
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="editGalleryDescription">
+                                Gallery description
+                            </label>
+
+                            <textarea
+                                id="editGalleryDescription"
+                                rows="4"
+                                placeholder="Add a short description for this gallery...">
+                            </textarea>
+
+                        </div>
+
+
+                        <div class="settings-actions">
+
+                            <button
+                                type="submit"
+                                class="dark-btn">
+
+                                Save Changes
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+
+                    <div class="danger-zone">
+
+                        <div>
+
+                            <span class="section-label">
+                                DANGER ZONE
+                            </span>
+
+                            <h3>
+                                Delete gallery
+                            </h3>
+
+                            <p>
+                                Permanently remove this gallery
+                                from your dashboard.
+                            </p>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            class="danger-btn"
+                            id="deleteGalleryBtn">
+
+                            Delete Gallery
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             CREATE ALBUM MODAL
+        ====================================================== -->
+
+        <div
+            class="small-modal-overlay"
+            id="albumModal">
+
+            <div class="small-modal">
+
+                <button
+                    type="button"
+                    class="modal-close"
+                    id="closeAlbumModal">
+
+                    ×
+
+                </button>
+
+                <span class="section-label">
+                    NEW SECTION
+                </span>
+
+                <h2>
+                    Create a gallery section
+                </h2>
+
+                <p>
+                    Give this section a name such as
+                    Ceremony, Reception, Portraits or Highlights.
+                </p>
+
+
+                <form id="albumForm">
+
+                    <div class="form-group">
+
+                        <label for="albumName">
+                            Section name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="albumName"
+                            placeholder="e.g. Wedding Ceremony"
+                            required>
+
+                    </div>
+
+
+                    <div class="modal-form-actions">
+
+                        <button
+                            type="button"
+                            class="secondary-btn"
+                            id="cancelAlbum">
+
+                            Cancel
+
+                        </button>
+
+                        <button
+                            type="submit"
+                            class="dark-btn">
+
+                            Create Section
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             TOAST
+        ====================================================== -->
+
+        <div
+            class="toast"
+            id="toast">
+
+            <span id="toastMessage">
+                Saved
+            </span>
+
+        </div>
+
+    </main>
+
+
+    <script src="clientgallery.js"></script>
+
+</body>
+</html>
