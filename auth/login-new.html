@@ -1,475 +1,733 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+
+<title>Login</title>
+
 <link
     rel="icon"
     type="image/png"
-    href="https://i.ibb.co/8g0LT3jZ/logo1-2.png" 
+    href="https://i.ibb.co/8g0LT3jZ/logo1-2.png"
 >
 
-    <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-body{
-    font-family:'Poppins','Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    padding:20px;
-    position:relative;
-    overflow:hidden;
-
-    background:#ffffff;
-    color:#111111;
-}
-
-/* ================= BACKGROUND GLOW ================= */
-
-body::before{
-    content:"";
-    position:absolute;
-
-    width:40vw;
-    height:40vw;
-
-    min-width:220px;
-    min-height:220px;
-
-    max-width:520px;
-    max-height:520px;
-
-    border-radius:50%;
-    background:#7c3aed;
-
-    filter:blur(140px);
-    opacity:.07;
-
-    top:-10%;
-    left:-10%;
-}
-
-body::after{
-    content:"";
-    position:absolute;
-
-    width:35vw;
-    height:35vw;
-
-    min-width:200px;
-    min-height:200px;
-
-    max-width:450px;
-    max-height:450px;
-
-    border-radius:50%;
-    background:#a78bfa;
-
-    filter:blur(140px);
-    opacity:.06;
-
-    right:-8%;
-    bottom:-8%;
-}
-
-/* ================= LOGIN CONTAINER ================= */
-
-.login-container{
-    position:relative;
-    width:100%;
-    max-width:430px;
-    margin:20px;
-    padding:45px;
-    overflow:hidden;
-
-    border-radius:22px;
-
-    background:#ffffff;
-
-    border:1px solid #e5e5e5;
-
-    box-shadow:
-        0 20px 50px rgba(0,0,0,.08);
-
-    z-index:10;
-}
-
-.login-container::before{
-    content:"";
-    position:absolute;
-    inset:0;
-
-    border-radius:22px;
-
-    border:1px solid rgba(124,58,237,.12);
-
-    pointer-events:none;
-}
-
-/* ================= HEADINGS ================= */
-
-h1{
-    color:#111111;
-    text-align:center;
-    margin-bottom:10px;
-    font-size:2rem;
-    font-weight:700;
-}
-
-h1+p{
-    text-align:center;
-    color:#666666;
-    margin-bottom:35px;
-    font-size:.95rem;
-}
-
-/* ================= FORM ================= */
-
-.form-group{
-    margin-bottom:22px;
-}
-
-label{
-    display:block;
-    margin-bottom:8px;
-
-    color:#333333;
-
-    font-size:.92rem;
-    font-weight:600;
-}
-
-input{
-    width:100%;
-    padding:15px 18px;
-
-    border-radius:12px;
-
-    border:1px solid #dddddd;
-
-    background:#f7f7f7;
-
-    color:#111111;
-    font-size:15px;
-
-    transition:.35s;
-}
-
-input::placeholder{
-    color:#999999;
-}
-
-input:focus{
-    outline:none;
-
-    border-color:#7c3aed;
-
-    background:#ffffff;
-
-    box-shadow:
-        0 0 0 4px rgba(124,58,237,.10);
-}
-
-/* ================= OPTIONS ================= */
-
-.options{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-
-    margin-bottom:28px;
-
-    font-size:.9rem;
-}
-
-.options label{
-    display:flex;
-    align-items:center;
-    gap:8px;
-
-    margin:0;
-
-    color:#666666;
-    font-weight:400;
-}
-
-.options input[type="checkbox"]{
-    width:16px;
-    height:16px;
-
-    margin:0;
-
-    cursor:pointer;
-
-    accent-color:#7c3aed;
-}
-
-.options a{
-    color:#7c3aed;
-    text-decoration:none;
-    transition:.3s;
-}
-
-.options a:hover{
-    color:#6d28d9;
-}
-
-/* ================= BUTTON ================= */
-
-button{
-    width:100%;
-    padding:16px;
-
-    border:none;
-    border-radius:50px;
-
-    background:#111111;
-
-    color:#ffffff;
-
-    font-size:16px;
-    font-weight:600;
-
-    cursor:pointer;
-
-    transition:.35s;
-
-    box-shadow:
-        0 12px 30px rgba(0,0,0,.12);
-}
-
-button:hover{
-    transform:translateY(-3px);
-
-    box-shadow:
-        0 18px 40px rgba(0,0,0,.16);
-}
-
-button:active{
-    transform:translateY(0);
-}
-
-button:disabled{
-    opacity:.7;
-    cursor:not-allowed;
-}
-
-/* ================= SIGNUP ================= */
-
-.signup{
-    margin-top:28px;
-    text-align:center;
-    color:#666666;
-    font-size:.95rem;
-}
-
-.signup a{
-    color:#7c3aed;
-    font-weight:600;
-    text-decoration:none;
-    transition:.3s;
-}
-
-.signup a:hover{
-    color:#6d28d9;
-}
-
-/* ---------- Tablet ---------- */
-
-@media (max-width:992px){
-
-    .login-container{
-        max-width:420px;
-        padding:40px 35px;
+<style>
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
     }
 
-    body::before{
-        width:340px;
-        height:340px;
-        top:-120px;
-        left:-120px;
-        filter:blur(120px);
+
+    body {
+        font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+        min-height: 100vh;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        padding: 20px;
+
+        position: relative;
+
+        overflow: hidden;
+
+        background: #ffffff;
+        color: #111111;
     }
 
-    body::after{
-        width:300px;
-        height:300px;
-        right:-100px;
-        bottom:-100px;
-        filter:blur(120px);
+
+    /* ================= BACKGROUND GLOW ================= */
+
+    body::before {
+        content: "";
+
+        position: absolute;
+
+        width: 40vw;
+        height: 40vw;
+
+        min-width: 220px;
+        min-height: 220px;
+
+        max-width: 520px;
+        max-height: 520px;
+
+        border-radius: 50%;
+
+        background: #7c3aed;
+
+        filter: blur(140px);
+
+        opacity: .07;
+
+        top: -10%;
+        left: -10%;
     }
 
-}
 
-/* ---------- Mobile ---------- */
+    body::after {
+        content: "";
 
-@media (max-width:768px){
+        position: absolute;
 
-    body{
-        padding:18px;
+        width: 35vw;
+        height: 35vw;
+
+        min-width: 200px;
+        min-height: 200px;
+
+        max-width: 450px;
+        max-height: 450px;
+
+        border-radius: 50%;
+
+        background: #a78bfa;
+
+        filter: blur(140px);
+
+        opacity: .06;
+
+        right: -8%;
+        bottom: -8%;
     }
 
-    .login-container{
-        width:100%;
-        max-width:400px;
-        margin:0;
-        padding:35px 28px;
-        border-radius:20px;
+
+    /* ================= LOGIN CONTAINER ================= */
+
+    .login-container {
+        position: relative;
+
+        width: 100%;
+        max-width: 430px;
+
+        margin: 20px;
+
+        padding: 45px;
+
+        overflow: hidden;
+
+        border-radius: 22px;
+
+        background: #ffffff;
+
+        border: 1px solid #e5e5e5;
+
+        box-shadow:
+            0 20px 50px rgba(0, 0, 0, .08);
+
+        z-index: 10;
     }
 
-    body::before{
-        width:260px;
-        height:260px;
-        top:-90px;
-        left:-100px;
-        filter:blur(100px);
-        opacity:.08;
+
+    .login-container::before {
+        content: "";
+
+        position: absolute;
+
+        inset: 0;
+
+        border-radius: 22px;
+
+        border: 1px solid rgba(124, 58, 237, .12);
+
+        pointer-events: none;
     }
 
-    body::after{
-        width:220px;
-        height:220px;
-        right:-80px;
-        bottom:-80px;
-        filter:blur(95px);
-        opacity:.07;
+
+    /* ================= HEADINGS ================= */
+
+    h1 {
+        color: #111111;
+
+        text-align: center;
+
+        margin-bottom: 10px;
+
+        font-size: 2rem;
+
+        font-weight: 700;
     }
 
-    h1{
-        font-size:1.8rem;
+
+    h1 + p {
+        text-align: center;
+
+        color: #666666;
+
+        margin-bottom: 35px;
+
+        font-size: .95rem;
     }
 
-    h1+p{
-        font-size:.9rem;
-        margin-bottom:28px;
+
+    /* ================= FORM ================= */
+
+    .form-group {
+        margin-bottom: 22px;
     }
 
-    input{
-        padding:14px 16px;
-        font-size:14px;
+
+    label {
+        display: block;
+
+        margin-bottom: 8px;
+
+        color: #333333;
+
+        font-size: .92rem;
+
+        font-weight: 600;
     }
 
-    button{
-        padding:15px;
-        font-size:15px;
+
+    input {
+        width: 100%;
+
+        padding: 15px 18px;
+
+        border-radius: 12px;
+
+        border: 1px solid #dddddd;
+
+        background: #f7f7f7;
+
+        color: #111111;
+
+        font-size: 15px;
+
+        transition: .35s;
     }
 
-}
 
-/* ---------- Small Phones ---------- */
-
-@media (max-width:480px){
-
-    body{
-        padding:16px;
+    input::placeholder {
+        color: #999999;
     }
 
-    .login-container{
-        padding:30px 22px;
-        border-radius:18px;
+
+    input:focus {
+        outline: none;
+
+        border-color: #7c3aed;
+
+        background: #ffffff;
+
+        box-shadow:
+            0 0 0 4px rgba(124, 58, 237, .10);
     }
 
-    body::before{
-        width:220px;
-        height:220px;
-        top:-80px;
-        left:-90px;
-        filter:blur(90px);
+
+    /* ================= PASSWORD WRAPPER ================= */
+
+    .password-wrapper {
+        position: relative;
+
+        width: 100%;
     }
 
-    body::after{
-        width:180px;
-        height:180px;
-        right:-70px;
-        bottom:-70px;
-        filter:blur(85px);
+
+    .password-wrapper input {
+        padding-right: 52px;
     }
 
-    h1{
-        font-size:1.6rem;
+
+    .password-toggle {
+        position: absolute;
+
+        top: 50%;
+        right: 15px;
+
+        transform: translateY(-50%);
+
+        width: 28px;
+        height: 28px;
+
+        padding: 0;
+
+        margin: 0;
+
+        border: none;
+
+        border-radius: 50%;
+
+        background: transparent;
+
+        color: #777777;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        cursor: pointer;
+
+        box-shadow: none;
+
+        transition:
+            color .25s ease,
+            background .25s ease;
     }
 
-    h1+p{
-        font-size:.85rem;
-        margin-bottom:24px;
+
+    .password-toggle:hover {
+        transform: translateY(-50%);
+
+        color: #111111;
+
+        background: rgba(0, 0, 0, .05);
+
+        box-shadow: none;
     }
 
-    .form-group{
-        margin-bottom:18px;
+
+    .password-toggle:active {
+        transform: translateY(-50%);
     }
 
-    input{
-        padding:13px 15px;
-        border-radius:12px;
+
+    .password-toggle:focus {
+        outline: none;
+
+        box-shadow:
+            0 0 0 3px rgba(124, 58, 237, .12);
     }
 
-    button{
-        padding:14px;
-        border-radius:50px;
+
+    .password-toggle svg {
+        width: 19px;
+        height: 19px;
+
+        stroke: currentColor;
+
+        stroke-width: 2;
+
+        fill: none;
+
+        stroke-linecap: round;
+        stroke-linejoin: round;
+
+        pointer-events: none;
     }
 
-    .options{
-        font-size:.82rem;
-        gap:10px;
-        flex-wrap:wrap;
+
+    /* ================= OPTIONS ================= */
+
+    .options {
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        margin-bottom: 28px;
+
+        font-size: .9rem;
     }
 
-    .signup{
-        font-size:.9rem;
+
+    .options label {
+        display: flex;
+
+        align-items: center;
+
+        gap: 8px;
+
+        margin: 0;
+
+        color: #666666;
+
+        font-weight: 400;
     }
 
-}
 
-/* ---------- Large Screens ---------- */
+    .options input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
 
-@media (min-width:1400px){
+        margin: 0;
 
-    body::before{
-        width:520px;
-        height:520px;
+        cursor: pointer;
+
+        accent-color: #7c3aed;
     }
 
-    body::after{
-        width:450px;
-        height:450px;
+
+    .options a {
+        color: #7c3aed;
+
+        text-decoration: none;
+
+        transition: .3s;
     }
 
-}
-    </style>
+
+    .options a:hover {
+        color: #6d28d9;
+    }
+
+
+    /* ================= BUTTON ================= */
+
+    button {
+        width: 100%;
+
+        padding: 16px;
+
+        border: none;
+
+        border-radius: 50px;
+
+        background: #111111;
+
+        color: #ffffff;
+
+        font-size: 16px;
+
+        font-weight: 600;
+
+        cursor: pointer;
+
+        transition: .35s;
+
+        box-shadow:
+            0 12px 30px rgba(0, 0, 0, .12);
+    }
+
+
+    button:hover {
+        transform: translateY(-3px);
+
+        box-shadow:
+            0 18px 40px rgba(0, 0, 0, .16);
+    }
+
+
+    button:active {
+        transform: translateY(0);
+    }
+
+
+    button:disabled {
+        opacity: .7;
+
+        cursor: not-allowed;
+    }
+
+
+    /* ================= SIGNUP ================= */
+
+    .signup {
+        margin-top: 28px;
+
+        text-align: center;
+
+        color: #666666;
+
+        font-size: .95rem;
+    }
+
+
+    .signup a {
+        color: #7c3aed;
+
+        font-weight: 600;
+
+        text-decoration: none;
+
+        transition: .3s;
+    }
+
+
+    .signup a:hover {
+        color: #6d28d9;
+    }
+
+
+    /* ================= TABLET ================= */
+
+    @media (max-width: 992px) {
+
+        .login-container {
+            max-width: 420px;
+
+            padding: 40px 35px;
+        }
+
+
+        body::before {
+            width: 340px;
+            height: 340px;
+
+            top: -120px;
+            left: -120px;
+
+            filter: blur(120px);
+        }
+
+
+        body::after {
+            width: 300px;
+            height: 300px;
+
+            right: -100px;
+            bottom: -100px;
+
+            filter: blur(120px);
+        }
+
+    }
+
+
+    /* ================= MOBILE ================= */
+
+    @media (max-width: 768px) {
+
+        body {
+            padding: 18px;
+        }
+
+
+        .login-container {
+            width: 100%;
+
+            max-width: 400px;
+
+            margin: 0;
+
+            padding: 35px 28px;
+
+            border-radius: 20px;
+        }
+
+
+        body::before {
+            width: 260px;
+            height: 260px;
+
+            top: -90px;
+            left: -100px;
+
+            filter: blur(100px);
+
+            opacity: .08;
+        }
+
+
+        body::after {
+            width: 220px;
+            height: 220px;
+
+            right: -80px;
+            bottom: -80px;
+
+            filter: blur(95px);
+
+            opacity: .07;
+        }
+
+
+        h1 {
+            font-size: 1.8rem;
+        }
+
+
+        h1 + p {
+            font-size: .9rem;
+
+            margin-bottom: 28px;
+        }
+
+
+        input {
+            padding: 14px 16px;
+
+            font-size: 14px;
+        }
+
+
+        .password-wrapper input {
+            padding-right: 48px;
+        }
+
+
+        .password-toggle {
+            right: 12px;
+        }
+
+
+        button {
+            padding: 15px;
+
+            font-size: 15px;
+        }
+
+    }
+
+
+    /* ================= SMALL PHONES ================= */
+
+    @media (max-width: 480px) {
+
+        body {
+            padding: 16px;
+        }
+
+
+        .login-container {
+            padding: 30px 22px;
+
+            border-radius: 18px;
+        }
+
+
+        body::before {
+            width: 220px;
+            height: 220px;
+
+            top: -80px;
+            left: -90px;
+
+            filter: blur(90px);
+        }
+
+
+        body::after {
+            width: 180px;
+            height: 180px;
+
+            right: -70px;
+            bottom: -70px;
+
+            filter: blur(85px);
+        }
+
+
+        h1 {
+            font-size: 1.6rem;
+        }
+
+
+        h1 + p {
+            font-size: .85rem;
+
+            margin-bottom: 24px;
+        }
+
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+
+        input {
+            padding: 13px 15px;
+
+            border-radius: 12px;
+        }
+
+
+        .password-wrapper input {
+            padding-right: 46px;
+        }
+
+
+        .password-toggle {
+            right: 10px;
+        }
+
+
+        button {
+            padding: 14px;
+
+            border-radius: 50px;
+        }
+
+
+        .options {
+            font-size: .82rem;
+
+            gap: 10px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .signup {
+            font-size: .9rem;
+        }
+
+    }
+
+
+    /* ================= LARGE SCREENS ================= */
+
+    @media (min-width: 1400px) {
+
+        body::before {
+            width: 520px;
+            height: 520px;
+        }
+
+
+        body::after {
+            width: 450px;
+            height: 450px;
+        }
+
+    }
+
+</style>
+```
 
 </head>
 
 <body>
 
-    <div class="login-container">
+```
+<div class="login-container">
 
-        <h1>Login</h1>
+    <h1>Login</h1>
 
-        <p>Welcome back! Sign in to your account.</p>
+    <p>Welcome back! Sign in to your account.</p>
 
-        <form id="loginForm">
 
-            <div class="form-group">
-                <label for="email">Email</label>
+    <form id="loginForm">
 
-                <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    placeholder="Enter your email"
-                    autocomplete="email"
-                    required>
-            </div>
 
-            <div class="form-group">
-                <label for="password">Password</label>
+        <!-- ================= EMAIL ================= -->
+
+        <div class="form-group">
+
+            <label for="email">
+                Email
+            </label>
+
+            <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Enter your email"
+                autocomplete="email"
+                required
+            >
+
+        </div>
+
+
+        <!-- ================= PASSWORD ================= -->
+
+        <div class="form-group">
+
+            <label for="password">
+                Password
+            </label>
+
+
+            <div class="password-wrapper">
 
                 <input
                     type="password"
@@ -477,101 +735,326 @@ button:disabled{
                     name="password"
                     placeholder="Enter your password"
                     autocomplete="current-password"
-                    required>
+                    required
+                >
+
+
+                <button
+                    type="button"
+                    class="password-toggle"
+                    id="passwordToggle"
+                    aria-label="Show password"
+                    title="Show password"
+                >
+
+                    <svg
+                        class="eye-icon"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+
+                        <path
+                            d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"
+                        ></path>
+
+                        <circle
+                            cx="12"
+                            cy="12"
+                            r="3"
+                        ></circle>
+
+                    </svg>
+
+                </button>
+
             </div>
 
-            <div class="options">
-                <label>
-                    <input type="checkbox">
-                    Remember me
-                </label>
+        </div>
 
-                <a href="/forget.html">Forgot Password?</a>
-            </div>
 
-            <button type="submit" id="loginBtn">
-                Sign In
-            </button>
+        <!-- ================= OPTIONS ================= -->
 
-            <div class="signup">
-                Don't have an account?
-                <a href="signup.html">Create Account</a>
-            </div>
+        <div class="options">
 
-        </form>
+            <label>
 
-    </div>
+                <input
+                    type="checkbox"
+                    id="rememberMe"
+                >
 
-    <script>
+                Remember me
 
-        const form = document.getElementById("loginForm");
-        const loginBtn = document.getElementById("loginBtn");
+            </label>
 
-        form.addEventListener("submit", function(event){
+
+            <a href="/forget.html">
+                Forgot Password?
+            </a>
+
+        </div>
+
+
+        <!-- ================= LOGIN BUTTON ================= -->
+
+        <button
+            type="submit"
+            id="loginBtn"
+        >
+            Sign In
+        </button>
+
+
+        <!-- ================= SIGNUP ================= -->
+
+        <div class="signup">
+
+            Don't have an account?
+
+            <a href="signup.html">
+                Create Account
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<script>
+
+    const form =
+        document.getElementById("loginForm");
+
+    const loginBtn =
+        document.getElementById("loginBtn");
+
+    const passwordInput =
+        document.getElementById("password");
+
+    const passwordToggle =
+        document.getElementById("passwordToggle");
+
+
+    /* =========================================================
+       PASSWORD VISIBILITY TOGGLE
+    ========================================================= */
+
+    passwordToggle.addEventListener(
+        "click",
+        function () {
+
+            const isPassword =
+                passwordInput.type === "password";
+
+
+            if (isPassword) {
+
+                passwordInput.type = "text";
+
+
+                passwordToggle.setAttribute(
+                    "aria-label",
+                    "Hide password"
+                );
+
+
+                passwordToggle.setAttribute(
+                    "title",
+                    "Hide password"
+                );
+
+
+                passwordToggle.innerHTML = `
+                    <svg
+                        class="eye-icon"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+
+                        <path d="M3 3l18 18"></path>
+
+                        <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"></path>
+
+                        <path d="M9.9 5.1A10.9 10.9 0 0 1 12 5c6.5 0 10 7 10 7a17.2 17.2 0 0 1-3.1 3.9"></path>
+
+                        <path d="M6.1 6.1C3.6 8 2 12 2 12s3.5 7 10 7c1.7 0 3.2-.4 4.5-1"></path>
+
+                    </svg>
+                `;
+
+            } else {
+
+                passwordInput.type = "password";
+
+
+                passwordToggle.setAttribute(
+                    "aria-label",
+                    "Show password"
+                );
+
+
+                passwordToggle.setAttribute(
+                    "title",
+                    "Show password"
+                );
+
+
+                passwordToggle.innerHTML = `
+                    <svg
+                        class="eye-icon"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+
+                        <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"></path>
+
+                        <circle
+                            cx="12"
+                            cy="12"
+                            r="3"
+                        ></circle>
+
+                    </svg>
+                `;
+
+            }
+
+        }
+    );
+
+
+    /* =========================================================
+       LOGIN
+    ========================================================= */
+
+    form.addEventListener(
+        "submit",
+        function (event) {
 
             event.preventDefault();
 
-            const email = document.getElementById("email").value.trim();
-            const password = document.getElementById("password").value;
 
-            if(!email || !password){
-                alert("Please fill in both fields.");
+            const email =
+                document
+                    .getElementById("email")
+                    .value
+                    .trim();
+
+
+            const password =
+                document
+                    .getElementById("password")
+                    .value;
+
+
+            /* ================= VALIDATION ================= */
+
+            if (!email || !password) {
+
+                alert(
+                    "Please fill in both fields."
+                );
+
                 return;
             }
 
+
+            /* ================= BUTTON STATE ================= */
+
             loginBtn.disabled = true;
-            loginBtn.textContent = "Signing In...";
 
-            fetch('/api/login',{
+            loginBtn.textContent =
+                "Signing In...";
 
-                method:'POST',
 
-                headers:{
-                    'Content-Type':'application/json'
-                },
+            /* ================= LOGIN REQUEST ================= */
 
-                body:JSON.stringify({
-                    email,
-                    password
-                })
+            fetch(
+                "/api/login",
+                {
 
-            })
+                    method: "POST",
 
-            .then(response=>response.json())
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
 
-            .then(data=>{
+                    body: JSON.stringify({
 
-                loginBtn.disabled = false;
-                loginBtn.textContent = "Sign In";
+                        email,
 
-                if(data.message === "Login successful"){
+                        password
 
-                    //alert("Login successful!");
-
-                    window.location.href = "/user.html";
-
-                }else{
-
-                    alert(data.message || "Invalid email or password.");
+                    })
 
                 }
+            )
 
-            })
+            .then(
+                response =>
+                    response.json()
+            )
 
-            .catch(error=>{
+            .then(
+                data => {
 
-                console.error(error);
+                    loginBtn.disabled =
+                        false;
 
-                loginBtn.disabled = false;
-                loginBtn.textContent = "Sign In";
+                    loginBtn.textContent =
+                        "Sign In";
 
-                alert("Unable to connect to the server. Please try again.");
 
-            });
+                    if (
+                        data.message ===
+                        "Login successful"
+                    ) {
 
-        });
+                        window.location.href =
+                            "/user.html";
 
-    </script>
+                    } else {
+
+                        alert(
+                            data.message ||
+                            "Invalid email or password."
+                        );
+
+                    }
+
+                }
+            )
+
+            .catch(
+                error => {
+
+                    console.error(
+                        error
+                    );
+
+
+                    loginBtn.disabled =
+                        false;
+
+                    loginBtn.textContent =
+                        "Sign In";
+
+
+                    alert(
+                        "Unable to connect to the server. Please try again."
+                    );
+
+                }
+            );
+
+        }
+    );
+
+</script>
+
 
 </body>
 </html>

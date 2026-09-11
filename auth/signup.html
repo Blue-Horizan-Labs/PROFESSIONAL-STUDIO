@@ -1,455 +1,548 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Create Account</title>
+<title>Create Account</title>
 
-    <link
-        rel="icon"
-        type="image/png"
-        href="https://i.ibb.co/8g0LT3jZ/logo1-2.png"
-    >
+<link
+    rel="icon"
+    type="image/png"
+    href="https://i.ibb.co/8g0LT3jZ/logo1-2.png"
+>
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-        html,
+    html,
+    body {
+        width: 100%;
+        min-height: 100%;
+    }
+
+    body {
+        font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        min-height: 100vh;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        background: #ffffff;
+        color: #111111;
+
+        overflow-x: hidden;
+        overflow-y: auto;
+
+        position: relative;
+    }
+
+
+    /* ================= BACKGROUND GLOW ================= */
+
+    body::before {
+        content: "";
+
+        position: absolute;
+
+        width: 550px;
+        height: 550px;
+
+        background: #7c3aed;
+
+        filter: blur(180px);
+        opacity: .07;
+
+        top: -180px;
+        left: -150px;
+
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    body::after {
+        content: "";
+
+        position: absolute;
+
+        width: 450px;
+        height: 450px;
+
+        background: #a78bfa;
+
+        filter: blur(170px);
+        opacity: .06;
+
+        bottom: -150px;
+        right: -120px;
+
+        pointer-events: none;
+        z-index: 0;
+    }
+
+
+    /* ================= SIGNUP CONTAINER ================= */
+
+    .signup-container {
+        position: relative;
+
+        width: 100%;
+        max-width: 430px;
+
+        margin: 20px;
+        padding: 45px;
+
+        border-radius: 22px;
+
+        background: #ffffff;
+
+        border: 1px solid #e5e5e5;
+
+        box-shadow:
+            0 20px 50px rgba(0, 0, 0, .08);
+
+        z-index: 10;
+    }
+
+    .signup-container::before {
+        content: "";
+
+        position: absolute;
+
+        inset: 0;
+
+        border-radius: 22px;
+
+        border: 1px solid rgba(124, 58, 237, .12);
+
+        pointer-events: none;
+
+        z-index: 0;
+    }
+
+    .signup-container > * {
+        position: relative;
+        z-index: 2;
+    }
+
+
+    /* ================= HEADING ================= */
+
+    h1 {
+        color: #111111;
+
+        text-align: center;
+
+        margin-bottom: 10px;
+
+        font-size: 2rem;
+        font-weight: 700;
+    }
+
+    h1 + p {
+        text-align: center;
+
+        color: #666666;
+
+        margin-bottom: 35px;
+
+        font-size: .95rem;
+    }
+
+
+    /* ================= FORM ================= */
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+
+        color: #333333;
+
+        margin-bottom: 8px;
+
+        font-size: .92rem;
+        font-weight: 600;
+    }
+
+    input {
+        width: 100%;
+
+        padding: 15px 18px;
+
+        border-radius: 12px;
+
+        border: 1px solid #dddddd;
+
+        background: #f7f7f7;
+
+        color: #111111;
+
+        font-size: 15px;
+
+        transition: .35s;
+    }
+
+    input::placeholder {
+        color: #999999;
+    }
+
+    input:focus {
+        outline: none;
+
+        border-color: #7c3aed;
+
+        box-shadow:
+            0 0 0 4px rgba(124, 58, 237, .10);
+
+        background: #ffffff;
+    }
+
+
+    /* ================= PASSWORD WRAPPER ================= */
+
+    .password-wrapper {
+        position: relative;
+
+        width: 100%;
+    }
+
+    .password-wrapper input {
+        padding-right: 52px;
+    }
+
+    .password-toggle {
+        position: absolute;
+
+        top: 50%;
+        right: 15px;
+
+        transform: translateY(-50%);
+
+        width: 28px;
+        height: 28px;
+
+        padding: 0;
+        margin: 0;
+
+        border: none;
+        border-radius: 50%;
+
+        background: transparent;
+
+        color: #777777;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        cursor: pointer;
+
+        box-shadow: none;
+
+        transition:
+            color .25s ease,
+            background .25s ease;
+    }
+
+    .password-toggle:hover {
+        transform: translateY(-50%);
+
+        color: #111111;
+
+        background: rgba(0, 0, 0, .05);
+
+        box-shadow: none;
+    }
+
+    .password-toggle:focus {
+        outline: none;
+
+        box-shadow:
+            0 0 0 3px rgba(124, 58, 237, .12);
+    }
+
+    .password-toggle svg {
+        width: 19px;
+        height: 19px;
+
+        stroke: currentColor;
+
+        stroke-width: 2;
+
+        fill: none;
+
+        stroke-linecap: round;
+        stroke-linejoin: round;
+
+        pointer-events: none;
+    }
+
+
+    /* ================= REFERRAL ================= */
+
+    .referral-group {
+        margin-bottom: 20px;
+    }
+
+    .referral-label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .optional-text {
+        color: #999999;
+
+        font-size: .78rem;
+
+        font-weight: 500;
+    }
+
+    .referral-hint {
+        margin-top: 7px;
+
+        color: #888888;
+
+        font-size: .78rem;
+
+        line-height: 1.4;
+    }
+
+
+    /* ================= BUTTON ================= */
+
+    .signup-button {
+        width: 100%;
+
+        padding: 16px;
+
+        margin-top: 10px;
+
+        border: none;
+
+        border-radius: 50px;
+
+        background: #111111;
+
+        color: #ffffff;
+
+        font-size: 16px;
+
+        font-weight: 600;
+
+        cursor: pointer;
+
+        transition: .35s;
+
+        box-shadow:
+            0 12px 30px rgba(0, 0, 0, .12);
+    }
+
+    .signup-button:hover {
+        transform: translateY(-3px);
+
+        box-shadow:
+            0 18px 40px rgba(0, 0, 0, .16);
+    }
+
+    .signup-button:disabled {
+        opacity: .7;
+
+        cursor: not-allowed;
+    }
+
+
+    /* ================= LOGIN LINK ================= */
+
+    .login-link {
+        position: relative;
+
+        margin-top: 28px;
+
+        text-align: center;
+
+        color: #666666;
+
+        z-index: 20;
+    }
+
+    .login-link a {
+        position: relative;
+
+        display: inline-block;
+
+        color: #7c3aed;
+
+        text-decoration: none;
+
+        font-weight: 600;
+
+        padding: 4px 2px;
+
+        cursor: pointer;
+
+        pointer-events: auto;
+
+        z-index: 30;
+
+        transition: .3s;
+    }
+
+    .login-link a:hover {
+        color: #6d28d9;
+    }
+
+
+    /* ================= MOBILE ================= */
+
+    @media (max-width: 500px) {
+
         body {
-            width: 100%;
-            min-height: 100%;
-        }
+            align-items: flex-start;
 
-        body {
-            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            min-height: 100vh;
-
-            display: flex;
-            justify-content: center;
-            align-items: center;
-
-            background: #ffffff;
-            color: #111111;
+            padding: 20px 0;
 
             overflow-x: hidden;
             overflow-y: auto;
-
-            position: relative;
         }
-
-
-        /* ================= BACKGROUND GLOW ================= */
-
-        body::before {
-            content: "";
-
-            position: absolute;
-
-            width: 550px;
-            height: 550px;
-
-            background: #7c3aed;
-
-            filter: blur(180px);
-            opacity: .07;
-
-            top: -180px;
-            left: -150px;
-
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        body::after {
-            content: "";
-
-            position: absolute;
-
-            width: 450px;
-            height: 450px;
-
-            background: #a78bfa;
-
-            filter: blur(170px);
-            opacity: .06;
-
-            bottom: -150px;
-            right: -120px;
-
-            pointer-events: none;
-            z-index: 0;
-        }
-
-
-        /* ================= SIGNUP CONTAINER ================= */
 
         .signup-container {
-            position: relative;
+            width: calc(100% - 30px);
 
-            width: 100%;
-            max-width: 430px;
+            margin: 0 15px;
 
-            margin: 20px;
-            padding: 45px;
+            padding: 35px 28px;
 
-            border-radius: 22px;
-
-            background: #ffffff;
-
-            border: 1px solid #e5e5e5;
-
-            box-shadow:
-                0 20px 50px rgba(0, 0, 0, .08);
-
-            z-index: 10;
+            border-radius: 20px;
         }
-
-        .signup-container::before {
-            content: "";
-
-            position: absolute;
-
-            inset: 0;
-
-            border-radius: 22px;
-
-            border: 1px solid rgba(124, 58, 237, .12);
-
-            pointer-events: none;
-
-            z-index: 0;
-        }
-
-        .signup-container > * {
-            position: relative;
-            z-index: 2;
-        }
-
-
-        /* ================= HEADING ================= */
 
         h1 {
-            color: #111111;
-
-            text-align: center;
-
-            margin-bottom: 10px;
-
-            font-size: 2rem;
-            font-weight: 700;
+            font-size: 1.8rem;
         }
 
         h1 + p {
-            text-align: center;
+            font-size: .9rem;
 
-            color: #666666;
-
-            margin-bottom: 35px;
-
-            font-size: .95rem;
-        }
-
-
-        /* ================= FORM ================= */
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-
-            color: #333333;
-
-            margin-bottom: 8px;
-
-            font-size: .92rem;
-            font-weight: 600;
+            margin-bottom: 28px;
         }
 
         input {
-            width: 100%;
+            padding: 14px 16px;
 
-            padding: 15px 18px;
+            font-size: 14px;
+        }
 
-            border-radius: 12px;
+        .password-wrapper input {
+            padding-right: 48px;
+        }
 
-            border: 1px solid #dddddd;
+        .password-toggle {
+            right: 12px;
+        }
 
-            background: #f7f7f7;
-
-            color: #111111;
+        .signup-button {
+            padding: 15px;
 
             font-size: 15px;
-
-            transition: .35s;
         }
-
-        input::placeholder {
-            color: #999999;
-        }
-
-        input:focus {
-            outline: none;
-
-            border-color: #7c3aed;
-
-            box-shadow:
-                0 0 0 4px rgba(124, 58, 237, .10);
-
-            background: #ffffff;
-        }
-
-
-        /* ================= REFERRAL ================= */
-
-        .referral-group {
-            margin-bottom: 20px;
-        }
-
-        .referral-label {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-        }
-
-        .optional-text {
-            color: #999999;
-
-            font-size: .78rem;
-
-            font-weight: 500;
-        }
-
-        .referral-hint {
-            margin-top: 7px;
-
-            color: #888888;
-
-            font-size: .78rem;
-
-            line-height: 1.4;
-        }
-
-
-        /* ================= BUTTON ================= */
-
-        button {
-            width: 100%;
-
-            padding: 16px;
-
-            margin-top: 10px;
-
-            border: none;
-
-            border-radius: 50px;
-
-            background: #111111;
-
-            color: #ffffff;
-
-            font-size: 16px;
-
-            font-weight: 600;
-
-            cursor: pointer;
-
-            transition: .35s;
-
-            box-shadow:
-                0 12px 30px rgba(0, 0, 0, .12);
-        }
-
-        button:hover {
-            transform: translateY(-3px);
-
-            box-shadow:
-                0 18px 40px rgba(0, 0, 0, .16);
-        }
-
-        button:disabled {
-            opacity: .7;
-
-            cursor: not-allowed;
-        }
-
-
-        /* ================= LOGIN LINK ================= */
 
         .login-link {
-            position: relative;
+            margin-top: 24px;
 
-            margin-top: 28px;
-
-            text-align: center;
-
-            color: #666666;
-
-            z-index: 20;
+            padding-bottom: 5px;
         }
 
         .login-link a {
-            position: relative;
+            padding: 6px 4px;
 
-            display: inline-block;
+            min-height: 32px;
+        }
+    }
 
-            color: #7c3aed;
 
-            text-decoration: none;
+    /* ================= VERY SMALL PHONES ================= */
 
-            font-weight: 600;
+    @media (max-width: 360px) {
 
-            padding: 4px 2px;
+        .signup-container {
+            width: calc(100% - 20px);
 
-            cursor: pointer;
+            margin: 0 10px;
 
-            pointer-events: auto;
-
-            z-index: 30;
-
-            transition: .3s;
+            padding: 30px 20px;
         }
 
-        .login-link a:hover {
-            color: #6d28d9;
+        h1 {
+            font-size: 1.65rem;
         }
 
-
-        /* ================= MOBILE ================= */
-
-        @media (max-width: 500px) {
-
-            body {
-                align-items: flex-start;
-
-                padding: 20px 0;
-
-                overflow-x: hidden;
-                overflow-y: auto;
-            }
-
-            .signup-container {
-                width: calc(100% - 30px);
-
-                margin: 0 15px;
-
-                padding: 35px 28px;
-
-                border-radius: 20px;
-            }
-
-            h1 {
-                font-size: 1.8rem;
-            }
-
-            h1 + p {
-                font-size: .9rem;
-
-                margin-bottom: 28px;
-            }
-
-            input {
-                padding: 14px 16px;
-
-                font-size: 14px;
-            }
-
-            button {
-                padding: 15px;
-
-                font-size: 15px;
-            }
-
-            .login-link {
-                margin-top: 24px;
-
-                padding-bottom: 5px;
-            }
-
-            .login-link a {
-                padding: 6px 4px;
-
-                min-height: 32px;
-            }
+        h1 + p {
+            margin-bottom: 24px;
         }
 
-
-        /* ================= VERY SMALL PHONES ================= */
-
-        @media (max-width: 360px) {
-
-            .signup-container {
-                width: calc(100% - 20px);
-
-                margin: 0 10px;
-
-                padding: 30px 20px;
-            }
-
-            h1 {
-                font-size: 1.65rem;
-            }
-
-            h1 + p {
-                margin-bottom: 24px;
-            }
-
-            .form-group {
-                margin-bottom: 16px;
-            }
-
-            .referral-group {
-                margin-bottom: 16px;
-            }
+        .form-group {
+            margin-bottom: 16px;
         }
-    </style>
+
+        .referral-group {
+            margin-bottom: 16px;
+        }
+    }
+</style>
+```
+
 </head>
-
 
 <body>
 
-    <div class="signup-container">
+```
+<div class="signup-container">
 
-        <h1>Create Account</h1>
+    <h1>Create Account</h1>
 
-        <p>Create your Professional Studio account.</p>
-
-
-        <form id="signupForm">
-
-            <!-- ================= EMAIL ================= -->
-
-            <div class="form-group">
-
-                <label for="email">
-                    Email
-                </label>
-
-                <input
-                    type="email"
-                    id="email"
-                    placeholder="Enter your email"
-                    autocomplete="email"
-                    required
-                >
-
-            </div>
+    <p>Create your Professional Studio account.</p>
 
 
-            <!-- ================= PASSWORD ================= -->
+    <form id="signupForm">
 
-            <div class="form-group">
+        <!-- ================= EMAIL ================= -->
 
-                <label for="password">
-                    Password
-                </label>
+        <div class="form-group">
+
+            <label for="email">
+                Email
+            </label>
+
+            <input
+                type="email"
+                id="email"
+                placeholder="Enter your email"
+                autocomplete="email"
+                required
+            >
+
+        </div>
+
+
+        <!-- ================= PASSWORD ================= -->
+
+        <div class="form-group">
+
+            <label for="password">
+                Password
+            </label>
+
+            <div class="password-wrapper">
 
                 <input
                     type="password"
@@ -459,16 +552,39 @@
                     required
                 >
 
+                <button
+                    type="button"
+                    class="password-toggle"
+                    data-target="password"
+                    aria-label="Show password"
+                    title="Show password"
+                >
+
+                    <svg
+                        class="eye-icon"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+
+                </button>
+
             </div>
 
+        </div>
 
-            <!-- ================= CONFIRM PASSWORD ================= -->
 
-            <div class="form-group">
+        <!-- ================= CONFIRM PASSWORD ================= -->
 
-                <label for="confirmPassword">
-                    Confirm Password
-                </label>
+        <div class="form-group">
+
+            <label for="confirmPassword">
+                Confirm Password
+            </label>
+
+            <div class="password-wrapper">
 
                 <input
                     type="password"
@@ -478,206 +594,341 @@
                     required
                 >
 
-            </div>
-
-
-            <!-- ================= REFERRAL CODE ================= -->
-
-            <div class="form-group referral-group">
-
-                <label
-                    for="referralCode"
-                    class="referral-label"
-                >
-                    <span>Referral Code</span>
-
-                    <span class="optional-text">
-                        Optional
-                    </span>
-                </label>
-
-                <input
-                    type="text"
-                    id="referralCode"
-                    placeholder="Enter referral code"
-                    autocomplete="off"
-                    maxlength="50"
-                    spellcheck="false"
+                <button
+                    type="button"
+                    class="password-toggle"
+                    data-target="confirmPassword"
+                    aria-label="Show password"
+                    title="Show password"
                 >
 
-                <div class="referral-hint">
-                    Have a referral code? Enter it here and get 30 days free trial when you sign up.
-                </div>
+                    <svg
+                        class="eye-icon"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+
+                </button>
 
             </div>
 
+        </div>
 
-            <!-- ================= SIGNUP BUTTON ================= -->
 
-            <button
-                type="submit"
-                id="signupBtn"
+        <!-- ================= REFERRAL CODE ================= -->
+
+        <div class="form-group referral-group">
+
+            <label
+                for="referralCode"
+                class="referral-label"
             >
-                Create Account
-            </button>
+                <span>Referral Code</span>
 
+                <span class="optional-text">
+                    Optional
+                </span>
+            </label>
 
-            <!-- ================= LOGIN LINK ================= -->
+            <input
+                type="text"
+                id="referralCode"
+                placeholder="Enter referral code"
+                autocomplete="off"
+                maxlength="50"
+                spellcheck="false"
+            >
 
-            <div class="login-link">
-
-                Already have an account?
-
-                <a href="/auth/login-new.html">
-                    Sign In
-                </a>
-
+            <div class="referral-hint">
+                Have a referral code? Enter it here.
             </div>
 
-        </form>
-
-    </div>
+        </div>
 
 
-    <script>
+        <!-- ================= SIGNUP BUTTON ================= -->
 
-        const form = document.getElementById("signupForm");
-        const signupBtn = document.getElementById("signupBtn");
+        <button
+            type="submit"
+            id="signupBtn"
+            class="signup-button"
+        >
+            Create Account
+        </button>
 
 
-        /* =========================================================
-           GET A USEFUL ERROR MESSAGE FROM ANY API RESPONSE
-        ========================================================= */
+        <!-- ================= LOGIN LINK ================= -->
 
-        function getErrorMessage(data) {
+        <div class="login-link">
 
-            if (!data) {
-                return "Unable to create account.";
+            Already have an account?
+
+            <a href="/auth/login-new.html">
+                Sign In
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<script>
+
+    const form =
+        document.getElementById("signupForm");
+
+    const signupBtn =
+        document.getElementById("signupBtn");
+
+
+    /* =========================================================
+       PASSWORD VISIBILITY TOGGLE
+    ========================================================= */
+
+    const passwordToggles =
+        document.querySelectorAll(".password-toggle");
+
+
+    passwordToggles.forEach(function (toggle) {
+
+        toggle.addEventListener("click", function () {
+
+            const targetId =
+                toggle.getAttribute("data-target");
+
+            const passwordInput =
+                document.getElementById(targetId);
+
+
+            if (!passwordInput) {
+                return;
             }
 
 
-            /* Direct string response */
+            const isPassword =
+                passwordInput.type === "password";
 
-            if (typeof data === "string") {
-                return data;
+
+            if (isPassword) {
+
+                passwordInput.type = "text";
+
+                toggle.setAttribute(
+                    "aria-label",
+                    "Hide password"
+                );
+
+                toggle.setAttribute(
+                    "title",
+                    "Hide password"
+                );
+
+
+                toggle.innerHTML = `
+                    <svg
+                        class="eye-icon"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path d="M3 3l18 18"></path>
+                        <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"></path>
+                        <path d="M9.9 5.1A10.9 10.9 0 0 1 12 5c6.5 0 10 7 10 7a17.2 17.2 0 0 1-3.1 3.9"></path>
+                        <path d="M6.1 6.1C3.6 8 2 12 2 12s3.5 7 10 7c1.7 0 3.2-.4 4.5-1"></path>
+                    </svg>
+                `;
+
+            } else {
+
+                passwordInput.type = "password";
+
+                toggle.setAttribute(
+                    "aria-label",
+                    "Show password"
+                );
+
+                toggle.setAttribute(
+                    "title",
+                    "Show password"
+                );
+
+
+                toggle.innerHTML = `
+                    <svg
+                        class="eye-icon"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                `;
+
             }
 
+        });
 
-            /* Normal API response */
-
-            if (
-                typeof data.message === "string" &&
-                data.message.trim()
-            ) {
-                return data.message;
-            }
+    });
 
 
-            /* Nested message */
+    /* =========================================================
+       GET A USEFUL ERROR MESSAGE FROM ANY API RESPONSE
+    ========================================================= */
 
-            if (
-                data.message &&
-                typeof data.message === "object" &&
-                typeof data.message.message === "string"
-            ) {
-                return data.message.message;
-            }
+    function getErrorMessage(data) {
 
-
-            /* Common error format */
-
-            if (
-                typeof data.error === "string" &&
-                data.error.trim()
-            ) {
-                return data.error;
-            }
-
-
-            /* Nested error */
-
-            if (
-                data.error &&
-                typeof data.error === "object" &&
-                typeof data.error.message === "string"
-            ) {
-                return data.error.message;
-            }
-
-
-            /* Supabase-style nested error */
-
-            if (
-                data.error &&
-                typeof data.error === "object" &&
-                typeof data.error.error_description === "string"
-            ) {
-                return data.error.error_description;
-            }
-
-
-            /* Details field */
-
-            if (
-                typeof data.details === "string" &&
-                data.details.trim()
-            ) {
-                return data.details;
-            }
-
-
-            /* Description field */
-
-            if (
-                typeof data.error_description === "string" &&
-                data.error_description.trim()
-            ) {
-                return data.error_description;
-            }
-
-
-            /* Last resort */
-
-            try {
-                return JSON.stringify(data);
-            } catch (e) {
-                return "Unable to create account.";
-            }
+        if (!data) {
+            return "Unable to create account.";
         }
 
 
-        /* =========================================================
-           RESET BUTTON
-        ========================================================= */
+        /* Direct string response */
 
-        function resetSignupButton() {
-
-            signupBtn.disabled = false;
-
-            signupBtn.textContent = "Create Account";
+        if (typeof data === "string") {
+            return data;
         }
 
 
-        /* =========================================================
-           SIGNUP
-        ========================================================= */
+        /* Normal API response */
 
-        form.addEventListener("submit", async function (e) {
+        if (
+            typeof data.message === "string" &&
+            data.message.trim()
+        ) {
+            return data.message;
+        }
+
+
+        /* Nested message */
+
+        if (
+            data.message &&
+            typeof data.message === "object" &&
+            typeof data.message.message === "string"
+        ) {
+            return data.message.message;
+        }
+
+
+        /* Common error format */
+
+        if (
+            typeof data.error === "string" &&
+            data.error.trim()
+        ) {
+            return data.error;
+        }
+
+
+        /* Nested error */
+
+        if (
+            data.error &&
+            typeof data.error === "object" &&
+            typeof data.error.message === "string"
+        ) {
+            return data.error.message;
+        }
+
+
+        /* Supabase-style nested error */
+
+        if (
+            data.error &&
+            typeof data.error === "object" &&
+            typeof data.error.error_description === "string"
+        ) {
+            return data.error.error_description;
+        }
+
+
+        /* Details field */
+
+        if (
+            typeof data.details === "string" &&
+            data.details.trim()
+        ) {
+            return data.details;
+        }
+
+
+        /* Description field */
+
+        if (
+            typeof data.error_description === "string" &&
+            data.error_description.trim()
+        ) {
+            return data.error_description;
+        }
+
+
+        /* Last resort */
+
+        try {
+            return JSON.stringify(data);
+
+        } catch (e) {
+
+            return "Unable to create account.";
+
+        }
+
+    }
+
+
+    /* =========================================================
+       RESET BUTTON
+    ========================================================= */
+
+    function resetSignupButton() {
+
+        signupBtn.disabled = false;
+
+        signupBtn.textContent =
+            "Create Account";
+
+    }
+
+
+    /* =========================================================
+       SIGNUP
+    ========================================================= */
+
+    form.addEventListener(
+        "submit",
+        async function (e) {
 
             e.preventDefault();
 
 
             const email =
-                document.getElementById("email").value.trim();
+                document
+                    .getElementById("email")
+                    .value
+                    .trim();
+
 
             const password =
-                document.getElementById("password").value;
+                document
+                    .getElementById("password")
+                    .value;
+
 
             const confirmPassword =
-                document.getElementById("confirmPassword").value;
+                document
+                    .getElementById("confirmPassword")
+                    .value;
+
 
             const referralCode =
-                document.getElementById("referralCode").value.trim();
+                document
+                    .getElementById("referralCode")
+                    .value
+                    .trim();
 
 
             /* ================= VALIDATION ================= */
@@ -688,15 +939,21 @@
                 !confirmPassword
             ) {
 
-                alert("Please fill in all required fields.");
+                alert(
+                    "Please fill in all required fields."
+                );
 
                 return;
             }
 
 
-            if (password !== confirmPassword) {
+            if (
+                password !== confirmPassword
+            ) {
 
-                alert("Passwords do not match.");
+                alert(
+                    "Passwords do not match."
+                );
 
                 return;
             }
@@ -706,54 +963,68 @@
 
             signupBtn.disabled = true;
 
-            signupBtn.textContent = "Creating Account...";
+            signupBtn.textContent =
+                "Creating Account...";
 
 
             try {
 
-                const response = await fetch("/api/signup", {
+                const response =
+                    await fetch(
+                        "/api/signup",
+                        {
 
-                    method: "POST",
+                            method: "POST",
 
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
 
-                    body: JSON.stringify({
+                            body: JSON.stringify({
 
-                        email: email,
+                                email: email,
 
-                        password: password,
+                                password: password,
 
-                        referralCode: referralCode
+                                referralCode:
+                                    referralCode
 
-                    })
+                            })
 
-                });
+                        }
+                    );
 
 
                 /* =================================================
                    READ RESPONSE SAFELY
-                   ================================================= */
+                ================================================= */
 
                 const contentType =
-                    response.headers.get("content-type") || "";
+                    response.headers
+                        .get("content-type") || "";
+
 
                 let data;
 
 
                 if (
-                    contentType.includes("application/json")
+                    contentType.includes(
+                        "application/json"
+                    )
                 ) {
 
-                    data = await response.json();
+                    data =
+                        await response.json();
 
                 } else {
 
                     const text =
                         await response.text();
 
-                    data = text || null;
+                    data =
+                        text || null;
+
                 }
 
 
@@ -761,6 +1032,7 @@
                     "Signup HTTP status:",
                     response.status
                 );
+
 
                 console.log(
                     "Signup response:",
@@ -770,7 +1042,7 @@
 
                 /* =================================================
                    SUCCESS
-                   ================================================= */
+                ================================================= */
 
                 if (response.ok) {
 
@@ -792,12 +1064,13 @@
                             "/setup.html";
 
                         return;
+
                     }
 
 
                     /* =================
                        OTHER SUCCESS RESPONSE
-                       ================= */
+                    ================= */
 
                     if (
                         typeof data === "string" &&
@@ -813,16 +1086,19 @@
                             "/setup.html";
 
                         return;
+
                     }
+
                 }
 
 
                 /* =================================================
                    ERROR
-                   ================================================= */
+                ================================================= */
 
                 const errorMessage =
                     getErrorMessage(data);
+
 
                 alert(errorMessage);
 
@@ -848,9 +1124,11 @@
 
             }
 
-        });
+        }
+    );
 
-    </script>
+</script>
+
 
 </body>
 </html>
