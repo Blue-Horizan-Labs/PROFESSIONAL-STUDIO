@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Create Account</title>
-    <link
-    rel="icon"
-    type="image/png"
-    href="https://i.ibb.co/8g0LT3jZ/logo1-2.png" 
->
 
+    <link
+        rel="icon"
+        type="image/png"
+        href="https://i.ibb.co/8g0LT3jZ/logo1-2.png"
+    >
 
     <style>
         * {
@@ -41,6 +41,7 @@
 
             position: relative;
         }
+
 
         /* ================= BACKGROUND GLOW ================= */
 
@@ -83,6 +84,7 @@
             pointer-events: none;
             z-index: 0;
         }
+
 
         /* ================= SIGNUP CONTAINER ================= */
 
@@ -128,6 +130,7 @@
             z-index: 2;
         }
 
+
         /* ================= HEADING ================= */
 
         h1 {
@@ -150,6 +153,7 @@
 
             font-size: .95rem;
         }
+
 
         /* ================= FORM ================= */
 
@@ -201,6 +205,39 @@
             background: #ffffff;
         }
 
+
+        /* ================= REFERRAL ================= */
+
+        .referral-group {
+            margin-bottom: 20px;
+        }
+
+        .referral-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .optional-text {
+            color: #999999;
+
+            font-size: .78rem;
+
+            font-weight: 500;
+        }
+
+        .referral-hint {
+            margin-top: 7px;
+
+            color: #888888;
+
+            font-size: .78rem;
+
+            line-height: 1.4;
+        }
+
+
         /* ================= BUTTON ================= */
 
         button {
@@ -239,8 +276,10 @@
 
         button:disabled {
             opacity: .7;
+
             cursor: not-allowed;
         }
+
 
         /* ================= LOGIN LINK ================= */
 
@@ -281,6 +320,7 @@
         .login-link a:hover {
             color: #6d28d9;
         }
+
 
         /* ================= MOBILE ================= */
 
@@ -340,6 +380,7 @@
             }
         }
 
+
         /* ================= VERY SMALL PHONES ================= */
 
         @media (max-width: 360px) {
@@ -363,9 +404,14 @@
             .form-group {
                 margin-bottom: 16px;
             }
+
+            .referral-group {
+                margin-bottom: 16px;
+            }
         }
     </style>
 </head>
+
 
 <body>
 
@@ -375,57 +421,123 @@
 
         <p>Create your Professional Studio account.</p>
 
+
         <form id="signupForm">
 
+            <!-- ================= EMAIL ================= -->
+
             <div class="form-group">
-                <label for="email">Email</label>
+
+                <label for="email">
+                    Email
+                </label>
 
                 <input
                     type="email"
                     id="email"
                     placeholder="Enter your email"
                     autocomplete="email"
-                    required>
+                    required
+                >
+
             </div>
 
+
+            <!-- ================= PASSWORD ================= -->
+
             <div class="form-group">
-                <label for="password">Password</label>
+
+                <label for="password">
+                    Password
+                </label>
 
                 <input
                     type="password"
                     id="password"
                     placeholder="Create a password"
                     autocomplete="new-password"
-                    required>
+                    required
+                >
+
             </div>
 
+
+            <!-- ================= CONFIRM PASSWORD ================= -->
+
             <div class="form-group">
-                <label for="confirmPassword">Confirm Password</label>
+
+                <label for="confirmPassword">
+                    Confirm Password
+                </label>
 
                 <input
                     type="password"
                     id="confirmPassword"
                     placeholder="Confirm your password"
                     autocomplete="new-password"
-                    required>
+                    required
+                >
+
             </div>
+
+
+            <!-- ================= REFERRAL CODE ================= -->
+
+            <div class="form-group referral-group">
+
+                <label
+                    for="referralCode"
+                    class="referral-label"
+                >
+                    <span>Referral Code</span>
+
+                    <span class="optional-text">
+                        Optional
+                    </span>
+                </label>
+
+                <input
+                    type="text"
+                    id="referralCode"
+                    placeholder="Enter referral code"
+                    autocomplete="off"
+                    maxlength="50"
+                    spellcheck="false"
+                >
+
+                <div class="referral-hint">
+                    Have a referral code? Enter it here and get 30 days free trial when you sign up.
+                </div>
+
+            </div>
+
+
+            <!-- ================= SIGNUP BUTTON ================= -->
 
             <button
                 type="submit"
-                id="signupBtn">
+                id="signupBtn"
+            >
                 Create Account
             </button>
 
+
+            <!-- ================= LOGIN LINK ================= -->
+
             <div class="login-link">
+
                 Already have an account?
+
                 <a href="/auth/login-new.html">
                     Sign In
                 </a>
+
             </div>
 
         </form>
 
     </div>
+
 
     <script>
 
@@ -443,21 +555,26 @@
                 return "Unable to create account.";
             }
 
+
             /* Direct string response */
+
             if (typeof data === "string") {
                 return data;
             }
 
-            /* Normal API response:
-               { message: "Something went wrong" }
-            */
-            if (typeof data.message === "string" && data.message.trim()) {
+
+            /* Normal API response */
+
+            if (
+                typeof data.message === "string" &&
+                data.message.trim()
+            ) {
                 return data.message;
             }
 
-            /* Nested message:
-               { message: { message: "Something went wrong" } }
-            */
+
+            /* Nested message */
+
             if (
                 data.message &&
                 typeof data.message === "object" &&
@@ -466,16 +583,19 @@
                 return data.message.message;
             }
 
-            /* Common error format:
-               { error: "Something went wrong" }
-            */
-            if (typeof data.error === "string" && data.error.trim()) {
+
+            /* Common error format */
+
+            if (
+                typeof data.error === "string" &&
+                data.error.trim()
+            ) {
                 return data.error;
             }
 
-            /* Nested error:
-               { error: { message: "Something went wrong" } }
-            */
+
+            /* Nested error */
+
             if (
                 data.error &&
                 typeof data.error === "object" &&
@@ -484,7 +604,9 @@
                 return data.error.message;
             }
 
+
             /* Supabase-style nested error */
+
             if (
                 data.error &&
                 typeof data.error === "object" &&
@@ -493,12 +615,19 @@
                 return data.error.error_description;
             }
 
+
             /* Details field */
-            if (typeof data.details === "string" && data.details.trim()) {
+
+            if (
+                typeof data.details === "string" &&
+                data.details.trim()
+            ) {
                 return data.details;
             }
 
+
             /* Description field */
+
             if (
                 typeof data.error_description === "string" &&
                 data.error_description.trim()
@@ -506,10 +635,9 @@
                 return data.error_description;
             }
 
-            /* Last resort:
-               Convert the object into readable JSON instead of
-               displaying [object Object].
-            */
+
+            /* Last resort */
+
             try {
                 return JSON.stringify(data);
             } catch (e) {
@@ -523,7 +651,9 @@
         ========================================================= */
 
         function resetSignupButton() {
+
             signupBtn.disabled = false;
+
             signupBtn.textContent = "Create Account";
         }
 
@@ -536,6 +666,7 @@
 
             e.preventDefault();
 
+
             const email =
                 document.getElementById("email").value.trim();
 
@@ -545,12 +676,19 @@
             const confirmPassword =
                 document.getElementById("confirmPassword").value;
 
+            const referralCode =
+                document.getElementById("referralCode").value.trim();
+
 
             /* ================= VALIDATION ================= */
 
-            if (!email || !password || !confirmPassword) {
+            if (
+                !email ||
+                !password ||
+                !confirmPassword
+            ) {
 
-                alert("Please fill in all fields.");
+                alert("Please fill in all required fields.");
 
                 return;
             }
@@ -567,6 +705,7 @@
             /* ================= BUTTON STATE ================= */
 
             signupBtn.disabled = true;
+
             signupBtn.textContent = "Creating Account...";
 
 
@@ -581,8 +720,13 @@
                     },
 
                     body: JSON.stringify({
+
                         email: email,
-                        password: password
+
+                        password: password,
+
+                        referralCode: referralCode
+
                     })
 
                 });
@@ -598,20 +742,30 @@
                 let data;
 
 
-                if (contentType.includes("application/json")) {
+                if (
+                    contentType.includes("application/json")
+                ) {
 
                     data = await response.json();
 
                 } else {
 
-                    const text = await response.text();
+                    const text =
+                        await response.text();
 
                     data = text || null;
                 }
 
 
-                console.log("Signup HTTP status:", response.status);
-                console.log("Signup response:", data);
+                console.log(
+                    "Signup HTTP status:",
+                    response.status
+                );
+
+                console.log(
+                    "Signup response:",
+                    data
+                );
 
 
                 /* =================================================
@@ -620,17 +774,9 @@
 
                 if (response.ok) {
 
-                    /*
-                     * Your previous backend uses:
-                     * { message: "200" }
-                     *
-                     * We also accept common successful responses
-                     * so a small backend response-format change
-                     * doesn't break the signup page.
-                     */
-
                     const message =
-                        typeof data === "object" && data !== null
+                        typeof data === "object" &&
+                        data !== null
                             ? data.message
                             : data;
 
@@ -642,27 +788,29 @@
                         data?.status === 200
                     ) {
 
-                        window.location.href = "/setup.html";
+                        window.location.href =
+                            "/setup.html";
 
                         return;
                     }
 
 
-                    /*
-                     * If the HTTP request succeeded but the backend
-                     * didn't return the old "200" message, still check
-                     * for obvious success responses.
-                     */
+                    /* =================
+                       OTHER SUCCESS RESPONSE
+                       ================= */
 
                     if (
                         typeof data === "string" &&
                         (
-                            data.toLowerCase().includes("success") ||
+                            data
+                                .toLowerCase()
+                                .includes("success") ||
                             data === "200"
                         )
                     ) {
 
-                        window.location.href = "/setup.html";
+                        window.location.href =
+                            "/setup.html";
 
                         return;
                     }
@@ -673,7 +821,8 @@
                    ERROR
                    ================================================= */
 
-                const errorMessage = getErrorMessage(data);
+                const errorMessage =
+                    getErrorMessage(data);
 
                 alert(errorMessage);
 
@@ -683,15 +832,14 @@
 
             } catch (error) {
 
-                console.error("Signup request failed:", error);
+                console.error(
+                    "Signup request failed:",
+                    error
+                );
+
 
                 resetSignupButton();
 
-
-                /*
-                 * Network/fetch error.
-                 * This is different from an API error.
-                 */
 
                 alert(
                     error?.message ||
