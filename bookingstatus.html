@@ -11,16 +11,16 @@
     >
 
     <title>Booking Status | Professional Studio</title>
-    <link
-    rel="icon"
-    type="image/png"
-    href="https://i.ibb.co/8g0LT3jZ/logo1-2.png" 
->
 
+    <link
+        rel="icon"
+        type="image/png"
+        href="https://i.ibb.co/8g0LT3jZ/logo1-2.png"
+    >
 
     <meta
         name="description"
-        content="Track your photography booking status."
+        content="Track your photography booking status and complete payments."
     >
 
     <link
@@ -88,9 +88,9 @@
             </h1>
 
             <p>
-                Your booking request is shown below.
-                The photographer will review your request
-                before any advance payment is required.
+                Your booking request and payment status are shown below.
+                Payment becomes available only after the photographer
+                accepts your request.
             </p>
 
         </section>
@@ -377,7 +377,7 @@
                         <div class="timeline-content">
 
                             <strong>
-                                Advance Payment
+                                Payment
                             </strong>
 
                             <span id="paymentText">
@@ -411,7 +411,7 @@
                             </strong>
 
                             <span id="confirmedText">
-                                Your session will be confirmed after the advance payment.
+                                Your session will be confirmed after the required payment.
                             </span>
 
                         </div>
@@ -480,15 +480,26 @@
                         PAYMENT
                     </p>
 
-                    <h2>
-                        Complete Your Advance Payment
+                    <h2 id="paymentTitle">
+                        Complete Your Payment
                     </h2>
 
-                    <p>
+                    <p id="paymentDescription">
                         Your booking has been accepted.
-                        You can now proceed with the advance payment.
+                        You can now proceed with the required payment.
                     </p>
 
+                </div>
+
+
+                <div class="payment-plan-badge">
+                    <span>
+                        PAYMENT PLAN
+                    </span>
+
+                    <strong id="paymentPlanName">
+                        Full Payment
+                    </strong>
                 </div>
 
 
@@ -510,11 +521,37 @@
                     <div>
 
                         <span>
-                            Advance
+                            Paid
                         </span>
 
-                        <strong id="advanceAmount">
-                            Payment amount will be shown here
+                        <strong id="paidAmount">
+                            ₹0
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Remaining
+                        </span>
+
+                        <strong id="remainingAmount">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span id="nextPaymentLabel">
+                            Next Payment
+                        </span>
+
+                        <strong id="nextPaymentAmount">
+                            —
                         </strong>
 
                     </div>
@@ -522,27 +559,72 @@
                 </div>
 
 
-                <!--
-                    IMPORTANT:
-                    This button is intentionally not connected
-                    to any payment gateway yet.
+                <div class="payment-progress">
 
-                    The existing gateway must be connected here
-                    only after its current implementation is identified.
-                -->
+                    <div class="payment-progress-top">
+
+                        <span>
+                            Payment Progress
+                        </span>
+
+                        <strong id="paymentProgressText">
+                            0%
+                        </strong>
+
+                    </div>
+
+                    <div class="payment-progress-track">
+
+                        <div
+                            class="payment-progress-fill"
+                            id="paymentProgressFill"
+                        ></div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="payment-next">
+
+                    <div>
+
+                        <span class="payment-next-label">
+                            NEXT PAYMENT
+                        </span>
+
+                        <strong id="paymentNextTitle">
+                            —
+                        </strong>
+
+                    </div>
+
+                    <span id="paymentNextDue">
+                        —
+                    </span>
+
+                </div>
+
+
+                <div
+                    class="payment-schedule"
+                    id="paymentSchedule"
+                >
+                </div>
+
 
                 <button
                     type="button"
                     class="primary-button payment-button"
                     id="payAdvanceButton"
                 >
-                    Proceed to Advance Payment
+                    Proceed to Payment
                 </button>
 
 
                 <p class="payment-note">
-                    Your payment will be processed through
-                    the existing payment system.
+                    Payment processing will be connected to the
+                    production payment gateway later.
                 </p>
 
             </section>
@@ -605,12 +687,12 @@
                         BOOKING CONFIRMED
                     </p>
 
-                    <h2>
+                    <h2 id="confirmedCardTitle">
                         Your photography session is confirmed
                     </h2>
 
-                    <p>
-                        Your advance payment has been received
+                    <p id="confirmedCardText">
+                        Your required payment has been received
                         and your booking is now confirmed.
                     </p>
 

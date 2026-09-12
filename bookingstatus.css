@@ -490,6 +490,36 @@ body {
 }
 
 
+.payment-plan-badge {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+
+    padding: 14px 16px;
+
+    border: 1px solid #e1e1e1;
+    border-radius: 10px;
+
+    background: #fafafa;
+
+    margin-bottom: 16px;
+}
+
+
+.payment-plan-badge span {
+    color: #777;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+}
+
+
+.payment-plan-badge strong {
+    font-size: 0.85rem;
+}
+
+
 .payment-summary {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -521,6 +551,195 @@ body {
 }
 
 
+/* =========================================================
+   PAYMENT PROGRESS
+========================================================= */
+
+.payment-progress {
+    margin: 22px 0;
+}
+
+
+.payment-progress-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+
+    margin-bottom: 8px;
+}
+
+
+.payment-progress-top span {
+    color: #777;
+    font-size: 0.78rem;
+}
+
+
+.payment-progress-top strong {
+    font-size: 0.78rem;
+}
+
+
+.payment-progress-track {
+    width: 100%;
+    height: 7px;
+
+    background: #e9e9e9;
+    border-radius: 999px;
+
+    overflow: hidden;
+}
+
+
+.payment-progress-fill {
+    width: 0;
+    height: 100%;
+
+    background: #111;
+    border-radius: inherit;
+
+    transition: width 0.25s ease;
+}
+
+
+/* =========================================================
+   NEXT PAYMENT
+========================================================= */
+
+.payment-next {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    padding: 16px;
+
+    border: 1px solid #e1e1e1;
+    border-radius: 10px;
+
+    margin-bottom: 16px;
+}
+
+
+.payment-next > div {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+
+.payment-next-label {
+    color: #888;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+}
+
+
+.payment-next strong {
+    font-size: 0.92rem;
+}
+
+
+#paymentNextDue {
+    color: #777;
+    font-size: 0.78rem;
+    text-align: right;
+}
+
+
+/* =========================================================
+   PAYMENT SCHEDULE
+========================================================= */
+
+.payment-schedule {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+
+    margin-bottom: 20px;
+}
+
+
+.payment-stage {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 15px;
+    align-items: center;
+
+    padding: 14px 15px;
+
+    border: 1px solid #e4e4e4;
+    border-radius: 10px;
+}
+
+
+.payment-stage-main {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+
+.payment-stage-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+
+.payment-stage-due {
+    color: #888;
+    font-size: 0.74rem;
+}
+
+
+.payment-stage-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+.payment-stage-amount {
+    font-size: 0.84rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+
+.payment-stage-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 25px;
+    padding: 4px 9px;
+
+    border-radius: 999px;
+
+    background: #f1f1f1;
+    color: #777;
+
+    font-size: 0.68rem;
+    font-weight: 700;
+}
+
+
+.payment-stage-status.paid {
+    background: #111;
+    color: #fff;
+}
+
+
+.payment-stage-status.partial {
+    background: #e5e5e5;
+    color: #111;
+}
+
+
 .primary-button {
     display: inline-flex;
     align-items: center;
@@ -549,6 +768,12 @@ body {
 
 .primary-button:hover {
     background: #2a2a2a;
+}
+
+
+.primary-button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
 }
 
 
@@ -727,6 +952,37 @@ body {
 
     .payment-summary {
         grid-template-columns: 1fr;
+    }
+
+
+    .payment-plan-badge {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+
+    .payment-next {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+
+    #paymentNextDue {
+        text-align: left;
+    }
+
+
+    .payment-stage {
+        grid-template-columns: 1fr;
+        gap: 9px;
+    }
+
+
+    .payment-stage-right {
+        justify-content: space-between;
+        width: 100%;
     }
 
 }
