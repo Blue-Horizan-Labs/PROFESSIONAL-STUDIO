@@ -151,7 +151,36 @@ const packageDelivery = document.getElementById("packageDelivery");
 const packageDescription =
     document.getElementById("packageDescription");
 
-const addPackageBtn = document.getElementById("addPackageBtn");
+const paymentPlanType =
+    document.getElementById("paymentPlanType");
+
+const advancePaymentFields =
+    document.getElementById("advancePaymentFields");
+
+const advancePaymentType =
+    document.getElementById("advancePaymentType");
+
+const advancePaymentValue =
+    document.getElementById("advancePaymentValue");
+
+const advancePaymentPrefix =
+    document.getElementById("advancePaymentPrefix");
+
+const installmentPaymentFields =
+    document.getElementById("installmentPaymentFields");
+
+const installmentList =
+    document.getElementById("installmentList");
+
+const addInstallmentBtn =
+    document.getElementById("addInstallmentBtn");
+
+const installmentTotal =
+    document.getElementById("installmentTotal");
+
+const addPackageBtn =
+    document.getElementById("addPackageBtn");
+
 const closePackageEditorBtn =
     document.getElementById("closePackageEditorBtn");
 
@@ -205,7 +234,10 @@ function init() {
 
 function bindEvents() {
 
-    addServiceBtn.addEventListener("click", createService);
+    addServiceBtn.addEventListener(
+        "click",
+        createService
+    );
 
     emptyAddServiceBtn.addEventListener(
         "click",
@@ -262,6 +294,28 @@ function bindEvents() {
         savePackage
     );
 
+    paymentPlanType.addEventListener(
+        "change",
+        updatePaymentPlanVisibility
+    );
+
+    advancePaymentType.addEventListener(
+        "change",
+        updateAdvancePaymentPrefix
+    );
+
+    addInstallmentBtn.addEventListener(
+        "click",
+        function () {
+            addInstallmentRow();
+        }
+    );
+
+    packagePrice.addEventListener(
+        "input",
+        updateInstallmentTotal
+    );
+
     deleteDialog.addEventListener(
         "click",
         function (event) {
@@ -305,7 +359,8 @@ function loadServices() {
 
     if (!storedServices) {
 
-        services = structuredClone(DEFAULT_SERVICES);
+        services =
+            structuredClone(DEFAULT_SERVICES);
 
         saveServices();
 
@@ -321,7 +376,8 @@ function loadServices() {
             throw new Error("Invalid service data.");
         }
 
-        services = normalizeServices(parsed);
+        services =
+            normalizeServices(parsed);
 
     } catch (error) {
 
@@ -330,7 +386,8 @@ function loadServices() {
             error
         );
 
-        services = structuredClone(DEFAULT_SERVICES);
+        services =
+            structuredClone(DEFAULT_SERVICES);
 
         saveServices();
     }
@@ -355,21 +412,29 @@ function normalizeServices(list) {
     return list.map(function (service) {
 
         return {
-            id: service.id || createId(),
+            id:
+                service.id ||
+                createId(),
 
-            name: service.name || "Untitled Service",
+            name:
+                service.name ||
+                "Untitled Service",
 
             description:
-                service.description || "",
+                service.description ||
+                "",
 
             coverageDuration:
-                service.coverageDuration || "",
+                service.coverageDuration ||
+                "",
 
             deliveryTime:
-                service.deliveryTime || "",
+                service.deliveryTime ||
+                "",
 
             coverageType:
-                service.coverageType || "",
+                service.coverageType ||
+                "",
 
             active:
                 service.active !== false,
@@ -387,25 +452,38 @@ function normalizeServices(list) {
 function normalizePackage(pkg) {
 
     return {
-        id: pkg.id || createId(),
+        id:
+            pkg.id ||
+            createId(),
 
         name:
-            pkg.name || "Package",
+            pkg.name ||
+            "Package",
 
         price:
-            Number(pkg.price) || 0,
+            Number(pkg.price) ||
+            0,
 
         coverage:
-            pkg.coverage || "",
+            pkg.coverage ||
+            "",
 
         photos:
-            pkg.photos || "",
+            pkg.photos ||
+            "",
 
         delivery:
-            pkg.delivery || "",
+            pkg.delivery ||
+            "",
 
         description:
-            pkg.description || ""
+            pkg.description ||
+            "",
+
+        paymentPlan:
+            normalizePaymentPlan(
+                pkg.paymentPlan
+            )
     };
 }
 
@@ -418,7 +496,8 @@ function renderServices() {
 
     servicesList.innerHTML = "";
 
-    serviceCount.textContent = services.length;
+    serviceCount.textContent =
+        services.length;
 
     if (services.length === 0) {
 
@@ -434,7 +513,8 @@ function renderServices() {
         const card =
             document.createElement("article");
 
-        card.className = "service-card";
+        card.className =
+            "service-card";
 
         const startingPrice =
             getStartingPrice(service);
@@ -449,9 +529,15 @@ function renderServices() {
                     </h3>
 
                     <span class="service-status ${
-                        service.active ? "active" : ""
+                        service.active
+                            ? "active"
+                            : ""
                     }">
-                        ${service.active ? "Active" : "Inactive"}
+                        ${
+                            service.active
+                                ? "Active"
+                                : "Inactive"
+                        }
                     </span>
 
                 </div>
@@ -472,7 +558,9 @@ function renderServices() {
                         </span>
 
                         <span class="service-meta-value">
-                            ${formatCurrency(startingPrice)}
+                            ${formatCurrency(
+                                startingPrice
+                            )}
                         </span>
 
                     </div>
@@ -497,7 +585,8 @@ function renderServices() {
 
                         <span class="service-meta-value">
                             ${escapeHTML(
-                                service.coverageDuration || "Not set"
+                                service.coverageDuration ||
+                                "Not set"
                             )}
                         </span>
 
@@ -513,7 +602,9 @@ function renderServices() {
                     type="button"
                     class="text-button"
                     data-action="edit"
-                    data-service-id="${escapeHTML(service.id)}"
+                    data-service-id="${escapeHTML(
+                        service.id
+                    )}"
                 >
                     Edit Service →
                 </button>
@@ -525,7 +616,9 @@ function renderServices() {
     });
 
     servicesList
-        .querySelectorAll('[data-action="edit"]')
+        .querySelectorAll(
+            '[data-action="edit"]'
+        )
         .forEach(function (button) {
 
             button.addEventListener(
@@ -558,8 +651,11 @@ function openService(serviceId) {
         return;
     }
 
-    currentServiceId = serviceId;
-    isCreatingService = false;
+    currentServiceId =
+        serviceId;
+
+    isCreatingService =
+        false;
 
     populateEditor(service);
 
@@ -574,25 +670,37 @@ function openService(serviceId) {
 function createService() {
 
     const service = {
-        id: createId(),
 
-        name: "",
+        id:
+            createId(),
 
-        description: "",
+        name:
+            "",
 
-        coverageDuration: "",
+        description:
+            "",
 
-        deliveryTime: "",
+        coverageDuration:
+            "",
 
-        coverageType: "",
+        deliveryTime:
+            "",
 
-        active: true,
+        coverageType:
+            "",
 
-        packages: []
+        active:
+            true,
+
+        packages:
+            []
     };
 
-    currentServiceId = service.id;
-    isCreatingService = true;
+    currentServiceId =
+        service.id;
+
+    isCreatingService =
+        true;
 
     services.push(service);
 
@@ -621,22 +729,28 @@ function populateEditor(service) {
             : "Update the information your clients will see.";
 
     editorBreadcrumb.textContent =
-        service.name || "New Service";
+        service.name ||
+        "New Service";
 
     serviceName.value =
-        service.name || "";
+        service.name ||
+        "";
 
     serviceDescription.value =
-        service.description || "";
+        service.description ||
+        "";
 
     coverageDuration.value =
-        service.coverageDuration || "";
+        service.coverageDuration ||
+        "";
 
     deliveryTime.value =
-        service.deliveryTime || "";
+        service.deliveryTime ||
+        "";
 
     coverageType.value =
-        service.coverageType || "";
+        service.coverageType ||
+        "";
 
     updateStatusIndicator(service);
 
@@ -654,7 +768,11 @@ function updateStatusIndicator(service) {
 
     statusIndicator.className =
         "status-indicator " +
-        (service.active ? "active" : "inactive");
+        (
+            service.active
+                ? "active"
+                : "inactive"
+        );
 
     statusIndicator.textContent =
         service.active
@@ -669,8 +787,11 @@ function updateStatusIndicator(service) {
 
 function showEditor() {
 
-    servicesView.hidden = true;
-    editorView.hidden = false;
+    servicesView.hidden =
+        true;
+
+    editorView.hidden =
+        false;
 
     window.scrollTo({
         top: 0,
@@ -681,11 +802,17 @@ function showEditor() {
 
 function hideEditor() {
 
-    editorView.hidden = true;
-    servicesView.hidden = false;
+    editorView.hidden =
+        true;
 
-    currentServiceId = null;
-    isCreatingService = false;
+    servicesView.hidden =
+        false;
+
+    currentServiceId =
+        null;
+
+    isCreatingService =
+        false;
 
     closePackageEditor();
 
@@ -705,7 +832,9 @@ function hideEditor() {
 function collectServiceData() {
 
     return {
-        name: serviceName.value.trim(),
+
+        name:
+            serviceName.value.trim(),
 
         description:
             serviceDescription.value.trim(),
@@ -772,7 +901,8 @@ function saveService() {
     editorBreadcrumb.textContent =
         service.name;
 
-    isCreatingService = false;
+    isCreatingService =
+        false;
 
     showNotification(
         "Service saved successfully."
@@ -796,7 +926,8 @@ function validateService(data) {
 
         return {
             valid: false,
-            message: "Please enter a service name."
+            message:
+                "Please enter a service name."
         };
 
     }
@@ -805,7 +936,8 @@ function validateService(data) {
 
         return {
             valid: false,
-            message: "Please add a service description."
+            message:
+                "Please add a service description."
         };
 
     }
@@ -814,7 +946,8 @@ function validateService(data) {
 
         return {
             valid: false,
-            message: "Please enter the coverage duration."
+            message:
+                "Please enter the coverage duration."
         };
 
     }
@@ -823,7 +956,8 @@ function validateService(data) {
 
         return {
             valid: false,
-            message: "Please enter the delivery time."
+            message:
+                "Please enter the delivery time."
         };
 
     }
@@ -832,7 +966,8 @@ function validateService(data) {
 
         return {
             valid: false,
-            message: "Please enter the location or coverage type."
+            message:
+                "Please enter the location or coverage type."
         };
 
     }
@@ -852,9 +987,12 @@ function cancelEditing() {
     if (isCreatingService) {
 
         services =
-            services.filter(function (service) {
-                return service.id !== currentServiceId;
-            });
+            services.filter(
+                function (service) {
+                    return service.id !==
+                        currentServiceId;
+                }
+            );
 
     }
 
@@ -874,10 +1012,12 @@ function backToServices() {
 
 function renderPackages(service) {
 
-    packagesList.innerHTML = "";
+    packagesList.innerHTML =
+        "";
 
     const packages =
-        service.packages || [];
+        service.packages ||
+        [];
 
     packageEmpty.hidden =
         packages.length !== 0;
@@ -887,7 +1027,8 @@ function renderPackages(service) {
         const card =
             document.createElement("article");
 
-        card.className = "package-card";
+        card.className =
+            "package-card";
 
         card.innerHTML = `
             <div class="package-card-content">
@@ -908,19 +1049,22 @@ function renderPackages(service) {
 
                     <span class="package-detail">
                         ${escapeHTML(
-                            pkg.coverage || "Coverage not set"
+                            pkg.coverage ||
+                            "Coverage not set"
                         )}
                     </span>
 
                     <span class="package-detail">
                         ${escapeHTML(
-                            pkg.photos || "Photos not set"
+                            pkg.photos ||
+                            "Photos not set"
                         )}
                     </span>
 
                     <span class="package-detail">
                         ${escapeHTML(
-                            pkg.delivery || "Delivery not set"
+                            pkg.delivery ||
+                            "Delivery not set"
                         )}
                     </span>
 
@@ -930,11 +1074,30 @@ function renderPackages(service) {
                     pkg.description
                         ? `
                             <p class="package-description">
-                                ${escapeHTML(pkg.description)}
+                                ${escapeHTML(
+                                    pkg.description
+                                )}
                             </p>
                         `
                         : ""
                 }
+
+                <div class="package-payment-summary">
+
+                    <span class="package-payment-label">
+                        Payment
+                    </span>
+
+                    <span class="package-payment-value">
+                        ${escapeHTML(
+                            getPaymentPlanSummary(
+                                pkg.paymentPlan,
+                                pkg.price
+                            )
+                        )}
+                    </span>
+
+                </div>
 
             </div>
 
@@ -944,7 +1107,9 @@ function renderPackages(service) {
                     type="button"
                     class="text-button"
                     data-package-action="edit"
-                    data-package-id="${escapeHTML(pkg.id)}"
+                    data-package-id="${escapeHTML(
+                        pkg.id
+                    )}"
                 >
                     Edit Package
                 </button>
@@ -953,7 +1118,9 @@ function renderPackages(service) {
                     type="button"
                     class="text-button"
                     data-package-action="delete"
-                    data-package-id="${escapeHTML(pkg.id)}"
+                    data-package-id="${escapeHTML(
+                        pkg.id
+                    )}"
                 >
                     Delete
                 </button>
@@ -965,7 +1132,9 @@ function renderPackages(service) {
     });
 
     packagesList
-        .querySelectorAll('[data-package-action="edit"]')
+        .querySelectorAll(
+            '[data-package-action="edit"]'
+        )
         .forEach(function (button) {
 
             button.addEventListener(
@@ -982,7 +1151,9 @@ function renderPackages(service) {
         });
 
     packagesList
-        .querySelectorAll('[data-package-action="delete"]')
+        .querySelectorAll(
+            '[data-package-action="delete"]'
+        )
         .forEach(function (button) {
 
             button.addEventListener(
@@ -1014,19 +1185,30 @@ function createPackage() {
     }
 
     const pkg = {
-        id: createId(),
 
-        name: "New Package",
+        id:
+            createId(),
 
-        price: 0,
+        name:
+            "New Package",
 
-        coverage: "",
+        price:
+            0,
 
-        photos: "",
+        coverage:
+            "",
 
-        delivery: "",
+        photos:
+            "",
 
-        description: ""
+        delivery:
+            "",
+
+        description:
+            "",
+
+        paymentPlan:
+            createDefaultPaymentPlan()
     };
 
     service.packages.push(pkg);
@@ -1051,38 +1233,53 @@ function openPackageEditor(packageId) {
     }
 
     const pkg =
-        service.packages.find(function (item) {
-            return item.id === packageId;
-        });
+        service.packages.find(
+            function (item) {
+                return item.id === packageId;
+            }
+        );
 
     if (!pkg) {
         return;
     }
 
-    editingPackageId = packageId;
+    editingPackageId =
+        packageId;
 
     packageEditorTitle.textContent =
-        pkg.name || "Edit Package";
+        pkg.name ||
+        "Edit Package";
 
     packageName.value =
-        pkg.name || "";
+        pkg.name ||
+        "";
 
     packagePrice.value =
-        pkg.price || "";
+        pkg.price ||
+        "";
 
     packageCoverage.value =
-        pkg.coverage || "";
+        pkg.coverage ||
+        "";
 
     packagePhotos.value =
-        pkg.photos || "";
+        pkg.photos ||
+        "";
 
     packageDelivery.value =
-        pkg.delivery || "";
+        pkg.delivery ||
+        "";
 
     packageDescription.value =
-        pkg.description || "";
+        pkg.description ||
+        "";
 
-    packageEditorSection.hidden = false;
+    setPaymentPlanEditor(
+        pkg.paymentPlan
+    );
+
+    packageEditorSection.hidden =
+        false;
 
     packageEditorSection.scrollIntoView({
         behavior: "smooth",
@@ -1090,7 +1287,9 @@ function openPackageEditor(packageId) {
     });
 
     setTimeout(function () {
+
         packageName.focus();
+
     }, 250);
 }
 
@@ -1109,9 +1308,11 @@ function savePackage() {
     }
 
     const pkg =
-        service.packages.find(function (item) {
-            return item.id === editingPackageId;
-        });
+        service.packages.find(
+            function (item) {
+                return item.id === editingPackageId;
+            }
+        );
 
     if (!pkg) {
         return;
@@ -1134,6 +1335,9 @@ function savePackage() {
 
     const description =
         packageDescription.value.trim();
+
+    const paymentResult =
+        collectPaymentPlan(price);
 
     if (!name) {
 
@@ -1183,6 +1387,15 @@ function savePackage() {
         return;
     }
 
+    if (!paymentResult.valid) {
+
+        showNotification(
+            paymentResult.message
+        );
+
+        return;
+    }
+
     pkg.name =
         name;
 
@@ -1200,6 +1413,9 @@ function savePackage() {
 
     pkg.description =
         description;
+
+    pkg.paymentPlan =
+        paymentResult.paymentPlan;
 
     saveServices();
 
@@ -1219,16 +1435,910 @@ function savePackage() {
 
 function closePackageEditor() {
 
-    packageEditorSection.hidden = true;
+    packageEditorSection.hidden =
+        true;
 
-    editingPackageId = null;
+    editingPackageId =
+        null;
 
-    packageName.value = "";
-    packagePrice.value = "";
-    packageCoverage.value = "";
-    packagePhotos.value = "";
-    packageDelivery.value = "";
-    packageDescription.value = "";
+    packageName.value =
+        "";
+
+    packagePrice.value =
+        "";
+
+    packageCoverage.value =
+        "";
+
+    packagePhotos.value =
+        "";
+
+    packageDelivery.value =
+        "";
+
+    packageDescription.value =
+        "";
+
+    setPaymentPlanEditor(
+        createDefaultPaymentPlan()
+    );
+}
+
+
+/* =========================================================
+   PAYMENT PLAN
+========================================================= */
+
+function getPaymentPlanSummary(plan, price) {
+
+    const normalized =
+        normalizePaymentPlan(plan);
+
+    if (normalized.type === "full") {
+
+        return "Full payment";
+    }
+
+    if (normalized.type === "advance") {
+
+        const advance =
+            normalized.advance;
+
+        return advance.type === "percentage"
+            ? `${advance.value}% advance`
+            : `${formatCurrency(
+                advance.value
+            )} advance`;
+    }
+
+    const stages =
+        normalized.installments ||
+        [];
+
+    return stages.length > 0
+        ? `${stages.length} payment stages`
+        : "Custom installments";
+}
+
+
+function createDefaultPaymentPlan() {
+
+    return {
+
+        type:
+            "full",
+
+        advance: {
+
+            type:
+                "percentage",
+
+            value:
+                25
+        },
+
+        installments:
+            []
+    };
+}
+
+
+function normalizePaymentPlan(plan) {
+
+    const defaults =
+        createDefaultPaymentPlan();
+
+    if (
+        !plan ||
+        typeof plan !== "object"
+    ) {
+
+        return defaults;
+    }
+
+    const type =
+        [
+            "full",
+            "advance",
+            "installments"
+        ].includes(plan.type)
+            ? plan.type
+            : defaults.type;
+
+    const advanceType =
+        plan.advance &&
+        [
+            "percentage",
+            "fixed"
+        ].includes(plan.advance.type)
+            ? plan.advance.type
+            : defaults.advance.type;
+
+    const advanceValue =
+        Number(
+            plan.advance &&
+            plan.advance.value
+        );
+
+    const installments =
+        Array.isArray(plan.installments)
+            ? plan.installments.map(
+                function (item) {
+
+                    return {
+
+                        id:
+                            item.id ||
+                            createId(),
+
+                        name:
+                            item.name ||
+                            "Payment Stage",
+
+                        type:
+                            [
+                                "percentage",
+                                "fixed"
+                            ].includes(item.type)
+                                ? item.type
+                                : "percentage",
+
+                        value:
+                            Number.isFinite(
+                                Number(item.value)
+                            )
+                                ? Number(item.value)
+                                : 0,
+
+                        due:
+                            item.due ||
+                            ""
+                    };
+
+                }
+            )
+            : [];
+
+    return {
+
+        type:
+            type,
+
+        advance: {
+
+            type:
+                advanceType,
+
+            value:
+                Number.isFinite(
+                    advanceValue
+                )
+                    ? advanceValue
+                    : 25
+        },
+
+        installments:
+            installments
+    };
+}
+
+
+function setPaymentPlanEditor(plan) {
+
+    const normalized =
+        normalizePaymentPlan(plan);
+
+    paymentPlanType.value =
+        normalized.type;
+
+    advancePaymentType.value =
+        normalized.advance.type;
+
+    advancePaymentValue.value =
+        normalized.advance.value;
+
+    installmentList.innerHTML =
+        "";
+
+    if (
+        normalized.installments.length >
+        0
+    ) {
+
+        normalized.installments.forEach(
+            function (item) {
+
+                addInstallmentRow(item);
+
+            }
+        );
+
+    } else if (
+        normalized.type ===
+        "installments"
+    ) {
+
+        addInstallmentRow({
+
+            name:
+                "Booking Advance",
+
+            type:
+                "percentage",
+
+            value:
+                25,
+
+            due:
+                "At booking"
+        });
+
+        addInstallmentRow({
+
+            name:
+                "Final Payment",
+
+            type:
+                "percentage",
+
+            value:
+                75,
+
+            due:
+                "Before event"
+        });
+    }
+
+    updateAdvancePaymentPrefix();
+
+    updatePaymentPlanVisibility();
+
+    updateInstallmentTotal();
+}
+
+
+function updatePaymentPlanVisibility() {
+
+    const type =
+        paymentPlanType.value;
+
+    advancePaymentFields.hidden =
+        type !== "advance";
+
+    installmentPaymentFields.hidden =
+        type !== "installments";
+
+    if (
+        type === "installments" &&
+        installmentList.children.length === 0
+    ) {
+
+        addInstallmentRow({
+
+            name:
+                "Booking Advance",
+
+            type:
+                "percentage",
+
+            value:
+                25,
+
+            due:
+                "At booking"
+        });
+
+        addInstallmentRow({
+
+            name:
+                "Final Payment",
+
+            type:
+                "percentage",
+
+            value:
+                75,
+
+            due:
+                "Before event"
+        });
+    }
+
+    updateInstallmentTotal();
+}
+
+
+function updateAdvancePaymentPrefix() {
+
+    advancePaymentPrefix.textContent =
+        advancePaymentType.value ===
+        "percentage"
+            ? "%"
+            : "₹";
+}
+
+
+function addInstallmentRow(data) {
+
+    const item =
+        data || {
+
+            name:
+                "Payment Stage",
+
+            type:
+                "percentage",
+
+            value:
+                0,
+
+            due:
+                ""
+        };
+
+    const row =
+        document.createElement("div");
+
+    row.className =
+        "installment-row";
+
+    row.dataset.installmentId =
+        item.id ||
+        createId();
+
+    row.innerHTML = `
+        <div class="installment-field">
+
+            <label>
+                Stage Name
+            </label>
+
+            <input
+                type="text"
+                class="installment-name"
+                maxlength="80"
+                value="${escapeHTML(
+                    item.name || ""
+                )}"
+                placeholder="e.g. Booking Advance"
+            >
+
+        </div>
+
+        <div class="installment-field">
+
+            <label>
+                Amount Type
+            </label>
+
+            <select class="installment-type">
+
+                <option
+                    value="percentage"
+                    ${
+                        item.type ===
+                        "percentage"
+                            ? "selected"
+                            : ""
+                    }
+                >
+                    Percentage
+                </option>
+
+                <option
+                    value="fixed"
+                    ${
+                        item.type ===
+                        "fixed"
+                            ? "selected"
+                            : ""
+                    }
+                >
+                    Fixed Amount
+                </option>
+
+            </select>
+
+        </div>
+
+        <div class="installment-field">
+
+            <label>
+                Amount
+            </label>
+
+            <div class="input-prefix">
+
+                <span class="installment-prefix">
+                    ${
+                        item.type ===
+                        "fixed"
+                            ? "₹"
+                            : "%"
+                    }
+                </span>
+
+                <input
+                    type="number"
+                    class="installment-value"
+                    min="0"
+                    step="1"
+                    value="${
+                        Number(item.value) ||
+                        0
+                    }"
+                    placeholder="25"
+                >
+
+            </div>
+
+        </div>
+
+        <div class="installment-field">
+
+            <label>
+                Due Timing
+            </label>
+
+            <input
+                type="text"
+                class="installment-due"
+                maxlength="100"
+                value="${escapeHTML(
+                    item.due || ""
+                )}"
+                placeholder="e.g. At booking"
+            >
+
+        </div>
+
+        <button
+            type="button"
+            class="installment-remove"
+        >
+            Remove
+        </button>
+    `;
+
+    installmentList.appendChild(row);
+
+    const typeInput =
+        row.querySelector(
+            ".installment-type"
+        );
+
+    const valueInput =
+        row.querySelector(
+            ".installment-value"
+        );
+
+    const prefix =
+        row.querySelector(
+            ".installment-prefix"
+        );
+
+    const removeButton =
+        row.querySelector(
+            ".installment-remove"
+        );
+
+    typeInput.addEventListener(
+        "change",
+        function () {
+
+            prefix.textContent =
+                typeInput.value === "fixed"
+                    ? "₹"
+                    : "%";
+
+            updateInstallmentTotal();
+        }
+    );
+
+    valueInput.addEventListener(
+        "input",
+        updateInstallmentTotal
+    );
+
+    removeButton.addEventListener(
+        "click",
+        function () {
+
+            row.remove();
+
+            updateInstallmentTotal();
+        }
+    );
+
+    updateInstallmentTotal();
+}
+
+
+function collectPaymentPlan(price) {
+
+    const type =
+        paymentPlanType.value;
+
+    if (type === "full") {
+
+        return {
+
+            valid:
+                true,
+
+            paymentPlan: {
+
+                type:
+                    "full",
+
+                advance: {
+
+                    type:
+                        "percentage",
+
+                    value:
+                        0
+                },
+
+                installments:
+                    []
+            }
+        };
+    }
+
+    if (type === "advance") {
+
+        const value =
+            Number(
+                advancePaymentValue.value
+            );
+
+        const amountType =
+            advancePaymentType.value;
+
+        if (
+            !Number.isFinite(value) ||
+            value <= 0
+        ) {
+
+            return {
+
+                valid:
+                    false,
+
+                message:
+                    "Please enter a valid advance amount."
+            };
+        }
+
+        if (
+            amountType === "percentage" &&
+            value >= 100
+        ) {
+
+            return {
+
+                valid:
+                    false,
+
+                message:
+                    "Advance percentage must be less than 100%."
+            };
+        }
+
+        if (
+            amountType === "fixed" &&
+            value >= price &&
+            price > 0
+        ) {
+
+            return {
+
+                valid:
+                    false,
+
+                message:
+                    "Fixed advance must be less than the package price."
+            };
+        }
+
+        return {
+
+            valid:
+                true,
+
+            paymentPlan: {
+
+                type:
+                    "advance",
+
+                advance: {
+
+                    type:
+                        amountType,
+
+                    value:
+                        value
+                },
+
+                installments:
+                    []
+            }
+        };
+    }
+
+    const rows =
+        Array.from(
+            installmentList.querySelectorAll(
+                ".installment-row"
+            )
+        );
+
+    if (rows.length === 0) {
+
+        return {
+
+            valid:
+                false,
+
+            message:
+                "Please add at least one payment stage."
+        };
+    }
+
+    const installments =
+        [];
+
+    let calculatedTotal =
+        0;
+
+    for (
+        let i = 0;
+        i < rows.length;
+        i += 1
+    ) {
+
+        const row =
+            rows[i];
+
+        const name =
+            row
+                .querySelector(
+                    ".installment-name"
+                )
+                .value
+                .trim();
+
+        const amountType =
+            row
+                .querySelector(
+                    ".installment-type"
+                )
+                .value;
+
+        const value =
+            Number(
+                row
+                    .querySelector(
+                        ".installment-value"
+                    )
+                    .value
+            );
+
+        const due =
+            row
+                .querySelector(
+                    ".installment-due"
+                )
+                .value
+                .trim();
+
+        if (!name) {
+
+            return {
+
+                valid:
+                    false,
+
+                message:
+                    `Please enter a name for payment stage ${i + 1}.`
+            };
+        }
+
+        if (
+            !Number.isFinite(value) ||
+            value <= 0
+        ) {
+
+            return {
+
+                valid:
+                    false,
+
+                message:
+                    `Please enter a valid amount for payment stage ${i + 1}.`
+            };
+        }
+
+        if (!due) {
+
+            return {
+
+                valid:
+                    false,
+
+                message:
+                    `Please enter when payment stage ${i + 1} is due.`
+            };
+        }
+
+        if (
+            amountType ===
+                "percentage" &&
+            value > 100
+        ) {
+
+            return {
+
+                valid:
+                    false,
+
+                message:
+                    `Payment stage ${i + 1} cannot exceed 100%.`
+            };
+        }
+
+        if (
+            amountType ===
+                "fixed" &&
+            price > 0 &&
+            value > price
+        ) {
+
+            return {
+
+                valid:
+                    false,
+
+                message:
+                    `Payment stage ${i + 1} cannot exceed the package price.`
+            };
+        }
+
+        calculatedTotal +=
+            amountType ===
+            "percentage"
+                ? (
+                    price *
+                    value
+                ) / 100
+                : value;
+
+        installments.push({
+
+            id:
+                row.dataset.installmentId ||
+                createId(),
+
+            name:
+                name,
+
+            type:
+                amountType,
+
+            value:
+                value,
+
+            due:
+                due
+        });
+    }
+
+    if (
+        Math.abs(
+            calculatedTotal -
+            price
+        ) > 0.01
+    ) {
+
+        return {
+
+            valid:
+                false,
+
+            message:
+                `Payment stages must total ${formatCurrency(
+                    price
+                )}. Current total is ${formatCurrency(
+                    calculatedTotal
+                )}.`
+        };
+    }
+
+    return {
+
+        valid:
+            true,
+
+        paymentPlan: {
+
+            type:
+                "installments",
+
+            advance: {
+
+                type:
+                    "percentage",
+
+                value:
+                    0
+            },
+
+            installments:
+                installments
+        }
+    };
+}
+
+
+function updateInstallmentTotal() {
+
+    if (
+        !installmentTotal ||
+        !installmentList
+    ) {
+
+        return;
+    }
+
+    const price =
+        Number(
+            packagePrice.value
+        ) || 0;
+
+    const rows =
+        Array.from(
+            installmentList.querySelectorAll(
+                ".installment-row"
+            )
+        );
+
+    let total =
+        0;
+
+    rows.forEach(function (row) {
+
+        const type =
+            row
+                .querySelector(
+                    ".installment-type"
+                )
+                .value;
+
+        const value =
+            Number(
+                row
+                    .querySelector(
+                        ".installment-value"
+                    )
+                    .value
+            ) || 0;
+
+        total +=
+            type === "percentage"
+                ? (
+                    price *
+                    value
+                ) / 100
+                : value;
+    });
+
+    installmentTotal.textContent =
+        `Total: ${formatCurrency(
+            total
+        )} / ${formatCurrency(
+            price
+        )}`;
 }
 
 
@@ -1246,9 +2356,11 @@ function deletePackage(packageId) {
     }
 
     const pkg =
-        service.packages.find(function (item) {
-            return item.id === packageId;
-        });
+        service.packages.find(
+            function (item) {
+                return item.id === packageId;
+            }
+        );
 
     if (!pkg) {
         return;
@@ -1264,9 +2376,11 @@ function deletePackage(packageId) {
     }
 
     service.packages =
-        service.packages.filter(function (item) {
-            return item.id !== packageId;
-        });
+        service.packages.filter(
+            function (item) {
+                return item.id !== packageId;
+            }
+        );
 
     saveServices();
 
@@ -1290,13 +2404,15 @@ function openDeleteDialog() {
         return;
     }
 
-    deleteDialog.hidden = false;
+    deleteDialog.hidden =
+        false;
 }
 
 
 function closeDeleteDialog() {
 
-    deleteDialog.hidden = true;
+    deleteDialog.hidden =
+        true;
 }
 
 
@@ -1307,9 +2423,12 @@ function deleteService() {
     }
 
     services =
-        services.filter(function (service) {
-            return service.id !== currentServiceId;
-        });
+        services.filter(
+            function (service) {
+                return service.id !==
+                    currentServiceId;
+            }
+        );
 
     saveServices();
 
@@ -1329,9 +2448,12 @@ function deleteService() {
 
 function getCurrentService() {
 
-    return services.find(function (service) {
-        return service.id === currentServiceId;
-    });
+    return services.find(
+        function (service) {
+            return service.id ===
+                currentServiceId;
+        }
+    );
 }
 
 
@@ -1341,24 +2463,36 @@ function getStartingPrice(service) {
         !service.packages ||
         service.packages.length === 0
     ) {
+
         return 0;
     }
 
     const prices =
         service.packages
             .map(function (pkg) {
-                return Number(pkg.price);
+
+                return Number(
+                    pkg.price
+                );
+
             })
             .filter(function (price) {
-                return Number.isFinite(price) &&
-                    price >= 0;
+
+                return Number.isFinite(
+                    price
+                ) &&
+                price >= 0;
+
             });
 
     if (prices.length === 0) {
         return 0;
     }
 
-    return Math.min.apply(null, prices);
+    return Math.min.apply(
+        null,
+        prices
+    );
 }
 
 
@@ -1367,11 +2501,18 @@ function formatCurrency(amount) {
     return new Intl.NumberFormat(
         "en-IN",
         {
-            style: "currency",
-            currency: "INR",
-            maximumFractionDigits: 0
+            style:
+                "currency",
+
+            currency:
+                "INR",
+
+            maximumFractionDigits:
+                0
         }
-    ).format(amount || 0);
+    ).format(
+        amount || 0
+    );
 }
 
 
@@ -1390,11 +2531,26 @@ function createId() {
 function escapeHTML(value) {
 
     return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 }
 
 
@@ -1402,22 +2558,31 @@ function escapeHTML(value) {
    NOTIFICATION
 ========================================================= */
 
-let notificationTimer = null;
+let notificationTimer =
+    null;
 
 function showNotification(message) {
 
-    notification.textContent = message;
+    notification.textContent =
+        message;
 
-    notification.classList.add("show");
+    notification.classList.add(
+        "show"
+    );
 
-    clearTimeout(notificationTimer);
+    clearTimeout(
+        notificationTimer
+    );
 
     notificationTimer =
-        setTimeout(function () {
+        setTimeout(
+            function () {
 
-            notification.classList.remove(
-                "show"
-            );
+                notification.classList.remove(
+                    "show"
+                );
 
-        }, 2500);
+            },
+            2500
+        );
 }

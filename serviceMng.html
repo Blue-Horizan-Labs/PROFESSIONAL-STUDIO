@@ -19,11 +19,12 @@
     >
 
     <title>Manage Services | Professional Studio</title>
-<link
-    rel="icon"
-    type="image/png"
-    href="https://i.ibb.co/8g0LT3jZ/logo1-2.png" 
->
+
+    <link
+        rel="icon"
+        type="image/png"
+        href="https://i.ibb.co/8g0LT3jZ/logo1-2.png"
+    >
 
     <link rel="stylesheet" href="serviceMng.css">
 </head>
@@ -41,12 +42,19 @@
         </div>
 
         <nav aria-label="Main navigation">
-            <a href="dashboard.html">Dashboard</a>
-            <a href="serviceMng.html" class="active" aria-current="page">
+            <a href="user.html">Dashboard</a>
+
+            <a
+                href="serviceMng.html"
+                class="active"
+                aria-current="page"
+            >
                 Services
             </a>
-            <a href="portfolio.html">Portfolio</a>
-            <a href="bookings.html">Bookings</a>
+
+            <a href="client.html">Portfolio</a>
+
+            <a href="bookingMng.html">Bookings</a>
         </nav>
 
     </header>
@@ -71,7 +79,7 @@
                     <div class="page-header-content">
 
                         <div class="breadcrumb">
-                            <a href="dashboard.html">Dashboard</a>
+                            <a href="user.html">Dashboard</a>
                             <span>/</span>
                             <span>Services</span>
                         </div>
@@ -96,19 +104,23 @@
                 </div>
 
 
-                <!-- SERVICES -->
+                <!-- =================================================
+                     SERVICES
+                ================================================== -->
 
                 <section class="services-section">
 
                     <div class="section-heading">
 
                         <div>
+
                             <h2>Your Services</h2>
 
                             <p>
                                 <span id="serviceCount">0</span>
                                 services
                             </p>
+
                         </div>
 
                     </div>
@@ -319,11 +331,13 @@
                     <div class="section-title package-section-heading">
 
                         <div>
+
                             <h2>Your Packages</h2>
 
                             <p>
                                 Create the packages clients can choose from.
                             </p>
+
                         </div>
 
                         <button
@@ -495,6 +509,175 @@
                         </div>
 
 
+                        <!-- =================================================
+                             PAYMENT PLAN
+                        ================================================== -->
+
+                        <div class="payment-plan-editor">
+
+                            <div class="payment-plan-heading">
+
+                                <div>
+
+                                    <span class="small-label">
+                                        PAYMENT PLAN
+                                    </span>
+
+                                    <h3>
+                                        How clients pay for this package
+                                    </h3>
+
+                                    <p>
+                                        Set the default payment structure
+                                        used when this package is booked.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="form-group full-width payment-plan-type-group">
+
+                                <label for="paymentPlanType">
+                                    Payment Type
+                                </label>
+
+                                <select id="paymentPlanType">
+
+                                    <option value="full">
+                                        Full Payment
+                                    </option>
+
+                                    <option value="advance">
+                                        Advance Payment
+                                    </option>
+
+                                    <option value="installments">
+                                        Custom Installments
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <!-- ADVANCE PAYMENT -->
+
+                            <div
+                                id="advancePaymentFields"
+                                class="payment-plan-fields"
+                                hidden
+                            >
+
+                                <div class="form-grid">
+
+                                    <div class="form-group">
+
+                                        <label for="advancePaymentType">
+                                            Advance Type
+                                        </label>
+
+                                        <select id="advancePaymentType">
+
+                                            <option value="percentage">
+                                                Percentage
+                                            </option>
+
+                                            <option value="fixed">
+                                                Fixed Amount
+                                            </option>
+
+                                        </select>
+
+                                    </div>
+
+
+                                    <div class="form-group">
+
+                                        <label for="advancePaymentValue">
+                                            Advance Amount
+                                        </label>
+
+                                        <div
+                                            class="input-prefix"
+                                            id="advancePaymentInputWrap"
+                                        >
+
+                                            <span id="advancePaymentPrefix">
+                                                %
+                                            </span>
+
+                                            <input
+                                                type="number"
+                                                id="advancePaymentValue"
+                                                min="0"
+                                                step="1"
+                                                placeholder="25"
+                                            >
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <span class="field-hint">
+                                    The remaining balance will be due later
+                                    and can be tracked through Billing.
+                                </span>
+
+                            </div>
+
+
+                            <!-- CUSTOM INSTALLMENTS -->
+
+                            <div
+                                id="installmentPaymentFields"
+                                class="payment-plan-fields"
+                                hidden
+                            >
+
+                                <div
+                                    class="installment-list"
+                                    id="installmentList"
+                                ></div>
+
+
+                                <div class="installment-footer">
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-secondary"
+                                        id="addInstallmentBtn"
+                                    >
+                                        + Add Payment Stage
+                                    </button>
+
+                                    <div
+                                        class="installment-total"
+                                        id="installmentTotal"
+                                    >
+                                        Total: ₹0
+                                    </div>
+
+                                </div>
+
+
+                                <span class="field-hint">
+                                    Use a mix of percentage and fixed amounts
+                                    if needed. Payment stages must add up
+                                    exactly to the package price.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- PACKAGE ACTIONS -->
+
                         <div class="package-editor-actions">
 
                             <button
@@ -533,6 +716,7 @@
                     >
                         Delete Service
                     </button>
+
 
                     <div class="editor-actions-right">
 
