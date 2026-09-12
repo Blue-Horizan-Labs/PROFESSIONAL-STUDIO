@@ -1252,6 +1252,19 @@ tbody tr:hover{
         font-size:32px;
     }
 
+    .equipment-remove-btn{
+         background: #fff;
+    color: #111;
+    border: 1px solid #d0d0d0;
+    padding: 8px 14px;
+    border-radius: 70px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-left: 12px;
+    transition: all 0.2s ease;
+}
+
 
     /* ===========================
        GALLERY
