@@ -122,7 +122,7 @@ a {
 }
 
 .page-heading p {
-    max-width: 650px;
+    max-width: 680px;
     margin-top: 12px;
     color: #666;
     font-size: 0.95rem;
@@ -136,7 +136,7 @@ a {
 
 .overview-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 15px;
     margin-bottom: 35px;
 }
@@ -172,6 +172,10 @@ a {
 
 .overview-card.pending {
     border-top: 3px solid #777;
+}
+
+.overview-card.accepted {
+    border-top: 3px solid #999;
 }
 
 .overview-card.confirmed {
@@ -378,6 +382,11 @@ a {
     color: #444;
 }
 
+.status-accepted {
+    background: #e8e8e8;
+    color: #222;
+}
+
 .status-confirmed {
     background: #111;
     color: #fff;
@@ -507,6 +516,64 @@ a {
     background: #111;
     color: #fff;
     border-color: #111;
+}
+
+
+/* ============================================================
+   PAYMENT SUMMARY ON CARD
+============================================================ */
+
+.booking-payment-summary {
+    margin-top: 14px;
+    padding: 13px;
+    border: 1px solid #e2e2e2;
+    border-radius: 9px;
+    background: #fafafa;
+}
+
+.booking-payment-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.booking-payment-label {
+    color: #777;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.booking-payment-status {
+    font-size: 0.65rem;
+    font-weight: 700;
+}
+
+.payment-pending {
+    color: #777;
+}
+
+.payment-partial {
+    color: #444;
+}
+
+.payment-paid {
+    color: #111;
+}
+
+.booking-payment-amount {
+    margin-top: 5px;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.booking-payment-detail {
+    margin-top: 4px;
+    color: #777;
+    font-size: 0.67rem;
+    line-height: 1.45;
 }
 
 
@@ -652,6 +719,14 @@ a {
     background: #fff;
 }
 
+.calendar-day.selected .day-number {
+    border-color: transparent;
+}
+
+.calendar-day.busy-day {
+    background: #f0f0f0;
+}
+
 .booking-dots {
     display: flex;
     gap: 3px;
@@ -664,14 +739,6 @@ a {
     height: 4px;
     border-radius: 50%;
     background: #111;
-}
-
-.calendar-day.selected .day-number {
-    border-color: transparent;
-}
-
-.calendar-day.busy-day {
-    background: #f0f0f0;
 }
 
 
@@ -701,6 +768,10 @@ a {
     height: 6px;
     border-radius: 50%;
     background: #111;
+}
+
+.accepted-dot {
+    background: #777;
 }
 
 .pending-dot {
@@ -822,7 +893,7 @@ a {
 .booking-modal {
     position: relative;
     width: 100%;
-    max-width: 620px;
+    max-width: 680px;
     max-height: 90vh;
     overflow-y: auto;
 
@@ -851,6 +922,7 @@ a {
     border-radius: 50%;
     background: #fff;
 
+    color: #111;
     font-size: 1.2rem;
     line-height: 1;
 }
@@ -951,6 +1023,133 @@ a {
     font-size: 0.68rem;
 }
 
+
+/* ============================================================
+   PAYMENT PLAN MODAL
+============================================================ */
+
+.payment-plan-box {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.payment-plan-header {
+    padding: 12px 13px;
+    background: #f7f7f7;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.payment-plan-header strong {
+    font-size: 0.78rem;
+}
+
+.payment-plan-header span {
+    color: #777;
+    font-size: 0.65rem;
+}
+
+.payment-stage {
+    padding: 11px 13px;
+    border-top: 1px solid #eee;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.payment-stage-info {
+    min-width: 0;
+}
+
+.payment-stage-name {
+    display: block;
+    font-size: 0.74rem;
+    font-weight: 600;
+}
+
+.payment-stage-due {
+    display: block;
+    margin-top: 3px;
+    color: #777;
+    font-size: 0.63rem;
+}
+
+.payment-stage-amount {
+    flex-shrink: 0;
+    font-size: 0.76rem;
+    font-weight: 700;
+}
+
+.payment-stage-paid {
+    color: #555;
+}
+
+.payment-stage-pending {
+    color: #999;
+}
+
+
+/* ============================================================
+   PAYMENT PROGRESS
+============================================================ */
+
+.payment-progress-box {
+    padding: 13px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.payment-progress-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.payment-progress-heading strong {
+    font-size: 0.76rem;
+}
+
+.payment-progress-heading span {
+    color: #777;
+    font-size: 0.67rem;
+}
+
+.payment-progress-track {
+    height: 6px;
+    margin-top: 10px;
+    background: #ededed;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.payment-progress-bar {
+    height: 100%;
+    background: #111;
+    border-radius: inherit;
+    transition: width 0.2s ease;
+}
+
+.payment-progress-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 7px;
+    color: #777;
+    font-size: 0.63rem;
+}
+
+
+/* ============================================================
+   NOTES
+============================================================ */
+
 .notes-box {
     padding: 12px;
     border: 1px solid #e2e2e2;
@@ -959,6 +1158,11 @@ a {
     font-size: 0.76rem;
     line-height: 1.6;
 }
+
+
+/* ============================================================
+   MODAL ACTIONS
+============================================================ */
 
 .modal-actions {
     display: flex;
@@ -997,6 +1201,15 @@ a {
 /* ============================================================
    RESPONSIVE
 ============================================================ */
+
+@media (max-width: 1100px) {
+
+    .overview-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+}
+
 
 @media (max-width: 1050px) {
 
@@ -1156,6 +1369,10 @@ a {
 
     .detail-full {
         grid-column: auto;
+    }
+
+    .payment-stage {
+        align-items: flex-start;
     }
 
     .modal-actions {

@@ -5,14 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Professional Studio | Booking Management</title>
-<link
-    rel="icon"
-    type="image/png"
-    href="https://i.ibb.co/8g0LT3jZ/logo1-2.png" 
->
 
+    <link
+        rel="icon"
+        type="image/png"
+        href="https://i.ibb.co/8g0LT3jZ/logo1-2.png"
+    >
 
-    <meta name="description" content="Manage photography bookings and availability">
+    <meta
+        name="description"
+        content="Manage photography bookings, payments and availability"
+    >
+
     <meta name="theme-color" content="#111111">
 
     <link rel="stylesheet" href="bookingMng.css">
@@ -22,11 +26,19 @@
 
 <header class="topbar">
     <div class="topbar-inner">
-        <a href="index.html" class="brand">Professional Studio</a>
 
-        <div class="page-label">Booking Management</div>
+        <a href="index.html" class="brand">
+            Professional Studio
+        </a>
 
-        <a href="user.html" class="dashboard-link">Dashboard</a>
+        <div class="page-label">
+            Booking Management
+        </div>
+
+        <a href="user.html" class="dashboard-link">
+            Dashboard
+        </a>
+
     </div>
 </header>
 
@@ -34,11 +46,24 @@
 <main class="booking-management">
 
     <div class="page-heading">
+
         <div>
-            <span class="eyebrow">BOOKINGS</span>
-            <h1>Booking Management</h1>
-            <p>Review requests, manage confirmed sessions and keep track of your availability.</p>
+
+            <span class="eyebrow">
+                BOOKINGS
+            </span>
+
+            <h1>
+                Booking Management
+            </h1>
+
+            <p>
+                Review booking requests, manage confirmed sessions,
+                track payment progress and keep your availability organized.
+            </p>
+
         </div>
+
     </div>
 
 
@@ -49,27 +74,87 @@
     <section class="overview-grid">
 
         <div class="overview-card">
-            <span class="overview-label">TOTAL BOOKINGS</span>
-            <strong id="totalBookings">0</strong>
-            <span class="overview-description">All bookings</span>
+
+            <span class="overview-label">
+                TOTAL BOOKINGS
+            </span>
+
+            <strong id="totalBookings">
+                0
+            </strong>
+
+            <span class="overview-description">
+                All bookings
+            </span>
+
         </div>
+
 
         <div class="overview-card pending">
-            <span class="overview-label">PENDING</span>
-            <strong id="pendingBookings">0</strong>
-            <span class="overview-description">Need your attention</span>
+
+            <span class="overview-label">
+                PENDING
+            </span>
+
+            <strong id="pendingBookings">
+                0
+            </strong>
+
+            <span class="overview-description">
+                Need your attention
+            </span>
+
         </div>
+
+
+        <div class="overview-card accepted">
+
+            <span class="overview-label">
+                ACCEPTED
+            </span>
+
+            <strong id="acceptedBookings">
+                0
+            </strong>
+
+            <span class="overview-description">
+                Awaiting required payment
+            </span>
+
+        </div>
+
 
         <div class="overview-card confirmed">
-            <span class="overview-label">CONFIRMED</span>
-            <strong id="confirmedBookings">0</strong>
-            <span class="overview-description">Upcoming sessions</span>
+
+            <span class="overview-label">
+                CONFIRMED
+            </span>
+
+            <strong id="confirmedBookings">
+                0
+            </strong>
+
+            <span class="overview-description">
+                Upcoming sessions
+            </span>
+
         </div>
 
+
         <div class="overview-card completed">
-            <span class="overview-label">COMPLETED</span>
-            <strong id="completedBookings">0</strong>
-            <span class="overview-description">Finished sessions</span>
+
+            <span class="overview-label">
+                COMPLETED
+            </span>
+
+            <strong id="completedBookings">
+                0
+            </strong>
+
+            <span class="overview-description">
+                Finished sessions
+            </span>
+
         </div>
 
     </section>
@@ -81,6 +166,7 @@
 
     <section class="management-layout">
 
+
         <!-- =================================================
              BOOKINGS
         ================================================== -->
@@ -88,58 +174,129 @@
         <div class="bookings-panel">
 
             <div class="section-header">
+
                 <div>
-                    <span class="section-eyebrow">BOOKING REQUESTS</span>
-                    <h2>Your Bookings</h2>
+
+                    <span class="section-eyebrow">
+                        BOOKING REQUESTS
+                    </span>
+
+                    <h2>
+                        Your Bookings
+                    </h2>
+
                 </div>
 
-                <span id="bookingCount" class="result-count">0 bookings</span>
+                <span
+                    id="bookingCount"
+                    class="result-count"
+                >
+                    0 bookings
+                </span>
+
             </div>
 
 
             <div class="booking-controls">
 
                 <div class="search-box">
-                    <span class="search-icon">⌕</span>
+
+                    <span class="search-icon">
+                        ⌕
+                    </span>
+
                     <input
                         type="search"
                         id="bookingSearch"
                         placeholder="Search client, service or package..."
                         autocomplete="off"
                     >
+
                 </div>
 
-                <div class="filter-tabs" id="filterTabs">
-                    <button class="filter-btn active" data-filter="all">
+
+                <div
+                    class="filter-tabs"
+                    id="filterTabs"
+                >
+
+                    <button
+                        type="button"
+                        class="filter-btn active"
+                        data-filter="all"
+                    >
                         All
                     </button>
 
-                    <button class="filter-btn" data-filter="Pending">
+
+                    <button
+                        type="button"
+                        class="filter-btn"
+                        data-filter="Pending"
+                    >
                         Pending
                     </button>
 
-                    <button class="filter-btn" data-filter="Confirmed">
+
+                    <button
+                        type="button"
+                        class="filter-btn"
+                        data-filter="Accepted"
+                    >
+                        Accepted
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="filter-btn"
+                        data-filter="Confirmed"
+                    >
                         Confirmed
                     </button>
 
-                    <button class="filter-btn" data-filter="Completed">
+
+                    <button
+                        type="button"
+                        class="filter-btn"
+                        data-filter="Completed"
+                    >
                         Completed
                     </button>
 
-                    <button class="filter-btn" data-filter="Cancelled">
+
+                    <button
+                        type="button"
+                        class="filter-btn"
+                        data-filter="Cancelled"
+                    >
                         Cancelled
                     </button>
+
                 </div>
 
             </div>
 
 
-            <div id="bookingsContainer" class="bookings-container">
+            <div
+                id="bookingsContainer"
+                class="bookings-container"
+            >
 
                 <div class="empty-state">
-                    <div class="empty-icon">□</div>
-                    <h3>No bookings yet</h3>
-                    <p>Your incoming photography bookings will appear here.</p>
+
+                    <div class="empty-icon">
+                        □
+                    </div>
+
+                    <h3>
+                        No bookings yet
+                    </h3>
+
+                    <p>
+                        Your incoming photography bookings will appear here.
+                    </p>
+
                 </div>
 
             </div>
@@ -156,11 +313,20 @@
             <div class="calendar-header">
 
                 <div>
-                    <span class="section-eyebrow">AVAILABILITY</span>
-                    <h2>Booking Calendar</h2>
+
+                    <span class="section-eyebrow">
+                        AVAILABILITY
+                    </span>
+
+                    <h2>
+                        Booking Calendar
+                    </h2>
+
                 </div>
 
+
                 <div class="calendar-navigation">
+
                     <button
                         type="button"
                         id="previousMonth"
@@ -170,6 +336,7 @@
                         ‹
                     </button>
 
+
                     <button
                         type="button"
                         id="nextMonth"
@@ -178,17 +345,23 @@
                     >
                         ›
                     </button>
+
                 </div>
 
             </div>
 
 
             <div class="calendar-month">
-                <strong id="calendarMonth">September 2026</strong>
+
+                <strong id="calendarMonth">
+                    September 2026
+                </strong>
+
             </div>
 
 
             <div class="calendar-weekdays">
+
                 <span>MON</span>
                 <span>TUE</span>
                 <span>WED</span>
@@ -196,10 +369,14 @@
                 <span>FRI</span>
                 <span>SAT</span>
                 <span>SUN</span>
+
             </div>
 
 
-            <div id="calendarGrid" class="calendar-grid"></div>
+            <div
+                id="calendarGrid"
+                class="calendar-grid"
+            ></div>
 
 
             <div class="calendar-legend">
@@ -207,6 +384,11 @@
                 <div class="legend-item">
                     <span class="legend-dot confirmed-dot"></span>
                     Confirmed
+                </div>
+
+                <div class="legend-item">
+                    <span class="legend-dot accepted-dot"></span>
+                    Accepted
                 </div>
 
                 <div class="legend-item">
@@ -222,11 +404,21 @@
             </div>
 
 
-            <div id="calendarDetails" class="calendar-details">
+            <div
+                id="calendarDetails"
+                class="calendar-details"
+            >
 
                 <div class="calendar-details-empty">
-                    <strong>Select a date</strong>
-                    <p>Booked sessions for that date will appear here.</p>
+
+                    <strong>
+                        Select a date
+                    </strong>
+
+                    <p>
+                        Booked sessions for that date will appear here.
+                    </p>
+
                 </div>
 
             </div>
@@ -261,21 +453,38 @@
             class="modal-close"
             aria-label="Close booking details"
         >
-            
+            ×
         </button>
 
 
         <div class="modal-heading">
-            <span class="section-eyebrow">BOOKING DETAILS</span>
-            <h2 id="modalTitle">Booking</h2>
-            <span id="modalBookingId" class="booking-id"></span>
+
+            <span class="section-eyebrow">
+                BOOKING DETAILS
+            </span>
+
+            <h2 id="modalTitle">
+                Booking
+            </h2>
+
+            <span
+                id="modalBookingId"
+                class="booking-id"
+            ></span>
+
         </div>
 
 
-        <div id="modalContent" class="modal-content"></div>
+        <div
+            id="modalContent"
+            class="modal-content"
+        ></div>
 
 
-        <div id="modalActions" class="modal-actions"></div>
+        <div
+            id="modalActions"
+            class="modal-actions"
+        ></div>
 
     </div>
 
@@ -283,8 +492,15 @@
 
 
 <footer class="footer">
-    <p>Professional Studio</p>
-    <span>Photography Management</span>
+
+    <p>
+        Professional Studio
+    </p>
+
+    <span>
+        Photography Management
+    </span>
+
 </footer>
 
 
