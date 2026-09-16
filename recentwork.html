@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recent Work | Professional Studio</title>
+    <link rel="stylesheet" href="recentwork.css">
+</head>
+
+<body>
+
+<div class="app-shell">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+        <div class="brand">
+            <div class="brand-mark">PS</div>
+
+            <div>
+                <strong>Professional Studio</strong>
+                <span>Photographer Dashboard</span>
+            </div>
+        </div>
+
+        <nav class="nav">
+
+            <a href="user.html" class="nav-link">
+                <span>⌂</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="recentwork.html" class="nav-link active">
+                <span>▦</span>
+                <span>Recent Work</span>
+            </a>
+
+            <a href="clientgallery.html" class="nav-link">
+                <span>▤</span>
+                <span>Client Galleries</span>
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <a href="user.html" class="back-link">
+                ← Back to Dashboard
+            </a>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <!-- TOP BAR -->
+        <header class="topbar">
+
+            <button
+                class="mobile-menu"
+                id="mobileMenu"
+                type="button"
+                aria-label="Open menu">
+
+                ☰
+
+            </button>
+
+            <div>
+
+                <p class="eyebrow">
+                    Portfolio
+                </p>
+
+                <h1>
+                    Recent Work
+                </h1>
+
+            </div>
+
+            <a
+                href="user.html"
+                class="dashboard-button">
+
+                Dashboard
+
+            </a>
+
+        </header>
+
+
+        <!-- PAGE INTRO -->
+        <section class="page-intro">
+
+            <div>
+
+                <h2>
+                    Manage your photography work
+                </h2>
+
+                <p>
+                    Upload profile, portfolio, featured and
+                    recent-work images from one shared storage allowance.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- STORAGE CARD -->
+        <section class="storage-card">
+
+            <div class="storage-header">
+
+                <div>
+
+                    <span class="section-label">
+                        Portfolio Storage
+                    </span>
+
+                    <h2 id="planName">
+                        Basic Plan
+                    </h2>
+
+                </div>
+
+                <span
+                    class="storage-badge available"
+                    id="storageBadge">
+
+                    Available
+
+                </span>
+
+            </div>
+
+
+            <div class="storage-numbers">
+
+                <div>
+
+                    <strong id="usedStorage">
+                        0 MB
+                    </strong>
+
+                    <span>
+                        Used
+                    </span>
+
+                </div>
+
+
+                <div>
+
+                    <strong id="availableStorage">
+                        500 MB
+                    </strong>
+
+                    <span>
+                        Available
+                    </span>
+
+                </div>
+
+
+                <div>
+
+                    <strong id="totalStorage">
+                        500 MB
+                    </strong>
+
+                    <span>
+                        Total
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="progress-track">
+
+                <div
+                    class="progress-fill"
+                    id="storageProgress">
+                </div>
+
+            </div>
+
+
+            <p
+                class="storage-message"
+                id="storageMessage">
+
+                Your portfolio storage is ready for uploads.
+
+            </p>
+
+        </section>
+
+
+        <!-- UPLOAD CARD -->
+        <section class="upload-card">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        Add Work
+                    </span>
+
+                    <h2>
+                        Add Recent Work Images
+                    </h2>
+
+                    <p>
+                        Upload photos that you want to showcase in your recent work gallery.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="upload-options">
+
+                <label class="upload-box">
+
+                    <input
+                        type="file"
+                        id="imageInput"
+                        accept="image/*"
+                        multiple>
+
+                    <span class="upload-icon">
+                        ＋
+                    </span>
+
+                    <strong>
+                        Choose images
+                    </strong>
+
+                    <span>
+                        JPG, JPEG, PNG, WEBP and other
+                        browser-supported images
+                    </span>
+
+                </label>
+
+
+                <div class="upload-info">
+
+                  
+
+                    <div
+                        class="selected-files"
+                        id="selectedFiles">
+
+                        <p>
+                            No files selected.
+                        </p>
+
+                    </div>
+
+<button
+    class="primary-button"
+    id="uploadButton"
+    type="button">
+
+    Upload to Recent Work Gallery
+
+</button>
+
+                    <p
+                        class="upload-status"
+                        id="uploadStatus">
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- WORK LIBRARY -->
+        <section class="work-section">
+
+            <div class="section-heading work-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        Your Library
+                    </span>
+
+                    <h2>
+                        Uploaded work
+                    </h2>
+
+                    <p>
+                        Delete an image whenever you need
+                        to reclaim its storage space.
+                    </p>
+
+                </div>
+
+
+                <span
+                    class="item-count"
+                    id="itemCount">
+
+                    0 items
+
+                </span>
+
+            </div>
+
+
+            <div
+                class="empty-state"
+                id="emptyState">
+
+                <div class="empty-icon">
+                    ▧
+                </div>
+
+                <h3>
+                    No work uploaded yet
+                </h3>
+
+                <p>
+                    Your uploaded photography will appear here.
+                </p>
+
+            </div>
+
+
+            <div
+                class="work-grid"
+                id="workGrid">
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- DELETE MODAL -->
+<!-- IMPORTANT: Hidden by default -->
+
+<div
+    class="modal-backdrop"
+    id="deleteModal"
+    aria-hidden="true">
+
+    <div
+        class="delete-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="deleteTitle">
+
+        <button
+            class="modal-close"
+            id="closeDeleteModal"
+            type="button"
+            aria-label="Close">
+
+            ×
+
+        </button>
+
+
+        <div class="modal-icon">
+            !
+        </div>
+
+
+        <h2 id="deleteTitle">
+            Delete this image?
+        </h2>
+
+
+        <p id="deleteDescription">
+            This will remove the image and immediately
+            free its storage space.
+        </p>
+
+
+        <div class="modal-actions">
+
+            <button
+                class="secondary-button"
+                id="cancelDelete"
+                type="button">
+
+                Cancel
+
+            </button>
+
+
+            <button
+                class="danger-button"
+                id="confirmDelete"
+                type="button">
+
+                Delete Image
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="recentwork.js"></script>
+
+</body>
+</html>
