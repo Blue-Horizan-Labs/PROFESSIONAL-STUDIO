@@ -1,782 +1,1088 @@
-/* ==========================================
-   Dashboard Core
-========================================== */
+/* =========================================================
+   PROFESSIONAL STUDIO
+   DASHBOARD JAVASCRIPT
+========================================================= */
 
 
-/* ==========================================
-   GLOBAL VARIABLES
-========================================== */
+/* =========================================================
+   GLOBAL STORAGE CONFIGURATION
+========================================================= */
 
-var userName = "Rahul Photography";
+var PORTFOLIO_STORAGE_KEY =
+    "professionalStudio.portfolioStorage";
 
-var SERVICE_STORAGE_KEY =
-    "professionalStudio.services";
-
-var BOOKING_STORAGE_KEY =
-    "bookings";
+var SUBSCRIPTION_PLAN_KEY =
+    "professionalStudio.subscriptionPlan";
 
 
-/* ==========================================
-   PUBLIC CLIENT PAGE
-========================================== */
+/* =========================================================
+   SUBSCRIPTION PLANS
+========================================================= */
 
-var link =
-    window.location.origin +
-    "/client.html";
+var STORAGE_PLANS = {
+
+    basic: {
+        id: "basic",
+        name: "Basic",
+        price: 499,
+        storageMB: 500
+    },
+
+    professional: {
+        id: "professional",
+        name: "Professional",
+        price: 1499,
+        storageMB: 5120
+    },
+
+    studio: {
+        id: "studio",
+        name: "Studio",
+        price: 2999,
+        storageMB: 20480
+    }
+
+};
 
 
-/* ==========================================
-   SERVICE STORAGE HELPERS
-========================================== */
+/* =========================================================
+   DEFAULT SUBSCRIPTION
+========================================================= */
 
-function getStoredServices() {
+function getCurrentSubscriptionPlan() {
+
+    var savedPlan =
+        localStorage.getItem(
+            SUBSCRIPTION_PLAN_KEY
+        );
+
+    if (
+        savedPlan &&
+        STORAGE_PLANS[savedPlan]
+    ) {
+        return STORAGE_PLANS[savedPlan];
+    }
+
+    /*
+       Prototype default.
+
+       Until the real backend/subscription
+       system is connected, every new
+       photographer starts on Basic.
+    */
+
+    return STORAGE_PLANS.basic;
+}
+
+
+/* =========================================================
+   GET STORAGE LIMIT FROM PLAN
+========================================================= */
+
+function getPortfolioStorageLimitMB() {
+
+    var plan =
+        getCurrentSubscriptionPlan();
+
+    return plan.storageMB;
+}
+
+
+/* =========================================================
+   STORAGE OBJECT
+========================================================= */
+
+function getPortfolioStorage() {
+
+    var saved =
+        localStorage.getItem(
+            PORTFOLIO_STORAGE_KEY
+        );
+
+    var storage;
 
     try {
 
-        var stored =
-            localStorage.getItem(
-                SERVICE_STORAGE_KEY
-            );
+        storage =
+            saved
+                ? JSON.parse(saved)
+                : null;
 
-        if (!stored) {
-            return [];
-        }
+    } catch (error) {
 
-        var parsed =
-            JSON.parse(stored);
-
-        if (!Array.isArray(parsed)) {
-            return [];
-        }
-
-        return parsed;
+        storage = null;
 
     }
-    catch (error) {
 
-        console.error(
-            "Could not read service data:",
-            error
-        );
 
-        return [];
+    if (
+        !storage ||
+        typeof storage !== "object"
+    ) {
+
+        storage = {
+
+            storageUsedMB: 0,
+
+            storagePlan:
+                getCurrentSubscriptionPlan().id,
+
+            files: []
+
+        };
 
     }
+
+
+    if (
+        !Array.isArray(
+            storage.files
+        )
+    ) {
+
+        storage.files = [];
+
+    }
+
+
+    /*
+       The limit is NEVER permanently
+       stored as the source of truth.
+
+       It comes from the photographer's
+       current subscription plan.
+    */
+
+    storage.storageLimitMB =
+        getPortfolioStorageLimitMB();
+
+
+    storage.storagePlan =
+        getCurrentSubscriptionPlan().id;
+
+
+    /*
+       Recalculate usage from files when
+       possible so the dashboard does not
+       blindly trust an old number.
+    */
+
+    var calculatedUsage = 0;
+
+    storage.files.forEach(
+        function(file) {
+
+            var size =
+                Number(
+                    file.sizeMB
+                );
+
+            if (
+                Number.isFinite(size) &&
+                size > 0
+            ) {
+
+                calculatedUsage +=
+                    size;
+
+            }
+
+        }
+    );
+
+
+    /*
+       Only replace the stored usage when
+       file records actually exist.
+
+       This keeps compatibility with the
+       prototype while allowing the new
+       Recent Work page to maintain exact
+       file sizes.
+    */
+
+    if (
+        storage.files.length > 0
+    ) {
+
+        storage.storageUsedMB =
+            calculatedUsage;
+
+    } else {
+
+        storage.storageUsedMB =
+            Number(
+                storage.storageUsedMB
+            ) || 0;
+
+    }
+
+
+    return storage;
 
 }
 
 
-function saveServices(services) {
+/* =========================================================
+   SAVE PORTFOLIO STORAGE
+========================================================= */
 
-    try {
+function savePortfolioStorage(
+    storage
+) {
 
-        localStorage.setItem(
-            SERVICE_STORAGE_KEY,
-            JSON.stringify(services)
-        );
-
-        return true;
-
-    }
-    catch (error) {
-
-        console.error(
-            "Could not save service data:",
-            error
-        );
+    if (
+        !storage ||
+        typeof storage !== "object"
+    ) {
 
         return false;
 
     }
 
+
+    storage.storageLimitMB =
+        getPortfolioStorageLimitMB();
+
+
+    storage.storagePlan =
+        getCurrentSubscriptionPlan().id;
+
+
+    localStorage.setItem(
+        PORTFOLIO_STORAGE_KEY,
+        JSON.stringify(storage)
+    );
+
+
+    return true;
+
 }
 
 
-function getServiceName(service) {
+/* =========================================================
+   FORMAT STORAGE SIZE
+========================================================= */
 
-    return service && service.name
-        ? String(service.name).trim()
-        : "";
+function formatPortfolioStorageMB(
+    value
+) {
 
-}
+    var mb =
+        Number(value) || 0;
 
 
-/* ==========================================
-   SERVER REQUEST
-========================================== */
+    if (mb < 1024) {
 
-fetch("/api/dashboard-data", {
+        return (
+            Math.round(
+                mb * 100
+            ) / 100
+        ) + " MB";
 
-    method: "POST",
-
-    headers: {
-        "Content-Type": "application/json"
     }
 
-})
-.then(function(response) {
 
-    if (!response.ok) {
+    var gb =
+        mb / 1024;
 
-        throw new Error(
-            "Dashboard data request failed"
+
+    if (gb < 10) {
+
+        return (
+            Math.round(
+                gb * 100
+            ) / 100
+        ) + " GB";
+
+    }
+
+
+    return (
+        Math.round(
+            gb * 10
+        ) / 10
+    ) + " GB";
+
+}
+
+
+/* =========================================================
+   STORAGE PERCENTAGE
+========================================================= */
+
+function getPortfolioStoragePercentage(
+    storage
+) {
+
+    if (!storage) {
+        return 0;
+    }
+
+
+    var limit =
+        Number(
+            storage.storageLimitMB
+        ) || 0;
+
+
+    var used =
+        Number(
+            storage.storageUsedMB
+        ) || 0;
+
+
+    if (limit <= 0) {
+        return 100;
+    }
+
+
+    return Math.min(
+        100,
+        Math.max(
+            0,
+            (used / limit) * 100
+        )
+    );
+
+}
+
+
+/* =========================================================
+   STORAGE STATUS
+========================================================= */
+
+function getPortfolioStorageStatus(
+    storage
+) {
+
+    var percentage =
+        getPortfolioStoragePercentage(
+            storage
         );
 
-    }
-
-    return response.json();
-
-})
-.then(function(data) {
-
-    var nameElement =
-        document.getElementById("name");
 
     if (
-        nameElement &&
-        data.name
+        percentage >= 100
     ) {
 
-        nameElement.textContent =
-            data.name;
+        return {
+            label: "Storage Full",
+            className: "full"
+        };
 
     }
 
-    userName =
-        data.name ||
-        "Rahul Photography";
 
-})
-.catch(function(error) {
+    if (
+        percentage >= 80
+    ) {
 
-    console.error(
-        "Dashboard data error:",
-        error
-    );
-
-});
-
-
-/* ==========================================
-   PUBLIC PAGE BUTTONS
-========================================== */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function() {
-
-        var openButton =
-            document.getElementById(
-                "openPortfolioBtn"
-            );
-
-        var copyButton =
-            document.getElementById(
-                "copyProfileBtn"
-            );
-
-        if (openButton) {
-
-            openButton.disabled =
-                false;
-
-        }
-
-        if (copyButton) {
-
-            copyButton.disabled =
-                false;
-
-        }
+        return {
+            label: "Almost Full",
+            className: "warning"
+        };
 
     }
-);
 
 
-/* ==========================================
-   OPEN CLIENT PAGE
-========================================== */
-
-function openPortfolio() {
-
-    window.open(
-        link,
-        "_blank"
-    );
+    return {
+        label: "Available",
+        className: ""
+    };
 
 }
 
 
-/* ==========================================
-   COPY CLIENT PAGE LINK
-========================================== */
+/* =========================================================
+   RENDER PORTFOLIO STORAGE
+========================================================= */
 
-function copyProfileLink() {
+function renderPortfolioStorage() {
 
-    var button =
+    var sizeElement =
         document.getElementById(
-            "copyProfileBtn"
+            "portfolioStorageSize"
         );
 
-    if (!link) {
-        return;
-    }
+    var usedElement =
+        document.getElementById(
+            "portfolioStorageUsed"
+        );
 
+    var availableElement =
+        document.getElementById(
+            "portfolioStorageAvailable"
+        );
+
+    var progressElement =
+        document.getElementById(
+            "portfolioStorageProgress"
+        );
+
+    var badgeElement =
+        document.getElementById(
+            "portfolioStorageBadge"
+        );
+
+    var warningElement =
+        document.getElementById(
+            "portfolioStorageWarning"
+        );
+
+
+    /*
+       These elements may not exist on
+       older dashboard versions.
+    */
 
     if (
-        navigator.clipboard &&
-        window.isSecureContext
+        !sizeElement &&
+        !usedElement &&
+        !availableElement &&
+        !progressElement &&
+        !badgeElement
     ) {
 
-        navigator.clipboard
-            .writeText(link)
-            .then(function() {
-
-                showCopiedState(button);
-
-            })
-            .catch(function(error) {
-
-                console.error(
-                    "Could not copy profile link:",
-                    error
-                );
-
-                fallbackCopyLink();
-
-            });
-
         return;
 
     }
 
 
-    fallbackCopyLink();
+    var storage =
+        getPortfolioStorage();
 
 
-    function fallbackCopyLink() {
+    var limit =
+        Number(
+            storage.storageLimitMB
+        ) || 0;
 
-        var textarea =
-            document.createElement(
-                "textarea"
-            );
 
-        textarea.value =
-            link;
+    var used =
+        Number(
+            storage.storageUsedMB
+        ) || 0;
 
-        textarea.style.position =
-            "fixed";
 
-        textarea.style.left =
-            "-9999px";
-
-        document.body.appendChild(
-            textarea
+    var available =
+        Math.max(
+            0,
+            limit - used
         );
 
-        textarea.focus();
 
-        textarea.select();
-
-        try {
-
-            document.execCommand(
-                "copy"
-            );
-
-            showCopiedState(button);
-
-        }
-        catch (error) {
-
-            console.error(
-                "Could not copy profile link:",
-                error
-            );
-
-        }
-
-        document.body.removeChild(
-            textarea
+    var percentage =
+        getPortfolioStoragePercentage(
+            storage
         );
+
+
+    var status =
+        getPortfolioStorageStatus(
+            storage
+        );
+
+
+    var plan =
+        getCurrentSubscriptionPlan();
+
+
+    if (sizeElement) {
+
+        sizeElement.textContent =
+            formatPortfolioStorageMB(
+                used
+            ) +
+            " / " +
+            formatPortfolioStorageMB(
+                limit
+            );
 
     }
 
-}
 
+    if (usedElement) {
 
-function showCopiedState(button) {
+        usedElement.textContent =
+            formatPortfolioStorageMB(
+                used
+            ) +
+            " used";
 
-    if (!button) {
-        return;
     }
 
-    var originalText =
-        button.textContent;
 
-    button.textContent =
-        "✓ COPIED";
+    if (availableElement) {
 
-    button.disabled =
-        true;
+        availableElement.textContent =
+            formatPortfolioStorageMB(
+                available
+            ) +
+            " available";
 
-    setTimeout(
-        function() {
+    }
 
-            button.textContent =
-                originalText;
 
-            button.disabled =
+    if (progressElement) {
+
+        progressElement.style.width =
+            percentage + "%";
+
+    }
+
+
+    if (badgeElement) {
+
+        badgeElement.textContent =
+            status.label;
+
+
+        badgeElement.classList.remove(
+            "warning",
+            "full"
+        );
+
+
+        if (
+            status.className
+        ) {
+
+            badgeElement.classList.add(
+                status.className
+            );
+
+        }
+
+    }
+
+
+    /*
+       Update warning.
+    */
+
+    if (warningElement) {
+
+        if (
+            percentage >= 100
+        ) {
+
+            warningElement.hidden =
                 false;
 
-        },
-        2000
+
+            var warningStrong =
+                warningElement.querySelector(
+                    "strong"
+                );
+
+            var warningText =
+                warningElement.querySelector(
+                    "span"
+                );
+
+
+            if (warningStrong) {
+
+                warningStrong.textContent =
+                    "Storage is full";
+
+            }
+
+
+            if (warningText) {
+
+                warningText.textContent =
+                    "Delete existing recent work to make space before uploading new photos.";
+
+            }
+
+        } else {
+
+            warningElement.hidden =
+                true;
+
+        }
+
+    }
+
+
+    /*
+       Optional plan labels.
+       These only update if the dashboard
+       contains the corresponding elements.
+    */
+
+    var planElements =
+        document.querySelectorAll(
+            "[data-portfolio-plan]"
+        );
+
+
+    planElements.forEach(
+        function(element) {
+
+            element.textContent =
+                plan.name +
+                " Plan";
+
+        }
+    );
+
+
+    var planStorageElements =
+        document.querySelectorAll(
+            "[data-portfolio-plan-storage]"
+        );
+
+
+    planStorageElements.forEach(
+        function(element) {
+
+            element.textContent =
+                formatPortfolioStorageMB(
+                    plan.storageMB
+                );
+
+        }
     );
 
 }
 
 
-/* ==========================================
-   DOM CONTENT LOADED
-========================================== */
+/* =========================================================
+   STORAGE VALIDATION
+========================================================= */
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function() {
+function canUploadPortfolioFile(
+    fileSizeMB
+) {
+
+    var storage =
+        getPortfolioStorage();
 
 
-        /* ==========================
-           SIDEBAR ACTIVE
-        ========================== */
+    var size =
+        Number(fileSizeMB) || 0;
 
-        var menuLinks =
-            document.querySelectorAll(
-                ".menu a"
-            );
 
-        menuLinks.forEach(
-            function(menuLink) {
+    var used =
+        Number(
+            storage.storageUsedMB
+        ) || 0;
 
-                menuLink.addEventListener(
-                    "click",
-                    function() {
 
-                        menuLinks.forEach(
-                            function(item) {
+    var limit =
+        Number(
+            storage.storageLimitMB
+        ) || 0;
 
-                                item.classList.remove(
-                                    "active"
-                                );
 
-                            }
-                        );
+    return (
+        used + size <= limit
+    );
 
-                        menuLink.classList.add(
-                            "active"
-                        );
+}
 
-                    }
+
+/* =========================================================
+   STORAGE SPACE CHECK
+========================================================= */
+
+function getPortfolioUploadCheck(
+    fileSizeMB
+) {
+
+    var storage =
+        getPortfolioStorage();
+
+
+    var size =
+        Number(fileSizeMB) || 0;
+
+
+    var used =
+        Number(
+            storage.storageUsedMB
+        ) || 0;
+
+
+    var limit =
+        Number(
+            storage.storageLimitMB
+        ) || 0;
+
+
+    var available =
+        Math.max(
+            0,
+            limit - used
+        );
+
+
+    var allowed =
+        used + size <= limit;
+
+
+    return {
+
+        allowed: allowed,
+
+        fileSizeMB: size,
+
+        usedMB: used,
+
+        limitMB: limit,
+
+        availableMB: available,
+
+        requiredExtraMB:
+            Math.max(
+                0,
+                size - available
+            ),
+
+        plan:
+            getCurrentSubscriptionPlan()
+
+    };
+
+}
+
+
+/* =========================================================
+   ADD PORTFOLIO FILE
+========================================================= */
+
+function addPortfolioFile(
+    fileData
+) {
+
+    if (
+        !fileData ||
+        typeof fileData !== "object"
+    ) {
+
+        return {
+            success: false,
+            reason: "invalid-file"
+        };
+
+    }
+
+
+    var sizeMB =
+        Number(
+            fileData.sizeMB
+        ) || 0;
+
+
+    var check =
+        getPortfolioUploadCheck(
+            sizeMB
+        );
+
+
+    /*
+       HARD BLOCK.
+
+       Never automatically delete,
+       overwrite, compress or replace
+       existing photographer work.
+    */
+
+    if (!check.allowed) {
+
+        return {
+
+            success: false,
+
+            reason: "storage-full",
+
+            message:
+                "Not enough storage available.",
+
+            check: check
+
+        };
+
+    }
+
+
+    var storage =
+        getPortfolioStorage();
+
+
+    if (
+        !fileData.id
+    ) {
+
+        fileData.id =
+            "portfolio-" +
+            Date.now() +
+            "-" +
+            Math.random()
+                .toString(36)
+                .slice(2, 8);
+
+    }
+
+
+    fileData.sizeMB =
+        sizeMB;
+
+
+    fileData.createdAt =
+        fileData.createdAt ||
+        new Date().toISOString();
+
+
+    storage.files.push(
+        fileData
+    );
+
+
+    /*
+       Recalculate from actual file
+       records.
+    */
+
+    storage.storageUsedMB =
+        storage.files.reduce(
+            function(total, file) {
+
+                return total +
+                    (
+                        Number(
+                            file.sizeMB
+                        ) || 0
+                    );
+
+            },
+            0
+        );
+
+
+    savePortfolioStorage(
+        storage
+    );
+
+
+    renderPortfolioStorage();
+
+
+    return {
+
+        success: true,
+
+        file: fileData,
+
+        storage: storage
+
+    };
+
+}
+
+
+/* =========================================================
+   DELETE PORTFOLIO FILE
+========================================================= */
+
+function deletePortfolioFile(
+    fileId
+) {
+
+    var storage =
+        getPortfolioStorage();
+
+
+    var originalLength =
+        storage.files.length;
+
+
+    storage.files =
+        storage.files.filter(
+            function(file) {
+
+                return String(
+                    file.id
+                ) !==
+                String(
+                    fileId
                 );
 
             }
         );
 
 
-        /* ==========================
-           COUNTER ANIMATION
-        ========================== */
+    if (
+        storage.files.length ===
+        originalLength
+    ) {
 
-        var counters =
-            document.querySelectorAll(
-                ".counter"
-            );
+        return false;
 
-        counters.forEach(
-            function(counter) {
+    }
 
-                var target =
-                    Number(
-                        counter.dataset.target
+
+    storage.storageUsedMB =
+        storage.files.reduce(
+            function(total, file) {
+
+                return total +
+                    (
+                        Number(
+                            file.sizeMB
+                        ) || 0
                     );
 
-                var current =
-                    0;
-
-                var speed =
-                    target / 80;
-
-
-                function updateCounter() {
-
-                    current += speed;
-
-                    if (
-                        current < target
-                    ) {
-
-                        counter.textContent =
-                            Math.floor(current);
-
-                        requestAnimationFrame(
-                            updateCounter
-                        );
-
-                    }
-                    else {
-
-                        counter.textContent =
-                            target;
-
-                    }
-
-                }
-
-                updateCounter();
-
-            }
+            },
+            0
         );
 
 
-        /* ==========================
-           SAVE BUTTONS
-        ========================== */
-
-        document
-            .querySelectorAll("button")
-            .forEach(
-                function(button) {
-
-                    button.addEventListener(
-                        "click",
-                        function() {
-
-                            if (
-                                button.id ===
-                                "openPortfolioBtn" ||
-                                button.id ===
-                                "copyProfileBtn"
-                            ) {
-
-                                return;
-
-                            }
-
-                            if (
-                                button.type ===
-                                "submit"
-                            ) {
-
-                                return;
-
-                            }
-
-                            if (
-                                button.classList.contains(
-                                    "service-save-btn"
-                                )
-                            ) {
-
-                                return;
-
-                            }
-
-                            var original =
-                                button.innerText;
-
-                            button.innerText =
-                                "Saved ✓";
-
-                            button.disabled =
-                                true;
-
-                            setTimeout(
-                                function() {
-
-                                    button.innerText =
-                                        original;
-
-                                    button.disabled =
-                                        false;
-
-                                },
-                                1500
-                            );
-
-                        }
-                    );
-
-                }
-            );
+    savePortfolioStorage(
+        storage
+    );
 
 
-        /* ==========================
-           IMAGE PREVIEW
-        ========================== */
+    renderPortfolioStorage();
 
-        var upload =
-            document.querySelector(
-                "input[type=file]"
-            );
 
-        if (upload) {
+    return true;
 
-            upload.addEventListener(
-                "change",
-                function() {
+}
 
-                    var file =
-                        this.files[0];
 
-                    if (!file) {
-                        return;
-                    }
+/* =========================================================
+   CHANGE SUBSCRIPTION PLAN
+========================================================= */
 
-                    var reader =
-                        new FileReader();
+function setPortfolioSubscriptionPlan(
+    planId
+) {
 
-                    reader.onload =
-                        function(e) {
+    if (
+        !STORAGE_PLANS[planId]
+    ) {
 
-                            var preview =
-                                document.querySelector(
-                                    ".preview-image"
-                                );
+        return false;
 
-                            if (!preview) {
+    }
 
-                                preview =
-                                    document.createElement(
-                                        "img"
-                                    );
 
-                                preview.className =
-                                    "preview-image";
+    localStorage.setItem(
+        SUBSCRIPTION_PLAN_KEY,
+        planId
+    );
 
-                                upload.parentNode.appendChild(
-                                    preview
-                                );
 
-                            }
+    var storage =
+        getPortfolioStorage();
 
-                            preview.src =
-                                e.target.result;
 
-                        };
+    storage.storagePlan =
+        planId;
 
-                    reader.readAsDataURL(
-                        file
-                    );
 
-                }
-            );
+    storage.storageLimitMB =
+        STORAGE_PLANS[
+            planId
+        ].storageMB;
+
+
+    /*
+       Existing files remain untouched
+       even when they exceed the new
+       storage limit.
+    */
+
+    savePortfolioStorage(
+        storage
+    );
+
+
+    renderPortfolioStorage();
+
+
+    return true;
+
+}
+
+
+/* =========================================================
+   STORAGE EVENT
+========================================================= */
+
+window.addEventListener(
+    "storage",
+    function(event) {
+
+        if (
+            event.key ===
+            PORTFOLIO_STORAGE_KEY ||
+            event.key ===
+            SUBSCRIPTION_PLAN_KEY
+        ) {
+
+            renderPortfolioStorage();
 
         }
-
-
-        /* ==========================
-           SMOOTH SCROLL
-        ========================== */
-
-        document
-            .querySelectorAll(
-                'a[href^="#"]'
-            )
-            .forEach(
-                function(anchor) {
-
-                    anchor.addEventListener(
-                        "click",
-                        function(e) {
-
-                            var target =
-                                document.querySelector(
-                                    this.getAttribute(
-                                        "href"
-                                    )
-                                );
-
-                            if (!target) {
-                                return;
-                            }
-
-                            e.preventDefault();
-
-                            target.scrollIntoView({
-                                behavior: "smooth",
-                                block: "start"
-                            });
-
-                        }
-                    );
-
-                }
-            );
-
-
-        /* ==========================
-           ACTIVE SECTION
-        ========================== */
-
-        var sections =
-            document.querySelectorAll(
-                "section"
-            );
-
-        window.addEventListener(
-            "scroll",
-            function() {
-
-                var current =
-                    "";
-
-                sections.forEach(
-                    function(section) {
-
-                        var top =
-                            section.offsetTop -
-                            120;
-
-                        if (
-                            pageYOffset >=
-                            top
-                        ) {
-
-                            current =
-                                section.id;
-
-                        }
-
-                    }
-                );
-
-                menuLinks.forEach(
-                    function(menuLink) {
-
-                        menuLink.classList.remove(
-                            "active"
-                        );
-
-                        if (
-                            menuLink.getAttribute(
-                                "href"
-                            ) ===
-                            "#" + current
-                        ) {
-
-                            menuLink.classList.add(
-                                "active"
-                            );
-
-                        }
-
-                    }
-                );
-
-            }
-        );
 
     }
 );
 
 
-/* ==========================================
-   INTERACTIVE DASHBOARD FEATURES
-========================================== */
+/* =========================================================
+   DASHBOARD INITIALIZATION
+========================================================= */
 
 document.addEventListener(
     "DOMContentLoaded",
     function() {
 
+        renderPortfolioStorage();
 
-       /* ==========================
-   EQUIPMENT SECTION
-========================== */
+    }
+);
+
+
+/* =========================================================
+   EQUIPMENT STORAGE
+========================================================= */
 
 var EQUIPMENT_STORAGE_KEY =
     "professionalStudio.equipment";
 
 
-/* ==========================
-   DEFAULT EQUIPMENT
-========================== */
-
-var DEFAULT_EQUIPMENT = [
-    {
-        id: "cameras",
-        name: "Cameras",
-        items: []
-    },
-    {
-        id: "lenses",
-        name: "Lenses",
-        items: []
-    },
-    {
-        id: "lighting",
-        name: "Lighting",
-        items: []
-    },
-    {
-        id: "drone-accessories",
-        name: "Drone & Accessories",
-        items: []
-    }
-];
-
-
-/* ==========================
-   GET EQUIPMENT
-========================== */
-
 function getStoredEquipment() {
+
+    var saved =
+        localStorage.getItem(
+            EQUIPMENT_STORAGE_KEY
+        );
+
+
+    if (!saved) {
+
+        return [];
+
+    }
+
 
     try {
 
-        var stored =
-            localStorage.getItem(
-                EQUIPMENT_STORAGE_KEY
-            );
-
-
-        if (!stored) {
-
-            var defaults =
-                JSON.parse(
-                    JSON.stringify(
-                        DEFAULT_EQUIPMENT
-                    )
-                );
-
-            localStorage.setItem(
-                EQUIPMENT_STORAGE_KEY,
-                JSON.stringify(defaults)
-            );
-
-            return defaults;
-
-        }
-
-
         var parsed =
-            JSON.parse(stored);
+            JSON.parse(saved);
 
 
-        if (!Array.isArray(parsed)) {
+        return Array.isArray(
+            parsed
+        )
+            ? parsed
+            : [];
 
-            return [];
-
-        }
-
-
-        return parsed;
-
-    }
-    catch (error) {
-
-        console.error(
-            "Could not read equipment data:",
-            error
-        );
+    } catch (error) {
 
         return [];
 
@@ -785,28 +1091,22 @@ function getStoredEquipment() {
 }
 
 
-/* ==========================
-   SAVE EQUIPMENT
-========================== */
-
-function saveEquipment(equipment) {
+function saveEquipment(
+    equipment
+) {
 
     try {
 
         localStorage.setItem(
             EQUIPMENT_STORAGE_KEY,
-            JSON.stringify(equipment)
+            JSON.stringify(
+                equipment
+            )
         );
 
         return true;
 
-    }
-    catch (error) {
-
-        console.error(
-            "Could not save equipment data:",
-            error
-        );
+    } catch (error) {
 
         return false;
 
@@ -815,141 +1115,24 @@ function saveEquipment(equipment) {
 }
 
 
-/* ==========================
-   CREATE EQUIPMENT CARD
-========================== */
-
-function createEquipmentCard(
-    category
-) {
-
-    var card =
-        document.createElement(
-            "div"
-        );
-
-
-    card.className =
-        "equipment-card";
-
-
-    card.dataset.categoryId =
-        category.id;
-
-
-    var title =
-        document.createElement(
-            "h3"
-        );
-
-    title.textContent =
-        category.name;
-
-
-    var list =
-        document.createElement(
-            "ul"
-        );
-
-    list.className =
-        "equipment-list";
-
-
-    if (
-        Array.isArray(category.items)
-    ) {
-
-        category.items.forEach(
-            function(item) {
-
-                addEquipmentListItem(
-                    list,
-                    item
-                );
-
-            }
-        );
-
-    }
-
-
-    var inputArea =
-        document.createElement(
-            "div"
-        );
-
-    inputArea.className =
-        "equipment-input";
-
-
-    var input =
-        document.createElement(
-            "input"
-        );
-
-    input.type =
-        "text";
-
-    input.placeholder =
-        "Enter " +
-        category.name.toLowerCase();
-
-
-    var button =
-        document.createElement(
-            "button"
-        );
-
-    button.type =
-        "button";
-
-    button.className =
-        "add-item-btn";
-
-    button.textContent =
-        "Add Item";
-
-
-    inputArea.appendChild(
-        input
-    );
-
-    inputArea.appendChild(
-        button
-    );
-
-
-    card.appendChild(
-        title
-    );
-
-    card.appendChild(
-        list
-    );
-
-    card.appendChild(
-        inputArea
-    );
-
-
-    attachEquipmentEvents(
-        card
-    );
-
-
-    return card;
-
-}
-
-
-/* ==========================
-   ADD LIST ITEM
-========================== */
+/* =========================================================
+   EQUIPMENT LIST ITEM
+========================================================= */
 
 function addEquipmentListItem(
     list,
     item
 ) {
+
+    if (
+        !list ||
+        !item
+    ) {
+
+        return;
+
+    }
+
 
     var li =
         document.createElement(
@@ -962,6 +1145,7 @@ function addEquipmentListItem(
             "span"
         );
 
+
     text.textContent =
         item;
 
@@ -971,14 +1155,23 @@ function addEquipmentListItem(
             "button"
         );
 
+
     removeButton.type =
         "button";
+
 
     removeButton.className =
         "equipment-remove-btn";
 
+
     removeButton.textContent =
         "×";
+
+
+    removeButton.setAttribute(
+        "aria-label",
+        "Remove " + item
+    );
 
 
     removeButton.addEventListener(
@@ -1006,10 +1199,10 @@ function addEquipmentListItem(
 
             var category =
                 equipment.find(
-                    function(item) {
+                    function(existing) {
 
                         return String(
-                            item.id
+                            existing.id
                         ) ===
                         String(
                             categoryId
@@ -1050,6 +1243,7 @@ function addEquipmentListItem(
         text
     );
 
+
     li.appendChild(
         removeButton
     );
@@ -1062,9 +1256,148 @@ function addEquipmentListItem(
 }
 
 
-/* ==========================
+/* =========================================================
+   CREATE EQUIPMENT CARD
+========================================================= */
+
+function createEquipmentCard(
+    category
+) {
+
+    var card =
+        document.createElement(
+            "div"
+        );
+
+
+    card.className =
+        "equipment-card";
+
+
+    card.dataset.categoryId =
+        category.id;
+
+
+    var heading =
+        document.createElement(
+            "h3"
+        );
+
+
+    heading.textContent =
+        category.name;
+
+
+    var list =
+        document.createElement(
+            "ul"
+        );
+
+
+    list.className =
+        "equipment-list";
+
+
+    if (
+        Array.isArray(
+            category.items
+        )
+    ) {
+
+        category.items.forEach(
+            function(item) {
+
+                addEquipmentListItem(
+                    list,
+                    item
+                );
+
+            }
+        );
+
+    }
+
+
+    var inputWrapper =
+        document.createElement(
+            "div"
+        );
+
+
+    inputWrapper.className =
+        "equipment-input";
+
+
+    var input =
+        document.createElement(
+            "input"
+        );
+
+
+    input.type =
+        "text";
+
+
+    input.placeholder =
+        "Add equipment";
+
+
+    var button =
+        document.createElement(
+            "button"
+        );
+
+
+    button.type =
+        "button";
+
+
+    button.className =
+        "add-item-btn";
+
+
+    button.textContent =
+        "ADD";
+
+
+    inputWrapper.appendChild(
+        input
+    );
+
+
+    inputWrapper.appendChild(
+        button
+    );
+
+
+    card.appendChild(
+        heading
+    );
+
+
+    card.appendChild(
+        list
+    );
+
+
+    card.appendChild(
+        inputWrapper
+    );
+
+
+    attachEquipmentEvents(
+        card
+    );
+
+
+    return card;
+
+}
+
+
+/* =========================================================
    EQUIPMENT EVENTS
-========================== */
+========================================================= */
 
 function attachEquipmentEvents(
     card
@@ -1106,7 +1439,9 @@ function attachEquipmentEvents(
 
 
         if (!value) {
+
             return;
+
         }
 
 
@@ -1134,7 +1469,9 @@ function attachEquipmentEvents(
 
 
         if (!category) {
+
             return;
+
         }
 
 
@@ -1192,6 +1529,7 @@ function attachEquipmentEvents(
         input.value =
             "";
 
+
         input.focus();
 
     }
@@ -1224,9 +1562,9 @@ function attachEquipmentEvents(
 }
 
 
-/* ==========================
+/* =========================================================
    RENDER EQUIPMENT
-========================== */
+========================================================= */
 
 function renderDashboardEquipment() {
 
@@ -1299,9 +1637,9 @@ function renderDashboardEquipment() {
 }
 
 
-/* ==========================
+/* =========================================================
    ADD EQUIPMENT CATEGORY
-========================== */
+========================================================= */
 
 function initializeEquipmentCategoryCreation() {
 
@@ -1383,7 +1721,9 @@ function initializeEquipmentCategoryCreation() {
 
 
                 if (!categoryName) {
+
                     return;
+
                 }
 
 
@@ -1506,1884 +1846,611 @@ function initializeEquipmentCategoryCreation() {
 }
 
 
-/* ==========================
+/* =========================================================
    INITIALIZE EQUIPMENT
-========================== */
+========================================================= */
 
 renderDashboardEquipment();
 
 initializeEquipmentCategoryCreation();
 
-        /* ==========================
-           DASHBOARD SERVICE CONTROLS
-        ========================== */
 
-        var serviceGrid =
-            document.getElementById(
-                "serviceGrid"
-            );
+/* =========================================================
+   DASHBOARD SERVICE CONTROLS
+========================================================= */
 
+var serviceGrid =
+    document.getElementById(
+        "serviceGrid"
+    );
 
-        function getSharedServices() {
 
-            return getStoredServices();
+function getSharedServices() {
 
-        }
-
-
-        function saveSharedServices(
-            services
-        ) {
-
-            saveServices(
-                services
-            );
-
-        }
-
-
-        function updateActiveServiceCounter(
-            services
-        ) {
-
-            var counter =
-                document.getElementById(
-                    "activeServicesCounter"
-                );
-
-            if (!counter) {
-                return;
-            }
-
-
-            var activeCount =
-                services.filter(
-                    function(service) {
-
-                        return service.active === true;
-
-                    }
-                ).length;
-
-
-            counter.dataset.target =
-                activeCount;
-
-            counter.textContent =
-                activeCount;
-
-        }
-
-
-        function renderDashboardServices() {
-
-            if (!serviceGrid) {
-                return;
-            }
-
-
-            var services =
-                getSharedServices();
-
-
-            serviceGrid.innerHTML =
-                "";
-
-
-            if (!services.length) {
-
-                var empty =
-                    document.createElement(
-                        "p"
-                    );
-
-                empty.textContent =
-                    "No services have been created yet. Open Manage Services to add your services.";
-
-                empty.style.color =
-                    "#666";
-
-                serviceGrid.appendChild(
-                    empty
-                );
-
-                updateActiveServiceCounter(
-                    services
-                );
-
-                return;
-
-            }
-
-
-            services.forEach(
-                function(service) {
-
-                    var name =
-                        getServiceName(
-                            service
-                        );
-
-                    if (!name) {
-                        return;
-                    }
-
-
-                    var label =
-                        document.createElement(
-                            "label"
-                        );
-
-                    label.className =
-                        "service-card";
-
-                    label.dataset.serviceId =
-                        service.id || "";
-
-
-                    var checkbox =
-                        document.createElement(
-                            "input"
-                        );
-
-                    checkbox.type =
-                        "checkbox";
-
-                    checkbox.checked =
-                        service.active === true;
-
-                    checkbox.dataset.serviceId =
-                        service.id || "";
-
-                    checkbox.dataset.serviceName =
-                        name;
-
-
-                    var span =
-                        document.createElement(
-                            "span"
-                        );
-
-                    span.textContent =
-                        name;
-
-
-                    label.appendChild(
-                        checkbox
-                    );
-
-                    label.appendChild(
-                        span
-                    );
-
-                    serviceGrid.appendChild(
-                        label
-                    );
-
-                }
-            );
-
-
-            attachServiceCheckboxEvents();
-
-            updateActiveServiceCounter(
-                services
-            );
-
-        }
-
-
-        function attachServiceCheckboxEvents() {
-
-            if (!serviceGrid) {
-                return;
-            }
-
-
-            serviceGrid
-                .querySelectorAll(
-                    "input[type='checkbox']"
-                )
-                .forEach(
-                    function(checkbox) {
-
-                        checkbox.addEventListener(
-                            "change",
-                            function() {
-
-                                var services =
-                                    getSharedServices();
-
-                                var serviceId =
-                                    checkbox.dataset.serviceId;
-
-                                var serviceName =
-                                    checkbox.dataset.serviceName;
-
-
-                                var service =
-                                    services.find(
-                                        function(item) {
-
-                                            if (
-                                                serviceId
-                                            ) {
-
-                                                return String(
-                                                    item.id
-                                                ) ===
-                                                String(
-                                                    serviceId
-                                                );
-
-                                            }
-
-
-                                            return (
-                                                getServiceName(
-                                                    item
-                                                ).toLowerCase() ===
-                                                serviceName.toLowerCase()
-                                            );
-
-                                        }
-                                    );
-
-
-                                if (!service) {
-                                    return;
-                                }
-
-
-                                service.active =
-                                    checkbox.checked;
-
-
-                                saveSharedServices(
-                                    services
-                                );
-
-
-                                updateActiveServiceCounter(
-                                    services
-                                );
-
-                            }
-                        );
-
-                    }
-                );
-
-        }
-
-
-        renderDashboardServices();
-
-
-        /* ==========================
-           GALLERY FILE COUNT
-        ========================== */
-
-        var galleryUpload =
-            document.querySelector(
-                'input[type="file"]'
-            );
-
-        if (galleryUpload) {
-
-            galleryUpload.addEventListener(
-                "change",
-                function() {
-
-                    var count =
-                        this.files.length;
-
-                    var info =
-                        document.querySelector(
-                            ".upload-count"
-                        );
-
-                    if (!info) {
-
-                        info =
-                            document.createElement(
-                                "p"
-                            );
-
-                        info.className =
-                            "upload-count";
-
-                        this.parentNode.appendChild(
-                            info
-                        );
-
-                    }
-
-                    info.innerHTML =
-                        count +
-                        " file(s) selected";
-
-                }
-            );
-
-        }
-
-
-        /* ==========================
-           SIMPLE LOCAL STORAGE
-        ========================== */
-
-        document
-            .querySelectorAll(
-                "input, textarea, select"
-            )
-            .forEach(
-                function(field) {
-
-                    if (!field.name) {
-                        return;
-                    }
-
-
-                    var saved =
-                        localStorage.getItem(
-                            field.name
-                        );
-
-                    if (saved) {
-
-                        field.value =
-                            saved;
-
-                    }
-
-
-                    field.addEventListener(
-                        "input",
-                        function() {
-
-                            localStorage.setItem(
-                                field.name,
-                                field.value
-                            );
-
-                        }
-                    );
-
-                }
-            );
-
-
-        /* ==========================
-           ANALYTICS BAR
-        ========================== */
-
-        document
-            .querySelectorAll(
-                ".chart-placeholder"
-            )
-            .forEach(
-                function(chart) {
-
-                    chart.innerHTML =
-                        "";
-
-                    for (
-                        var i = 0;
-                        i < 7;
-                        i++
-                    ) {
-
-                        var bar =
-                            document.createElement(
-                                "div"
-                            );
-
-                        bar.style.width =
-                            "28px";
-
-                        bar.style.height =
-                            (
-                                40 +
-                                Math.random() *
-                                100
-                            ) +
-                            "px";
-
-                        bar.style.background =
-                            "#111";
-
-                        bar.style.borderRadius =
-                            "6px";
-
-                        bar.style.display =
-                            "inline-block";
-
-                        bar.style.margin =
-                            "0 5px";
-
-                        bar.style.verticalAlign =
-                            "bottom";
-
-                        chart.appendChild(
-                            bar
-                        );
-
-                    }
-
-                }
-            );
-
-
-        /* ==========================
-           MOBILE SIDEBAR
-        ========================== */
-
-        var toggle =
-            document.querySelector(
-                ".mobile-toggle"
-            );
-
-        var sidebar =
-            document.querySelector(
-                ".sidebar"
-            );
-
-
-        if (
-            toggle &&
-            sidebar
-        ) {
-
-            toggle.addEventListener(
-                "click",
-                function() {
-
-                    sidebar.classList.toggle(
-                        "show"
-                    );
-
-                }
-            );
-
-        }
-
-
-        /* ==========================
-           DASHBOARD GREETING
-        ========================== */
-
-        var hour =
-            new Date().getHours();
-
-        var greeting =
-            "Welcome";
-
-
-        if (hour < 12) {
-
-            greeting =
-                "Good Morning";
-
-        }
-        else if (hour < 17) {
-
-            greeting =
-                "Good Afternoon";
-
-        }
-        else {
-
-            greeting =
-                "Good Evening";
-
-        }
-
-
-        var heading =
-            document.querySelector(
-                ".topbar h1"
-            );
-
-
-        if (heading) {
-
-            heading.innerHTML =
-                greeting +
-                ", " +
-                userName;
-
-        }
-
-
-        document
-            .querySelectorAll(
-                ".menu a"
-            )
-            .forEach(
-                function(menuLink) {
-
-                    menuLink.addEventListener(
-                        "click",
-                        function() {
-
-                            if (
-                                window.innerWidth <
-                                768
-                            ) {
-
-                                if (sidebar) {
-
-                                    sidebar.classList.remove(
-                                        "show"
-                                    );
-
-                                }
-
-                            }
-
-                        }
-                    );
-
-                }
-            );
-
-    }
-);
-
-
-/* ==========================================
-   BOOKING DASHBOARD
-========================================== */
-
-
-/* ==========================================
-   GET STORED BOOKINGS
-========================================== */
-
-function getStoredBookings() {
-
-    try {
-
-        var stored =
-            localStorage.getItem(
-                BOOKING_STORAGE_KEY
-            );
-
-        if (!stored) {
-            return [];
-        }
-
-        var parsed =
-            JSON.parse(stored);
-
-        return Array.isArray(parsed)
-            ? parsed
-            : [];
-
-    }
-    catch (error) {
-
-        console.error(
-            "Could not read booking data:",
-            error
-        );
-
-        return [];
-
-    }
+    return getStoredServices();
 
 }
 
 
-/* ==========================================
-   BOOKING HELPERS
-========================================== */
-
-function getBookingClient(
-    booking
+function saveSharedServices(
+    services
 ) {
 
-    return booking &&
-        booking.client
-        ? String(booking.client)
-        : "Unknown Client";
+    saveServices(
+        services
+    );
 
 }
 
 
-function getBookingService(
-    booking
+function updateActiveServiceCounter(
+    services
 ) {
 
-    return booking &&
-        booking.service
-        ? String(booking.service)
-        : "Photography Service";
-
-}
-
-
-function getBookingDate(
-    booking
-) {
-
-    if (
-        booking &&
-        booking.date
-    ) {
-
-        return String(
-            booking.date
-        );
-
-    }
-
-
-    if (
-        booking &&
-        Array.isArray(booking.dates) &&
-        booking.dates.length
-    ) {
-
-        return booking.dates[0].date ||
-            "Not specified";
-
-    }
-
-
-    return "Not specified";
-
-}
-
-
-function getBookingAmount(
-    booking
-) {
-
-    if (
-        booking &&
-        booking.packagePrice !== undefined &&
-        booking.packagePrice !== null &&
-        booking.packagePrice !== ""
-    ) {
-
-        var price =
-            Number(
-                String(
-                    booking.packagePrice
-                )
-                .replace(
-                    /[^\d.-]/g,
-                    ""
-                )
-            );
-
-
-        if (!isNaN(price)) {
-
-            return new Intl.NumberFormat(
-                "en-IN",
-                {
-                    style: "currency",
-                    currency: "INR",
-                    maximumFractionDigits: 0
-                }
-            ).format(price);
-
-        }
-
-    }
-
-
-    if (
-        booking &&
-        booking.amount
-    ) {
-
-        return String(
-            booking.amount
-        );
-
-    }
-
-
-    return "₹0";
-
-}
-
-
-function getBookingStatus(
-    booking
-) {
-
-    return booking &&
-        booking.status
-        ? String(booking.status)
-        : "Pending";
-
-}
-
-
-function getBookingStatusClass(
-    status
-) {
-
-    if (
-        status ===
-        "Confirmed"
-    ) {
-
-        return "active";
-
-    }
-
-
-    if (
-        status ===
-        "Completed"
-    ) {
-
-        return "completed";
-
-    }
-
-
-    return "pending";
-
-}
-
-
-/* ==========================================
-   RENDER BOOKING TABLE
-========================================== */
-
-function renderBookingTable() {
-
-    var table =
+    var counter =
         document.getElementById(
-            "bookingTable"
+            "activeServicesCounter"
         );
 
 
-    if (!table) {
+    if (!counter) {
+
         return;
+
     }
 
 
-    var searchInput =
-        document.getElementById(
-            "searchBooking"
-        );
+    var activeCount =
+        services.filter(
+            function(service) {
 
-
-    var statusFilter =
-        document.getElementById(
-            "statusFilter"
-        );
-
-
-    var search =
-        searchInput
-        ? searchInput.value
-            .trim()
-            .toLowerCase()
-        : "";
-
-
-    var selectedStatus =
-        statusFilter
-        ? statusFilter.value
-        : "all";
-
-
-    var bookings =
-        getStoredBookings();
-
-
-    var filtered =
-        bookings.filter(
-            function(booking) {
-
-                var client =
-                    getBookingClient(
-                        booking
-                    ).toLowerCase();
-
-                var service =
-                    getBookingService(
-                        booking
-                    ).toLowerCase();
-
-                var status =
-                    getBookingStatus(
-                        booking
-                    );
-
-
-                var matchesSearch =
-                    !search ||
-                    client.includes(search) ||
-                    service.includes(search);
-
-
-                var matchesStatus =
-                    selectedStatus === "all" ||
-                    status === selectedStatus;
-
-
-                return (
-                    matchesSearch &&
-                    matchesStatus
-                );
+                return service.active === true;
 
             }
-        );
+        ).length;
 
 
-    table.innerHTML =
+    counter.dataset.target =
+        activeCount;
+
+
+    counter.textContent =
+        activeCount;
+
+}
+
+
+/* =========================================================
+   DASHBOARD SERVICES
+========================================================= */
+
+function renderDashboardServices() {
+
+    if (!serviceGrid) {
+
+        return;
+
+    }
+
+
+    var services =
+        getSharedServices();
+
+
+    serviceGrid.innerHTML =
         "";
 
 
-    if (!filtered.length) {
+    if (!services.length) {
 
-        var emptyRow =
+        var empty =
             document.createElement(
-                "tr"
+                "p"
             );
 
-        var emptyCell =
-            document.createElement(
-                "td"
-            );
 
-        emptyCell.colSpan =
-            5;
+        empty.textContent =
+            "No services have been created yet. Open Manage Services to add your services.";
 
-        emptyCell.textContent =
-            bookings.length
-                ? "No bookings match your search."
-                : "No bookings have been received yet.";
 
-        emptyCell.style.textAlign =
-            "center";
-
-        emptyCell.style.padding =
-            "30px 20px";
-
-        emptyCell.style.color =
+        empty.style.color =
             "#666";
 
 
-        emptyRow.appendChild(
-            emptyCell
-        );
-
-        table.appendChild(
-            emptyRow
+        serviceGrid.appendChild(
+            empty
         );
 
 
-        updateBookingStats(
-            filtered
+        updateActiveServiceCounter(
+            services
         );
+
 
         return;
 
     }
 
 
-    filtered.forEach(
-        function(booking) {
+    services.forEach(
+        function(service) {
 
-            var row =
+            var name =
+                getServiceName(
+                    service
+                );
+
+
+            if (!name) {
+
+                return;
+
+            }
+
+
+            var label =
                 document.createElement(
-                    "tr"
+                    "label"
                 );
 
 
-            var client =
+            label.className =
+                "service-card";
+
+
+            label.dataset.serviceId =
+                service.id || "";
+
+
+            var checkbox =
                 document.createElement(
-                    "td"
-                );
-
-            client.textContent =
-                getBookingClient(
-                    booking
+                    "input"
                 );
 
 
-            var service =
-                document.createElement(
-                    "td"
-                );
-
-            service.textContent =
-                getBookingService(
-                    booking
-                );
+            checkbox.type =
+                "checkbox";
 
 
-            var date =
-                document.createElement(
-                    "td"
-                );
-
-            date.textContent =
-                getBookingDate(
-                    booking
-                );
+            checkbox.checked =
+                service.active === true;
 
 
-            var amount =
-                document.createElement(
-                    "td"
-                );
-
-            amount.textContent =
-                getBookingAmount(
-                    booking
-                );
+            checkbox.dataset.serviceId =
+                service.id || "";
 
 
-            var statusCell =
-                document.createElement(
-                    "td"
-                );
+            checkbox.dataset.serviceName =
+                name;
 
 
-            var statusBadge =
+            var span =
                 document.createElement(
                     "span"
                 );
 
 
-            var status =
-                getBookingStatus(
-                    booking
-                );
+            span.textContent =
+                name;
 
 
-            statusBadge.className =
-                "status " +
-                getBookingStatusClass(
-                    status
-                );
-
-
-            statusBadge.textContent =
-                status;
-
-
-            statusCell.appendChild(
-                statusBadge
+            label.appendChild(
+                checkbox
             );
 
 
-            row.appendChild(
-                client
-            );
-
-            row.appendChild(
-                service
-            );
-
-            row.appendChild(
-                date
-            );
-
-            row.appendChild(
-                amount
-            );
-
-            row.appendChild(
-                statusCell
+            label.appendChild(
+                span
             );
 
 
-            table.appendChild(
-                row
+            serviceGrid.appendChild(
+                label
             );
 
         }
     );
 
 
-    updateBookingStats(
-        filtered
+    attachServiceCheckboxEvents();
+
+
+    updateActiveServiceCounter(
+        services
     );
 
 }
 
 
-/* ==========================================
-   BOOKING STATISTICS
-========================================== */
+/* =========================================================
+   SERVICE CHECKBOX EVENTS
+========================================================= */
 
-function updateBookingStats(
-    list
+function attachServiceCheckboxEvents() {
+
+    if (!serviceGrid) {
+
+        return;
+
+    }
+
+
+    serviceGrid
+        .querySelectorAll(
+            "input[type='checkbox']"
+        )
+        .forEach(
+            function(checkbox) {
+
+                checkbox.addEventListener(
+                    "change",
+                    function() {
+
+                        var services =
+                            getSharedServices();
+
+
+                        var serviceId =
+                            checkbox.dataset.serviceId;
+
+
+                        var serviceName =
+                            checkbox.dataset.serviceName;
+
+
+                        var service =
+                            services.find(
+                                function(item) {
+
+                                    if (
+                                        serviceId
+                                    ) {
+
+                                        return String(
+                                            item.id
+                                        ) ===
+                                        String(
+                                            serviceId
+                                        );
+
+                                    }
+
+
+                                    return (
+                                        getServiceName(
+                                            item
+                                        ).toLowerCase() ===
+                                        serviceName.toLowerCase()
+                                    );
+
+                                }
+                            );
+
+
+                        if (!service) {
+
+                            return;
+
+                        }
+
+
+                        service.active =
+                            checkbox.checked;
+
+
+                        saveSharedServices(
+                            services
+                        );
+
+
+                        updateActiveServiceCounter(
+                            services
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   RENDER SERVICES
+========================================================= */
+
+renderDashboardServices();
+
+
+/* =========================================================
+   GALLERY FILE COUNT
+========================================================= */
+
+var galleryUpload =
+    document.querySelector(
+        'input[type="file"]'
+    );
+
+
+if (galleryUpload) {
+
+    galleryUpload.addEventListener(
+        "change",
+        function() {
+
+            var count =
+                this.files.length;
+
+
+            var info =
+                document.querySelector(
+                    ".upload-count"
+                );
+
+
+            if (!info) {
+
+                info =
+                    document.createElement(
+                        "p"
+                    );
+
+
+                info.className =
+                    "upload-count";
+
+
+                this.parentNode.appendChild(
+                    info
+                );
+
+            }
+
+
+            info.innerHTML =
+                count +
+                " file(s) selected";
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   SIMPLE LOCAL STORAGE
+========================================================= */
+
+document
+    .querySelectorAll(
+        "input, textarea, select"
+    )
+    .forEach(
+        function(field) {
+
+            if (!field.name) {
+
+                return;
+
+            }
+
+
+            var saved =
+                localStorage.getItem(
+                    field.name
+                );
+
+
+            if (saved) {
+
+                field.value =
+                    saved;
+
+            }
+
+
+            field.addEventListener(
+                "input",
+                function() {
+
+                    localStorage.setItem(
+                        field.name,
+                        field.value
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+/* =========================================================
+   ANALYTICS BAR
+========================================================= */
+
+document
+    .querySelectorAll(
+        ".chart-placeholder"
+    )
+    .forEach(
+        function(chart) {
+
+            chart.innerHTML =
+                "";
+
+
+            for (
+                var i = 0;
+                i < 7;
+                i++
+            ) {
+
+                var bar =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                bar.style.width =
+                    "28px";
+
+
+                bar.style.height =
+                    (
+                        40 +
+                        Math.random() *
+                        100
+                    ) +
+                    "px";
+
+
+                bar.style.background =
+                    "#111";
+
+
+                bar.style.borderRadius =
+                    "6px";
+
+
+                bar.style.display =
+                    "inline-block";
+
+
+                bar.style.margin =
+                    "0 5px";
+
+
+                bar.style.verticalAlign =
+                    "bottom";
+
+
+                chart.appendChild(
+                    bar
+                );
+
+            }
+
+        }
+    );
+
+
+/* =========================================================
+   MOBILE SIDEBAR
+========================================================= */
+
+var toggle =
+    document.querySelector(
+        ".mobile-toggle"
+    );
+
+
+var sidebar =
+    document.querySelector(
+        ".sidebar"
+    );
+
+
+if (
+    toggle &&
+    sidebar
 ) {
 
-    var totalBookings =
-        document.getElementById(
-            "totalBookings"
-        );
-
-    var confirmedBookings =
-        document.getElementById(
-            "confirmedBookings"
-        );
-
-    var pendingBookings =
-        document.getElementById(
-            "pendingBookings"
-        );
-
-    var completedBookings =
-        document.getElementById(
-            "completedBookings"
-        );
-
-
-    if (totalBookings) {
-
-        totalBookings.textContent =
-            list.length;
-
-    }
-
-
-    if (confirmedBookings) {
-
-        confirmedBookings.textContent =
-            list.filter(
-                function(booking) {
-
-                    return getBookingStatus(
-                        booking
-                    ) ===
-                    "Confirmed";
-
-                }
-            ).length;
-
-    }
-
-
-    if (pendingBookings) {
-
-        pendingBookings.textContent =
-            list.filter(
-                function(booking) {
-
-                    return getBookingStatus(
-                        booking
-                    ) ===
-                    "Pending";
-
-                }
-            ).length;
-
-    }
-
-
-    if (completedBookings) {
-
-        completedBookings.textContent =
-            list.filter(
-                function(booking) {
-
-                    return getBookingStatus(
-                        booking
-                    ) ===
-                    "Completed";
-
-                }
-            ).length;
-
-    }
-
-}
-
-
-/* ==========================================
-   BOOKING COMPARISON
-========================================== */
-
-function updateComparison() {
-
-    var viewFilter =
-        document.getElementById(
-            "viewFilter"
-        );
-
-    var compareFilter =
-        document.getElementById(
-            "compareFilter"
-        );
-
-    var currentValue =
-        document.getElementById(
-            "currentValue"
-        );
-
-    var previousValue =
-        document.getElementById(
-            "previousValue"
-        );
-
-    var growthValue =
-        document.getElementById(
-            "growthValue"
-        );
-
-
-    if (
-        !viewFilter ||
-        !compareFilter ||
-        !currentValue ||
-        !previousValue ||
-        !growthValue
-    ) {
-
-        return;
-
-    }
-
-
-    if (
-        compareFilter.value ===
-        "none"
-    ) {
-
-        currentValue.textContent =
-            "--";
-
-        previousValue.textContent =
-            "--";
-
-        growthValue.textContent =
-            "--";
-
-        return;
-
-    }
-
-
-    var bookings =
-        getStoredBookings();
-
-
-    var now =
-        new Date();
-
-
-    var current =
-        0;
-
-    var previous =
-        0;
-
-
-    bookings.forEach(
-        function(booking) {
-
-            if (!booking.createdAt) {
-                return;
-            }
-
-
-            var created =
-                new Date(
-                    booking.createdAt
-                );
-
-
-            if (
-                isNaN(
-                    created.getTime()
-                )
-            ) {
-
-                return;
-
-            }
-
-
-            var difference =
-                now.getTime() -
-                created.getTime();
-
-
-            var days =
-                difference /
-                (
-                    1000 *
-                    60 *
-                    60 *
-                    24
-                );
-
-
-            if (
-                viewFilter.value ===
-                "week"
-            ) {
-
-                if (
-                    days >= 0 &&
-                    days < 7
-                ) {
-
-                    current++;
-
-                }
-                else if (
-                    days >= 7 &&
-                    days < 14
-                ) {
-
-                    previous++;
-
-                }
-
-            }
-
-
-            else if (
-                viewFilter.value ===
-                "month"
-            ) {
-
-                if (
-                    created.getMonth() ===
-                    now.getMonth() &&
-                    created.getFullYear() ===
-                    now.getFullYear()
-                ) {
-
-                    current++;
-
-                }
-
-
-                var previousMonth =
-                    new Date(
-                        now.getFullYear(),
-                        now.getMonth() - 1,
-                        1
-                    );
-
-
-                if (
-                    created.getMonth() ===
-                    previousMonth.getMonth() &&
-                    created.getFullYear() ===
-                    previousMonth.getFullYear()
-                ) {
-
-                    previous++;
-
-                }
-
-            }
-
-
-            else if (
-                viewFilter.value ===
-                "year"
-            ) {
-
-                if (
-                    created.getFullYear() ===
-                    now.getFullYear()
-                ) {
-
-                    current++;
-
-                }
-
-
-                if (
-                    created.getFullYear() ===
-                    now.getFullYear() - 1
-                ) {
-
-                    previous++;
-
-                }
-
-            }
+    toggle.addEventListener(
+        "click",
+        function() {
+
+            sidebar.classList.toggle(
+                "show"
+            );
 
         }
     );
 
-
-    currentValue.textContent =
-        current;
-
-    previousValue.textContent =
-        previous;
-
-
-    if (previous === 0) {
-
-        growthValue.textContent =
-            current > 0
-                ? "+100%"
-                : "0%";
-
-        return;
-
-    }
-
-
-    var growth =
-        (
-            (
-                current -
-                previous
-            ) /
-            previous *
-            100
-        ).toFixed(0);
-
-
-    growthValue.textContent =
-        (
-            Number(growth) >= 0
-                ? "+"
-                : ""
-        ) +
-        growth +
-        "%";
-
 }
 
-
-/* ==========================================
-   INITIALIZE BOOKING DASHBOARD
-========================================== */
-
-function initializeBookingDashboard() {
-
-    var searchInput =
-        document.getElementById(
-            "searchBooking"
-        );
-
-
-    var statusFilter =
-        document.getElementById(
-            "statusFilter"
-        );
-
-
-    var viewFilter =
-        document.getElementById(
-            "viewFilter"
-        );
-
-
-    var compareFilter =
-        document.getElementById(
-            "compareFilter"
-        );
-
-
-    if (searchInput) {
-
-        searchInput.addEventListener(
-            "input",
-            renderBookingTable
-        );
-
-    }
-
- 
-    if (statusFilter) {
-
-        statusFilter.addEventListener(
-            "change",
-            renderBookingTable
-        );
-
-    }
-
-
-    if (viewFilter) {
-
-        viewFilter.addEventListener(
-            "change",
-            updateComparison
-        );
-
-    }
-
-
-    if (compareFilter) {
-
-        compareFilter.addEventListener(
-            "change",
-            updateComparison
-        );
-
-    }
-
-
-    renderBookingTable();
-
-    updateComparison();
-
-}
-
-
-/* ==========================================
-   INITIALIZE BOOKING DASHBOARD
-========================================== */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function() {
-
-        initializeBookingDashboard();
-
-    }
-);
-
-
-/* ==========================================
-   LIVE BOOKING UPDATES
-========================================== */
-
-window.addEventListener(
-    "storage",
-    function(event) {
-
-        if (
-            event.key ===
-            BOOKING_STORAGE_KEY
-        ) {
-
-            renderBookingTable();
-
-            updateComparison();
-
-        }
-
-    }
-);
-
-
-/* ==========================================
-   SERVICE DATA CHANGE LISTENER
-========================================== */
-
-window.addEventListener(
-    "storage",
-    function(event) {
-
-        if (
-            event.key ===
-            SERVICE_STORAGE_KEY
-        ) {
-
-            if (
-                typeof renderDashboardServices ===
-                "function"
-            ) {
-
-                renderDashboardServices();
-
-            }
-
-        }
-
-    }
-);
 
 /* =========================================================
-   CLIENT GALLERY DASHBOARD
+   DASHBOARD GREETING
 ========================================================= */
 
-function loadDashboardGalleries(){
+var hour =
+    new Date().getHours();
 
-    const galleryList =
-        document.getElementById("dashboardGalleryList");
 
-    if(!galleryList){
-        return;
-    }
+var greeting =
+    "Welcome";
 
-    let galleries = [];
 
-    try{
+if (hour < 12) {
 
-        galleries =
-            JSON.parse(
-                localStorage.getItem(
-                    "professionalStudioGalleries"
-                )
-            ) || [];
+    greeting =
+        "Good Morning";
 
-    }catch(error){
+}
+else if (hour < 17) {
 
-        galleries = [];
+    greeting =
+        "Good Afternoon";
 
-    }
+}
+else {
 
-
-    const totalElement =
-        document.getElementById("totalGalleries");
-
-    const activeElement =
-        document.getElementById("activeGalleries");
-
-    const storageElement =
-        document.getElementById("galleryStorageUsed");
-
-    const expiringElement =
-        document.getElementById("expiringGalleries");
-
-
-    const now = new Date();
-
-    let activeCount = 0;
-    let expiringCount = 0;
-    let totalStorageUsed = 0;
-
-
-    galleries.forEach(gallery => {
-
-        const expiresAt =
-            gallery.expiresAt
-                ? new Date(gallery.expiresAt)
-                : null;
-
-        const isExpired =
-            expiresAt && expiresAt <= now;
-
-        if(!isExpired){
-
-            activeCount++;
-
-            if(expiresAt){
-
-                const daysRemaining =
-                    Math.ceil(
-                        (
-                            expiresAt.getTime() -
-                            now.getTime()
-                        ) /
-                        (1000 * 60 * 60 * 24)
-                    );
-
-                if(daysRemaining <= 30){
-
-                    expiringCount++;
-
-                }
-
-            }
-
-        }
-
-
-        totalStorageUsed +=
-            Number(gallery.storageUsed) || 0;
-
-    });
-
-
-    if(totalElement){
-
-        totalElement.textContent =
-            galleries.length;
-
-    }
-
-
-    if(activeElement){
-
-        activeElement.textContent =
-            activeCount;
-
-    }
-
-
-    if(storageElement){
-
-        totalStorageUsed =
-            Math.round(
-                totalStorageUsed * 100
-            ) / 100;
-
-        storageElement.textContent =
-            `${totalStorageUsed} GB`;
-
-    }
-
-
-    if(expiringElement){
-
-        expiringElement.textContent =
-            expiringCount;
-
-    }
-
-
-    /* =========================
-       EMPTY STATE
-    ========================= */
-
-    if(galleries.length === 0){
-
-        galleryList.innerHTML = `
-
-            <div class="gallery-empty">
-
-                <div class="gallery-empty-icon">
-                    📷
-                </div>
-
-                <h3>
-                    No galleries yet
-                </h3>
-
-                <p>
-                    Purchase a gallery to start delivering
-                    photos and videos to your clients.
-                </p>
-
-                <a href="galleryshop.html">
-
-                    <button
-                        class="btn-primary"
-                        type="button"
-                    >
-                        BUY YOUR FIRST GALLERY
-                    </button>
-
-                </a>
-
-            </div>
-
-        `;
-
-        return;
-
-    }
-
-
-    /* =========================
-       SHOW RECENT GALLERIES
-    ========================= */
-
-    const recentGalleries =
-        galleries.slice(-3).reverse();
-
-
-    galleryList.innerHTML =
-        recentGalleries
-            .map(gallery => {
-
-                const expiresAt =
-                    gallery.expiresAt
-                        ? new Date(gallery.expiresAt)
-                        : null;
-
-                const isExpired =
-                    expiresAt &&
-                    expiresAt <= now;
-
-
-                const storageUsed =
-                    Number(gallery.storageUsed) || 0;
-
-                const storageLimit =
-                    Number(gallery.storageLimit) || 1;
-
-
-                const storagePercentage =
-                    Math.min(
-                        100,
-                        Math.round(
-                            (
-                                storageUsed /
-                                storageLimit
-                            ) * 100
-                        )
-                    );
-
-
-                const expiryText =
-                    expiresAt
-                        ? expiresAt.toLocaleDateString(
-                            "en-IN",
-                            {
-                                day:"2-digit",
-                                month:"short",
-                                year:"numeric"
-                            }
-                        )
-                        : "Not set";
-
-
-                const status =
-                    isExpired
-                        ? "Expired"
-                        : "Active";
-
-
-                const statusClass =
-                    isExpired
-                        ? "expired"
-                        : "";
-
-
-                return `
-
-                    <div class="dashboard-gallery-card">
-
-                        <div class="dashboard-gallery-top">
-
-                            <div>
-
-                                <div class="dashboard-gallery-title">
-                                    ${escapeGalleryText(
-                                        gallery.name ||
-                                        "Untitled Gallery"
-                                    )}
-                                </div>
-
-                                <div class="dashboard-gallery-client">
-                                    ${
-                                        escapeGalleryText(
-                                            gallery.clientName ||
-                                            "No client assigned"
-                                        )
-                                    }
-                                </div>
-
-                            </div>
-
-                            <span
-                                class="dashboard-gallery-status ${statusClass}"
-                            >
-                                ${status}
-                            </span>
-
-                        </div>
-
-
-                        <div class="dashboard-gallery-info">
-
-                            <div>
-
-                                <span>
-                                    Storage
-                                </span>
-
-                                <strong>
-                                    ${storageUsed} /
-                                    ${storageLimit} GB
-                                </strong>
-
-                            </div>
-
-
-                            <div>
-
-                                <span>
-                                    Expires
-                                </span>
-
-                                <strong>
-                                    ${expiryText}
-                                </strong>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="dashboard-gallery-progress">
-
-                            <div
-                                class="dashboard-gallery-progress-bar"
-                                style="width:${storagePercentage}%"
-                            ></div>
-
-                        </div>
-
-
-                        <a href="clientgallery.html">
-
-                            <button
-                                class="btn-primary dashboard-gallery-button"
-                                type="button"
-                            >
-                                MANAGE GALLERY
-                            </button>
-
-                        </a>
-
-                    </div>
-
-                `;
-
-            })
-            .join("");
+    greeting =
+        "Good Evening";
 
 }
 
 
 /* =========================================================
-   SAFE TEXT
+   APPLY GREETING
 ========================================================= */
 
-function escapeGalleryText(value){
-
-    return String(value)
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
-
-}
+var greetingElements =
+    document.querySelectorAll(
+        "[data-greeting]"
+    );
 
 
-/* =========================================================
-   INITIALIZE
-========================================================= */
+greetingElements.forEach(
+    function(element) {
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function(){
-
-        loadDashboardGalleries();
+        element.textContent =
+            greeting;
 
     }
 );
 
 
 /* =========================================================
-   REFRESH WHEN RETURNING TO DASHBOARD
+   INITIAL PORTFOLIO STORAGE SETUP
 ========================================================= */
 
-window.addEventListener(
-    "storage",
-    function(event){
+(function initializePortfolioStorage() {
 
-        if(
-            event.key ===
-            "professionalStudioGalleries"
-        ){
+    var storage =
+        getPortfolioStorage();
 
-            loadDashboardGalleries();
 
-        }
+    /*
+       Make sure the current plan is
+       reflected immediately.
+    */
 
-    }
-);
+    storage.storagePlan =
+        getCurrentSubscriptionPlan().id;
+
+
+    storage.storageLimitMB =
+        getPortfolioStorageLimitMB();
+
+
+    savePortfolioStorage(
+        storage
+    );
+
+
+    renderPortfolioStorage();
+
+})();

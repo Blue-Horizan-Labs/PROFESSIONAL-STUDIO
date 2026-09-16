@@ -4,7 +4,6 @@
 
 <head>
 
-
 <meta charset="UTF-8">
 
 <meta
@@ -13,12 +12,12 @@
 >
 
 <title>Professional Studio | Dashboard</title>
+
 <link
     rel="icon"
     type="image/png"
-    href="https://i.ibb.co/8g0LT3jZ/logo1-2.png" 
+    href="https://i.ibb.co/8g0LT3jZ/logo1-2.png"
 >
-
 
 <meta
     name="description"
@@ -30,8 +29,8 @@
     href="user.css"
 >
 
-
 </head>
+
 
 <body>
 
@@ -45,6 +44,7 @@
     <div class="logo">
         Professional Studio
     </div>
+
 
     <nav>
 
@@ -64,6 +64,10 @@
             Client Gallery
         </a>
 
+        <a href="#recent-work">
+            Recent Work
+        </a>
+
         <a href="#equipment">
             Equipment
         </a>
@@ -79,6 +83,7 @@
     </nav>
 
 </header>
+
 
 
 <!-- ==========================================
@@ -128,6 +133,7 @@
 </section>
 
 
+
 <!-- ==========================================
      DASHBOARD
 =========================================== -->
@@ -140,6 +146,7 @@
     <h2>
         Dashboard
     </h2>
+
 
     <div class="stats-grid">
 
@@ -164,6 +171,7 @@
         </div>
 
 
+
         <div class="stat-card">
 
             <h3>
@@ -182,6 +190,7 @@
             </p>
 
         </div>
+
 
 
         <div class="stat-card">
@@ -205,6 +214,7 @@
         </div>
 
 
+
         <div class="stat-card">
 
             <h3>
@@ -225,6 +235,7 @@
     </div>
 
 </section>
+
 
 
 <!-- ==========================================
@@ -250,10 +261,13 @@
 
         </div>
 
+
         <a href="setup.html">
 
             <button class="btn-primary">
+
                 Update Profile
+
             </button>
 
         </a>
@@ -261,6 +275,7 @@
     </div>
 
 </section>
+
 
 
 <!-- ==========================================
@@ -286,6 +301,7 @@
 
         </div>
 
+
         <a href="serviceMng.html">
 
             <button
@@ -309,8 +325,9 @@
 
     </div>
 
-
 </section>
+
+
 
 <!-- ==========================================
      CLIENT GALLERIES
@@ -335,24 +352,30 @@
 
         </div>
 
+
         <div class="gallery-actions">
 
             <a href="clientgallery.html">
+
                 <button
                     class="btn-primary"
                     type="button"
                 >
                     MANAGE GALLERIES
                 </button>
+
             </a>
 
+
             <a href="galleryshop.html">
+
                 <button
                     class="btn-secondary"
                     type="button"
                 >
                     BUY NEW GALLERY
                 </button>
+
             </a>
 
         </div>
@@ -361,6 +384,7 @@
 
 
     <div class="gallery-dashboard-grid">
+
 
         <!-- TOTAL GALLERIES -->
 
@@ -387,6 +411,7 @@
             </div>
 
         </div>
+
 
 
         <!-- ACTIVE GALLERIES -->
@@ -416,6 +441,7 @@
         </div>
 
 
+
         <!-- STORAGE -->
 
         <div class="gallery-stat-card">
@@ -441,6 +467,7 @@
             </div>
 
         </div>
+
 
 
         <!-- EXPIRING -->
@@ -469,7 +496,9 @@
 
         </div>
 
+
     </div>
+
 
 
     <!-- RECENT GALLERIES -->
@@ -489,6 +518,7 @@
                 </p>
 
             </div>
+
 
             <a href="clientgallery.html">
                 View All
@@ -538,6 +568,175 @@
 </section>
 
 
+
+<!-- ==========================================
+     RECENT WORK / PORTFOLIO STORAGE
+=========================================== -->
+
+<section
+    class="section"
+    id="recent-work"
+>
+
+    <div class="section-header">
+
+        <div>
+
+            <h2>
+                Recent Work
+            </h2>
+
+            <p>
+                Manage the photos you use on your professional profile and portfolio.
+            </p>
+
+        </div>
+
+
+        <a
+            href="recentwork.html"
+            id="manageRecentWorkLink"
+        >
+
+            <button
+                class="btn-primary"
+                type="button"
+            >
+                MANAGE RECENT WORK
+            </button>
+
+        </a>
+
+    </div>
+
+
+
+    <!-- PORTFOLIO STORAGE CARD -->
+
+    <div class="portfolio-storage-card">
+
+
+        <div class="portfolio-storage-header">
+
+
+            <div class="portfolio-storage-title">
+
+
+                <div class="portfolio-storage-icon">
+                    IMG
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Portfolio Storage
+                    </span>
+
+                    <h3>
+                        Your Recent Work Storage
+                    </h3>
+
+                    <p>
+                        Shared storage for profile photos, recent work, portfolio and featured images.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+            <div
+                class="portfolio-storage-size"
+                id="portfolioStorageSize"
+            >
+                0 MB / 250 MB
+            </div>
+
+
+        </div>
+
+
+
+        <!-- STORAGE PROGRESS -->
+
+        <div class="portfolio-storage-progress">
+
+            <div
+                class="portfolio-storage-progress-bar"
+                id="portfolioStorageProgress"
+                style="width:0%;"
+            ></div>
+
+        </div>
+
+
+
+        <!-- STORAGE FOOTER -->
+
+        <div class="portfolio-storage-footer">
+
+
+            <div class="portfolio-storage-meta">
+
+                <strong id="portfolioStorageUsed">
+                    0 MB used
+                </strong>
+
+                <span id="portfolioStorageAvailable">
+                    250 MB available
+                </span>
+
+            </div>
+
+
+            <span
+                class="portfolio-storage-badge"
+                id="portfolioStorageBadge"
+            >
+                Available
+            </span>
+
+
+        </div>
+
+
+
+        <!-- STORAGE WARNING -->
+
+        <div
+            class="portfolio-storage-warning"
+            id="portfolioStorageWarning"
+            hidden
+        >
+
+            <div class="portfolio-storage-warning-icon">
+                !
+            </div>
+
+
+            <div>
+
+                <strong>
+                    Storage is full
+                </strong>
+
+                <span>
+                    Delete existing recent work to make space before uploading new photos.
+                </span>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+
 <!-- ==========================================
      EQUIPMENT
 =========================================== -->
@@ -579,6 +778,7 @@
         </div>
 
 
+
         <div class="equipment-card">
 
             <h3>
@@ -601,6 +801,7 @@
             </div>
 
         </div>
+
 
 
         <div class="equipment-card">
@@ -627,6 +828,7 @@
         </div>
 
 
+
         <div class="equipment-card">
 
             <h3>
@@ -649,6 +851,7 @@
             </div>
 
         </div>
+
 
 
         <div
@@ -675,6 +878,8 @@
 
 </section>
 
+
+
 <!-- ==========================================
      BOOKINGS
 =========================================== -->
@@ -685,88 +890,91 @@
 >
 
 
-<div class="section-header">
+    <div class="section-header">
 
-    <div>
+        <div>
 
-        <h2>
-            Booking Management
-        </h2>
+            <h2>
+                Booking Management
+            </h2>
 
-        <p>
-            Manage, monitor and compare all your photography bookings.
-        </p>
+            <p>
+                Manage, monitor and compare all your photography bookings.
+            </p>
+
+        </div>
+
+
+        <a href="bookingMng.html">
+
+            <button class="btn-primary">
+                MANAGE BOOKINGS
+            </button>
+
+        </a>
 
     </div>
 
 
-    <a href="bookingMng.html">
 
-        <button class="btn-primary">
-            MANAGE BOOKINGS
-        </button>
+    <div class="booking-toolbar">
 
-    </a>
+        <input
+            type="text"
+            id="searchBooking"
+            placeholder="Search client..."
+        >
 
-</div>
-
-
-<div class="booking-toolbar">
-
-    <input
-        type="text"
-        id="searchBooking"
-        placeholder="Search client..."
-    >
-
-</div>
+    </div>
 
 
-<div class="table-container">
 
-    <table>
+    <div class="table-container">
 
-        <thead>
+        <table>
 
-            <tr>
+            <thead>
 
-                <th>
-                    Client
-                </th>
+                <tr>
 
-                <th>
-                    Service
-                </th>
+                    <th>
+                        Client
+                    </th>
 
-                <th>
-                    Date
-                </th>
+                    <th>
+                        Service
+                    </th>
 
-                <th>
-                    Amount
-                </th>
+                    <th>
+                        Date
+                    </th>
 
-                <th>
-                    Status
-                </th>
+                    <th>
+                        Amount
+                    </th>
 
-            </tr>
+                    <th>
+                        Status
+                    </th>
 
-        </thead>
+                </tr>
+
+            </thead>
 
 
-        <tbody id="bookingTable">
+            <tbody id="bookingTable">
 
-            <!-- Bookings will be loaded dynamically -->
+                <!-- Bookings will be loaded dynamically -->
 
-        </tbody>
+            </tbody>
 
-    </table>
+        </table>
 
-</div>
+    </div>
 
 
 </section>
+
 
 
 <!-- ==========================================
@@ -800,6 +1008,7 @@
         </div>
 
 
+
         <div class="review-card">
 
             <h3>
@@ -815,6 +1024,7 @@
             </h4>
 
         </div>
+
 
 
         <div class="review-card">
@@ -837,6 +1047,7 @@
     </div>
 
 </section>
+
 
 
 <!-- ==========================================
@@ -873,6 +1084,7 @@
         </div>
 
 
+
         <div class="stat-card">
 
             <h3>
@@ -893,6 +1105,7 @@
         </div>
 
 
+
         <div class="stat-card">
 
             <h3>
@@ -908,6 +1121,7 @@
             </p>
 
         </div>
+
 
 
         <div class="stat-card">
@@ -933,6 +1147,7 @@
     </div>
 
 </section>
+
 
 
 <!-- ==========================================
@@ -975,6 +1190,7 @@
 </section>
 
 
+
 <!-- ==========================================
      SETTINGS
 =========================================== -->
@@ -998,17 +1214,22 @@
                 Change Password
             </h3>
 
-            <p>
-                Update your account password.
-            </p>
+            <button>
+                Change Password
+            </button>
 
-            <a href="change-pass.html">
+        </div>
 
-                <button>
-                    Update
-                </button>
 
-            </a>
+        <div class="setting-card">
+
+            <h3>
+                Account Settings
+            </h3>
+
+            <button>
+                Manage Account
+            </button>
 
         </div>
 
@@ -1019,38 +1240,9 @@
                 Notifications
             </h3>
 
-            <p>
-                Manage booking notifications.
-            </p>
-
-            <a href="notification.html">
-
-                <button>
-                    Manage
-                </button>
-
-            </a>
-
-        </div>
-
-
-        <div class="setting-card">
-
-            <h3>
-                Delete Account
-            </h3>
-
-            <p>
-                Remove your account permanently.
-            </p>
-
-            <a href="del-acc.html">
-
-                <button>
-                    Delete
-                </button>
-
-            </a>
+            <button>
+                Notification Settings
+            </button>
 
         </div>
 
@@ -1060,34 +1252,8 @@
 </section>
 
 
-<!-- ==========================================
-     FOOTER
-=========================================== -->
-
-<footer>
-
-    <p>
-
-        © 2026 Powered by
-
-        <a
-            href="https://bluehorizanlabs.vercel.app/"
-            target="_blank"
-        >
-            Bluehorizanlabs
-        </a>
-
-    </p>
-
-</footer>
-
-
-<!-- ==========================================
-     JAVASCRIPT
-=========================================== -->
 
 <script src="user.js"></script>
-
 
 </body>
 
