@@ -1,33 +1,27 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-<title>Professional Studio | Dashboard</title>
+    <title>Professional Studio | Dashboard</title>
 
-<link
-    rel="icon"
-    type="image/png"
-    href="https://i.ibb.co/8g0LT3jZ/logo1-2.png"
->
+    <link
+        rel="icon"
+        type="image/png"
+        href="https://i.ibb.co/8g0LT3jZ/logo1-2.png"
+    >
 
-<meta
-    name="description"
-    content="Professional Studio photographer dashboard"
->
-
-<link
-    rel="stylesheet"
-    href="user.css"
->
+    <link
+        rel="stylesheet"
+        href="user.css"
+    >
 
 </head>
 
@@ -35,28 +29,31 @@
 <body>
 
 
-<!-- ==========================================
+<!-- =========================================================
      NAVBAR
-=========================================== -->
+========================================================= -->
 
-<header class="navbar">
+<nav class="navbar">
 
-    <div class="logo">
+    <div class="nav-brand">
         Professional Studio
     </div>
 
 
-    <nav>
+    <div class="nav-links">
 
-        <a href="#dashboard">
+        <a
+            href="user.html"
+            class="active"
+        >
             Dashboard
         </a>
 
-        <a href="#profile">
+        <a href="setup.html">
             Profile
         </a>
 
-        <a href="#services">
+        <a href="serviceMng.html">
             Services
         </a>
 
@@ -64,173 +61,157 @@
             Client Gallery
         </a>
 
-        <a href="#recent-work">
+        <a href="recentwork.html">
             Recent Work
         </a>
 
-        <a href="#equipment">
+        <a href="user.html#equipment">
             Equipment
         </a>
 
-        <a href="#bookings">
+        <a href="bookingMng.html">
             Bookings
         </a>
 
-        <a href="#settings">
+        <a href="user.html#settings">
             Settings
         </a>
 
-    </nav>
+    </div>
 
-</header>
+</nav>
 
 
 
-<!-- ==========================================
+<!-- =========================================================
      HERO
-=========================================== -->
+========================================================= -->
 
 <section class="hero">
 
     <div class="hero-content">
 
-        <h1>
-            Welcome, <span id="name">Back!</span>
-        </h1>
-
-        <p>
-            Manage your portfolio, services, packages, equipment and bookings from one place.
+        <p class="hero-eyebrow">
+            PROFESSIONAL STUDIO
         </p>
 
-        <button
-            onclick="openPortfolio()"
-            id="openPortfolioBtn"
-            style="
-                padding:14px 28px;
-                font-size:16px;
-                font-weight:600;
-                border:none;
-                border-radius:8px;
-                cursor:pointer;
-            "
-            disabled
-        >
-            Open My Page
-        </button>
+        <h1>
+            <span data-greeting>
+                Welcome
+            </span>,
+            <span id="name">
+                Photographer
+            </span>
+        </h1>
+
+        <p class="hero-description">
+            Manage your photography business, portfolio,
+            galleries, services and bookings from one place.
+        </p>
+
+
+        <div class="hero-actions">
+
+            <button
+                type="button"
+                class="btn-primary"
+                id="openPortfolioBtn"
+                onclick="openPortfolio()"
+            >
+                Open My Page
+            </button>
+
+            <button
+                type="button"
+                class="copy-profile-btn"
+                id="copyProfileBtn"
+                onclick="copyProfileLink()"
+            >
+                Copy Profile Link
+            </button>
+
+        </div>
 
     </div>
-
-
-    <button
-        onclick="copyProfileLink()"
-        id="copyProfileBtn"
-        class="copy-profile-btn"
-        disabled
-    >
-        Copy Profile Link
-    </button>
 
 </section>
 
 
 
-<!-- ==========================================
-     DASHBOARD
-=========================================== -->
+<!-- =========================================================
+     DASHBOARD STATS
+========================================================= -->
 
-<section
-    class="section"
-    id="dashboard"
->
-
-    <h2>
-        Dashboard
-    </h2>
-
+<section class="dashboard-section">
 
     <div class="stats-grid">
 
-
         <div class="stat-card">
 
-            <h3>
+            <p>
                 Today's Bookings
-            </h3>
-
-            <h1
-                class="counter"
-                data-target="4"
-            >
-                0
-            </h1>
-
-            <p>
-                Upcoming sessions today
             </p>
+
+            <h2 id="todayBookingsCounter">
+                0
+            </h2>
+
+            <span class="stat-note">
+                Scheduled for today
+            </span>
 
         </div>
 
 
-
         <div class="stat-card">
 
-            <h3>
+            <p>
                 Gallery Photos
-            </h3>
-
-            <h1
-                class="counter"
-                data-target="185"
-            >
-                0
-            </h1>
-
-            <p>
-                Total uploaded
             </p>
+
+            <h2 id="galleryPhotosCounter">
+                0
+            </h2>
+
+            <span class="stat-note">
+                Across your client galleries
+            </span>
 
         </div>
 
 
-
         <div class="stat-card">
 
-            <h3>
+            <p>
                 Active Services
-            </h3>
-
-            <h1
-                class="counter"
-                id="activeServicesCounter"
-                data-target="0"
-            >
-                0
-            </h1>
-
-            <p>
-                Currently available
             </p>
 
-        </div>
+            <h2 id="activeServicesCounter">
+                0
+            </h2>
 
+            <span class="stat-note">
+                Currently available
+            </span>
+
+        </div>
 
 
         <div class="stat-card">
 
-            <h3>
-                Revenue
-            </h3>
-
-            <h1>
-                ₹82K
-            </h1>
-
             <p>
-                This Month
+                Revenue
             </p>
 
-        </div>
+            <h2 id="dashboardRevenue">
+                ₹0
+            </h2>
 
+            <span class="stat-note">
+                From recorded bookings
+            </span>
+
+        </div>
 
     </div>
 
@@ -238,38 +219,37 @@
 
 
 
-<!-- ==========================================
+<!-- =========================================================
      PROFILE
-=========================================== -->
+========================================================= -->
 
 <section
-    class="section"
+    class="dashboard-section"
     id="profile"
 >
 
-    <div class="section-header">
+    <div class="section-heading">
 
         <div>
+            <p class="section-eyebrow">
+                PROFILE
+            </p>
 
             <h2>
-                Profile
+                Your Photographer Profile
             </h2>
 
             <p>
-                Keep your public photographer profile information updated.
+                Keep your public photographer profile
+                updated so clients know who they are booking.
             </p>
-
         </div>
 
-
-        <a href="setup.html">
-
-            <button class="btn-primary">
-
-                Update Profile
-
-            </button>
-
+        <a
+            href="setup.html"
+            class="btn-secondary"
+        >
+            Update Profile
         </a>
 
     </div>
@@ -278,39 +258,40 @@
 
 
 
-<!-- ==========================================
+<!-- =========================================================
      SERVICES
-=========================================== -->
+========================================================= -->
 
 <section
-    class="section"
+    class="dashboard-section"
     id="services"
 >
 
-    <div class="section-header">
+    <div class="section-heading">
 
         <div>
 
+            <p class="section-eyebrow">
+                SERVICES
+            </p>
+
             <h2>
-                Services
+                Manage Your Services
             </h2>
 
             <p>
-                Choose which photography services are currently available to clients.
+                Choose which photography services are
+                currently available for clients.
             </p>
 
         </div>
 
 
-        <a href="serviceMng.html">
-
-            <button
-                class="btn-primary"
-                type="button"
-            >
-                MANAGE SERVICES
-            </button>
-
+        <a
+            href="serviceMng.html"
+            class="btn-secondary"
+        >
+            Manage Services
         </a>
 
     </div>
@@ -319,35 +300,36 @@
     <div
         class="service-grid"
         id="serviceGrid"
-    >
-
-        <!-- Services are loaded from professionalStudio.services -->
-
-    </div>
+    ></div>
 
 </section>
 
 
 
-<!-- ==========================================
+<!-- =========================================================
      CLIENT GALLERIES
-=========================================== -->
+========================================================= -->
 
 <section
-    class="section"
+    class="dashboard-section"
     id="client-galleries"
 >
 
-    <div class="section-header">
+    <div class="section-heading">
 
         <div>
 
+            <p class="section-eyebrow">
+                CLIENT GALLERIES
+            </p>
+
             <h2>
-                Client Galleries
+                Your Client Galleries
             </h2>
 
             <p>
-                Manage your purchased client galleries, uploads, access and expiry.
+                Prepare, manage and share galleries
+                with your photography clients.
             </p>
 
         </div>
@@ -355,27 +337,18 @@
 
         <div class="gallery-actions">
 
-            <a href="clientgallery.html">
-
-                <button
-                    class="btn-primary"
-                    type="button"
-                >
-                    MANAGE GALLERIES
-                </button>
-
+            <a
+                href="clientgallery.html"
+                class="btn-secondary"
+            >
+                Manage Galleries
             </a>
 
-
-            <a href="galleryshop.html">
-
-                <button
-                    class="btn-secondary"
-                    type="button"
-                >
-                    BUY NEW GALLERY
-                </button>
-
+            <a
+                href="galleryshop.html"
+                class="btn-primary"
+            >
+                Buy New Gallery
             </a>
 
         </div>
@@ -383,94 +356,71 @@
     </div>
 
 
+
     <div class="gallery-dashboard-grid">
 
-
-        <!-- TOTAL GALLERIES -->
-
         <div class="gallery-stat-card">
 
             <div class="gallery-stat-icon">
-                📸
+                G
             </div>
 
             <div>
 
-                <h3>
+                <span>
                     Total Galleries
-                </h3>
+                </span>
 
-                <h1 id="totalGalleries">
+                <strong id="totalGalleries">
                     0
-                </h1>
-
-                <p>
-                    Purchased galleries
-                </p>
+                </strong>
 
             </div>
 
         </div>
 
 
-
-        <!-- ACTIVE GALLERIES -->
-
         <div class="gallery-stat-card">
 
             <div class="gallery-stat-icon">
-                ✓
+                A
             </div>
 
             <div>
 
-                <h3>
+                <span>
                     Active Galleries
-                </h3>
+                </span>
 
-                <h1 id="activeGalleries">
+                <strong id="activeGalleries">
                     0
-                </h1>
-
-                <p>
-                    Currently available
-                </p>
+                </strong>
 
             </div>
 
         </div>
 
-
-
-        <!-- STORAGE -->
 
         <div class="gallery-stat-card">
 
             <div class="gallery-stat-icon">
-                GB
+                S
             </div>
 
             <div>
 
-                <h3>
+                <span>
                     Storage Used
-                </h3>
+                </span>
 
-                <h1 id="galleryStorageUsed">
-                    0 GB
-                </h1>
-
-                <p>
-                    Across all galleries
-                </p>
+                <strong id="galleryStorageUsed">
+                    0 MB
+                </strong>
 
             </div>
 
         </div>
 
-
-
-        <!-- EXPIRING -->
 
         <div class="gallery-stat-card">
 
@@ -480,28 +430,21 @@
 
             <div>
 
-                <h3>
+                <span>
                     Expiring Soon
-                </h3>
+                </span>
 
-                <h1 id="expiringGalleries">
+                <strong id="expiringGalleries">
                     0
-                </h1>
-
-                <p>
-                    Within 30 days
-                </p>
+                </strong>
 
             </div>
 
         </div>
 
-
     </div>
 
 
-
-    <!-- RECENT GALLERIES -->
 
     <div class="gallery-preview-wrapper">
 
@@ -510,15 +453,14 @@
             <div>
 
                 <h3>
-                    Your Galleries
+                    Recent Galleries
                 </h3>
 
                 <p>
-                    Recently purchased and active galleries.
+                    Your latest client gallery activity.
                 </p>
 
             </div>
-
 
             <a href="clientgallery.html">
                 View All
@@ -530,36 +472,34 @@
         <div
             class="gallery-preview-grid"
             id="dashboardGalleryList"
+        ></div>
+
+
+        <div
+            class="gallery-empty"
+            id="galleryEmptyState"
+            hidden
         >
 
-            <!-- Galleries loaded from localStorage -->
-
-            <div class="gallery-empty">
-
-                <div class="gallery-empty-icon">
-                    📷
-                </div>
-
-                <h3>
-                    No galleries yet
-                </h3>
-
-                <p>
-                    Purchase a gallery to start delivering photos and videos to your clients.
-                </p>
-
-                <a href="galleryshop.html">
-
-                    <button
-                        class="btn-primary"
-                        type="button"
-                    >
-                        BUY YOUR FIRST GALLERY
-                    </button>
-
-                </a>
-
+            <div class="empty-icon">
+                G
             </div>
+
+            <h3>
+                No galleries yet
+            </h3>
+
+            <p>
+                Purchase your first gallery to start
+                preparing a client album.
+            </p>
+
+            <a
+                href="galleryshop.html"
+                class="btn-primary"
+            >
+                Buy Your First Gallery
+            </a>
 
         </div>
 
@@ -569,25 +509,30 @@
 
 
 
-<!-- ==========================================
+<!-- =========================================================
      RECENT WORK / PORTFOLIO STORAGE
-=========================================== -->
+========================================================= -->
 
 <section
-    class="section"
+    class="dashboard-section"
     id="recent-work"
 >
 
-    <div class="section-header">
+    <div class="section-heading">
 
         <div>
 
+            <p class="section-eyebrow">
+                RECENT WORK
+            </p>
+
             <h2>
-                Recent Work
+                Portfolio Storage
             </h2>
 
             <p>
-                Manage the photos you use on your professional profile and portfolio.
+                Manage the photos displayed on your
+                public photographer profile.
             </p>
 
         </div>
@@ -595,115 +540,64 @@
 
         <a
             href="recentwork.html"
+            class="btn-secondary"
             id="manageRecentWorkLink"
         >
-
-            <button
-                class="btn-primary"
-                type="button"
-            >
-                MANAGE RECENT WORK
-            </button>
-
+            Manage Recent Work
         </a>
 
     </div>
 
 
-
-    <!-- PORTFOLIO STORAGE CARD -->
-
     <div class="portfolio-storage-card">
-
 
         <div class="portfolio-storage-header">
 
+            <div>
 
-            <div class="portfolio-storage-title">
-
-
-                <div class="portfolio-storage-icon">
-                    IMG
-                </div>
-
-
-                <div>
-
-                    <span>
-                        Portfolio Storage
-                    </span>
-
-                    <h3>
-                        Your Recent Work Storage
-                    </h3>
-
-                    <p>
-                        Shared storage for profile photos, recent work, portfolio and featured images.
-                    </p>
-
-                </div>
-
-
-            </div>
-
-
-            <div
-                class="portfolio-storage-size"
-                id="portfolioStorageSize"
-            >
-                0 MB / 250 MB
-            </div>
-
-
-        </div>
-
-
-
-        <!-- STORAGE PROGRESS -->
-
-        <div class="portfolio-storage-progress">
-
-            <div
-                class="portfolio-storage-progress-bar"
-                id="portfolioStorageProgress"
-                style="width:0%;"
-            ></div>
-
-        </div>
-
-
-
-        <!-- STORAGE FOOTER -->
-
-        <div class="portfolio-storage-footer">
-
-
-            <div class="portfolio-storage-meta">
-
-                <strong id="portfolioStorageUsed">
-                    0 MB used
-                </strong>
-
-                <span id="portfolioStorageAvailable">
-                    250 MB available
+                <span class="storage-label">
+                    Portfolio Storage
                 </span>
+
+                <h3 id="portfolioStorageSize">
+                    0 MB / 500 MB
+                </h3>
 
             </div>
 
 
             <span
-                class="portfolio-storage-badge"
+                class="storage-badge"
                 id="portfolioStorageBadge"
             >
                 Available
             </span>
 
+        </div>
+
+
+        <div class="storage-progress-track">
+
+            <div
+                class="storage-progress"
+                id="portfolioStorageProgress"
+            ></div>
 
         </div>
 
 
+        <div class="portfolio-storage-footer">
 
-        <!-- STORAGE WARNING -->
+            <span id="portfolioStorageUsed">
+                0 MB used
+            </span>
+
+            <span id="portfolioStorageAvailable">
+                500 MB available
+            </span>
+
+        </div>
+
 
         <div
             class="portfolio-storage-warning"
@@ -711,25 +605,16 @@
             hidden
         >
 
-            <div class="portfolio-storage-warning-icon">
-                !
-            </div>
+            <strong>
+                Storage is full
+            </strong>
 
-
-            <div>
-
-                <strong>
-                    Storage is full
-                </strong>
-
-                <span>
-                    Delete existing recent work to make space before uploading new photos.
-                </span>
-
-            </div>
+            <span>
+                Delete existing recent work to make
+                space before uploading new photos.
+            </span>
 
         </div>
-
 
     </div>
 
@@ -737,142 +622,57 @@
 
 
 
-<!-- ==========================================
+<!-- =========================================================
      EQUIPMENT
-=========================================== -->
+========================================================= -->
 
 <section
-    class="section"
+    class="dashboard-section"
     id="equipment"
 >
 
-    <h2>
-        Equipment
-    </h2>
+    <div class="section-heading">
+
+        <div>
+
+            <p class="section-eyebrow">
+                EQUIPMENT
+            </p>
+
+            <h2>
+                Your Equipment
+            </h2>
+
+            <p>
+                Keep track of the cameras, lenses,
+                lighting and equipment you use.
+            </p>
+
+        </div>
+
+    </div>
 
 
     <div class="equipment-grid">
 
-
-        <div class="equipment-card">
-
-            <h3>
-                Cameras
-            </h3>
-
-            <ul class="equipment-list"></ul>
-
-            <div class="equipment-input">
-
-                <input
-                    type="text"
-                    placeholder="Enter camera name"
-                >
-
-                <button class="add-item-btn">
-                    Add Item
-                </button>
-
-            </div>
-
-        </div>
-
-
-
-        <div class="equipment-card">
-
-            <h3>
-                Lenses
-            </h3>
-
-            <ul class="equipment-list"></ul>
-
-            <div class="equipment-input">
-
-                <input
-                    type="text"
-                    placeholder="Enter lens name"
-                >
-
-                <button class="add-item-btn">
-                    Add Item
-                </button>
-
-            </div>
-
-        </div>
-
-
-
-        <div class="equipment-card">
-
-            <h3>
-                Lighting
-            </h3>
-
-            <ul class="equipment-list"></ul>
-
-            <div class="equipment-input">
-
-                <input
-                    type="text"
-                    placeholder="Enter lighting equipment"
-                >
-
-                <button class="add-item-btn">
-                    Add Item
-                </button>
-
-            </div>
-
-        </div>
-
-
-
-        <div class="equipment-card">
-
-            <h3>
-                Drone & Accessories
-            </h3>
-
-            <ul class="equipment-list"></ul>
-
-            <div class="equipment-input">
-
-                <input
-                    type="text"
-                    placeholder="Enter equipment"
-                >
-
-                <button class="add-item-btn">
-                    Add Item
-                </button>
-
-            </div>
-
-        </div>
-
-
-
         <div
-            class="equipment-card add-equipment-card"
+            class="equipment-card"
             id="addEquipment"
         >
 
-            <div class="add-icon">
+            <div class="add-equipment-icon">
                 +
             </div>
 
             <h3>
-                Add Equipment
+                Add Category
             </h3>
 
             <p>
-                Create a new equipment category
+                Create your own equipment category.
             </p>
 
         </div>
-
 
     </div>
 
@@ -880,58 +680,60 @@
 
 
 
-<!-- ==========================================
+<!-- =========================================================
      BOOKINGS
-=========================================== -->
+========================================================= -->
 
 <section
-    class="section"
+    class="dashboard-section"
     id="bookings"
 >
 
-
-    <div class="section-header">
+    <div class="section-heading">
 
         <div>
 
+            <p class="section-eyebrow">
+                BOOKINGS
+            </p>
+
             <h2>
-                Booking Management
+                Upcoming Bookings
             </h2>
 
             <p>
-                Manage, monitor and compare all your photography bookings.
+                Keep an eye on your latest photography
+                sessions and client appointments.
             </p>
 
         </div>
 
 
-        <a href="bookingMng.html">
-
-            <button class="btn-primary">
-                MANAGE BOOKINGS
-            </button>
-
+        <a
+            href="bookingMng.html"
+            class="btn-secondary"
+        >
+            Manage Bookings
         </a>
 
     </div>
 
 
-
     <div class="booking-toolbar">
 
         <input
-            type="text"
+            type="search"
             id="searchBooking"
-            placeholder="Search client..."
+            placeholder="Search bookings..."
+            autocomplete="off"
         >
 
     </div>
 
 
+    <div class="booking-table-container">
 
-    <div class="table-container">
-
-        <table>
+        <table class="booking-table">
 
             <thead>
 
@@ -950,10 +752,6 @@
                     </th>
 
                     <th>
-                        Amount
-                    </th>
-
-                    <th>
                         Status
                     </th>
 
@@ -964,8 +762,6 @@
 
             <tbody id="bookingTable">
 
-                <!-- Bookings will be loaded dynamically -->
-
             </tbody>
 
         </table>
@@ -973,176 +769,172 @@
     </div>
 
 
+    <div
+        class="booking-empty"
+        id="bookingEmptyState"
+        hidden
+    >
+
+        <h3>
+            No bookings found
+        </h3>
+
+        <p>
+            Your upcoming bookings will appear here.
+        </p>
+
+    </div>
+
 </section>
 
 
 
-<!-- ==========================================
+<!-- =========================================================
      REVIEWS
-=========================================== -->
+========================================================= -->
 
-<section class="section">
+<section
+    class="dashboard-section"
+    id="reviews"
+>
 
-    <h2>
-        Customer Reviews
-    </h2>
+    <div class="section-heading">
 
+        <div>
 
-    <div class="review-grid">
-
-
-        <div class="review-card">
-
-            <h3>
-                ⭐⭐⭐⭐⭐
-            </h3>
-
-            <p>
-                Amazing photography and very professional.
+            <p class="section-eyebrow">
+                REVIEWS
             </p>
 
-            <h4>
-                - Rahul Patil
-            </h4>
-
-        </div>
-
-
-
-        <div class="review-card">
-
-            <h3>
-                ⭐⭐⭐⭐⭐
-            </h3>
+            <h2>
+                Client Reviews
+            </h2>
 
             <p>
-                Photos exceeded our expectations.
+                A preview of feedback from your clients.
             </p>
 
-            <h4>
-                - Neha Sharma
-            </h4>
-
         </div>
-
-
-
-        <div class="review-card">
-
-            <h3>
-                ⭐⭐⭐⭐☆
-            </h3>
-
-            <p>
-                Great service and timely delivery.
-            </p>
-
-            <h4>
-                - Aryan Mehta
-            </h4>
-
-        </div>
-
 
     </div>
+
+
+    <div
+        class="reviews-grid"
+        id="reviewsGrid"
+    ></div>
 
 </section>
 
 
 
-<!-- ==========================================
+<!-- =========================================================
      ANALYTICS
-=========================================== -->
+========================================================= -->
 
-<section class="section">
+<section
+    class="dashboard-section"
+    id="analytics"
+>
 
-    <h2>
-        Analytics
-    </h2>
+    <div class="section-heading">
+
+        <div>
+
+            <p class="section-eyebrow">
+                ANALYTICS
+            </p>
+
+            <h2>
+                Business Overview
+            </h2>
+
+            <p>
+                A quick snapshot of your photography
+                business activity.
+            </p>
+
+        </div>
+
+    </div>
 
 
-    <div class="stats-grid">
+    <div class="analytics-grid">
 
+        <div class="analytics-card">
 
-        <div class="stat-card">
-
-            <h3>
+            <span>
                 Portfolio Views
-            </h3>
+            </span>
 
-            <h1
-                class="counter"
-                data-target="1245"
-            >
+            <strong id="portfolioViews">
                 0
-            </h1>
-
-            <p>
-                Last 30 Days
-            </p>
+            </strong>
 
         </div>
 
 
+        <div class="analytics-card">
 
-        <div class="stat-card">
-
-            <h3>
+            <span>
                 Total Bookings
-            </h3>
+            </span>
 
-            <h1
-                class="counter"
-                data-target="87"
-            >
+            <strong id="totalBookings">
                 0
-            </h1>
-
-            <p>
-                This Year
-            </p>
+            </strong>
 
         </div>
 
 
+        <div class="analytics-card">
 
-        <div class="stat-card">
-
-            <h3>
+            <span>
                 Total Revenue
-            </h3>
+            </span>
 
-            <h1>
-                ₹4.8L
-            </h1>
-
-            <p>
-                Current Year
-            </p>
+            <strong id="totalRevenue">
+                ₹0
+            </strong>
 
         </div>
 
 
+        <div class="analytics-card">
 
-        <div class="stat-card">
+            <span>
+                Albums
+            </span>
+
+            <strong id="totalAlbums">
+                0
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <div class="analytics-chart-card">
+
+        <div>
 
             <h3>
-                Albums
+                Recent Activity
             </h3>
 
-            <h1
-                class="counter"
-                data-target="42"
-            >
-                0
-            </h1>
-
             <p>
-                Published
+                Activity visualization for your dashboard.
             </p>
 
         </div>
 
+
+        <div
+            class="chart-placeholder"
+            id="activityChart"
+            aria-label="Recent activity chart"
+        ></div>
 
     </div>
 
@@ -1150,40 +942,74 @@
 
 
 
-<!-- ==========================================
+<!-- =========================================================
      SUBSCRIPTION
-=========================================== -->
+========================================================= -->
 
-<section class="section">
+<section
+    class="dashboard-section"
+    id="subscription"
+>
 
-    <h2>
-        Subscription
-    </h2>
+    <div class="section-heading">
+
+        <div>
+
+            <p class="section-eyebrow">
+                SUBSCRIPTION
+            </p>
+
+            <h2>
+                Your Plan
+            </h2>
+
+            <p>
+                Manage your Professional Studio subscription.
+            </p>
+
+        </div>
+
+    </div>
 
 
     <div class="subscription-card">
 
-        <h3>
-            Current Plan
-        </h3>
+        <div>
 
-        <h1>
-            Professional
-        </h1>
+            <span class="subscription-label">
+                Current Plan
+            </span>
 
-        <p>
+            <h3 id="subscriptionPlanName">
+                Basic
+            </h3>
 
-            Renewal Date:
+            <p id="subscriptionStorageText">
+                500 MB portfolio storage
+            </p>
 
-            <strong>
-                12 January 2027
+        </div>
+
+
+        <div class="subscription-meta">
+
+            <span>
+                Renewal
+            </span>
+
+            <strong id="subscriptionRenewal">
+                —
             </strong>
 
-        </p>
+        </div>
 
-        <button>
-            Upgrade Plan
-        </button>
+
+        <a
+            href="subscription.html"
+            class="btn-primary"
+        >
+            Manage Plan
+        </a>
 
     </div>
 
@@ -1191,61 +1017,121 @@
 
 
 
-<!-- ==========================================
+<!-- =========================================================
      SETTINGS
-=========================================== -->
+========================================================= -->
 
 <section
-    class="section"
+    class="dashboard-section"
     id="settings"
 >
 
-    <h2>
-        Settings
-    </h2>
+    <div class="section-heading">
+
+        <div>
+
+            <p class="section-eyebrow">
+                SETTINGS
+            </p>
+
+            <h2>
+                Account Settings
+            </h2>
+
+            <p>
+                Manage security, account preferences
+                and notifications.
+            </p>
+
+        </div>
+
+    </div>
 
 
     <div class="settings-grid">
 
+        <a
+            href="change-pass.html"
+            class="settings-card"
+        >
 
-        <div class="setting-card">
+            <span class="settings-icon">
+                🔒
+            </span>
 
-            <h3>
-                Change Password
-            </h3>
+            <div>
 
-            <button>
-                Change Password
-            </button>
+                <h3>
+                    Change Password
+                </h3>
 
-        </div>
+                <p>
+                    Update your account password.
+                </p>
 
+            </div>
 
-        <div class="setting-card">
+            <span class="settings-arrow">
+                →
+            </span>
 
-            <h3>
-                Account Settings
-            </h3>
-
-            <button>
-                Manage Account
-            </button>
-
-        </div>
+        </a>
 
 
-        <div class="setting-card">
+        <a
+            href="del-acc.html"
+            class="settings-card"
+        >
 
-            <h3>
-                Notifications
-            </h3>
+            <span class="settings-icon">
+                ⚙
+            </span>
 
-            <button>
-                Notification Settings
-            </button>
+            <div>
 
-        </div>
+                <h3>
+                    Manage Account
+                </h3>
 
+                <p>
+                    Manage your account information.
+                </p>
+
+            </div>
+
+            <span class="settings-arrow">
+                →
+            </span>
+
+        </a>
+
+
+        <a
+            href="notification.html"
+            class="settings-card"
+        >
+
+            <span class="settings-icon">
+                🔔
+            </span>
+
+            <div>
+
+                <h3>
+                    Notifications
+                </h3>
+
+                <p>
+                    Manage your notification preferences.
+                </p>
+
+            </div>
+
+            <span class="settings-arrow">
+                →
+            </span>
+
+        </a>
 
     </div>
 
@@ -1253,7 +1139,25 @@
 
 
 
+<!-- =========================================================
+     TOAST
+========================================================= -->
+
+<div
+    id="dashboardToast"
+    class="dashboard-toast"
+    role="status"
+    aria-live="polite"
+></div>
+
+
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+
 <script src="user.js"></script>
+
 
 </body>
 
