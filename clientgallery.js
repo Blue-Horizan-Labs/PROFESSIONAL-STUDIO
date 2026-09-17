@@ -2,6 +2,7 @@
    PROFESSIONAL STUDIO
    CLIENT GALLERIES
    COMPLETE JAVASCRIPT
+   WEDDING ALBUM / SELECTION SYSTEM
    ========================================================= */
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -281,6 +282,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         new Set();
 
     let databasePromise = null;
+
+    let toastTimer = null;
 
 
     /* =====================================================
@@ -705,7 +708,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     /* =====================================================
-       DELETE GALLERY MEDIA BLOBS
+       DELETE GALLERY MEDIA
     ====================================================== */
 
     async function deleteGalleryMedia(
@@ -772,81 +775,142 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     /* =====================================================
-       LOAD GALLERIES
+       WEDDING ALBUM HELPERS
     ====================================================== */
 
-    function loadGalleries() {
+    function getWeddingAlbum(
+        gallery
+    ) {
 
-        try {
+        if (!gallery) {
+            return null;
+        }
 
-            const stored =
-                localStorage.getItem(
-                    GALLERIES_STORAGE_KEY
-                );
+        return gallery.sections.find(
+            section =>
+                section.isWeddingAlbum === true
+        ) || null;
 
-            galleries =
-                stored
-                    ? JSON.parse(stored)
-                    : [];
+    }
 
-        } catch (error) {
 
-            console.error(
-                "Could not load galleries:",
-                error
+    function ensureWeddingAlbum(
+        gallery
+    ) {
+
+        if (!gallery.sections) {
+            gallery.sections = [];
+        }
+
+        let weddingAlbum =
+            getWeddingAlbum(
+                gallery
             );
 
-            galleries = [];
+        if (!weddingAlbum) {
+
+            weddingAlbum = {
+
+                id:
+                    createId("weddingAlbum"),
+
+                name:
+                    "WEDDING ALBUM",
+
+                createdAt:
+                    new Date().toISOString(),
+
+                updatedAt:
+                    new Date().toISOString(),
+
+                isWeddingAlbum:
+                    true,
+
+                system:
+                    true
+
+            };
+
+            gallery.sections.push(
+                weddingAlbum
+            );
 
         }
 
-        if (!Array.isArray(galleries)) {
-            galleries = [];
-        }
-
-        galleries =
-            galleries.map(
-                normalizeGallery
-            );
+        return weddingAlbum;
 
     }
 
 
     /* =====================================================
-       SAVE GALLERIES
+       ALBUM SELECTION DATA
     ====================================================== */
 
-    function saveGalleries() {
+    function normalizeAlbumSelection(
+        selection
+    ) {
 
-        try {
+        selection =
+            selection || {};
 
-            localStorage.setItem(
-                GALLERIES_STORAGE_KEY,
-                JSON.stringify(galleries)
-            );
+        return {
 
-            window.dispatchEvent(
-                new CustomEvent(
-                    "professionalStudioClientGalleriesUpdated"
+            enabled:
+                Boolean(
+                    selection.enabled
+                ),
+
+            maxSelections:
+                selection.maxSelections ===
+                null ||
+                selection.maxSelections ===
+                undefined ||
+                selection.maxSelections === ""
+                    ? null
+                    : Number(
+                        selection.maxSelections
+                    ),
+
+            status:
+                selection.status ||
+                "closed",
+
+            selectedMediaIds:
+                Array.isArray(
+                    selection.selectedMediaIds
                 )
-            );
+                    ? [
+                        ...new Set(
+                            selection.selectedMediaIds
+                        )
+                    ]
+                    : [],
 
-            return true;
+            comments:
+                selection.comments &&
+                typeof selection.comments ===
+                    "object"
+                    ? selection.comments
+                    : {},
 
-        } catch (error) {
+            submittedAt:
+                selection.submittedAt ||
+                null,
 
-            console.error(
-                "Could not save galleries:",
-                error
-            );
+            submittedBy:
+                selection.submittedBy ||
+                "client",
 
-            showToast(
-                "Could not save gallery information."
-            );
+            photographerApproved:
+                Boolean(
+                    selection.photographerApproved
+                ),
 
-            return false;
+            approvedAt:
+                selection.approvedAt ||
+                null
 
-        }
+        };
 
     }
 
@@ -855,7 +919,9 @@ document.addEventListener("DOMContentLoaded", async () => {
        NORMALIZE GALLERY
     ====================================================== */
 
-    function normalizeGallery(gallery) {
+    function normalizeGallery(
+        gallery
+    ) {
 
         const now =
             new Date().toISOString();
@@ -888,6 +954,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const normalizedSections =
             sections.map(section => ({
+
                 id:
                     section.id ||
                     createId("section"),
@@ -898,7 +965,22 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 createdAt:
                     section.createdAt ||
-                    now
+                    now,
+
+                updatedAt:
+                    section.updatedAt ||
+                    now,
+
+                isWeddingAlbum:
+                    Boolean(
+                        section.isWeddingAlbum
+                    ),
+
+                system:
+                    Boolean(
+                        section.system
+                    )
+
             }));
 
         const createdAt =
@@ -956,7 +1038,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 0
             );
 
-        return {
+        const normalized = {
 
             id:
                 gallery.id ||
@@ -1047,11 +1129,22 @@ document.addEventListener("DOMContentLoaded", async () => {
                 gallery.purchaseId ||
                 null,
 
+            albumSelection:
+                normalizeAlbumSelection(
+                    gallery.albumSelection
+                ),
+
             updatedAt:
                 gallery.updatedAt ||
                 now
 
         };
+
+        ensureWeddingAlbum(
+            normalized
+        );
+
+        return normalized;
 
     }
 
@@ -1060,7 +1153,9 @@ document.addEventListener("DOMContentLoaded", async () => {
        NORMALIZE MEDIA
     ====================================================== */
 
-    function normalizeMedia(media) {
+    function normalizeMedia(
+        media
+    ) {
 
         return {
 
@@ -1133,6 +1228,106 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     /* =====================================================
+       LOAD GALLERIES
+    ====================================================== */
+
+    function loadGalleries() {
+
+        try {
+
+            const stored =
+                localStorage.getItem(
+                    GALLERIES_STORAGE_KEY
+                );
+
+            galleries =
+                stored
+                    ? JSON.parse(stored)
+                    : [];
+
+        } catch (error) {
+
+            console.error(
+                "Could not load galleries:",
+                error
+            );
+
+            galleries = [];
+
+        }
+
+        if (!Array.isArray(galleries)) {
+            galleries = [];
+        }
+
+        galleries =
+            galleries.map(
+                normalizeGallery
+            );
+
+        /*
+            Ensure migrations are saved.
+        */
+
+        try {
+
+            localStorage.setItem(
+                GALLERIES_STORAGE_KEY,
+                JSON.stringify(galleries)
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Could not save normalized galleries:",
+                error
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       SAVE GALLERIES
+    ====================================================== */
+
+    function saveGalleries() {
+
+        try {
+
+            localStorage.setItem(
+                GALLERIES_STORAGE_KEY,
+                JSON.stringify(galleries)
+            );
+
+            window.dispatchEvent(
+                new CustomEvent(
+                    "professionalStudioClientGalleriesUpdated"
+                )
+            );
+
+            return true;
+
+        } catch (error) {
+
+            console.error(
+                "Could not save galleries:",
+                error
+            );
+
+            showToast(
+                "Could not save gallery information."
+            );
+
+            return false;
+
+        }
+
+    }
+
+
+    /* =====================================================
        PROCESS GALLERY SHOP PURCHASE
     ====================================================== */
 
@@ -1179,13 +1374,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         }
 
-
-        /*
-            Prevent duplicate creation.
-
-            The Gallery Shop gives every purchase
-            a unique purchaseId.
-        */
 
         const purchaseId =
             pending.purchaseId ||
@@ -1282,7 +1470,35 @@ document.addEventListener("DOMContentLoaded", async () => {
                         name:
                             "Highlights",
 
-                        createdAt
+                        createdAt,
+
+                        updatedAt:
+                            createdAt,
+
+                        isWeddingAlbum:
+                            false,
+
+                        system:
+                            false
+                    },
+
+                    {
+                        id:
+                            createId("weddingAlbum"),
+
+                        name:
+                            "WEDDING ALBUM",
+
+                        createdAt,
+
+                        updatedAt:
+                            createdAt,
+
+                        isWeddingAlbum:
+                            true,
+
+                        system:
+                            true
                     }
                 ],
 
@@ -1315,6 +1531,36 @@ document.addEventListener("DOMContentLoaded", async () => {
                         0
                 },
 
+            albumSelection:
+                {
+                    enabled:
+                        false,
+
+                    maxSelections:
+                        null,
+
+                    status:
+                        "closed",
+
+                    selectedMediaIds:
+                        [],
+
+                    comments:
+                        {},
+
+                    submittedAt:
+                        null,
+
+                    submittedBy:
+                        "client",
+
+                    photographerApproved:
+                        false,
+
+                    approvedAt:
+                        null
+                },
+
             purchaseId,
 
             updatedAt:
@@ -1329,11 +1575,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         saveGalleries();
 
-
-        /*
-            Clear the handoff after successful
-            gallery creation.
-        */
 
         localStorage.removeItem(
             PENDING_GALLERY_KEY
@@ -1403,10 +1644,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
-
-    /* =====================================================
-       UPDATE STORAGE DATA
-    ====================================================== */
 
     function updateGalleryStorage(
         gallery
@@ -1733,6 +1970,20 @@ document.addEventListener("DOMContentLoaded", async () => {
                         )
                         : 0;
 
+                const weddingAlbum =
+                    getWeddingAlbum(
+                        gallery
+                    );
+
+                const weddingAlbumCount =
+                    weddingAlbum
+                        ? gallery.media.filter(
+                            media =>
+                                media.sectionId ===
+                                weddingAlbum.id
+                        ).length
+                        : 0;
+
                 card.innerHTML =
                     `
                     <div
@@ -1811,6 +2062,26 @@ document.addEventListener("DOMContentLoaded", async () => {
                             ></div>
 
                         </div>
+
+                        ${
+                            weddingAlbumCount > 0
+                                ? `
+                                <div class="gallery-wedding-album-mini">
+                                    <span>
+                                        WEDDING ALBUM
+                                    </span>
+                                    <strong>
+                                        ${weddingAlbumCount}
+                                        ${
+                                            weddingAlbumCount === 1
+                                                ? "photo"
+                                                : "photos"
+                                        }
+                                    </strong>
+                                </div>
+                                `
+                                : ""
+                        }
 
                         <div class="gallery-card-footer">
 
@@ -1971,6 +2242,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
+        ensureWeddingAlbum(
+            gallery
+        );
+
         selectedGalleryId =
             galleryId;
 
@@ -2091,6 +2366,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
+        ensureWeddingAlbum(
+            gallery
+        );
+
         updateGalleryStorage(
             gallery
         );
@@ -2117,114 +2396,75 @@ document.addEventListener("DOMContentLoaded", async () => {
                 : 0;
 
 
-        /* ================================================
-           HEADER
-        ================================================= */
-
         if (modalGalleryTitle) {
-
             modalGalleryTitle.textContent =
                 gallery.name;
-
         }
 
         if (modalGalleryClient) {
-
             modalGalleryClient.textContent =
                 gallery.clientName;
-
         }
 
-
-        /* ================================================
-           DETAILS
-        ================================================= */
-
         if (modalGalleryName) {
-
             modalGalleryName.textContent =
                 gallery.name;
-
         }
 
         if (modalClientName) {
-
             modalClientName.textContent =
                 gallery.clientName;
-
         }
 
         if (modalDescription) {
-
             modalDescription.textContent =
                 gallery.description ||
                 "No description added.";
-
         }
 
         if (modalCreatedAt) {
-
             modalCreatedAt.textContent =
                 formatDate(
                     gallery.createdAt
                 );
-
         }
 
         if (modalDuration) {
-
             modalDuration.textContent =
                 `${gallery.durationMonths} ${
                     gallery.durationMonths === 1
                         ? "month"
                         : "months"
                 }`;
-
         }
 
 
-        /* ================================================
-           STORAGE
-        ================================================= */
-
         if (modalStorageText) {
-
             modalStorageText.textContent =
                 `${formatStorage(
                     usedBytes
                 )} used of ${
                     gallery.storageGB
                 } GB`;
-
         }
 
         if (modalStorageLimit) {
-
             modalStorageLimit.textContent =
                 `${gallery.storageGB} GB`;
-
         }
 
         if (modalStorageUsed) {
-
             modalStorageUsed.textContent =
                 formatStorage(
                     usedBytes
                 );
-
         }
 
         if (modalStorageProgress) {
-
             modalStorageProgress.style.width =
                 `${percent}%`;
-
         }
 
-
-        /* ================================================
-           EXPIRY
-        ================================================= */
 
         const daysLeft =
             getDaysLeft(
@@ -2232,110 +2472,81 @@ document.addEventListener("DOMContentLoaded", async () => {
             );
 
         if (modalExpiry) {
-
             modalExpiry.textContent =
                 formatDate(
                     gallery.expiresAt
                 );
-
         }
 
         if (modalExpiryDuration) {
-
             modalExpiryDuration.textContent =
                 `${gallery.durationMonths} ${
                     gallery.durationMonths === 1
                         ? "month"
                         : "months"
                 }`;
-
         }
 
         if (modalExpiryStatus) {
-
             modalExpiryStatus.textContent =
                 daysLeft > 0
                     ? `${daysLeft} days remaining`
                     : "Gallery expired";
-
         }
 
-
-        /* ================================================
-           LINK
-        ================================================= */
 
         if (modalGalleryLink) {
-
             modalGalleryLink.value =
                 gallery.galleryLink;
-
         }
 
 
-        /* ================================================
-           SETTINGS
-        ================================================= */
-
         if (editGalleryName) {
-
             editGalleryName.value =
                 gallery.name;
-
         }
 
         if (editClientName) {
-
             editClientName.value =
                 gallery.clientName;
-
         }
 
         if (editGalleryDescription) {
-
             editGalleryDescription.value =
                 gallery.description;
-
         }
 
         if (passwordEnabled) {
-
             passwordEnabled.checked =
                 Boolean(
                     gallery.access
                         ?.passwordEnabled
                 );
-
         }
 
         if (galleryPassword) {
-
             galleryPassword.value =
                 gallery.access
                     ?.password ||
                 "";
-
         }
 
         if (downloadsEnabled) {
-
             downloadsEnabled.checked =
                 Boolean(
                     gallery.access
                         ?.downloadsEnabled
                 );
-
         }
 
         if (galleryVisible) {
-
             galleryVisible.checked =
                 Boolean(
                     gallery.access
                         ?.visible
                 );
-
         }
+
 
         updatePasswordVisibility(
             gallery
@@ -2353,526 +2564,354 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         renderAlbums();
 
-    }
-
-
-    /* =====================================================
-       UPDATE PASSWORD UI
-    ====================================================== */
-
-    function updatePasswordVisibility(
-        gallery
-    ) {
-
-        if (!passwordSetting) {
-            return;
-        }
-
-        const enabled =
-            Boolean(
-                gallery.access
-                    ?.passwordEnabled
-            );
-
-        passwordSetting.style.display =
-            enabled
-                ? ""
-                : "none";
+        renderWeddingAlbumPanel();
 
     }
 
 
     /* =====================================================
-       UPDATE ACCESS SUMMARY
+       WEDDING ALBUM PANEL
     ====================================================== */
 
-    function updateAccessSummary(
-        gallery
-    ) {
-
-        const access =
-            gallery.access || {};
-
-
-        if (modalPassword) {
-
-            modalPassword.textContent =
-                access.passwordEnabled
-                    ? "Enabled"
-                    : "Disabled";
-
-        }
-
-        if (modalDownloads) {
-
-            modalDownloads.textContent =
-                access.downloadsEnabled
-                    ? "Allowed"
-                    : "Disabled";
-
-        }
-
-        if (modalVisibility) {
-
-            modalVisibility.textContent =
-                access.visible
-                    ? "Available"
-                    : "Private";
-
-        }
-
-    }
-
-
-    /* =====================================================
-       READINESS ITEM
-    ====================================================== */
-
-    function updateReadinessItem(
-        element,
-        complete
-    ) {
-
-        if (!element) {
-            return;
-        }
-
-        element.classList.toggle(
-            "complete",
-            complete
-        );
-
-        element.classList.toggle(
-            "incomplete",
-            !complete
-        );
-
-        const icon =
-            element.querySelector(
-                ".readiness-icon"
-            );
-
-        if (icon) {
-
-            icon.textContent =
-                complete
-                    ? "✓"
-                    : "•";
-
-        }
-
-    }
-
-
-    /* =====================================================
-       DELIVERY READINESS
-    ====================================================== */
-
-    function updateDeliveryReadiness(
-        gallery
-    ) {
-
-        const access =
-            gallery.access || {};
-
-        const hasName =
-            Boolean(
-                gallery.name &&
-                gallery.name.trim() &&
-                gallery.clientName &&
-                gallery.clientName.trim()
-            );
-
-        const hasMedia =
-            gallery.media.length > 0;
-
-        const passwordReady =
-            !access.passwordEnabled ||
-            Boolean(
-                access.password &&
-                access.password.trim()
-            );
-
-        const downloadsReady =
-            typeof access.downloadsEnabled ===
-            "boolean";
-
-        const storageReady =
-            calculateUsedBytes(
-                gallery
-            ) <=
-            getStorageLimitBytes(
-                gallery
-            );
-
-        updateReadinessItem(
-            checkGalleryName,
-            hasName
-        );
-
-        updateReadinessItem(
-            checkMedia,
-            hasMedia
-        );
-
-        updateReadinessItem(
-            checkPassword,
-            passwordReady
-        );
-
-        updateReadinessItem(
-            checkDownloads,
-            downloadsReady
-        );
-
-        updateReadinessItem(
-            checkStorage,
-            storageReady
-        );
-
-
-        const ready =
-            hasName &&
-            hasMedia &&
-            passwordReady &&
-            downloadsReady &&
-            storageReady;
-
-
-        if (deliveryStatus) {
-
-            if (
-                getGalleryStatus(
-                    gallery
-                ) === "sent"
-            ) {
-
-                deliveryStatus.textContent =
-                    "SENT TO CLIENT";
-
-                deliveryStatus.className =
-                    "delivery-status sent";
-
-            } else if (ready) {
-
-                deliveryStatus.textContent =
-                    "READY";
-
-                deliveryStatus.className =
-                    "delivery-status ready";
-
-            } else {
-
-                deliveryStatus.textContent =
-                    "PREPARING";
-
-                deliveryStatus.className =
-                    "delivery-status preparing";
-
-            }
-
-        }
-
-
-        if (deliveryMessage) {
-
-            deliveryMessage.textContent =
-                ready
-                    ? "This gallery is ready to be delivered."
-                    : "Finish the setup before sending this gallery.";
-
-        }
-
-        if (deliveryExpiry) {
-
-            deliveryExpiry.textContent =
-                `Gallery expires on ${formatDate(
-                    gallery.expiresAt
-                )}.`;
-
-        }
-
-        if (sendToClientBtn) {
-
-            sendToClientBtn.disabled =
-                !ready;
-
-            sendToClientBtn.textContent =
-                gallery.deliveryStatus === "sent"
-                    ? "Gallery Sent"
-                    : ready
-                        ? "Send to Client"
-                        : "Complete Setup";
-
-        }
-
-    }
-
-
-    /* =====================================================
-       RENDER MEDIA
-    ====================================================== */
-
-    async function renderMedia() {
+    function renderWeddingAlbumPanel() {
 
         const gallery =
             getSelectedGallery();
 
-        if (!gallery || !mediaGrid) {
+        if (!gallery) {
             return;
         }
 
-        revokeObjectUrls();
+        ensureWeddingAlbum(
+            gallery
+        );
 
-        mediaGrid.innerHTML =
-            "";
+        const existing =
+            document.getElementById(
+                "professionalStudioWeddingAlbumPanel"
+            );
 
-        let media =
-            [...gallery.media];
-
-
-        if (
-            activeMediaFilter !==
-            "all"
-        ) {
-
-            media =
-                media.filter(
-                    item =>
-                        item.type ===
-                        activeMediaFilter
-                );
-
+        if (existing) {
+            existing.remove();
         }
 
+        const albumsTab =
+            document.getElementById(
+                "tab-albums"
+            );
 
-        if (mediaCount) {
-
-            mediaCount.textContent =
-                `${gallery.media.length} ${
-                    gallery.media.length === 1
-                        ? "item"
-                        : "items"
-                }`;
-
+        if (!albumsTab) {
+            return;
         }
 
+        const selection =
+            gallery.albumSelection;
 
-        if (!media.length) {
+        const weddingAlbum =
+            getWeddingAlbum(
+                gallery
+            );
 
-            mediaGrid.innerHTML =
-                `
-                <div class="media-empty-state">
-                    <h4>No media yet</h4>
+        const selectedMedia =
+            gallery.media.filter(
+                media =>
+                    media.sectionId ===
+                    weddingAlbum.id
+            );
+
+        const selectedCount =
+            selectedMedia.length;
+
+        const maxText =
+            selection.maxSelections
+                ? `${selection.maxSelections} photos maximum`
+                : "No selection limit";
+
+        const statusLabel =
+            selection.status === "submitted"
+                ? "Selection Submitted"
+                : selection.status === "approved"
+                    ? "Approved"
+                    : selection.enabled
+                        ? "Open"
+                        : "Not Enabled";
+
+        const panel =
+            document.createElement(
+                "section"
+            );
+
+        panel.id =
+            "professionalStudioWeddingAlbumPanel";
+
+        panel.className =
+            "wedding-album-control-panel";
+
+        panel.innerHTML =
+            `
+            <div class="wedding-album-panel-header">
+
+                <div>
+                    <span class="eyebrow">
+                        CLIENT SELECTION
+                    </span>
+
+                    <h3>
+                        WEDDING ALBUM
+                    </h3>
+
                     <p>
-                        Upload photos or videos
-                        to this client gallery.
+                        Let your client select the photos
+                        they want in the physical wedding album.
                     </p>
                 </div>
-                `;
 
-            return;
+                <span class="wedding-album-status">
+                    ${escapeHTML(
+                        statusLabel
+                    )}
+                </span>
 
-        }
+            </div>
 
+            <div class="wedding-album-panel-stats">
 
-        for (
-            const mediaItem
-            of media
-        ) {
+                <div>
+                    <strong>
+                        ${selectedCount}
+                    </strong>
 
-            const card =
-                document.createElement(
-                    "article"
-                );
+                    <span>
+                        Selected
+                    </span>
+                </div>
 
-            card.className =
-                "media-card";
+                <div>
+                    <strong>
+                        ${escapeHTML(
+                            maxText
+                        )}
+                    </strong>
 
-            card.dataset.mediaId =
-                mediaItem.id;
+                    <span>
+                        Selection limit
+                    </span>
+                </div>
 
+                <div>
+                    <strong>
+                        ${gallery.media.filter(
+                            media =>
+                                media.type ===
+                                "photo"
+                        ).length}
+                    </strong>
 
-            const mediaBlob =
-                await getMediaBlob(
-                    mediaItem.id
-                );
+                    <span>
+                        Available photos
+                    </span>
+                </div>
 
+            </div>
 
-            if (mediaBlob) {
+            <div class="wedding-album-panel-actions">
 
-                const objectUrl =
-                    URL.createObjectURL(
-                        mediaBlob
-                    );
-
-                activeObjectUrls.add(
-                    objectUrl
-                );
-
-
-                if (
-                    mediaItem.type ===
-                    "video"
-                ) {
-
-                    card.innerHTML =
+                ${
+                    selection.enabled
+                        ? `
+                            <button
+                                type="button"
+                                class="secondary-btn"
+                                id="disableWeddingAlbumSelection"
+                            >
+                                Disable Selection
+                            </button>
                         `
-                        <div class="media-preview">
-
-                            <video
-                                src="${objectUrl}"
-                                controls
-                                preload="metadata"
-                            ></video>
-
-                        </div>
-
-                        <div class="media-card-info">
-
-                            <strong>
-                                ${escapeHTML(
-                                    mediaItem.name
-                                )}
-                            </strong>
-
-                            <small>
-                                ${formatStorage(
-                                    mediaItem.sizeBytes
-                                )}
-                            </small>
-
-                        </div>
-
-                        <div class="media-card-actions">
-
+                        : `
                             <button
                                 type="button"
-                                class="secondary-btn set-cover"
-                                data-media-id="${escapeHTML(
-                                    mediaItem.id
-                                )}"
+                                class="primary-btn"
+                                id="enableWeddingAlbumSelection"
                             >
-                                Set Cover
+                                Enable Album Selection
                             </button>
-
-                            <button
-                                type="button"
-                                class="danger-btn remove-media"
-                                data-media-id="${escapeHTML(
-                                    mediaItem.id
-                                )}"
-                            >
-                                Remove
-                            </button>
-
-                        </div>
-                        `;
-
-                } else {
-
-                    card.innerHTML =
                         `
-                        <div class="media-preview">
-
-                            <img
-                                src="${objectUrl}"
-                                alt="${escapeHTML(
-                                    mediaItem.name
-                                )}"
-                            >
-
-                        </div>
-
-                        <div class="media-card-info">
-
-                            <strong>
-                                ${escapeHTML(
-                                    mediaItem.name
-                                )}
-                            </strong>
-
-                            <small>
-                                ${formatStorage(
-                                    mediaItem.sizeBytes
-                                )}
-                            </small>
-
-                        </div>
-
-                        <div class="media-card-actions">
-
-                            <button
-                                type="button"
-                                class="secondary-btn set-cover"
-                                data-media-id="${escapeHTML(
-                                    mediaItem.id
-                                )}"
-                            >
-                                Set Cover
-                            </button>
-
-                            <button
-                                type="button"
-                                class="danger-btn remove-media"
-                                data-media-id="${escapeHTML(
-                                    mediaItem.id
-                                )}"
-                            >
-                                Remove
-                            </button>
-
-                        </div>
-                        `;
-
                 }
 
-            } else {
+                ${
+                    selection.status === "submitted"
+                        ? `
+                            <button
+                                type="button"
+                                class="primary-btn"
+                                id="approveWeddingAlbumSelection"
+                            >
+                                Approve Selection
+                            </button>
 
-                card.innerHTML =
+                            <button
+                                type="button"
+                                class="secondary-btn"
+                                id="reopenWeddingAlbumSelection"
+                            >
+                                Reopen Selection
+                            </button>
+                        `
+                        : ""
+                }
+
+                ${
+                    selection.status === "approved"
+                        ? `
+                            <button
+                                type="button"
+                                class="secondary-btn"
+                                id="reopenWeddingAlbumSelection"
+                            >
+                                Reopen Selection
+                            </button>
+                        `
+                        : ""
+                }
+
+            </div>
+
+            ${
+                selection.enabled
+                    ? `
+                        <div class="wedding-album-limit-control">
+
+                            <label
+                                for="weddingAlbumMaxSelections"
+                            >
+                                Maximum photos
+                            </label>
+
+                            <div class="wedding-album-limit-row">
+
+                                <input
+                                    type="number"
+                                    id="weddingAlbumMaxSelections"
+                                    min="1"
+                                    max="10000"
+                                    value="${
+                                        selection.maxSelections ??
+                                        ""
+                                    }"
+                                    placeholder="No limit"
+                                >
+
+                                <button
+                                    type="button"
+                                    class="secondary-btn"
+                                    id="saveWeddingAlbumLimit"
+                                >
+                                    Save Limit
+                                </button>
+
+                            </div>
+
+                            <small>
+                                Leave empty if the client can select any number of photos.
+                            </small>
+
+                        </div>
                     `
-                    <div class="media-preview media-missing">
-
-                        <span>
-                            Media unavailable
-                        </span>
-
-                    </div>
-
-                    <div class="media-card-info">
-
-                        <strong>
-                            ${escapeHTML(
-                                mediaItem.name
-                            )}
-                        </strong>
-
-                        <small>
-                            File data not found
-                        </small>
-
-                    </div>
-
-                    <div class="media-card-actions">
-
-                        <button
-                            type="button"
-                            class="danger-btn remove-media"
-                            data-media-id="${escapeHTML(
-                                mediaItem.id
-                            )}"
-                        >
-                            Remove
-                        </button>
-
-                    </div>
-                    `;
-
+                    : ""
             }
 
+            <div class="wedding-album-info">
 
-            mediaGrid.appendChild(
-                card
+                <strong>
+                    How it works
+                </strong>
+
+                <p>
+                    Clients select photos from the gallery.
+                    Selected photos are placed into this
+                    WEDDING ALBUM folder using the same
+                    existing media files. No duplicate uploads
+                    or extra storage are created.
+                </p>
+
+            </div>
+            `;
+
+        albumsTab.prepend(
+            panel
+        );
+
+
+        const enableButton =
+            document.getElementById(
+                "enableWeddingAlbumSelection"
+            );
+
+        if (enableButton) {
+
+            enableButton.addEventListener(
+                "click",
+                enableWeddingAlbumSelection
+            );
+
+        }
+
+
+        const disableButton =
+            document.getElementById(
+                "disableWeddingAlbumSelection"
+            );
+
+        if (disableButton) {
+
+            disableButton.addEventListener(
+                "click",
+                disableWeddingAlbumSelection
+            );
+
+        }
+
+
+        const saveLimitButton =
+            document.getElementById(
+                "saveWeddingAlbumLimit"
+            );
+
+        if (saveLimitButton) {
+
+            saveLimitButton.addEventListener(
+                "click",
+                saveWeddingAlbumLimit
+            );
+
+        }
+
+
+        const approveButton =
+            document.getElementById(
+                "approveWeddingAlbumSelection"
+            );
+
+        if (approveButton) {
+
+            approveButton.addEventListener(
+                "click",
+                approveWeddingAlbumSelection
+            );
+
+        }
+
+
+        const reopenButton =
+            document.getElementById(
+                "reopenWeddingAlbumSelection"
+            );
+
+        if (reopenButton) {
+
+            reopenButton.addEventListener(
+                "click",
+                reopenWeddingAlbumSelection
             );
 
         }
@@ -2881,12 +2920,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     /* =====================================================
-       UPLOAD MEDIA
+       ENABLE WEDDING ALBUM SELECTION
     ====================================================== */
 
-    async function uploadFiles(
-        files
-    ) {
+    function enableWeddingAlbumSelection() {
 
         const gallery =
             getSelectedGallery();
@@ -2895,221 +2932,46 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-        const fileArray =
-            Array.from(files || []);
-
-        if (!fileArray.length) {
-            return;
-        }
-
-
-        const validFiles =
-            fileArray.filter(
-                file =>
-                    file.type.startsWith(
-                        "image/"
-                    ) ||
-                    file.type.startsWith(
-                        "video/"
-                    )
+        gallery.albumSelection =
+            normalizeAlbumSelection(
+                gallery.albumSelection
             );
 
+        gallery.albumSelection.enabled =
+            true;
 
-        if (!validFiles.length) {
+        gallery.albumSelection.status =
+            "open";
 
-            showToast(
-                "Please select image or video files."
-            );
+        gallery.albumSelection.photographerApproved =
+            false;
 
-            return;
+        gallery.albumSelection.approvedAt =
+            null;
 
-        }
+        gallery.updatedAt =
+            new Date().toISOString();
 
+        ensureWeddingAlbum(
+            gallery
+        );
 
-        const currentUsed =
-            calculateUsedBytes(
-                gallery
-            );
+        saveGalleries();
 
-        const limit =
-            getStorageLimitBytes(
-                gallery
-            );
+        renderModal();
 
-        const incomingSize =
-            validFiles.reduce(
-                (
-                    total,
-                    file
-                ) =>
-                    total +
-                    file.size,
-                0
-            );
-
-
-        if (
-            currentUsed +
-            incomingSize >
-            limit
-        ) {
-
-            showToast(
-                "These files exceed your purchased gallery storage."
-            );
-
-            return;
-
-        }
-
-
-        const addedMedia =
-            [];
-
-        try {
-
-            for (
-                const file
-                of validFiles
-            ) {
-
-                const mediaId =
-                    createId("media");
-
-                const type =
-                    file.type.startsWith(
-                        "video/"
-                    )
-                        ? "video"
-                        : "photo";
-
-
-                await saveMediaBlob(
-                    mediaId,
-                    file,
-                    gallery.id
-                );
-
-
-                addedMedia.push({
-
-                    id:
-                        mediaId,
-
-                    name:
-                        file.name,
-
-                    type,
-
-                    mimeType:
-                        file.type,
-
-                    sizeBytes:
-                        file.size,
-
-                    sectionId:
-                        selectedAlbumId ||
-                        null,
-
-                    createdAt:
-                        new Date()
-                            .toISOString()
-
-                });
-
-            }
-
-
-            gallery.media.push(
-                ...addedMedia
-            );
-
-
-            if (
-                !gallery.coverMediaId
-            ) {
-
-                const firstPhoto =
-                    addedMedia.find(
-                        item =>
-                            item.type ===
-                            "photo"
-                    );
-
-                if (firstPhoto) {
-
-                    gallery.coverMediaId =
-                        firstPhoto.id;
-
-                }
-
-            }
-
-
-            updateGalleryStorage(
-                gallery
-            );
-
-            gallery.updatedAt =
-                new Date().toISOString();
-
-            saveGalleries();
-
-            renderPage();
-
-            renderModal();
-
-            showToast(
-                `${addedMedia.length} ${
-                    addedMedia.length === 1
-                        ? "file"
-                        : "files"
-                } uploaded successfully.`
-            );
-
-
-        } catch (error) {
-
-            console.error(
-                "Upload failed:",
-                error
-            );
-
-
-            for (
-                const item
-                of addedMedia
-            ) {
-
-                try {
-
-                    await deleteMediaBlob(
-                        item.id
-                    );
-
-                } catch (
-                    cleanupError
-                ) {}
-
-            }
-
-
-            showToast(
-                "Upload failed. Please try again."
-            );
-
-        }
+        showToast(
+            "Wedding Album selection enabled."
+        );
 
     }
 
 
     /* =====================================================
-       REMOVE MEDIA
+       DISABLE WEDDING ALBUM SELECTION
     ====================================================== */
 
-    async function removeMedia(
-        mediaId
-    ) {
+    function disableWeddingAlbumSelection() {
 
         const gallery =
             getSelectedGallery();
@@ -3117,100 +2979,41 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!gallery) {
             return;
         }
-
-        const media =
-            gallery.media.find(
-                item =>
-                    item.id ===
-                    mediaId
-            );
-
-        if (!media) {
-            return;
-        }
-
 
         const confirmed =
             window.confirm(
-                `Remove "${media.name}" from this gallery?`
+                "Disable Wedding Album selection for this gallery?"
             );
 
         if (!confirmed) {
             return;
         }
 
+        gallery.albumSelection.enabled =
+            false;
 
-        try {
-
-            await deleteMediaBlob(
-                mediaId
-            );
-
-        } catch (error) {
-
-            console.error(
-                "Could not delete media blob:",
-                error
-            );
-
-        }
-
-
-        gallery.media =
-            gallery.media.filter(
-                item =>
-                    item.id !==
-                    mediaId
-            );
-
-
-        if (
-            gallery.coverMediaId ===
-            mediaId
-        ) {
-
-            const nextPhoto =
-                gallery.media.find(
-                    item =>
-                        item.type ===
-                        "photo"
-                );
-
-            gallery.coverMediaId =
-                nextPhoto
-                    ? nextPhoto.id
-                    : null;
-
-        }
-
+        gallery.albumSelection.status =
+            "closed";
 
         gallery.updatedAt =
             new Date().toISOString();
 
-        updateGalleryStorage(
-            gallery
-        );
-
         saveGalleries();
-
-        renderPage();
 
         renderModal();
 
         showToast(
-            "Media removed."
+            "Wedding Album selection disabled."
         );
 
     }
 
 
     /* =====================================================
-       SET MEDIA COVER
+       SAVE WEDDING ALBUM LIMIT
     ====================================================== */
 
-    function setMediaAsCover(
-        mediaId
-    ) {
+    function saveWeddingAlbumLimit() {
 
         const gallery =
             getSelectedGallery();
@@ -3218,6 +3021,183 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!gallery) {
             return;
         }
+
+        const input =
+            document.getElementById(
+                "weddingAlbumMaxSelections"
+            );
+
+        if (!input) {
+            return;
+        }
+
+        const value =
+            input.value.trim();
+
+        if (!value) {
+
+            gallery.albumSelection.maxSelections =
+                null;
+
+        } else {
+
+            const limit =
+                Number(value);
+
+            if (
+                !Number.isInteger(limit) ||
+                limit < 1
+            ) {
+
+                showToast(
+                    "Enter a valid selection limit."
+                );
+
+                return;
+
+            }
+
+            gallery.albumSelection.maxSelections =
+                limit;
+
+        }
+
+        gallery.updatedAt =
+            new Date().toISOString();
+
+        saveGalleries();
+
+        renderModal();
+
+        showToast(
+            "Wedding Album selection limit saved."
+        );
+
+    }
+
+
+    /* =====================================================
+       APPROVE WEDDING ALBUM SELECTION
+    ====================================================== */
+
+    function approveWeddingAlbumSelection() {
+
+        const gallery =
+            getSelectedGallery();
+
+        if (!gallery) {
+            return;
+        }
+
+        const selectedCount =
+            gallery.albumSelection
+                .selectedMediaIds
+                .length;
+
+        if (!selectedCount) {
+
+            showToast(
+                "There are no selected photos to approve."
+            );
+
+            return;
+
+        }
+
+        const confirmed =
+            window.confirm(
+                `Approve ${selectedCount} selected ${
+                    selectedCount === 1
+                        ? "photo"
+                        : "photos"
+                } for the Wedding Album?`
+            );
+
+        if (!confirmed) {
+            return;
+        }
+
+        gallery.albumSelection.status =
+            "approved";
+
+        gallery.albumSelection.photographerApproved =
+            true;
+
+        gallery.albumSelection.approvedAt =
+            new Date().toISOString();
+
+        gallery.updatedAt =
+            new Date().toISOString();
+
+        saveGalleries();
+
+        renderModal();
+
+        showToast(
+            "Wedding Album selection approved."
+        );
+
+    }
+
+
+    /* =====================================================
+       REOPEN WEDDING ALBUM SELECTION
+    ====================================================== */
+
+    function reopenWeddingAlbumSelection() {
+
+        const gallery =
+            getSelectedGallery();
+
+        if (!gallery) {
+            return;
+        }
+
+        gallery.albumSelection.status =
+            "open";
+
+        gallery.albumSelection.photographerApproved =
+            false;
+
+        gallery.albumSelection.approvedAt =
+            null;
+
+        gallery.updatedAt =
+            new Date().toISOString();
+
+        saveGalleries();
+
+        renderModal();
+
+        showToast(
+            "Wedding Album selection reopened."
+        );
+
+    }
+
+
+    /* =====================================================
+       MOVE MEDIA TO WEDDING ALBUM
+       IMPORTANT:
+       THIS DOES NOT COPY THE FILE.
+       ONLY SECTION ID CHANGES.
+    ====================================================== */
+
+    function moveMediaToWeddingAlbum(
+        mediaId
+    ) {
+
+        const gallery =
+            getSelectedGallery();
+
+        if (!gallery) {
+            return false;
+        }
+
+        const weddingAlbum =
+            ensureWeddingAlbum(
+                gallery
+            );
 
         const media =
             gallery.media.find(
@@ -3227,7 +3207,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             );
 
         if (!media) {
-            return;
+            return false;
         }
 
         if (
@@ -3236,28 +3216,207 @@ document.addEventListener("DOMContentLoaded", async () => {
         ) {
 
             showToast(
-                "Only photos can be used as a gallery cover."
+                "Only photos can be added to the Wedding Album."
             );
 
-            return;
+            return false;
 
         }
 
-        gallery.coverMediaId =
-            mediaId;
+        /*
+            No blob operation happens here.
+
+            The existing media record stays exactly
+            where it is in IndexedDB.
+
+            We only change its folder reference.
+        */
+
+        media.sectionId =
+            weddingAlbum.id;
+
+        gallery.albumSelection =
+            normalizeAlbumSelection(
+                gallery.albumSelection
+            );
+
+        if (
+            !gallery.albumSelection
+                .selectedMediaIds
+                .includes(mediaId)
+        ) {
+
+            gallery.albumSelection
+                .selectedMediaIds
+                .push(
+                    mediaId
+                );
+
+        }
 
         gallery.updatedAt =
             new Date().toISOString();
 
         saveGalleries();
 
-        renderPage();
+        return true;
 
-        renderModal();
+    }
 
-        showToast(
-            "Gallery cover updated."
+
+    /* =====================================================
+       REMOVE MEDIA FROM WEDDING ALBUM
+       IMPORTANT:
+       THIS DOES NOT DELETE THE FILE.
+    ====================================================== */
+
+    function removeMediaFromWeddingAlbum(
+        mediaId
+    ) {
+
+        const gallery =
+            getSelectedGallery();
+
+        if (!gallery) {
+            return false;
+        }
+
+        const weddingAlbum =
+            getWeddingAlbum(
+                gallery
+            );
+
+        if (!weddingAlbum) {
+            return false;
+        }
+
+        const media =
+            gallery.media.find(
+                item =>
+                    item.id ===
+                    mediaId
+            );
+
+        if (!media) {
+            return false;
+        }
+
+        if (
+            media.sectionId !==
+            weddingAlbum.id
+        ) {
+            return false;
+        }
+
+        /*
+            We do not delete the IndexedDB blob.
+
+            We only remove the photo from the
+            Wedding Album folder.
+        */
+
+        media.sectionId =
+            null;
+
+        gallery.albumSelection =
+            normalizeAlbumSelection(
+                gallery.albumSelection
+            );
+
+        gallery.albumSelection
+            .selectedMediaIds =
+            gallery.albumSelection
+                .selectedMediaIds
+                .filter(
+                    id =>
+                        id !==
+                        mediaId
+                );
+
+        delete gallery.albumSelection
+            .comments[mediaId];
+
+        gallery.updatedAt =
+            new Date().toISOString();
+
+        saveGalleries();
+
+        return true;
+
+    }
+
+
+    /* =====================================================
+       GET WEDDING ALBUM MEDIA
+    ====================================================== */
+
+    function getWeddingAlbumMedia(
+        gallery
+    ) {
+
+        const weddingAlbum =
+            getWeddingAlbum(
+                gallery
+            );
+
+        if (!weddingAlbum) {
+            return [];
+        }
+
+        return gallery.media.filter(
+            media =>
+                media.sectionId ===
+                weddingAlbum.id
         );
+
+    }
+
+
+    /* =====================================================
+       ADD CLIENT COMMENT
+    ====================================================== */
+
+    function addClientAlbumComment(
+        mediaId,
+        comment
+    ) {
+
+        const gallery =
+            getSelectedGallery();
+
+        if (!gallery) {
+            return false;
+        }
+
+        gallery.albumSelection =
+            normalizeAlbumSelection(
+                gallery.albumSelection
+            );
+
+        const mediaExists =
+            gallery.media.some(
+                media =>
+                    media.id ===
+                    mediaId
+            );
+
+        if (!mediaExists) {
+            return false;
+        }
+
+        gallery.albumSelection.comments[
+            mediaId
+        ] =
+            String(
+                comment || ""
+            ).trim();
+
+        gallery.updatedAt =
+            new Date().toISOString();
+
+        saveGalleries();
+
+        return true;
 
     }
 
@@ -3274,6 +3433,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!gallery || !albumsGrid) {
             return;
         }
+
+        ensureWeddingAlbum(
+            gallery
+        );
 
         albumsGrid.innerHTML =
             "";
@@ -3307,6 +3470,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                             section.id
                     );
 
+                const isWeddingAlbum =
+                    section.isWeddingAlbum === true;
 
                 const card =
                     document.createElement(
@@ -3314,14 +3479,20 @@ document.addEventListener("DOMContentLoaded", async () => {
                     );
 
                 card.className =
-                    "album-card";
+                    isWeddingAlbum
+                        ? "album-card wedding-album-card"
+                        : "album-card";
 
                 card.innerHTML =
                     `
                     <div class="album-card-content">
 
                         <span class="eyebrow">
-                            GALLERY SECTION
+                            ${
+                                isWeddingAlbum
+                                    ? "CLIENT SELECTION"
+                                    : "GALLERY SECTION"
+                            }
                         </span>
 
                         <h4>
@@ -3334,34 +3505,68 @@ document.addEventListener("DOMContentLoaded", async () => {
                             ${sectionMedia.length}
                             ${
                                 sectionMedia.length === 1
-                                    ? "item"
-                                    : "items"
+                                    ? "photo"
+                                    : "photos"
                             }
                         </p>
+
+                        ${
+                            isWeddingAlbum
+                                ? `
+                                    <small>
+                                        ${
+                                            gallery.albumSelection
+                                                .status === "approved"
+                                                ? "Selection approved"
+                                                : gallery.albumSelection
+                                                    .status === "submitted"
+                                                    ? "Waiting for photographer review"
+                                                    : gallery.albumSelection
+                                                        .enabled
+                                                        ? "Client selection folder"
+                                                        : "Album selection disabled"
+                                        }
+                                    </small>
+                                `
+                                : ""
+                        }
 
                     </div>
 
                     <div class="album-card-actions">
 
-                        <button
-                            type="button"
-                            class="secondary-btn edit-album"
-                            data-album-id="${escapeHTML(
-                                section.id
-                            )}"
-                        >
-                            Edit
-                        </button>
+                        ${
+                            isWeddingAlbum
+                                ? `
+                                    <button
+                                        type="button"
+                                        class="secondary-btn view-wedding-album"
+                                    >
+                                        View Album
+                                    </button>
+                                `
+                                : `
+                                    <button
+                                        type="button"
+                                        class="secondary-btn edit-album"
+                                        data-album-id="${escapeHTML(
+                                            section.id
+                                        )}"
+                                    >
+                                        Edit
+                                    </button>
 
-                        <button
-                            type="button"
-                            class="danger-btn delete-album"
-                            data-album-id="${escapeHTML(
-                                section.id
-                            )}"
-                        >
-                            Delete
-                        </button>
+                                    <button
+                                        type="button"
+                                        class="danger-btn delete-album"
+                                        data-album-id="${escapeHTML(
+                                            section.id
+                                        )}"
+                                    >
+                                        Delete
+                                    </button>
+                                `
+                        }
 
                     </div>
                     `;
@@ -3372,6 +3577,46 @@ document.addEventListener("DOMContentLoaded", async () => {
                 );
 
             }
+        );
+
+        renderWeddingAlbumPanel();
+
+    }
+
+
+    /* =====================================================
+       OPEN WEDDING ALBUM
+    ====================================================== */
+
+    function openWeddingAlbum() {
+
+        const gallery =
+            getSelectedGallery();
+
+        if (!gallery) {
+            return;
+        }
+
+        const weddingAlbum =
+            getWeddingAlbum(
+                gallery
+            );
+
+        if (!weddingAlbum) {
+            return;
+        }
+
+        selectedAlbumId =
+            weddingAlbum.id;
+
+        activateTab(
+            "media"
+        );
+
+        renderMedia();
+
+        showToast(
+            "Showing WEDDING ALBUM photos."
         );
 
     }
@@ -3511,8 +3756,25 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             if (section) {
 
+                if (
+                    section.isWeddingAlbum
+                ) {
+
+                    showToast(
+                        "WEDDING ALBUM is a system folder and cannot be renamed."
+                    );
+
+                    closeAlbumModalFn();
+
+                    return;
+
+                }
+
                 section.name =
                     name;
+
+                section.updatedAt =
+                    new Date().toISOString();
 
             }
 
@@ -3531,7 +3793,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 createdAt:
                     new Date()
-                        .toISOString()
+                        .toISOString(),
+
+                updatedAt:
+                    new Date()
+                        .toISOString(),
+
+                isWeddingAlbum:
+                    false,
+
+                system:
+                    false
 
             });
 
@@ -3578,6 +3850,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (!section) {
             return;
+        }
+
+
+        if (
+            section.isWeddingAlbum
+        ) {
+
+            showToast(
+                "WEDDING ALBUM is a protected system folder."
+            );
+
+            return;
+
         }
 
 
@@ -3763,8 +4048,30 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     /* =====================================================
-       GENERATE PASSWORD
+       PASSWORD UI
     ====================================================== */
+
+    function updatePasswordVisibility(
+        gallery
+    ) {
+
+        if (!passwordSetting) {
+            return;
+        }
+
+        const enabled =
+            Boolean(
+                gallery.access
+                    ?.passwordEnabled
+            );
+
+        passwordSetting.style.display =
+            enabled
+                ? ""
+                : "none";
+
+    }
+
 
     function generateGalleryPassword() {
 
@@ -3798,10 +4105,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
-
-    /* =====================================================
-       SAVE PASSWORD
-    ====================================================== */
 
     function saveGalleryPassword() {
 
@@ -3855,6 +4158,47 @@ document.addEventListener("DOMContentLoaded", async () => {
         showToast(
             "Gallery password saved."
         );
+
+    }
+
+
+    /* =====================================================
+       ACCESS SUMMARY
+    ====================================================== */
+
+    function updateAccessSummary(
+        gallery
+    ) {
+
+        const access =
+            gallery.access || {};
+
+        if (modalPassword) {
+
+            modalPassword.textContent =
+                access.passwordEnabled
+                    ? "Enabled"
+                    : "Disabled";
+
+        }
+
+        if (modalDownloads) {
+
+            modalDownloads.textContent =
+                access.downloadsEnabled
+                    ? "Allowed"
+                    : "Disabled";
+
+        }
+
+        if (modalVisibility) {
+
+            modalVisibility.textContent =
+                access.visible
+                    ? "Available"
+                    : "Private";
+
+        }
 
     }
 
@@ -3928,6 +4272,971 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         updateDeliveryReadiness(
             gallery
+        );
+
+    }
+
+
+    /* =====================================================
+       READINESS
+    ====================================================== */
+
+    function updateReadinessItem(
+        element,
+        complete
+    ) {
+
+        if (!element) {
+            return;
+        }
+
+        element.classList.toggle(
+            "complete",
+            complete
+        );
+
+        element.classList.toggle(
+            "incomplete",
+            !complete
+        );
+
+        const icon =
+            element.querySelector(
+                ".readiness-icon"
+            );
+
+        if (icon) {
+
+            icon.textContent =
+                complete
+                    ? "✓"
+                    : "•";
+
+        }
+
+    }
+
+
+    function updateDeliveryReadiness(
+        gallery
+    ) {
+
+        const access =
+            gallery.access || {};
+
+        const hasName =
+            Boolean(
+                gallery.name &&
+                gallery.name.trim() &&
+                gallery.clientName &&
+                gallery.clientName.trim()
+            );
+
+        const hasMedia =
+            gallery.media.length > 0;
+
+        const passwordReady =
+            !access.passwordEnabled ||
+            Boolean(
+                access.password &&
+                access.password.trim()
+            );
+
+        const downloadsReady =
+            typeof access.downloadsEnabled ===
+            "boolean";
+
+        const storageReady =
+            calculateUsedBytes(
+                gallery
+            ) <=
+            getStorageLimitBytes(
+                gallery
+            );
+
+        updateReadinessItem(
+            checkGalleryName,
+            hasName
+        );
+
+        updateReadinessItem(
+            checkMedia,
+            hasMedia
+        );
+
+        updateReadinessItem(
+            checkPassword,
+            passwordReady
+        );
+
+        updateReadinessItem(
+            checkDownloads,
+            downloadsReady
+        );
+
+        updateReadinessItem(
+            checkStorage,
+            storageReady
+        );
+
+
+        const ready =
+            hasName &&
+            hasMedia &&
+            passwordReady &&
+            downloadsReady &&
+            storageReady;
+
+
+        if (deliveryStatus) {
+
+            if (
+                getGalleryStatus(
+                    gallery
+                ) === "sent"
+            ) {
+
+                deliveryStatus.textContent =
+                    "SENT TO CLIENT";
+
+                deliveryStatus.className =
+                    "delivery-status sent";
+
+            } else if (ready) {
+
+                deliveryStatus.textContent =
+                    "READY";
+
+                deliveryStatus.className =
+                    "delivery-status ready";
+
+            } else {
+
+                deliveryStatus.textContent =
+                    "PREPARING";
+
+                deliveryStatus.className =
+                    "delivery-status preparing";
+
+            }
+
+        }
+
+
+        if (deliveryMessage) {
+
+            deliveryMessage.textContent =
+                ready
+                    ? "This gallery is ready to be delivered."
+                    : "Finish the setup before sending this gallery.";
+
+        }
+
+        if (deliveryExpiry) {
+
+            deliveryExpiry.textContent =
+                `Gallery expires on ${formatDate(
+                    gallery.expiresAt
+                )}.`;
+
+        }
+
+        if (sendToClientBtn) {
+
+            sendToClientBtn.disabled =
+                !ready;
+
+            sendToClientBtn.textContent =
+                gallery.deliveryStatus === "sent"
+                    ? "Gallery Sent"
+                    : ready
+                        ? "Send to Client"
+                        : "Complete Setup";
+
+        }
+
+    }
+
+
+    /* =====================================================
+       RENDER MEDIA
+    ====================================================== */
+
+    async function renderMedia() {
+
+        const gallery =
+            getSelectedGallery();
+
+        if (!gallery || !mediaGrid) {
+            return;
+        }
+
+        revokeObjectUrls();
+
+        mediaGrid.innerHTML =
+            "";
+
+        let media =
+            [...gallery.media];
+
+
+        /*
+            If a Wedding Album is selected,
+            show only its photos.
+        */
+
+        if (selectedAlbumId) {
+
+            media =
+                media.filter(
+                    item =>
+                        item.sectionId ===
+                        selectedAlbumId
+                );
+
+        } else if (
+            activeMediaFilter !==
+            "all"
+        ) {
+
+            media =
+                media.filter(
+                    item =>
+                        item.type ===
+                        activeMediaFilter
+                );
+
+        }
+
+
+        if (mediaCount) {
+
+            if (selectedAlbumId) {
+
+                mediaCount.textContent =
+                    `${media.length} ${
+                        media.length === 1
+                            ? "photo"
+                            : "photos"
+                    } in WEDDING ALBUM`;
+
+            } else {
+
+                mediaCount.textContent =
+                    `${gallery.media.length} ${
+                        gallery.media.length === 1
+                            ? "item"
+                            : "items"
+                    }`;
+
+            }
+
+        }
+
+
+        if (!media.length) {
+
+            mediaGrid.innerHTML =
+                `
+                <div class="media-empty-state">
+                    <h4>
+                        ${
+                            selectedAlbumId
+                                ? "WEDDING ALBUM is empty"
+                                : "No media yet"
+                        }
+                    </h4>
+
+                    <p>
+                        ${
+                            selectedAlbumId
+                                ? "Selected client photos will appear here."
+                                : "Upload photos or videos to this client gallery."
+                        }
+                    </p>
+                </div>
+                `;
+
+            return;
+
+        }
+
+
+        for (
+            const mediaItem
+            of media
+        ) {
+
+            const card =
+                document.createElement(
+                    "article"
+                );
+
+            card.className =
+                "media-card";
+
+            card.dataset.mediaId =
+                mediaItem.id;
+
+
+            const mediaBlob =
+                await getMediaBlob(
+                    mediaItem.id
+                );
+
+
+            const isWeddingAlbumMedia =
+                selectedAlbumId &&
+                mediaItem.sectionId ===
+                selectedAlbumId;
+
+
+            const clientComment =
+                gallery.albumSelection
+                    ?.comments
+                    ?.[
+                        mediaItem.id
+                    ] ||
+                "";
+
+
+            if (mediaBlob) {
+
+                const objectUrl =
+                    URL.createObjectURL(
+                        mediaBlob
+                    );
+
+                activeObjectUrls.add(
+                    objectUrl
+                );
+
+
+                if (
+                    mediaItem.type ===
+                    "video"
+                ) {
+
+                    card.innerHTML =
+                        `
+                        <div class="media-preview">
+
+                            <video
+                                src="${objectUrl}"
+                                controls
+                                preload="metadata"
+                            ></video>
+
+                        </div>
+
+                        <div class="media-card-info">
+
+                            <strong>
+                                ${escapeHTML(
+                                    mediaItem.name
+                                )}
+                            </strong>
+
+                            <small>
+                                ${formatStorage(
+                                    mediaItem.sizeBytes
+                                )}
+                            </small>
+
+                        </div>
+
+                        <div class="media-card-actions">
+
+                            ${
+                                !isWeddingAlbumMedia
+                                    ? `
+                                        <button
+                                            type="button"
+                                            class="secondary-btn add-to-wedding-album"
+                                            data-media-id="${escapeHTML(
+                                                mediaItem.id
+                                            )}"
+                                        >
+                                            Add to Wedding Album
+                                        </button>
+                                    `
+                                    : `
+                                        <button
+                                            type="button"
+                                            class="secondary-btn remove-from-wedding-album"
+                                            data-media-id="${escapeHTML(
+                                                mediaItem.id
+                                            )}"
+                                        >
+                                            Remove from Album
+                                        </button>
+                                    `
+                            }
+
+                            <button
+                                type="button"
+                                class="danger-btn remove-media"
+                                data-media-id="${escapeHTML(
+                                    mediaItem.id
+                                )}"
+                            >
+                                Remove
+                            </button>
+
+                        </div>
+                        `;
+
+                } else {
+
+                    card.innerHTML =
+                        `
+                        <div class="media-preview">
+
+                            <img
+                                src="${objectUrl}"
+                                alt="${escapeHTML(
+                                    mediaItem.name
+                                )}"
+                            >
+
+                        </div>
+
+                        <div class="media-card-info">
+
+                            <strong>
+                                ${escapeHTML(
+                                    mediaItem.name
+                                )}
+                            </strong>
+
+                            <small>
+                                ${formatStorage(
+                                    mediaItem.sizeBytes
+                                )}
+                            </small>
+
+                        </div>
+
+                        ${
+                            clientComment
+                                ? `
+                                    <div class="client-photo-comment">
+                                        <span>
+                                            Client comment
+                                        </span>
+
+                                        <p>
+                                            ${escapeHTML(
+                                                clientComment
+                                            )}
+                                        </p>
+                                    </div>
+                                `
+                                : ""
+                        }
+
+                        <div class="media-card-actions">
+
+                            ${
+                                !isWeddingAlbumMedia
+                                    ? `
+                                        <button
+                                            type="button"
+                                            class="secondary-btn add-to-wedding-album"
+                                            data-media-id="${escapeHTML(
+                                                mediaItem.id
+                                            )}"
+                                        >
+                                            Add to Wedding Album
+                                        </button>
+                                    `
+                                    : `
+                                        <button
+                                            type="button"
+                                            class="secondary-btn remove-from-wedding-album"
+                                            data-media-id="${escapeHTML(
+                                                mediaItem.id
+                                            )}"
+                                        >
+                                            Remove from Album
+                                        </button>
+                                    `
+                            }
+
+                            <button
+                                type="button"
+                                class="secondary-btn set-cover"
+                                data-media-id="${escapeHTML(
+                                    mediaItem.id
+                                )}"
+                            >
+                                Set Cover
+                            </button>
+
+                            <button
+                                type="button"
+                                class="danger-btn remove-media"
+                                data-media-id="${escapeHTML(
+                                    mediaItem.id
+                                )}"
+                            >
+                                Remove
+                            </button>
+
+                        </div>
+                        `;
+
+                }
+
+            } else {
+
+                card.innerHTML =
+                    `
+                    <div class="media-preview media-missing">
+
+                        <span>
+                            Media unavailable
+                        </span>
+
+                    </div>
+
+                    <div class="media-card-info">
+
+                        <strong>
+                            ${escapeHTML(
+                                mediaItem.name
+                            )}
+                        </strong>
+
+                        <small>
+                            File data not found
+                        </small>
+
+                    </div>
+
+                    <div class="media-card-actions">
+
+                        <button
+                            type="button"
+                            class="danger-btn remove-media"
+                            data-media-id="${escapeHTML(
+                                mediaItem.id
+                            )}"
+                        >
+                            Remove
+                        </button>
+
+                    </div>
+                    `;
+
+            }
+
+
+            mediaGrid.appendChild(
+                card
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       UPLOAD MEDIA
+    ====================================================== */
+
+    async function uploadFiles(
+        files
+    ) {
+
+        const gallery =
+            getSelectedGallery();
+
+        if (!gallery) {
+            return;
+        }
+
+        const fileArray =
+            Array.from(files || []);
+
+        if (!fileArray.length) {
+            return;
+        }
+
+
+        const validFiles =
+            fileArray.filter(
+                file =>
+                    file.type.startsWith(
+                        "image/"
+                    ) ||
+                    file.type.startsWith(
+                        "video/"
+                    )
+            );
+
+
+        if (!validFiles.length) {
+
+            showToast(
+                "Please select image or video files."
+            );
+
+            return;
+
+        }
+
+
+        const currentUsed =
+            calculateUsedBytes(
+                gallery
+            );
+
+        const limit =
+            getStorageLimitBytes(
+                gallery
+            );
+
+        const incomingSize =
+            validFiles.reduce(
+                (
+                    total,
+                    file
+                ) =>
+                    total +
+                    file.size,
+                0
+            );
+
+
+        if (
+            currentUsed +
+            incomingSize >
+            limit
+        ) {
+
+            showToast(
+                "These files exceed your purchased gallery storage."
+            );
+
+            return;
+
+        }
+
+
+        const addedMedia =
+            [];
+
+
+        try {
+
+            for (
+                const file
+                of validFiles
+            ) {
+
+                const mediaId =
+                    createId("media");
+
+                const type =
+                    file.type.startsWith(
+                        "video/"
+                    )
+                        ? "video"
+                        : "photo";
+
+
+                await saveMediaBlob(
+                    mediaId,
+                    file,
+                    gallery.id
+                );
+
+
+                addedMedia.push({
+
+                    id:
+                        mediaId,
+
+                    name:
+                        file.name,
+
+                    type,
+
+                    mimeType:
+                        file.type,
+
+                    sizeBytes:
+                        file.size,
+
+                    sectionId:
+                        null,
+
+                    createdAt:
+                        new Date()
+                            .toISOString()
+
+                });
+
+            }
+
+
+            gallery.media.push(
+                ...addedMedia
+            );
+
+
+            if (
+                !gallery.coverMediaId
+            ) {
+
+                const firstPhoto =
+                    addedMedia.find(
+                        item =>
+                            item.type ===
+                            "photo"
+                    );
+
+                if (firstPhoto) {
+
+                    gallery.coverMediaId =
+                        firstPhoto.id;
+
+                }
+
+            }
+
+
+            updateGalleryStorage(
+                gallery
+            );
+
+            gallery.updatedAt =
+                new Date().toISOString();
+
+            saveGalleries();
+
+            renderPage();
+
+            renderModal();
+
+            showToast(
+                `${addedMedia.length} ${
+                    addedMedia.length === 1
+                        ? "file"
+                        : "files"
+                } uploaded successfully.`
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Upload failed:",
+                error
+            );
+
+
+            for (
+                const item
+                of addedMedia
+            ) {
+
+                try {
+
+                    await deleteMediaBlob(
+                        item.id
+                    );
+
+                } catch (
+                    cleanupError
+                ) {}
+
+            }
+
+
+            showToast(
+                "Upload failed. Please try again."
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       REMOVE MEDIA
+    ====================================================== */
+
+    async function removeMedia(
+        mediaId
+    ) {
+
+        const gallery =
+            getSelectedGallery();
+
+        if (!gallery) {
+            return;
+        }
+
+        const media =
+            gallery.media.find(
+                item =>
+                    item.id ===
+                    mediaId
+            );
+
+        if (!media) {
+            return;
+        }
+
+
+        const confirmed =
+            window.confirm(
+                `Remove "${media.name}" from this gallery?`
+            );
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        try {
+
+            await deleteMediaBlob(
+                mediaId
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Could not delete media blob:",
+                error
+            );
+
+        }
+
+
+        gallery.media =
+            gallery.media.filter(
+                item =>
+                    item.id !==
+                    mediaId
+            );
+
+
+        if (
+            gallery.coverMediaId ===
+            mediaId
+        ) {
+
+            const nextPhoto =
+                gallery.media.find(
+                    item =>
+                        item.type ===
+                        "photo"
+                );
+
+            gallery.coverMediaId =
+                nextPhoto
+                    ? nextPhoto.id
+                    : null;
+
+        }
+
+
+        gallery.albumSelection =
+            normalizeAlbumSelection(
+                gallery.albumSelection
+            );
+
+        gallery.albumSelection
+            .selectedMediaIds =
+            gallery.albumSelection
+                .selectedMediaIds
+                .filter(
+                    id =>
+                        id !==
+                        mediaId
+                );
+
+        delete gallery.albumSelection
+            .comments[mediaId];
+
+
+        gallery.updatedAt =
+            new Date().toISOString();
+
+        updateGalleryStorage(
+            gallery
+        );
+
+        saveGalleries();
+
+        renderPage();
+
+        renderModal();
+
+        showToast(
+            "Media removed."
+        );
+
+    }
+
+
+    /* =====================================================
+       SET MEDIA COVER
+    ====================================================== */
+
+    function setMediaAsCover(
+        mediaId
+    ) {
+
+        const gallery =
+            getSelectedGallery();
+
+        if (!gallery) {
+            return;
+        }
+
+        const media =
+            gallery.media.find(
+                item =>
+                    item.id ===
+                    mediaId
+            );
+
+        if (!media) {
+            return;
+        }
+
+        if (
+            media.type !==
+            "photo"
+        ) {
+
+            showToast(
+                "Only photos can be used as a gallery cover."
+            );
+
+            return;
+
+        }
+
+        gallery.coverMediaId =
+            mediaId;
+
+        gallery.updatedAt =
+            new Date().toISOString();
+
+        saveGalleries();
+
+        renderPage();
+
+        renderModal();
+
+        showToast(
+            "Gallery cover updated."
         );
 
     }
@@ -4181,8 +5490,6 @@ document.addEventListener("DOMContentLoaded", async () => {
        TOAST
     ====================================================== */
 
-    let toastTimer = null;
-
     function showToast(
         message
     ) {
@@ -4222,7 +5529,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     /* =====================================================
-       UPLOAD ZONE CLICK
+       UPLOAD ZONE
     ====================================================== */
 
     if (
@@ -4254,10 +5561,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         );
 
-
-        /* ================================================
-           DRAG & DROP
-        ================================================= */
 
         uploadZone.addEventListener(
             "dragover",
@@ -4494,6 +5797,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                 activeMediaFilter =
                     mediaFilter.value;
 
+                selectedAlbumId =
+                    null;
+
                 renderMedia();
 
             }
@@ -4522,6 +5828,16 @@ document.addEventListener("DOMContentLoaded", async () => {
                         ".set-cover"
                     );
 
+                const addWeddingButton =
+                    event.target.closest(
+                        ".add-to-wedding-album"
+                    );
+
+                const removeWeddingButton =
+                    event.target.closest(
+                        ".remove-from-wedding-album"
+                    );
+
 
                 if (removeButton) {
 
@@ -4539,6 +5855,84 @@ document.addEventListener("DOMContentLoaded", async () => {
                     setMediaAsCover(
                         coverButton.dataset.mediaId
                     );
+
+                    return;
+
+                }
+
+
+                if (addWeddingButton) {
+
+                    const mediaId =
+                        addWeddingButton
+                            .dataset
+                            .mediaId;
+
+                    const gallery =
+                        getSelectedGallery();
+
+                    if (
+                        gallery?.albumSelection
+                            ?.maxSelections
+                    ) {
+
+                        const currentCount =
+                            gallery.albumSelection
+                                .selectedMediaIds
+                                .length;
+
+                        if (
+                            currentCount >=
+                            gallery.albumSelection
+                                .maxSelections
+                        ) {
+
+                            showToast(
+                                "The Wedding Album selection limit has been reached."
+                            );
+
+                            return;
+
+                        }
+
+                    }
+
+                    if (
+                        moveMediaToWeddingAlbum(
+                            mediaId
+                        )
+                    ) {
+
+                        renderModal();
+
+                        showToast(
+                            "Photo added to WEDDING ALBUM."
+                        );
+
+                    }
+
+                    return;
+
+                }
+
+
+                if (removeWeddingButton) {
+
+                    if (
+                        removeMediaFromWeddingAlbum(
+                            removeWeddingButton
+                                .dataset
+                                .mediaId
+                        )
+                    ) {
+
+                        renderModal();
+
+                        showToast(
+                            "Photo removed from WEDDING ALBUM."
+                        );
+
+                    }
 
                 }
 
@@ -4638,6 +6032,20 @@ document.addEventListener("DOMContentLoaded", async () => {
                     event.target.closest(
                         ".delete-album"
                     );
+
+                const weddingButton =
+                    event.target.closest(
+                        ".view-wedding-album"
+                    );
+
+
+                if (weddingButton) {
+
+                    openWeddingAlbum();
+
+                    return;
+
+                }
 
 
                 if (editButton) {
@@ -4938,6 +6346,129 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 },
 
+            getWeddingAlbum:
+                galleryId => {
+
+                    const gallery =
+                        galleries.find(
+                            item =>
+                                item.id ===
+                                galleryId
+                        );
+
+                    if (!gallery) {
+                        return null;
+                    }
+
+                    const album =
+                        getWeddingAlbum(
+                            gallery
+                        );
+
+                    return album
+                        ? JSON.parse(
+                            JSON.stringify(
+                                album
+                            )
+                        )
+                        : null;
+
+                },
+
+            getWeddingAlbumMedia:
+                galleryId => {
+
+                    const gallery =
+                        galleries.find(
+                            item =>
+                                item.id ===
+                                galleryId
+                        );
+
+                    if (!gallery) {
+                        return [];
+                    }
+
+                    return JSON.parse(
+                        JSON.stringify(
+                            getWeddingAlbumMedia(
+                                gallery
+                            )
+                        )
+                    );
+
+                },
+
+            addMediaToWeddingAlbum:
+                (
+                    galleryId,
+                    mediaId
+                ) => {
+
+                    const gallery =
+                        galleries.find(
+                            item =>
+                                item.id ===
+                                galleryId
+                        );
+
+                    if (!gallery) {
+                        return false;
+                    }
+
+                    const previous =
+                        selectedGalleryId;
+
+                    selectedGalleryId =
+                        galleryId;
+
+                    const result =
+                        moveMediaToWeddingAlbum(
+                            mediaId
+                        );
+
+                    selectedGalleryId =
+                        previous;
+
+                    return result;
+
+                },
+
+            removeMediaFromWeddingAlbum:
+                (
+                    galleryId,
+                    mediaId
+                ) => {
+
+                    const gallery =
+                        galleries.find(
+                            item =>
+                                item.id ===
+                                galleryId
+                        );
+
+                    if (!gallery) {
+                        return false;
+                    }
+
+                    const previous =
+                        selectedGalleryId;
+
+                    selectedGalleryId =
+                        galleryId;
+
+                    const result =
+                        removeMediaFromWeddingAlbum(
+                            mediaId
+                        );
+
+                    selectedGalleryId =
+                        previous;
+
+                    return result;
+
+                },
+
             refresh:
                 () => {
 
@@ -4977,8 +6508,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     /*
         IMPORTANT:
-        This is where the Gallery Shop purchase
-        gets converted into an actual Client Gallery.
+        Gallery Shop purchase → Client Gallery
+        connection remains unchanged.
     */
 
     processPendingPurchase();
