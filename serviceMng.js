@@ -1,90 +1,92 @@
 "use strict";
 
 /* =========================================================
-   STORAGE
-========================================================= */
+   PROFESSIONAL STUDIO
+   Services & Packages Management
+   ========================================================= */
 
-const STORAGE_KEY = "professionalStudio.services";
+const SERVICES_STORAGE_KEY = "professionalStudio.services";
 
 let services = [];
 let currentServiceId = null;
-
 let editingPackageId = null;
-let isCreatingService = false;
 let creatingPackageId = null;
-
+let isCreatingService = false;
 
 /* =========================================================
-   DEFAULT DATA
-========================================================= */
+   DEFAULT SERVICES
+   ========================================================= */
 
 const DEFAULT_SERVICES = [
     {
         id: "wedding-photography",
         name: "Wedding Photography",
         description:
-            "Professional wedding photography covering ceremonies, portraits and receptions.",
-        coverageDuration: "8 hours",
-        deliveryTime: "14 days",
-        coverageType: "Local / On-location",
+            "Complete wedding photography coverage for ceremonies, portraits and celebrations.",
+        coverageDuration: "8 Hours",
+        deliveryTime: "15-20 Days",
+        coverageType: "Full Day",
         active: true,
-
         packages: [
             {
                 id: "wedding-basic",
                 name: "Basic",
                 price: 25000,
-                coverage: "4 hours",
-                photos: "150 edited photos",
-                delivery: "14 days",
-                album: "Not included",
-                description:
-                    "Essential wedding coverage for smaller celebrations.",
+                coverage: "6 Hours",
+                photos: "300+ Edited Photos",
+                delivery: "15 Days",
+                album: "No",
+                description: "Essential wedding photography coverage.",
                 paymentPlan: {
-                    type: "full",
-                    advance: {
-                        type: "percentage",
-                        value: 0
-                    },
-                    installments: []
+                    type: "full"
                 }
             },
             {
                 id: "wedding-premium",
                 name: "Premium",
                 price: 45000,
-                coverage: "8 hours",
-                photos: "350 edited photos",
-                delivery: "12 days",
-                album: "Included",
-                description:
-                    "Extended wedding coverage for a complete photography experience.",
+                coverage: "10 Hours",
+                photos: "600+ Edited Photos",
+                delivery: "15 Days",
+                album: "1 Premium Album",
+                description: "Extended wedding coverage with album.",
                 paymentPlan: {
                     type: "advance",
-                    advance: {
-                        type: "percentage",
-                        value: 25
-                    },
-                    installments: []
+                    advanceType: "percentage",
+                    advanceValue: 30
                 }
             },
             {
                 id: "wedding-luxury",
                 name: "Luxury",
-                price: 70000,
-                coverage: "12 hours",
-                photos: "600 edited photos",
-                delivery: "10 days",
-                album: "Premium album included",
-                description:
-                    "Full-day premium coverage for large and detailed celebrations.",
+                price: 75000,
+                coverage: "Full Day",
+                photos: "1000+ Edited Photos",
+                delivery: "12 Days",
+                album: "2 Premium Albums",
+                description: "Complete premium wedding photography experience.",
                 paymentPlan: {
-                    type: "advance",
-                    advance: {
-                        type: "percentage",
-                        value: 25
-                    },
-                    installments: []
+                    type: "installments",
+                    installments: [
+                        {
+                            name: "Booking",
+                            type: "percentage",
+                            value: 30,
+                            due: "At Booking"
+                        },
+                        {
+                            name: "Event",
+                            type: "percentage",
+                            value: 40,
+                            due: "Event Day"
+                        },
+                        {
+                            name: "Delivery",
+                            type: "percentage",
+                            value: 30,
+                            due: "Before Delivery"
+                        }
+                    ]
                 }
             }
         ]
@@ -95,982 +97,756 @@ const DEFAULT_SERVICES = [
         name: "Portrait Photography",
         description:
             "Professional portrait sessions for individuals, couples and personal branding.",
-        coverageDuration: "2 hours",
-        deliveryTime: "7 days",
-        coverageType: "Studio / On-location",
+        coverageDuration: "2 Hours",
+        deliveryTime: "7-10 Days",
+        coverageType: "Session",
         active: true,
-
         packages: [
             {
                 id: "portrait-basic",
                 name: "Basic",
                 price: 5000,
-                coverage: "1 hour",
-                photos: "20 edited photos",
-                delivery: "7 days",
-                album: "Not included",
-                description:
-                    "A simple portrait session for a small set of final images.",
+                coverage: "1 Hour",
+                photos: "15 Edited Photos",
+                delivery: "7 Days",
+                album: "No",
+                description: "Simple portrait session.",
                 paymentPlan: {
-                    type: "full",
-                    advance: {
-                        type: "percentage",
-                        value: 0
-                    },
-                    installments: []
+                    type: "full"
                 }
             },
             {
                 id: "portrait-premium",
                 name: "Premium",
                 price: 9000,
-                coverage: "2 hours",
-                photos: "40 edited photos",
-                delivery: "5 days",
-                album: "Not included",
-                description:
-                    "Extended portrait session with more variety and final images.",
+                coverage: "2 Hours",
+                photos: "30 Edited Photos",
+                delivery: "7 Days",
+                album: "No",
+                description: "Extended portrait session with additional edited photos.",
                 paymentPlan: {
                     type: "advance",
-                    advance: {
-                        type: "percentage",
-                        value: 25
-                    },
-                    installments: []
+                    advanceType: "percentage",
+                    advanceValue: 50
                 }
             },
             {
                 id: "portrait-luxury",
                 name: "Luxury",
                 price: 15000,
-                coverage: "3 hours",
-                photos: "70 edited photos",
-                delivery: "4 days",
-                album: "Premium album included",
-                description:
-                    "Complete portrait experience with extended shooting time and more images.",
+                coverage: "3 Hours",
+                photos: "50 Edited Photos",
+                delivery: "5 Days",
+                album: "1 Premium Album",
+                description: "Premium portrait experience.",
                 paymentPlan: {
-                    type: "advance",
-                    advance: {
-                        type: "percentage",
-                        value: 25
-                    },
-                    installments: []
+                    type: "full"
                 }
             }
         ]
     }
 ];
 
-
 /* =========================================================
-   DOM
-========================================================= */
+   DOM REFERENCES
+   ========================================================= */
 
-const servicesView =
-    document.getElementById("servicesView");
+const servicesView = document.getElementById("servicesView");
+const editorView = document.getElementById("editorView");
 
-const editorView =
-    document.getElementById("editorView");
+const addServiceBtn = document.getElementById("addServiceBtn");
+const emptyAddServiceBtn = document.getElementById("emptyAddServiceBtn");
 
-const servicesList =
-    document.getElementById("servicesList");
+const serviceCount = document.getElementById("serviceCount");
+const servicesList = document.getElementById("servicesList");
+const emptyState = document.getElementById("emptyState");
 
-const serviceCount =
-    document.getElementById("serviceCount");
+const backBtn = document.getElementById("backBtn");
+const editorBreadcrumb = document.getElementById("editorBreadcrumb");
+const editorTitle = document.getElementById("editorTitle");
+const editorSubtitle = document.getElementById("editorSubtitle");
 
-const emptyState =
-    document.getElementById("emptyState");
+const statusIndicator = document.getElementById("statusIndicator");
 
-const addServiceBtn =
-    document.getElementById("addServiceBtn");
+const serviceName = document.getElementById("serviceName");
+const serviceDescription = document.getElementById("serviceDescription");
+const coverageDuration = document.getElementById("coverageDuration");
+const deliveryTime = document.getElementById("deliveryTime");
+const coverageType = document.getElementById("coverageType");
 
-const emptyAddServiceBtn =
-    document.getElementById("emptyAddServiceBtn");
+const addPackageBtn = document.getElementById("addPackageBtn");
+const packagesList = document.getElementById("packagesList");
+const packageEmpty = document.getElementById("packageEmpty");
 
-const backBtn =
-    document.getElementById("backBtn");
+const packageEditorSection = document.getElementById("packageEditorSection");
+const packageEditorTitle = document.getElementById("packageEditorTitle");
+const closePackageEditorBtn = document.getElementById(
+    "closePackageEditorBtn"
+);
 
-const editorTitle =
-    document.getElementById("editorTitle");
+const packageName = document.getElementById("packageName");
+const packagePrice = document.getElementById("packagePrice");
+const packageCoverage = document.getElementById("packageCoverage");
+const packagePhotos = document.getElementById("packagePhotos");
+const packageDelivery = document.getElementById("packageDelivery");
+const packageAlbum = document.getElementById("packageAlbum");
+const packageDescription = document.getElementById("packageDescription");
 
-const editorSubtitle =
-    document.getElementById("editorSubtitle");
+const paymentPlanType = document.getElementById("paymentPlanType");
 
-const editorBreadcrumb =
-    document.getElementById("editorBreadcrumb");
+const advancePaymentFields = document.getElementById(
+    "advancePaymentFields"
+);
+const advancePaymentType = document.getElementById("advancePaymentType");
+const advancePaymentValue = document.getElementById("advancePaymentValue");
+const advancePaymentInputWrap = document.getElementById(
+    "advancePaymentInputWrap"
+);
+const advancePaymentPrefix = document.getElementById("advancePaymentPrefix");
 
-const statusIndicator =
-    document.getElementById("statusIndicator");
+const installmentPaymentFields = document.getElementById(
+    "installmentPaymentFields"
+);
+const installmentList = document.getElementById("installmentList");
+const addInstallmentBtn = document.getElementById("addInstallmentBtn");
+const installmentTotal = document.getElementById("installmentTotal");
 
-const serviceName =
-    document.getElementById("serviceName");
+const cancelPackageBtn = document.getElementById("cancelPackageBtn");
+const savePackageBtn = document.getElementById("savePackageBtn");
 
-const serviceDescription =
-    document.getElementById("serviceDescription");
+const deleteServiceBtn = document.getElementById("deleteServiceBtn");
+const cancelServiceBtn = document.getElementById("cancelServiceBtn");
+const saveServiceBtn = document.getElementById("saveServiceBtn");
 
-const coverageDuration =
-    document.getElementById("coverageDuration");
+const deleteDialog = document.getElementById("deleteDialog");
+const cancelDeleteBtn = document.getElementById("cancelDeleteBtn");
+const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
 
-const deliveryTime =
-    document.getElementById("deliveryTime");
-
-const coverageType =
-    document.getElementById("coverageType");
-
-const packagesList =
-    document.getElementById("packagesList");
-
-const packageEmpty =
-    document.getElementById("packageEmpty");
-
-const packageEditorSection =
-    document.getElementById("packageEditorSection");
-
-const packageEditorTitle =
-    document.getElementById("packageEditorTitle");
-
-const packageName =
-    document.getElementById("packageName");
-
-const packagePrice =
-    document.getElementById("packagePrice");
-
-const packageCoverage =
-    document.getElementById("packageCoverage");
-
-const packagePhotos =
-    document.getElementById("packagePhotos");
-
-const packageDelivery =
-    document.getElementById("packageDelivery");
-
-const packageAlbum =
-    document.getElementById("packageAlbum");
-
-const packageDescription =
-    document.getElementById("packageDescription");
-
-const paymentPlanType =
-    document.getElementById("paymentPlanType");
-
-const advancePaymentFields =
-    document.getElementById("advancePaymentFields");
-
-const advancePaymentType =
-    document.getElementById("advancePaymentType");
-
-const advancePaymentValue =
-    document.getElementById("advancePaymentValue");
-
-const advancePaymentPrefix =
-    document.getElementById("advancePaymentPrefix");
-
-const installmentPaymentFields =
-    document.getElementById("installmentPaymentFields");
-
-const installmentList =
-    document.getElementById("installmentList");
-
-const addInstallmentBtn =
-    document.getElementById("addInstallmentBtn");
-
-const installmentTotal =
-    document.getElementById("installmentTotal");
-
-const addPackageBtn =
-    document.getElementById("addPackageBtn");
-
-const closePackageEditorBtn =
-    document.getElementById("closePackageEditorBtn");
-
-const cancelPackageBtn =
-    document.getElementById("cancelPackageBtn");
-
-const savePackageBtn =
-    document.getElementById("savePackageBtn");
-
-const saveServiceBtn =
-    document.getElementById("saveServiceBtn");
-
-const cancelServiceBtn =
-    document.getElementById("cancelServiceBtn");
-
-const deleteServiceBtn =
-    document.getElementById("deleteServiceBtn");
-
-const deleteDialog =
-    document.getElementById("deleteDialog");
-
-const cancelDeleteBtn =
-    document.getElementById("cancelDeleteBtn");
-
-const confirmDeleteBtn =
-    document.getElementById("confirmDeleteBtn");
-
-const notification =
-    document.getElementById("notification");
-
+const notification = document.getElementById("notification");
 
 /* =========================================================
    INITIALIZATION
-========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    init
-);
-
+   ========================================================= */
 
 function init() {
-
     loadServices();
-
-    renderServices();
-
     bindEvents();
+    renderServices();
 }
 
-
-/* =========================================================
-   EVENTS
-========================================================= */
-
-function bindEvents() {
-
-    addServiceBtn.addEventListener(
-        "click",
-        createService
-    );
-
-    emptyAddServiceBtn.addEventListener(
-        "click",
-        createService
-    );
-
-    backBtn.addEventListener(
-        "click",
-        backToServices
-    );
-
-    cancelServiceBtn.addEventListener(
-        "click",
-        cancelEditing
-    );
-
-    saveServiceBtn.addEventListener(
-        "click",
-        saveService
-    );
-
-    deleteServiceBtn.addEventListener(
-        "click",
-        openDeleteDialog
-    );
-
-    cancelDeleteBtn.addEventListener(
-        "click",
-        closeDeleteDialog
-    );
-
-    confirmDeleteBtn.addEventListener(
-        "click",
-        deleteService
-    );
-
-    addPackageBtn.addEventListener(
-        "click",
-        createPackage
-    );
-
-    closePackageEditorBtn.addEventListener(
-        "click",
-        closePackageEditor
-    );
-
-    cancelPackageBtn.addEventListener(
-        "click",
-        closePackageEditor
-    );
-
-    savePackageBtn.addEventListener(
-        "click",
-        savePackage
-    );
-
-    paymentPlanType.addEventListener(
-        "change",
-        updatePaymentPlanVisibility
-    );
-
-    advancePaymentType.addEventListener(
-        "change",
-        updateAdvancePaymentPrefix
-    );
-
-    addInstallmentBtn.addEventListener(
-        "click",
-        function () {
-            addInstallmentRow();
-        }
-    );
-
-    packagePrice.addEventListener(
-        "input",
-        updateInstallmentTotal
-    );
-
-    statusIndicator.addEventListener(
-        "click",
-        toggleCurrentServiceStatus
-    );
-
-    statusIndicator.addEventListener(
-        "keydown",
-        function (event) {
-
-            if (
-                event.key === "Enter" ||
-                event.key === " "
-            ) {
-
-                event.preventDefault();
-
-                toggleCurrentServiceStatus();
-            }
-        }
-    );
-
-    deleteDialog.addEventListener(
-        "click",
-        function (event) {
-
-            if (
-                event.target ===
-                deleteDialog
-            ) {
-                closeDeleteDialog();
-            }
-        }
-    );
-
-    document.addEventListener(
-        "keydown",
-        function (event) {
-
-            if (event.key !== "Escape") {
-                return;
-            }
-
-            if (!deleteDialog.hidden) {
-                closeDeleteDialog();
-            }
-
-            if (!packageEditorSection.hidden) {
-                closePackageEditor();
-            }
-        }
-    );
+/*
+ * Handles both normal script loading and DOMContentLoaded.
+ * This prevents initialization problems if the script is moved
+ * into <head> later.
+ */
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+} else {
+    init();
 }
-
 
 /* =========================================================
    STORAGE
-========================================================= */
+   ========================================================= */
+
+/*
+ * IMPORTANT:
+ * This function is intentionally called persistServices().
+ *
+ * Do NOT rename this to saveServices().
+ * The public window.saveServices compatibility function below
+ * uses the name saveServices, and having both caused recursive
+ * calls in the previous version.
+ */
+function persistServices(dispatchEvent = true) {
+    try {
+        localStorage.setItem(
+            SERVICES_STORAGE_KEY,
+            JSON.stringify(services)
+        );
+
+        if (dispatchEvent) {
+            window.dispatchEvent(
+                new CustomEvent("professionalStudioServicesUpdated", {
+                    detail: {
+                        services: cloneData(services)
+                    }
+                })
+            );
+        }
+
+        return true;
+    } catch (error) {
+        console.error("Unable to save services:", error);
+        showNotification(
+            "Unable to save services. Please try again.",
+            "error"
+        );
+        return false;
+    }
+}
 
 function loadServices() {
+    const stored = localStorage.getItem(SERVICES_STORAGE_KEY);
 
-    const storedServices =
-        localStorage.getItem(STORAGE_KEY);
-
-    if (!storedServices) {
-
-        services =
-            structuredClone(
-                DEFAULT_SERVICES
-            );
-
-        saveServices();
-
+    if (!stored) {
+        services = cloneData(DEFAULT_SERVICES);
+        persistServices(false);
         return;
     }
 
     try {
-
-        const parsed =
-            JSON.parse(
-                storedServices
-            );
+        const parsed = JSON.parse(stored);
 
         if (!Array.isArray(parsed)) {
-            throw new Error(
-                "Invalid service data."
-            );
+            throw new Error("Invalid services data");
         }
 
-        services =
-            normalizeServices(parsed);
+        services = normalizeServices(parsed);
 
-        saveServices();
-
+        /*
+         * Save normalized data so newly-created IDs and missing
+         * optional fields become permanent.
+         */
+        persistServices(false);
     } catch (error) {
+        console.error("Unable to load services:", error);
 
-        console.error(
-            "Unable to load services:",
-            error
+        services = cloneData(DEFAULT_SERVICES);
+        persistServices(false);
+
+        showNotification(
+            "Saved service data was invalid. Default services were restored.",
+            "error"
         );
-
-        services =
-            structuredClone(
-                DEFAULT_SERVICES
-            );
-
-        saveServices();
     }
 }
-
-
-function saveServices() {
-
-    localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(services)
-    );
-
-    window.dispatchEvent(
-        new CustomEvent(
-            "professionalStudioServicesUpdated",
-            {
-                detail: {
-                    services:
-                        structuredClone(
-                            services
-                        )
-                }
-            }
-        )
-    );
-}
-
-
-/* =========================================================
-   DASHBOARD COMPATIBILITY API
-========================================================= */
-
-function getStoredServices() {
-
-    return structuredClone(
-        services
-    );
-}
-
-
-function getServiceName(service) {
-
-    if (
-        typeof service === "string"
-    ) {
-
-        return service;
-    }
-
-    if (
-        service &&
-        typeof service === "object"
-    ) {
-
-        return service.name || "Service";
-    }
-
-    return "Service";
-}
-
-
-window.ProfessionalStudioServices = {
-
-    get: function () {
-        return getStoredServices();
-    },
-
-    save: function (list) {
-
-        if (!Array.isArray(list)) {
-            return false;
-        }
-
-        services =
-            normalizeServices(list);
-
-        saveServices();
-
-        renderServices();
-
-        return true;
-    }
-};
-
-
-/* =========================================================
-   NORMALIZATION
-========================================================= */
 
 function normalizeServices(list) {
-
-    return list.map(
-        function (service) {
-
-            const normalizedService = {
-
-                id:
-                    service.id ||
-                    createId(),
-
-                name:
-                    cleanText(
-                        service.name,
-                        "Untitled Service"
-                    ),
-
-                description:
-                    cleanText(
-                        service.description,
-                        ""
-                    ),
-
-                coverageDuration:
-                    cleanText(
-                        service.coverageDuration,
-                        ""
-                    ),
-
-                deliveryTime:
-                    cleanText(
-                        service.deliveryTime,
-                        ""
-                    ),
-
-                coverageType:
-                    cleanText(
-                        service.coverageType,
-                        ""
-                    ),
-
-                active:
-                    service.active !== false,
-
-                packages:
-                    Array.isArray(
-                        service.packages
-                    )
-                        ? service.packages.map(
-                            normalizePackage
-                        )
-                        : []
-            };
-
-            return normalizedService;
-        }
-    );
+    return list.map((service) => ({
+        id: service.id || createId("service"),
+        name: String(service.name || "").trim(),
+        description: String(service.description || "").trim(),
+        coverageDuration: String(service.coverageDuration || "").trim(),
+        deliveryTime: String(service.deliveryTime || "").trim(),
+        coverageType: String(service.coverageType || "").trim(),
+        active: service.active !== false,
+        packages: Array.isArray(service.packages)
+            ? service.packages.map(normalizePackage)
+            : []
+    }));
 }
 
-
 function normalizePackage(pkg) {
+    const paymentPlan = normalizePaymentPlan(pkg.paymentPlan);
 
     return {
-
-        id:
-            pkg.id ||
-            createId(),
-
-        name:
-            cleanText(
-                pkg.name,
-                "Package"
-            ),
-
-        price:
-            normalizePositiveNumber(
-                pkg.price
-            ),
-
-        coverage:
-            cleanText(
-                pkg.coverage,
-                ""
-            ),
-
-        photos:
-            cleanText(
-                pkg.photos,
-                ""
-            ),
-
-        delivery:
-            cleanText(
-                pkg.delivery,
-                ""
-            ),
-
-        album:
-            cleanText(
-                pkg.album,
-                ""
-            ),
-
-        description:
-            cleanText(
-                pkg.description,
-                ""
-            ),
-
-        paymentPlan:
-            normalizePaymentPlan(
-                pkg.paymentPlan
-            )
+        id: pkg.id || createId("package"),
+        name: String(pkg.name || "").trim(),
+        price: Number(pkg.price) || 0,
+        coverage: String(pkg.coverage || "").trim(),
+        photos: String(pkg.photos || "").trim(),
+        delivery: String(pkg.delivery || "").trim(),
+        album: String(pkg.album || "").trim(),
+        description: String(pkg.description || "").trim(),
+        paymentPlan
     };
 }
 
+function normalizePaymentPlan(plan) {
+    if (!plan || typeof plan !== "object") {
+        return {
+            type: "full"
+        };
+    }
+
+    const type = ["full", "advance", "installments"].includes(plan.type)
+        ? plan.type
+        : "full";
+
+    if (type === "advance") {
+        return {
+            type: "advance",
+            advanceType:
+                plan.advanceType === "fixed"
+                    ? "fixed"
+                    : "percentage",
+            advanceValue: Number(plan.advanceValue) || 0
+        };
+    }
+
+    if (type === "installments") {
+        return {
+            type: "installments",
+            installments: Array.isArray(plan.installments)
+                ? plan.installments.map((item) => ({
+                      name: String(item.name || "").trim(),
+                      type:
+                          item.type === "fixed"
+                              ? "fixed"
+                              : "percentage",
+                      value: Number(item.value) || 0,
+                      due: String(item.due || "").trim()
+                  }))
+                : []
+        };
+    }
+
+    return {
+        type: "full"
+    };
+}
 
 /* =========================================================
-   SERVICES LIST
-========================================================= */
+   EVENTS
+   ========================================================= */
+
+function bindEvents() {
+    if (addServiceBtn) {
+        addServiceBtn.addEventListener("click", createService);
+    }
+
+    if (emptyAddServiceBtn) {
+        emptyAddServiceBtn.addEventListener("click", createService);
+    }
+
+    if (backBtn) {
+        backBtn.addEventListener("click", closeEditor);
+    }
+
+    if (cancelServiceBtn) {
+        cancelServiceBtn.addEventListener("click", cancelServiceEdit);
+    }
+
+    if (saveServiceBtn) {
+        saveServiceBtn.addEventListener("click", saveCurrentService);
+    }
+
+    if (deleteServiceBtn) {
+        deleteServiceBtn.addEventListener("click", openDeleteDialog);
+    }
+
+    if (cancelDeleteBtn) {
+        cancelDeleteBtn.addEventListener("click", closeDeleteDialog);
+    }
+
+    if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener("click", deleteCurrentService);
+    }
+
+    if (statusIndicator) {
+        statusIndicator.addEventListener("click", toggleServiceStatus);
+
+        statusIndicator.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                toggleServiceStatus();
+            }
+        });
+    }
+
+    if (addPackageBtn) {
+        addPackageBtn.addEventListener("click", createPackage);
+    }
+
+    if (closePackageEditorBtn) {
+        closePackageEditorBtn.addEventListener(
+            "click",
+            cancelPackageEdit
+        );
+    }
+
+    if (cancelPackageBtn) {
+        cancelPackageBtn.addEventListener("click", cancelPackageEdit);
+    }
+
+    if (savePackageBtn) {
+        savePackageBtn.addEventListener("click", saveCurrentPackage);
+    }
+
+    if (paymentPlanType) {
+        paymentPlanType.addEventListener(
+            "change",
+            updatePaymentPlanVisibility
+        );
+    }
+
+    if (advancePaymentType) {
+        advancePaymentType.addEventListener(
+            "change",
+            updateAdvancePaymentUI
+        );
+    }
+
+    if (advancePaymentValue) {
+        advancePaymentValue.addEventListener(
+            "input",
+            updateAdvancePaymentUI
+        );
+    }
+
+    if (packagePrice) {
+        packagePrice.addEventListener("input", () => {
+            updateAdvancePaymentUI();
+            updateInstallmentTotal();
+        });
+    }
+
+    if (addInstallmentBtn) {
+        addInstallmentBtn.addEventListener(
+            "click",
+            addInstallmentRow
+        );
+    }
+
+    if (installmentList) {
+        installmentList.addEventListener(
+            "input",
+            handleInstallmentInput
+        );
+
+        installmentList.addEventListener(
+            "change",
+            handleInstallmentInput
+        );
+
+        installmentList.addEventListener(
+            "click",
+            handleInstallmentClick
+        );
+    }
+
+    /*
+     * Event delegation for service cards.
+     * This means dynamically-created service cards work too.
+     */
+    if (servicesList) {
+        servicesList.addEventListener("click", handleServiceListClick);
+    }
+
+    /*
+     * Event delegation for package cards.
+     */
+    if (packagesList) {
+        packagesList.addEventListener("click", handlePackageListClick);
+    }
+
+    /*
+     * Close delete dialog when clicking the overlay.
+     */
+    if (deleteDialog) {
+        deleteDialog.addEventListener("click", (event) => {
+            if (event.target === deleteDialog) {
+                closeDeleteDialog();
+            }
+        });
+    }
+
+    /*
+     * Escape key closes dialogs/editors.
+     */
+    document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") {
+            return;
+        }
+
+        if (
+            deleteDialog &&
+            !deleteDialog.hidden &&
+            deleteDialog.classList.contains("show")
+        ) {
+            closeDeleteDialog();
+            return;
+        }
+
+        if (
+            packageEditorSection &&
+            !packageEditorSection.hidden &&
+            packageEditorSection.classList.contains("show")
+        ) {
+            cancelPackageEdit();
+        }
+    });
+}
+
+/* =========================================================
+   SERVICE LIST
+   ========================================================= */
 
 function renderServices() {
+    if (!servicesList) {
+        return;
+    }
 
     servicesList.innerHTML = "";
 
-    serviceCount.textContent =
-        services.length;
+    if (serviceCount) {
+        serviceCount.textContent = services.length;
+    }
 
     if (services.length === 0) {
+        servicesList.hidden = true;
 
-        emptyState.hidden = false;
-
-        return;
-    }
-
-    emptyState.hidden = true;
-
-    services.forEach(
-        function (service) {
-
-            const card =
-                document.createElement(
-                    "article"
-                );
-
-            card.className =
-                "service-card";
-
-            const startingPrice =
-                getStartingPrice(
-                    service
-                );
-
-            card.innerHTML = `
-                <div class="service-card-main">
-
-                    <div class="service-card-top">
-
-                        <h3>
-                            ${escapeHTML(
-                                service.name
-                            )}
-                        </h3>
-
-                        <span class="service-status ${
-                            service.active
-                                ? "active"
-                                : ""
-                        }">
-                            ${
-                                service.active
-                                    ? "Active"
-                                    : "Inactive"
-                            }
-                        </span>
-
-                    </div>
-
-                    <p class="service-description">
-                        ${escapeHTML(
-                            service.description ||
-                            "No description added yet."
-                        )}
-                    </p>
-
-                    <div class="service-meta">
-
-                        <div class="service-meta-item">
-
-                            <span class="service-meta-label">
-                                Starting from
-                            </span>
-
-                            <span class="service-meta-value">
-                                ${formatCurrency(
-                                    startingPrice
-                                )}
-                            </span>
-
-                        </div>
-
-                        <div class="service-meta-item">
-
-                            <span class="service-meta-label">
-                                Packages
-                            </span>
-
-                            <span class="service-meta-value">
-                                ${service.packages.length}
-                            </span>
-
-                        </div>
-
-                        <div class="service-meta-item">
-
-                            <span class="service-meta-label">
-                                Coverage
-                            </span>
-
-                            <span class="service-meta-value">
-                                ${escapeHTML(
-                                    service.coverageDuration ||
-                                    "Not set"
-                                )}
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <div class="service-card-action">
-
-                    <button
-                        type="button"
-                        class="text-button"
-                        data-action="edit"
-                        data-service-id="${escapeHTML(
-                            service.id
-                        )}"
-                    >
-                        Edit Service →
-                    </button>
-
-                </div>
-            `;
-
-            servicesList.appendChild(
-                card
-            );
+        if (emptyState) {
+            emptyState.hidden = false;
         }
-    );
 
-    servicesList
-        .querySelectorAll(
-            '[data-action="edit"]'
-        )
-        .forEach(
-            function (button) {
-
-                button.addEventListener(
-                    "click",
-                    function () {
-
-                        openService(
-                            button.dataset
-                                .serviceId
-                        );
-                    }
-                );
-            }
-        );
-}
-
-
-/* =========================================================
-   OPEN SERVICE
-========================================================= */
-
-function openService(serviceId) {
-
-    const service =
-        services.find(
-            function (item) {
-                return item.id === serviceId;
-            }
-        );
-
-    if (!service) {
         return;
     }
 
-    currentServiceId =
-        serviceId;
+    servicesList.hidden = false;
 
-    isCreatingService =
-        false;
+    if (emptyState) {
+        emptyState.hidden = true;
+    }
 
-    populateEditor(
-        service
-    );
+    services.forEach((service) => {
+        const card = document.createElement("article");
+        card.className = "service-card";
+        card.dataset.serviceId = service.id;
 
-    showEditor();
+        const startingPrice = getStartingPrice(service);
+
+        card.innerHTML = `
+            <div class="service-card-main">
+                <div class="service-card-header">
+                    <div>
+                        <h3>${escapeHTML(service.name || "Untitled Service")}</h3>
+                        <span class="service-status ${
+                            service.active ? "active" : "inactive"
+                        }">
+                            <span class="status-dot"></span>
+                            ${service.active ? "Active" : "Inactive"}
+                        </span>
+                    </div>
+                </div>
+
+                <p class="service-description">
+                    ${escapeHTML(
+                        service.description || "No description added."
+                    )}
+                </p>
+
+                <div class="service-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">Starting From</span>
+                        <strong>
+                            ${
+                                startingPrice > 0
+                                    ? formatCurrency(startingPrice)
+                                    : "Not set"
+                            }
+                        </strong>
+                    </div>
+
+                    <div class="meta-item">
+                        <span class="meta-label">Packages</span>
+                        <strong>${service.packages.length}</strong>
+                    </div>
+
+                    <div class="meta-item">
+                        <span class="meta-label">Coverage</span>
+                        <strong>
+                            ${escapeHTML(
+                                service.coverageDuration || "Not set"
+                            )}
+                        </strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="service-card-actions">
+                <button
+                    type="button"
+                    class="btn btn-secondary edit-service-btn"
+                    data-service-id="${escapeHTML(service.id)}"
+                >
+                    Edit Service
+                </button>
+            </div>
+        `;
+
+        servicesList.appendChild(card);
+    });
 }
 
+function handleServiceListClick(event) {
+    const editButton = event.target.closest(".edit-service-btn");
+
+    if (!editButton) {
+        return;
+    }
+
+    const serviceId = editButton.dataset.serviceId;
+
+    if (serviceId) {
+        openService(serviceId);
+    }
+}
 
 /* =========================================================
-   CREATE SERVICE
-========================================================= */
+   CREATE / OPEN SERVICE
+   ========================================================= */
 
 function createService() {
-
-    const service = {
-
-        id:
-            createId(),
-
-        name:
-            "",
-
-        description:
-            "",
-
-        coverageDuration:
-            "",
-
-        deliveryTime:
-            "",
-
-        coverageType:
-            "",
-
-        active:
-            true,
-
-        packages:
-            []
+    const newService = {
+        id: createId("service"),
+        name: "",
+        description: "",
+        coverageDuration: "",
+        deliveryTime: "",
+        coverageType: "",
+        active: true,
+        packages: []
     };
 
-    currentServiceId =
-        service.id;
+    services.push(newService);
 
-    isCreatingService =
-        true;
+    currentServiceId = newService.id;
+    isCreatingService = true;
+    editingPackageId = null;
+    creatingPackageId = null;
 
-    services.push(
-        service
-    );
+    openEditor();
+    populateEditor();
 
-    populateEditor(
-        service
-    );
-
-    showEditor();
-
-    serviceName.focus();
+    if (serviceName) {
+        setTimeout(() => {
+            serviceName.focus();
+        }, 50);
+    }
 }
 
-
-/* =========================================================
-   POPULATE EDITOR
-========================================================= */
-
-function populateEditor(service) {
-
-    editorTitle.textContent =
-        isCreatingService
-            ? "Add New Service"
-            : "Edit Service";
-
-    editorSubtitle.textContent =
-        isCreatingService
-            ? "Add the information clients will see."
-            : "Update the information your clients will see.";
-
-    editorBreadcrumb.textContent =
-        service.name ||
-        "New Service";
-
-    serviceName.value =
-        service.name ||
-        "";
-
-    serviceDescription.value =
-        service.description ||
-        "";
-
-    coverageDuration.value =
-        service.coverageDuration ||
-        "";
-
-    deliveryTime.value =
-        service.deliveryTime ||
-        "";
-
-    coverageType.value =
-        service.coverageType ||
-        "";
-
-    updateStatusIndicator(
-        service
+function openService(serviceId) {
+    const service = services.find(
+        (item) => item.id === serviceId
     );
+
+    if (!service) {
+        showNotification("Service could not be found.", "error");
+        return;
+    }
+
+    currentServiceId = serviceId;
+    isCreatingService = false;
+
+    openEditor();
+    populateEditor();
+}
+
+function openEditor() {
+    if (servicesView) {
+        servicesView.hidden = true;
+    }
+
+    if (editorView) {
+        editorView.hidden = false;
+    }
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+function closeEditor() {
+    if (isCreatingService) {
+        const service = getCurrentService();
+
+        /*
+         * If the user leaves a newly-created service without saving,
+         * remove it instead of leaving an empty service behind.
+         */
+        if (
+            service &&
+            !service.name.trim() &&
+            service.packages.length === 0
+        ) {
+            services = services.filter(
+                (item) => item.id !== currentServiceId
+            );
+        }
+    }
 
     closePackageEditor();
 
-    renderPackages(
-        service
-    );
+    currentServiceId = null;
+    isCreatingService = false;
+
+    if (editorView) {
+        editorView.hidden = true;
+    }
+
+    if (servicesView) {
+        servicesView.hidden = false;
+    }
+
+    renderServices();
 }
 
-
-/* =========================================================
-   STATUS
-========================================================= */
-
-function updateStatusIndicator(
-    service
-) {
-
-    statusIndicator.className =
-        "status-indicator " +
-        (
-            service.active
-                ? "active"
-                : "inactive"
-        );
-
-    statusIndicator.textContent =
-        service.active
-            ? "Active"
-            : "Inactive";
-
-    statusIndicator.setAttribute(
-        "aria-label",
-        service.active
-            ? "Service is active. Click to deactivate."
-            : "Service is inactive. Click to activate."
-    );
-}
-
-
-function toggleCurrentServiceStatus() {
-
-    const service =
-        getCurrentService();
+function populateEditor() {
+    const service = getCurrentService();
 
     if (!service) {
         return;
     }
 
-    service.active =
-        !service.active;
+    if (editorBreadcrumb) {
+        editorBreadcrumb.textContent =
+            service.name || "New Service";
+    }
 
-    updateStatusIndicator(
-        service
-    );
+    if (editorTitle) {
+        editorTitle.textContent =
+            service.name || "Create New Service";
+    }
+
+    if (editorSubtitle) {
+        editorSubtitle.textContent = service.name
+            ? "Manage your service details and packages."
+            : "Create your service and add packages.";
+    }
+
+    if (serviceName) {
+        serviceName.value = service.name;
+    }
+
+    if (serviceDescription) {
+        serviceDescription.value = service.description;
+    }
+
+    if (coverageDuration) {
+        coverageDuration.value = service.coverageDuration;
+    }
+
+    if (deliveryTime) {
+        deliveryTime.value = service.deliveryTime;
+    }
+
+    if (coverageType) {
+        coverageType.value = service.coverageType;
+    }
+
+    updateStatusIndicator(service);
+    closePackageEditor();
+    renderPackages();
+}
+
+/* =========================================================
+   SERVICE STATUS
+   ========================================================= */
+
+function toggleServiceStatus() {
+    const service = getCurrentService();
+
+    if (!service) {
+        return;
+    }
+
+    service.active = !service.active;
+
+    updateStatusIndicator(service);
+    persistServices();
 
     showNotification(
         service.active
@@ -1079,2113 +855,1404 @@ function toggleCurrentServiceStatus() {
     );
 }
 
+function updateStatusIndicator(service) {
+    if (!statusIndicator) {
+        return;
+    }
 
-/* =========================================================
-   SHOW / HIDE EDITOR
-========================================================= */
+    statusIndicator.classList.toggle("active", service.active);
+    statusIndicator.classList.toggle("inactive", !service.active);
 
-function showEditor() {
+    statusIndicator.setAttribute(
+        "aria-label",
+        service.active
+            ? "Service is active. Click to deactivate."
+            : "Service is inactive. Click to activate."
+    );
 
-    servicesView.hidden =
-        true;
+    statusIndicator.setAttribute(
+        "aria-pressed",
+        service.active ? "true" : "false"
+    );
 
-    editorView.hidden =
-        false;
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
+    statusIndicator.title = service.active
+        ? "Click to deactivate service"
+        : "Click to activate service";
 }
-
-
-function hideEditor() {
-
-    editorView.hidden =
-        true;
-
-    servicesView.hidden =
-        false;
-
-    currentServiceId =
-        null;
-
-    isCreatingService =
-        false;
-
-    closePackageEditor();
-
-    renderServices();
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-}
-
-
-/* =========================================================
-   SERVICE DATA
-========================================================= */
-
-function collectServiceData() {
-
-    return {
-
-        name:
-            serviceName.value.trim(),
-
-        description:
-            serviceDescription.value.trim(),
-
-        coverageDuration:
-            coverageDuration.value.trim(),
-
-        deliveryTime:
-            deliveryTime.value.trim(),
-
-        coverageType:
-            coverageType.value.trim()
-    };
-}
-
 
 /* =========================================================
    SAVE SERVICE
-========================================================= */
+   ========================================================= */
 
-function saveService() {
-
-    const service =
-        getCurrentService();
-
-    if (!service) {
-        return;
-    }
-
-    const data =
-        collectServiceData();
-
-    const validation =
-        validateService(
-            data
-        );
-
-    if (!validation.valid) {
-
-        showNotification(
-            validation.message
-        );
-
-        return;
-    }
-
-    service.name =
-        data.name;
-
-    service.description =
-        data.description;
-
-    service.coverageDuration =
-        data.coverageDuration;
-
-    service.deliveryTime =
-        data.deliveryTime;
-
-    service.coverageType =
-        data.coverageType;
-
-    saveServices();
-
-    editorBreadcrumb.textContent =
-        service.name;
-
-    isCreatingService =
-        false;
-
-    showNotification(
-        "Service saved successfully."
-    );
-
-    setTimeout(
-        function () {
-            hideEditor();
-        },
-        500
-    );
+function collectServiceData() {
+    return {
+        name: serviceName ? serviceName.value.trim() : "",
+        description: serviceDescription
+            ? serviceDescription.value.trim()
+            : "",
+        coverageDuration: coverageDuration
+            ? coverageDuration.value.trim()
+            : "",
+        deliveryTime: deliveryTime
+            ? deliveryTime.value.trim()
+            : "",
+        coverageType: coverageType
+            ? coverageType.value.trim()
+            : ""
+    };
 }
 
-
-/* =========================================================
-   VALIDATE SERVICE
-========================================================= */
-
 function validateService(data) {
-
     if (!data.name) {
+        showNotification("Please enter a service name.", "error");
 
-        return {
-            valid: false,
-            message:
-                "Please enter a service name."
-        };
+        if (serviceName) {
+            serviceName.focus();
+        }
+
+        return false;
     }
 
     if (!data.description) {
+        showNotification(
+            "Please enter a service description.",
+            "error"
+        );
 
-        return {
-            valid: false,
-            message:
-                "Please add a service description."
-        };
+        if (serviceDescription) {
+            serviceDescription.focus();
+        }
+
+        return false;
     }
 
     if (!data.coverageDuration) {
+        showNotification(
+            "Please enter the coverage duration.",
+            "error"
+        );
 
-        return {
-            valid: false,
-            message:
-                "Please enter the coverage duration."
-        };
+        if (coverageDuration) {
+            coverageDuration.focus();
+        }
+
+        return false;
     }
 
     if (!data.deliveryTime) {
+        showNotification(
+            "Please enter the delivery time.",
+            "error"
+        );
 
-        return {
-            valid: false,
-            message:
-                "Please enter the delivery time."
-        };
+        if (deliveryTime) {
+            deliveryTime.focus();
+        }
+
+        return false;
     }
 
     if (!data.coverageType) {
+        showNotification(
+            "Please enter the coverage type.",
+            "error"
+        );
 
-        return {
-            valid: false,
-            message:
-                "Please enter the location or coverage type."
-        };
+        if (coverageType) {
+            coverageType.focus();
+        }
+
+        return false;
     }
 
-    return {
-        valid: true
-    };
+    return true;
 }
 
+function saveCurrentService() {
+    const service = getCurrentService();
+
+    if (!service) {
+        return;
+    }
+
+    const data = collectServiceData();
+
+    if (!validateService(data)) {
+        return;
+    }
+
+    service.name = data.name;
+    service.description = data.description;
+    service.coverageDuration = data.coverageDuration;
+    service.deliveryTime = data.deliveryTime;
+    service.coverageType = data.coverageType;
+
+    persistServices();
+
+    isCreatingService = false;
+
+    if (editorBreadcrumb) {
+        editorBreadcrumb.textContent = service.name;
+    }
+
+    if (editorTitle) {
+        editorTitle.textContent = service.name;
+    }
+
+    if (editorSubtitle) {
+        editorSubtitle.textContent =
+            "Manage your service details and packages.";
+    }
+
+    showNotification("Service saved successfully.");
+
+    renderServices();
+}
 
 /* =========================================================
    CANCEL SERVICE
-========================================================= */
+   ========================================================= */
 
-function cancelEditing() {
-
+function cancelServiceEdit() {
     if (isCreatingService) {
+        const service = getCurrentService();
 
-        services =
-            services.filter(
-                function (service) {
-
-                    return service.id !==
-                        currentServiceId;
-                }
+        if (service) {
+            services = services.filter(
+                (item) => item.id !== service.id
             );
+
+            persistServices();
+        }
     }
 
-    hideEditor();
+    closeEditor();
 }
 
+/* =========================================================
+   DELETE SERVICE
+   ========================================================= */
 
-function backToServices() {
+function openDeleteDialog() {
+    const service = getCurrentService();
 
-    cancelEditing();
+    if (!service) {
+        return;
+    }
+
+    if (!deleteDialog) {
+        const confirmed = window.confirm(
+            `Delete "${service.name || "this service"}"?`
+        );
+
+        if (confirmed) {
+            deleteCurrentService();
+        }
+
+        return;
+    }
+
+    deleteDialog.hidden = false;
+    deleteDialog.classList.add("show");
+    deleteDialog.setAttribute("aria-hidden", "false");
 }
 
+function closeDeleteDialog() {
+    if (!deleteDialog) {
+        return;
+    }
+
+    deleteDialog.classList.remove("show");
+    deleteDialog.hidden = true;
+    deleteDialog.setAttribute("aria-hidden", "true");
+}
+
+function deleteCurrentService() {
+    const service = getCurrentService();
+
+    if (!service) {
+        closeDeleteDialog();
+        return;
+    }
+
+    services = services.filter(
+        (item) => item.id !== service.id
+    );
+
+    persistServices();
+
+    currentServiceId = null;
+    isCreatingService = false;
+
+    closeDeleteDialog();
+    closePackageEditor();
+
+    if (editorView) {
+        editorView.hidden = true;
+    }
+
+    if (servicesView) {
+        servicesView.hidden = false;
+    }
+
+    renderServices();
+
+    showNotification("Service deleted successfully.");
+}
 
 /* =========================================================
    PACKAGES
-========================================================= */
+   ========================================================= */
 
-function renderPackages(service) {
+function renderPackages() {
+    const service = getCurrentService();
 
-    packagesList.innerHTML =
-        "";
+    if (!service || !packagesList) {
+        return;
+    }
 
-    const packages =
-        service.packages ||
-        [];
+    packagesList.innerHTML = "";
 
-    packageEmpty.hidden =
-        packages.length !== 0;
+    if (service.packages.length === 0) {
+        packagesList.hidden = true;
 
-    packages.forEach(
-        function (pkg) {
+        if (packageEmpty) {
+            packageEmpty.hidden = false;
+        }
 
-            const card =
-                document.createElement(
-                    "article"
-                );
+        return;
+    }
 
-            card.className =
-                "package-card";
+    packagesList.hidden = false;
 
-            card.innerHTML = `
-                <div class="package-card-content">
+    if (packageEmpty) {
+        packageEmpty.hidden = true;
+    }
 
-                    <div class="package-card-top">
+    service.packages.forEach((pkg) => {
+        const card = document.createElement("article");
+        card.className = "package-card";
+        card.dataset.packageId = pkg.id;
 
-                        <h3>
-                            ${escapeHTML(
-                                pkg.name
-                            )}
-                        </h3>
-
+        card.innerHTML = `
+            <div class="package-card-content">
+                <div class="package-card-heading">
+                    <div>
+                        <h3>${escapeHTML(
+                            pkg.name || "Untitled Package"
+                        )}</h3>
+                        <strong class="package-price">
+                            ${formatCurrency(pkg.price)}
+                        </strong>
                     </div>
+                </div>
 
-                    <div class="package-price">
-                        ${formatCurrency(
-                            pkg.price
-                        )}
-                    </div>
+                ${
+                    pkg.description
+                        ? `<p class="package-description">${escapeHTML(
+                              pkg.description
+                          )}</p>`
+                        : ""
+                }
 
-                    <div class="package-details">
-
-                        <span class="package-detail">
-                            ${escapeHTML(
-                                pkg.coverage ||
-                                "Coverage not set"
-                            )}
-                        </span>
-
-                        <span class="package-detail">
-                            ${escapeHTML(
-                                pkg.photos ||
-                                "Photos not set"
-                            )}
-                        </span>
-
-                        <span class="package-detail">
-                            ${escapeHTML(
-                                pkg.delivery ||
-                                "Delivery not set"
-                            )}
-                        </span>
-
-                        ${
-                            pkg.album
-                                ? `
-                                    <span class="package-detail">
-                                        Album: ${escapeHTML(
-                                            pkg.album
-                                        )}
-                                    </span>
-                                `
-                                : ""
-                        }
-
-                    </div>
-
+                <div class="package-meta">
                     ${
-                        pkg.description
+                        pkg.coverage
                             ? `
-                                <p class="package-description">
-                                    ${escapeHTML(
-                                        pkg.description
-                                    )}
-                                </p>
-                            `
+                            <div class="meta-item">
+                                <span class="meta-label">Coverage</span>
+                                <strong>${escapeHTML(
+                                    pkg.coverage
+                                )}</strong>
+                            </div>
+                        `
                             : ""
                     }
 
-                    <div class="package-payment-summary">
+                    ${
+                        pkg.photos
+                            ? `
+                            <div class="meta-item">
+                                <span class="meta-label">Photos</span>
+                                <strong>${escapeHTML(
+                                    pkg.photos
+                                )}</strong>
+                            </div>
+                        `
+                            : ""
+                    }
 
-                        <span class="package-payment-label">
-                            Payment
-                        </span>
+                    ${
+                        pkg.delivery
+                            ? `
+                            <div class="meta-item">
+                                <span class="meta-label">Delivery</span>
+                                <strong>${escapeHTML(
+                                    pkg.delivery
+                                )}</strong>
+                            </div>
+                        `
+                            : ""
+                    }
 
-                        <span class="package-payment-value">
-                            ${escapeHTML(
-                                getPaymentPlanSummary(
-                                    pkg.paymentPlan
-                                )
-                            )}
-                        </span>
-
-                    </div>
-
+                    ${
+                        pkg.album
+                            ? `
+                            <div class="meta-item">
+                                <span class="meta-label">Album</span>
+                                <strong>${escapeHTML(
+                                    pkg.album
+                                )}</strong>
+                            </div>
+                        `
+                            : ""
+                    }
                 </div>
 
-                <div class="package-actions">
-
-                    <button
-                        type="button"
-                        class="text-button"
-                        data-package-action="edit"
-                        data-package-id="${escapeHTML(
-                            pkg.id
-                        )}"
-                    >
-                        Edit Package
-                    </button>
-
-                    <button
-                        type="button"
-                        class="text-button"
-                        data-package-action="delete"
-                        data-package-id="${escapeHTML(
-                            pkg.id
-                        )}"
-                    >
-                        Delete
-                    </button>
-
+                <div class="package-payment-summary">
+                    ${escapeHTML(
+                        getPaymentPlanSummary(
+                            pkg.paymentPlan,
+                            pkg.price
+                        )
+                    )}
                 </div>
-            `;
+            </div>
 
-            packagesList.appendChild(
-                card
-            );
-        }
-    );
+            <div class="package-card-actions">
+                <button
+                    type="button"
+                    class="btn btn-secondary edit-package-btn"
+                    data-package-id="${escapeHTML(pkg.id)}"
+                >
+                    Edit
+                </button>
 
-    packagesList
-        .querySelectorAll(
-            '[data-package-action="edit"]'
-        )
-        .forEach(
-            function (button) {
+                <button
+                    type="button"
+                    class="btn btn-danger delete-package-btn"
+                    data-package-id="${escapeHTML(pkg.id)}"
+                >
+                    Delete
+                </button>
+            </div>
+        `;
 
-                button.addEventListener(
-                    "click",
-                    function () {
-
-                        openPackageEditor(
-                            button.dataset
-                                .packageId
-                        );
-                    }
-                );
-            }
-        );
-
-    packagesList
-        .querySelectorAll(
-            '[data-package-action="delete"]'
-        )
-        .forEach(
-            function (button) {
-
-                button.addEventListener(
-                    "click",
-                    function () {
-
-                        deletePackage(
-                            button.dataset
-                                .packageId
-                        );
-                    }
-                );
-            }
-        );
+        packagesList.appendChild(card);
+    });
 }
 
+function handlePackageListClick(event) {
+    const editButton = event.target.closest(".edit-package-btn");
+    const deleteButton = event.target.closest(".delete-package-btn");
 
-/* =========================================================
-   CREATE PACKAGE
-========================================================= */
+    if (editButton) {
+        openPackageEditor(editButton.dataset.packageId);
+        return;
+    }
+
+    if (deleteButton) {
+        deletePackage(deleteButton.dataset.packageId);
+    }
+}
 
 function createPackage() {
-
-    const service =
-        getCurrentService();
+    const service = getCurrentService();
 
     if (!service) {
-        return;
-    }
-
-    if (editingPackageId) {
-
         showNotification(
-            "Finish editing the current package first."
+            "Save the service before adding a package.",
+            "error"
         );
-
         return;
     }
 
-    const pkg = {
-
-        id:
-            createId(),
-
-        name:
-            "",
-
-        price:
-            0,
-
-        coverage:
-            "",
-
-        photos:
-            "",
-
-        delivery:
-            "",
-
-        album:
-            "",
-
-        description:
-            "",
-
-        paymentPlan:
-            createDefaultPaymentPlan()
+    const newPackage = {
+        id: createId("package"),
+        name: "New Package",
+        price: 0,
+        coverage: "",
+        photos: "",
+        delivery: "",
+        album: "",
+        description: "",
+        paymentPlan: {
+            type: "full"
+        }
     };
 
-    service.packages.push(
-        pkg
-    );
+    service.packages.push(newPackage);
 
-    creatingPackageId =
-        pkg.id;
+    editingPackageId = newPackage.id;
+    creatingPackageId = newPackage.id;
 
-    openPackageEditor(
-        pkg.id
-    );
+    openPackageEditor(newPackage.id);
 }
 
-
-/* =========================================================
-   OPEN PACKAGE EDITOR
-========================================================= */
-
-function openPackageEditor(
-    packageId
-) {
-
-    const service =
-        getCurrentService();
+function openPackageEditor(packageId) {
+    const service = getCurrentService();
 
     if (!service) {
         return;
     }
 
-    const pkg =
-        service.packages.find(
-            function (item) {
-
-                return item.id ===
-                    packageId;
-            }
-        );
+    const pkg = service.packages.find(
+        (item) => item.id === packageId
+    );
 
     if (!pkg) {
+        showNotification("Package could not be found.", "error");
         return;
     }
 
-    editingPackageId =
-        packageId;
+    editingPackageId = packageId;
 
-    packageEditorTitle.textContent =
-        pkg.name ||
-        "New Package";
+    if (packageEditorSection) {
+        packageEditorSection.hidden = false;
+        packageEditorSection.classList.add("show");
+    }
 
-    packageName.value =
-        pkg.name ||
-        "";
+    if (packageEditorTitle) {
+        packageEditorTitle.textContent =
+            creatingPackageId === packageId
+                ? "Add Package"
+                : "Edit Package";
+    }
 
-    packagePrice.value =
-        pkg.price > 0
-            ? pkg.price
-            : "";
+    if (packageName) {
+        packageName.value = pkg.name;
+    }
 
-    packageCoverage.value =
-        pkg.coverage ||
-        "";
+    if (packagePrice) {
+        packagePrice.value =
+            pkg.price > 0 ? pkg.price : "";
+    }
 
-    packagePhotos.value =
-        pkg.photos ||
-        "";
+    if (packageCoverage) {
+        packageCoverage.value = pkg.coverage;
+    }
 
-    packageDelivery.value =
-        pkg.delivery ||
-        "";
+    if (packagePhotos) {
+        packagePhotos.value = pkg.photos;
+    }
 
-    packageAlbum.value =
-        pkg.album ||
-        "";
+    if (packageDelivery) {
+        packageDelivery.value = pkg.delivery;
+    }
 
-    packageDescription.value =
-        pkg.description ||
-        "";
+    if (packageAlbum) {
+        packageAlbum.value = pkg.album;
+    }
 
-    setPaymentPlanEditor(
-        pkg.paymentPlan
-    );
+    if (packageDescription) {
+        packageDescription.value = pkg.description;
+    }
 
-    packageEditorSection.hidden =
-        false;
+    populatePaymentPlanEditor(pkg.paymentPlan);
 
     packageEditorSection.scrollIntoView({
         behavior: "smooth",
         block: "start"
     });
-
-    setTimeout(
-        function () {
-
-            packageName.focus();
-
-        },
-        250
-    );
 }
 
+function closePackageEditor() {
+    editingPackageId = null;
+    creatingPackageId = null;
 
-/* =========================================================
-   SAVE PACKAGE
-========================================================= */
+    if (packageEditorSection) {
+        packageEditorSection.classList.remove("show");
+        packageEditorSection.hidden = true;
+    }
 
-function savePackage() {
+    if (installmentList) {
+        installmentList.innerHTML = "";
+    }
 
-    const service =
-        getCurrentService();
+    if (installmentTotal) {
+        installmentTotal.textContent = "₹0";
+        installmentTotal.classList.remove(
+            "valid",
+            "invalid"
+        );
+    }
+}
+
+function cancelPackageEdit() {
+    const service = getCurrentService();
 
     if (!service) {
+        closePackageEditor();
         return;
     }
 
-    const pkg =
-        service.packages.find(
-            function (item) {
-
-                return item.id ===
-                    editingPackageId;
-            }
+    /*
+     * If this package was just created and the user cancelled,
+     * remove it completely.
+     */
+    if (creatingPackageId) {
+        service.packages = service.packages.filter(
+            (pkg) => pkg.id !== creatingPackageId
         );
+
+        persistServices();
+    }
+
+    closePackageEditor();
+    renderPackages();
+}
+
+function collectPackageData() {
+    return {
+        name: packageName ? packageName.value.trim() : "",
+        price: packagePrice
+            ? Number(packagePrice.value)
+            : 0,
+        coverage: packageCoverage
+            ? packageCoverage.value.trim()
+            : "",
+        photos: packagePhotos
+            ? packagePhotos.value.trim()
+            : "",
+        delivery: packageDelivery
+            ? packageDelivery.value.trim()
+            : "",
+        album: packageAlbum
+            ? packageAlbum.value.trim()
+            : "",
+        description: packageDescription
+            ? packageDescription.value.trim()
+            : ""
+    };
+}
+
+function validatePackage(data) {
+    if (!data.name) {
+        showNotification("Please enter a package name.", "error");
+
+        if (packageName) {
+            packageName.focus();
+        }
+
+        return false;
+    }
+
+    if (!Number.isFinite(data.price) || data.price <= 0) {
+        showNotification(
+            "Package price must be greater than ₹0.",
+            "error"
+        );
+
+        if (packagePrice) {
+            packagePrice.focus();
+        }
+
+        return false;
+    }
+
+    if (!data.coverage) {
+        showNotification(
+            "Please enter the package coverage.",
+            "error"
+        );
+
+        if (packageCoverage) {
+            packageCoverage.focus();
+        }
+
+        return false;
+    }
+
+    if (!data.photos) {
+        showNotification(
+            "Please enter the included photos.",
+            "error"
+        );
+
+        if (packagePhotos) {
+            packagePhotos.focus();
+        }
+
+        return false;
+    }
+
+    if (!data.delivery) {
+        showNotification(
+            "Please enter the delivery time.",
+            "error"
+        );
+
+        if (packageDelivery) {
+            packageDelivery.focus();
+        }
+
+        return false;
+    }
+
+    return true;
+}
+
+function saveCurrentPackage() {
+    const service = getCurrentService();
+
+    if (!service || !editingPackageId) {
+        return;
+    }
+
+    const pkg = service.packages.find(
+        (item) => item.id === editingPackageId
+    );
 
     if (!pkg) {
         return;
     }
 
-    const name =
-        packageName.value.trim();
+    const data = collectPackageData();
 
-    const price =
-        Number(
-            packagePrice.value
-        );
-
-    const coverage =
-        packageCoverage.value.trim();
-
-    const photos =
-        packagePhotos.value.trim();
-
-    const delivery =
-        packageDelivery.value.trim();
-
-    const album =
-        packageAlbum.value.trim();
-
-    const description =
-        packageDescription.value.trim();
-
-    const paymentResult =
-        collectPaymentPlan(
-            price
-        );
-
-    if (!name) {
-
-        showNotification(
-            "Please enter a package name."
-        );
-
+    if (!validatePackage(data)) {
         return;
     }
 
-    if (
-        !Number.isFinite(price) ||
-        price <= 0
-    ) {
-
-        showNotification(
-            "Please enter a package price greater than ₹0."
-        );
-
-        return;
-    }
-
-    if (!coverage) {
-
-        showNotification(
-            "Please enter the package coverage."
-        );
-
-        return;
-    }
-
-    if (!photos) {
-
-        showNotification(
-            "Please enter the number of edited photos."
-        );
-
-        return;
-    }
-
-    if (!delivery) {
-
-        showNotification(
-            "Please enter the delivery time."
-        );
-
-        return;
-    }
-
-    if (!paymentResult.valid) {
-
-        showNotification(
-            paymentResult.message
-        );
-
-        return;
-    }
-
-    pkg.name =
-        name;
-
-    pkg.price =
-        price;
-
-    pkg.coverage =
-        coverage;
-
-    pkg.photos =
-        photos;
-
-    pkg.delivery =
-        delivery;
-
-    pkg.album =
-        album;
-
-    pkg.description =
-        description;
-
-    pkg.paymentPlan =
-        paymentResult.paymentPlan;
-
-    saveServices();
-
-    renderPackages(
-        service
+    const paymentPlan = collectPaymentPlan(
+        data.price
     );
+
+    if (!paymentPlan.valid) {
+        return;
+    }
+
+    pkg.name = data.name;
+    pkg.price = data.price;
+    pkg.coverage = data.coverage;
+    pkg.photos = data.photos;
+    pkg.delivery = data.delivery;
+    pkg.album = data.album;
+    pkg.description = data.description;
+    pkg.paymentPlan = paymentPlan.value;
+
+    persistServices();
+
+    creatingPackageId = null;
 
     closePackageEditor();
+    renderPackages();
 
-    showNotification(
-        "Package saved successfully."
-    );
+    showNotification("Package saved successfully.");
 }
-
-
-/* =========================================================
-   CLOSE PACKAGE EDITOR
-========================================================= */
-
-function closePackageEditor() {
-
-    if (
-        creatingPackageId &&
-        editingPackageId ===
-            creatingPackageId
-    ) {
-
-        const service =
-            getCurrentService();
-
-        if (service) {
-
-            service.packages =
-                service.packages.filter(
-                    function (pkg) {
-
-                        return pkg.id !==
-                            creatingPackageId;
-                    }
-                );
-
-            renderPackages(
-                service
-            );
-        }
-    }
-
-    packageEditorSection.hidden =
-        true;
-
-    editingPackageId =
-        null;
-
-    creatingPackageId =
-        null;
-
-    packageName.value =
-        "";
-
-    packagePrice.value =
-        "";
-
-    packageCoverage.value =
-        "";
-
-    packagePhotos.value =
-        "";
-
-    packageDelivery.value =
-        "";
-
-    packageAlbum.value =
-        "";
-
-    packageDescription.value =
-        "";
-
-    setPaymentPlanEditor(
-        createDefaultPaymentPlan()
-    );
-}
-
-
-/* =========================================================
-   PAYMENT PLAN
-========================================================= */
-
-function getPaymentPlanSummary(
-    plan
-) {
-
-    const normalized =
-        normalizePaymentPlan(
-            plan
-        );
-
-    if (
-        normalized.type ===
-        "full"
-    ) {
-
-        return "Full payment";
-    }
-
-    if (
-        normalized.type ===
-        "advance"
-    ) {
-
-        const advance =
-            normalized.advance;
-
-        return advance.type ===
-            "percentage"
-
-            ? `${advance.value}% advance`
-
-            : `${formatCurrency(
-                advance.value
-            )} advance`;
-    }
-
-    const stages =
-        normalized.installments ||
-        [];
-
-    return stages.length > 0
-        ? `${stages.length} payment stages`
-        : "Custom installments";
-}
-
-
-function createDefaultPaymentPlan() {
-
-    return {
-
-        type:
-            "full",
-
-        advance: {
-
-            type:
-                "percentage",
-
-            value:
-                0
-        },
-
-        installments:
-            []
-    };
-}
-
-
-function normalizePaymentPlan(
-    plan
-) {
-
-    const defaults =
-        createDefaultPaymentPlan();
-
-    if (
-        !plan ||
-        typeof plan !==
-            "object"
-    ) {
-
-        return defaults;
-    }
-
-    const type =
-        [
-            "full",
-            "advance",
-            "installments"
-        ].includes(
-            plan.type
-        )
-            ? plan.type
-            : defaults.type;
-
-    const advanceType =
-        plan.advance &&
-        [
-            "percentage",
-            "fixed"
-        ].includes(
-            plan.advance.type
-        )
-            ? plan.advance.type
-            : defaults.advance.type;
-
-    const advanceValue =
-        Number(
-            plan.advance &&
-            plan.advance.value
-        );
-
-    const installments =
-        Array.isArray(
-            plan.installments
-        )
-            ? plan.installments.map(
-                function (item) {
-
-                    return {
-
-                        id:
-                            item.id ||
-                            createId(),
-
-                        name:
-                            cleanText(
-                                item.name,
-                                "Payment Stage"
-                            ),
-
-                        type:
-                            [
-                                "percentage",
-                                "fixed"
-                            ].includes(
-                                item.type
-                            )
-                                ? item.type
-                                : "percentage",
-
-                        value:
-                            Number.isFinite(
-                                Number(
-                                    item.value
-                                )
-                            )
-                                ? Number(
-                                    item.value
-                                )
-                                : 0,
-
-                        due:
-                            cleanText(
-                                item.due,
-                                ""
-                            )
-                    };
-                }
-            )
-            : [];
-
-    return {
-
-        type:
-            type,
-
-        advance: {
-
-            type:
-                advanceType,
-
-            value:
-                Number.isFinite(
-                    advanceValue
-                )
-                    ? Math.max(
-                        0,
-                        advanceValue
-                    )
-                    : defaults.advance.value
-        },
-
-        installments:
-            installments
-    };
-}
-
-
-function setPaymentPlanEditor(
-    plan
-) {
-
-    const normalized =
-        normalizePaymentPlan(
-            plan
-        );
-
-    paymentPlanType.value =
-        normalized.type;
-
-    advancePaymentType.value =
-        normalized.advance.type;
-
-    advancePaymentValue.value =
-        normalized.advance.value;
-
-    installmentList.innerHTML =
-        "";
-
-    if (
-        normalized.installments.length >
-        0
-    ) {
-
-        normalized.installments.forEach(
-            function (item) {
-
-                addInstallmentRow(
-                    item
-                );
-            }
-        );
-
-    } else if (
-        normalized.type ===
-        "installments"
-    ) {
-
-        addInstallmentRow({
-
-            name:
-                "Booking Advance",
-
-            type:
-                "percentage",
-
-            value:
-                25,
-
-            due:
-                "At booking"
-        });
-
-        addInstallmentRow({
-
-            name:
-                "Final Payment",
-
-            type:
-                "percentage",
-
-            value:
-                75,
-
-            due:
-                "Before event"
-        });
-    }
-
-    updateAdvancePaymentPrefix();
-
-    updatePaymentPlanVisibility();
-
-    updateInstallmentTotal();
-}
-
-
-function updatePaymentPlanVisibility() {
-
-    const type =
-        paymentPlanType.value;
-
-    advancePaymentFields.hidden =
-        type !== "advance";
-
-    installmentPaymentFields.hidden =
-        type !== "installments";
-
-    if (
-        type === "installments" &&
-        installmentList.children.length === 0
-    ) {
-
-        addInstallmentRow({
-
-            name:
-                "Booking Advance",
-
-            type:
-                "percentage",
-
-            value:
-                25,
-
-            due:
-                "At booking"
-        });
-
-        addInstallmentRow({
-
-            name:
-                "Final Payment",
-
-            type:
-                "percentage",
-
-            value:
-                75,
-
-            due:
-                "Before event"
-        });
-    }
-
-    updateInstallmentTotal();
-}
-
-
-function updateAdvancePaymentPrefix() {
-
-    advancePaymentPrefix.textContent =
-        advancePaymentType.value ===
-        "percentage"
-            ? "%"
-            : "₹";
-}
-
-
-function addInstallmentRow(
-    data
-) {
-
-    const item =
-        data || {
-
-            name:
-                "Payment Stage",
-
-            type:
-                "percentage",
-
-            value:
-                0,
-
-            due:
-                ""
-        };
-
-    const row =
-        document.createElement(
-            "div"
-        );
-
-    row.className =
-        "installment-row";
-
-    row.dataset.installmentId =
-        item.id ||
-        createId();
-
-    row.innerHTML = `
-        <div class="installment-field">
-
-            <label>
-                Stage Name
-            </label>
-
-            <input
-                type="text"
-                class="installment-name"
-                maxlength="80"
-                value="${escapeHTML(
-                    item.name || ""
-                )}"
-                placeholder="e.g. Booking Advance"
-            >
-
-        </div>
-
-        <div class="installment-field">
-
-            <label>
-                Amount Type
-            </label>
-
-            <select class="installment-type">
-
-                <option
-                    value="percentage"
-                    ${
-                        item.type ===
-                        "percentage"
-                            ? "selected"
-                            : ""
-                    }
-                >
-                    Percentage
-                </option>
-
-                <option
-                    value="fixed"
-                    ${
-                        item.type ===
-                        "fixed"
-                            ? "selected"
-                            : ""
-                    }
-                >
-                    Fixed Amount
-                </option>
-
-            </select>
-
-        </div>
-
-        <div class="installment-field">
-
-            <label>
-                Amount
-            </label>
-
-            <div class="input-prefix">
-
-                <span class="installment-prefix">
-                    ${
-                        item.type ===
-                        "fixed"
-                            ? "₹"
-                            : "%"
-                    }
-                </span>
-
-                <input
-                    type="number"
-                    class="installment-value"
-                    min="0"
-                    step="1"
-                    value="${
-                        Number(
-                            item.value
-                        ) || 0
-                    }"
-                    placeholder="25"
-                >
-
-            </div>
-
-        </div>
-
-        <div class="installment-field">
-
-            <label>
-                Due Timing
-            </label>
-
-            <input
-                type="text"
-                class="installment-due"
-                maxlength="100"
-                value="${escapeHTML(
-                    item.due || ""
-                )}"
-                placeholder="e.g. At booking"
-            >
-
-        </div>
-
-        <button
-            type="button"
-            class="installment-remove"
-        >
-            Remove
-        </button>
-    `;
-
-    installmentList.appendChild(
-        row
-    );
-
-    const typeInput =
-        row.querySelector(
-            ".installment-type"
-        );
-
-    const valueInput =
-        row.querySelector(
-            ".installment-value"
-        );
-
-    const prefix =
-        row.querySelector(
-            ".installment-prefix"
-        );
-
-    const removeButton =
-        row.querySelector(
-            ".installment-remove"
-        );
-
-    typeInput.addEventListener(
-        "change",
-        function () {
-
-            prefix.textContent =
-                typeInput.value ===
-                "fixed"
-                    ? "₹"
-                    : "%";
-
-            updateInstallmentTotal();
-        }
-    );
-
-    valueInput.addEventListener(
-        "input",
-        updateInstallmentTotal
-    );
-
-    removeButton.addEventListener(
-        "click",
-        function () {
-
-            row.remove();
-
-            updateInstallmentTotal();
-        }
-    );
-
-    updateInstallmentTotal();
-}
-
-
-/* =========================================================
-   COLLECT PAYMENT PLAN
-========================================================= */
-
-function collectPaymentPlan(
-    price
-) {
-
-    const type =
-        paymentPlanType.value;
-
-    if (
-        type === "full"
-    ) {
-
-        return {
-
-            valid:
-                true,
-
-            paymentPlan: {
-
-                type:
-                    "full",
-
-                advance: {
-
-                    type:
-                        "percentage",
-
-                    value:
-                        0
-                },
-
-                installments:
-                    []
-            }
-        };
-    }
-
-
-    if (
-        type === "advance"
-    ) {
-
-        const value =
-            Number(
-                advancePaymentValue.value
-            );
-
-        const amountType =
-            advancePaymentType.value;
-
-        if (
-            !Number.isFinite(value) ||
-            value <= 0
-        ) {
-
-            return {
-
-                valid:
-                    false,
-
-                message:
-                    "Please enter a valid advance amount."
-            };
-        }
-
-        if (
-            amountType ===
-                "percentage" &&
-            value >= 100
-        ) {
-
-            return {
-
-                valid:
-                    false,
-
-                message:
-                    "Advance percentage must be less than 100%."
-            };
-        }
-
-        if (
-            amountType ===
-                "fixed" &&
-            value >= price
-        ) {
-
-            return {
-
-                valid:
-                    false,
-
-                message:
-                    "Fixed advance must be less than the package price."
-            };
-        }
-
-        return {
-
-            valid:
-                true,
-
-            paymentPlan: {
-
-                type:
-                    "advance",
-
-                advance: {
-
-                    type:
-                        amountType,
-
-                    value:
-                        value
-                },
-
-                installments:
-                    []
-            }
-        };
-    }
-
-
-    const rows =
-        Array.from(
-            installmentList.querySelectorAll(
-                ".installment-row"
-            )
-        );
-
-    if (
-        rows.length === 0
-    ) {
-
-        return {
-
-            valid:
-                false,
-
-            message:
-                "Please add at least one payment stage."
-        };
-    }
-
-    const installments =
-        [];
-
-    let percentageTotal =
-        0;
-
-    let fixedTotal =
-        0;
-
-
-    for (
-        let i = 0;
-        i < rows.length;
-        i += 1
-    ) {
-
-        const row =
-            rows[i];
-
-        const name =
-            row
-                .querySelector(
-                    ".installment-name"
-                )
-                .value
-                .trim();
-
-        const amountType =
-            row
-                .querySelector(
-                    ".installment-type"
-                )
-                .value;
-
-        const value =
-            Number(
-                row
-                    .querySelector(
-                        ".installment-value"
-                    )
-                    .value
-            );
-
-        const due =
-            row
-                .querySelector(
-                    ".installment-due"
-                )
-                .value
-                .trim();
-
-
-        if (!name) {
-
-            return {
-
-                valid:
-                    false,
-
-                message:
-                    `Please enter a name for payment stage ${i + 1}.`
-            };
-        }
-
-
-        if (
-            !Number.isFinite(value) ||
-            value <= 0
-        ) {
-
-            return {
-
-                valid:
-                    false,
-
-                message:
-                    `Please enter a valid amount for payment stage ${i + 1}.`
-            };
-        }
-
-
-        if (!due) {
-
-            return {
-
-                valid:
-                    false,
-
-                message:
-                    `Please enter when payment stage ${i + 1} is due.`
-            };
-        }
-
-
-        if (
-            amountType ===
-                "percentage"
-        ) {
-
-            if (
-                value > 100
-            ) {
-
-                return {
-
-                    valid:
-                        false,
-
-                    message:
-                        `Payment stage ${i + 1} cannot exceed 100%.`
-                };
-            }
-
-            percentageTotal +=
-                value;
-
-        } else {
-
-            if (
-                value > price
-            ) {
-
-                return {
-
-                    valid:
-                        false,
-
-                    message:
-                        `Payment stage ${i + 1} cannot exceed the package price.`
-                };
-            }
-
-            fixedTotal +=
-                value;
-        }
-
-
-        installments.push({
-
-            id:
-                row.dataset
-                    .installmentId ||
-                createId(),
-
-            name:
-                name,
-
-            type:
-                amountType,
-
-            value:
-                value,
-
-            due:
-                due
-        });
-    }
-
-
-    if (
-        percentageTotal >
-        100.01
-    ) {
-
-        return {
-
-            valid:
-                false,
-
-            message:
-                "Percentage payment stages cannot total more than 100%."
-        };
-    }
-
-
-    if (
-        fixedTotal >
-        price + 0.01
-    ) {
-
-        return {
-
-            valid:
-                false,
-
-            message:
-                "Fixed payment stages cannot exceed the package price."
-        };
-    }
-
-
-    const calculatedTotal =
-        (
-            price *
-            percentageTotal
-        ) / 100 +
-        fixedTotal;
-
-
-    if (
-        Math.abs(
-            calculatedTotal -
-            price
-        ) > 0.01
-    ) {
-
-        return {
-
-            valid:
-                false,
-
-            message:
-                `Payment stages must total ${formatCurrency(
-                    price
-                )}. Current total is ${formatCurrency(
-                    calculatedTotal
-                )}.`
-        };
-    }
-
-
-    return {
-
-        valid:
-            true,
-
-        paymentPlan: {
-
-            type:
-                "installments",
-
-            advance: {
-
-                type:
-                    "percentage",
-
-                value:
-                    0
-            },
-
-            installments:
-                installments
-        }
-    };
-}
-
-
-/* =========================================================
-   INSTALLMENT TOTAL
-========================================================= */
-
-function updateInstallmentTotal() {
-
-    if (
-        !installmentTotal ||
-        !installmentList
-    ) {
-        return;
-    }
-
-    const price =
-        Number(
-            packagePrice.value
-        ) || 0;
-
-    const rows =
-        Array.from(
-            installmentList.querySelectorAll(
-                ".installment-row"
-            )
-        );
-
-    let total =
-        0;
-
-    rows.forEach(
-        function (row) {
-
-            const type =
-                row
-                    .querySelector(
-                        ".installment-type"
-                    )
-                    .value;
-
-            const value =
-                Number(
-                    row
-                        .querySelector(
-                            ".installment-value"
-                        )
-                        .value
-                ) || 0;
-
-            total +=
-                type === "percentage"
-                    ? (
-                        price *
-                        value
-                    ) / 100
-                    : value;
-        }
-    );
-
-    installmentTotal.textContent =
-        `Total: ${formatCurrency(
-            total
-        )} / ${formatCurrency(
-            price
-        )}`;
-
-    installmentTotal.classList.toggle(
-        "valid",
-        price > 0 &&
-        Math.abs(
-            total - price
-        ) <= 0.01
-    );
-
-    installmentTotal.classList.toggle(
-        "invalid",
-        price > 0 &&
-        Math.abs(
-            total - price
-        ) > 0.01
-    );
-}
-
 
 /* =========================================================
    DELETE PACKAGE
-========================================================= */
+   ========================================================= */
 
-function deletePackage(
-    packageId
-) {
-
-    const service =
-        getCurrentService();
+function deletePackage(packageId) {
+    const service = getCurrentService();
 
     if (!service) {
         return;
     }
 
-    const pkg =
-        service.packages.find(
-            function (item) {
-
-                return item.id ===
-                    packageId;
-            }
-        );
+    const pkg = service.packages.find(
+        (item) => item.id === packageId
+    );
 
     if (!pkg) {
         return;
     }
 
-    const confirmed =
-        window.confirm(
-            `Delete the "${pkg.name}" package?`
-        );
+    const confirmed = window.confirm(
+        `Delete "${pkg.name || "this package"}"?`
+    );
 
     if (!confirmed) {
         return;
     }
 
-    service.packages =
-        service.packages.filter(
-            function (item) {
-
-                return item.id !==
-                    packageId;
-            }
-        );
-
-    saveServices();
-
-    renderPackages(
-        service
+    service.packages = service.packages.filter(
+        (item) => item.id !== packageId
     );
 
-    closePackageEditor();
+    if (editingPackageId === packageId) {
+        closePackageEditor();
+    }
 
-    showNotification(
-        "Package deleted."
-    );
+    persistServices();
+    renderPackages();
+
+    showNotification("Package deleted successfully.");
 }
-
 
 /* =========================================================
-   DELETE SERVICE
-========================================================= */
+   PAYMENT PLAN
+   ========================================================= */
 
-function openDeleteDialog() {
+function populatePaymentPlanEditor(paymentPlan) {
+    const plan = normalizePaymentPlan(paymentPlan);
 
-    if (!currentServiceId) {
-        return;
+    if (paymentPlanType) {
+        paymentPlanType.value = plan.type;
     }
 
-    deleteDialog.hidden =
-        false;
+    if (plan.type === "advance") {
+        if (advancePaymentType) {
+            advancePaymentType.value =
+                plan.advanceType || "percentage";
+        }
 
-    setTimeout(
-        function () {
+        if (advancePaymentValue) {
+            advancePaymentValue.value =
+                plan.advanceValue || "";
+        }
+    } else {
+        if (advancePaymentType) {
+            advancePaymentType.value = "percentage";
+        }
 
-            cancelDeleteBtn.focus();
+        if (advancePaymentValue) {
+            advancePaymentValue.value = "";
+        }
+    }
 
-        },
-        0
-    );
+    if (plan.type === "installments") {
+        renderInstallmentRows(plan.installments);
+    } else {
+        renderInstallmentRows([]);
+    }
+
+    updatePaymentPlanVisibility();
 }
 
+function updatePaymentPlanVisibility() {
+    const type = paymentPlanType
+        ? paymentPlanType.value
+        : "full";
 
-function closeDeleteDialog() {
+    if (advancePaymentFields) {
+        advancePaymentFields.hidden = type !== "advance";
+    }
 
-    deleteDialog.hidden =
-        true;
+    if (installmentPaymentFields) {
+        installmentPaymentFields.hidden =
+            type !== "installments";
+    }
+
+    if (type === "advance") {
+        updateAdvancePaymentUI();
+    }
+
+    if (type === "installments") {
+        updateInstallmentTotal();
+    }
 }
 
+function updateAdvancePaymentUI() {
+    const type = advancePaymentType
+        ? advancePaymentType.value
+        : "percentage";
 
-function deleteService() {
-
-    if (!currentServiceId) {
-        return;
+    if (advancePaymentPrefix) {
+        advancePaymentPrefix.textContent =
+            type === "percentage" ? "%" : "₹";
     }
 
-    const service =
-        getCurrentService();
-
-    if (!service) {
-        return;
+    if (advancePaymentInputWrap) {
+        advancePaymentInputWrap.dataset.type = type;
     }
+}
 
-    services =
-        services.filter(
-            function (item) {
+function collectPaymentPlan(price) {
+    const type = paymentPlanType
+        ? paymentPlanType.value
+        : "full";
 
-                return item.id !==
-                    currentServiceId;
+    if (type === "full") {
+        return {
+            valid: true,
+            value: {
+                type: "full"
             }
+        };
+    }
+
+    if (type === "advance") {
+        const advanceType = advancePaymentType
+            ? advancePaymentType.value
+            : "percentage";
+
+        const value = advancePaymentValue
+            ? Number(advancePaymentValue.value)
+            : 0;
+
+        if (!Number.isFinite(value) || value <= 0) {
+            showNotification(
+                "Please enter a valid advance payment.",
+                "error"
+            );
+
+            if (advancePaymentValue) {
+                advancePaymentValue.focus();
+            }
+
+            return {
+                valid: false
+            };
+        }
+
+        if (advanceType === "percentage") {
+            if (value >= 100) {
+                showNotification(
+                    "Advance percentage must be less than 100%.",
+                    "error"
+                );
+
+                return {
+                    valid: false
+                };
+            }
+        } else {
+            if (value >= price) {
+                showNotification(
+                    "Fixed advance must be less than the package price.",
+                    "error"
+                );
+
+                return {
+                    valid: false
+                };
+            }
+        }
+
+        return {
+            valid: true,
+            value: {
+                type: "advance",
+                advanceType,
+                advanceValue: value
+            }
+        };
+    }
+
+    if (type === "installments") {
+        const rows = collectInstallments();
+
+        if (rows.length === 0) {
+            showNotification(
+                "Add at least one installment.",
+                "error"
+            );
+
+            return {
+                valid: false
+            };
+        }
+
+        for (const row of rows) {
+            if (!row.name) {
+                showNotification(
+                    "Each installment needs a name.",
+                    "error"
+                );
+
+                return {
+                    valid: false
+                };
+            }
+
+            if (!Number.isFinite(row.value) || row.value <= 0) {
+                showNotification(
+                    "Each installment must have a value greater than ₹0.",
+                    "error"
+                );
+
+                return {
+                    valid: false
+                };
+            }
+
+            if (!row.due) {
+                showNotification(
+                    "Please enter when each installment is due.",
+                    "error"
+                );
+
+                return {
+                    valid: false
+                };
+            }
+
+            if (row.type === "percentage" && row.value > 100) {
+                showNotification(
+                    "Installment percentage cannot exceed 100%.",
+                    "error"
+                );
+
+                return {
+                    valid: false
+                };
+            }
+
+            if (row.type === "fixed" && row.value > price) {
+                showNotification(
+                    "An installment cannot exceed the package price.",
+                    "error"
+                );
+
+                return {
+                    valid: false
+                };
+            }
+        }
+
+        const total = calculateInstallmentTotal(
+            rows,
+            price
         );
 
-    saveServices();
+        if (Math.abs(total - price) > 0.01) {
+            showNotification(
+                `Installments must total ${formatCurrency(
+                    price
+                )}. Current total is ${formatCurrency(total)}.`,
+                "error"
+            );
 
-    closeDeleteDialog();
+            updateInstallmentTotal();
 
-    hideEditor();
+            return {
+                valid: false
+            };
+        }
 
-    showNotification(
-        "Service deleted."
-    );
+        return {
+            valid: true,
+            value: {
+                type: "installments",
+                installments: rows
+            }
+        };
+    }
+
+    return {
+        valid: false
+    };
 }
 
+/* =========================================================
+   INSTALLMENTS
+   ========================================================= */
+
+function renderInstallmentRows(rows) {
+    if (!installmentList) {
+        return;
+    }
+
+    installmentList.innerHTML = "";
+
+    rows.forEach((row) => {
+        appendInstallmentRow(row);
+    });
+
+    updateInstallmentTotal();
+}
+
+function appendInstallmentRow(row = {}) {
+    if (!installmentList) {
+        return;
+    }
+
+    const item = document.createElement("div");
+    item.className = "installment-row";
+
+    item.innerHTML = `
+        <div class="installment-field">
+            <label>Installment Name</label>
+            <input
+                type="text"
+                class="installment-name"
+                placeholder="e.g. Booking"
+                value="${escapeAttribute(row.name || "")}"
+            >
+        </div>
+
+        <div class="installment-field">
+            <label>Type</label>
+            <select class="installment-type">
+                <option value="percentage" ${
+                    row.type !== "fixed"
+                        ? "selected"
+                        : ""
+                }>
+                    Percentage
+                </option>
+                <option value="fixed" ${
+                    row.type === "fixed"
+                        ? "selected"
+                        : ""
+                }>
+                    Fixed Amount
+                </option>
+            </select>
+        </div>
+
+        <div class="installment-field">
+            <label>Value</label>
+            <input
+                type="number"
+                class="installment-value"
+                min="0"
+                step="0.01"
+                placeholder="0"
+                value="${
+                    Number(row.value) > 0
+                        ? Number(row.value)
+                        : ""
+                }"
+            >
+        </div>
+
+        <div class="installment-field">
+            <label>Due</label>
+            <input
+                type="text"
+                class="installment-due"
+                placeholder="e.g. At Booking"
+                value="${escapeAttribute(row.due || "")}"
+            >
+        </div>
+
+        <button
+            type="button"
+            class="remove-installment-btn"
+            aria-label="Remove installment"
+            title="Remove installment"
+        >
+            Remove
+        </button>
+    `;
+
+    installmentList.appendChild(item);
+}
+
+function addInstallmentRow() {
+    appendInstallmentRow({
+        name: "",
+        type: "percentage",
+        value: 0,
+        due: ""
+    });
+
+    updateInstallmentTotal();
+}
+
+function collectInstallments() {
+    if (!installmentList) {
+        return [];
+    }
+
+    const rows = [];
+
+    installmentList
+        .querySelectorAll(".installment-row")
+        .forEach((row) => {
+            const nameInput =
+                row.querySelector(".installment-name");
+
+            const typeInput =
+                row.querySelector(".installment-type");
+
+            const valueInput =
+                row.querySelector(".installment-value");
+
+            const dueInput =
+                row.querySelector(".installment-due");
+
+            rows.push({
+                name: nameInput
+                    ? nameInput.value.trim()
+                    : "",
+                type:
+                    typeInput &&
+                    typeInput.value === "fixed"
+                        ? "fixed"
+                        : "percentage",
+                value: valueInput
+                    ? Number(valueInput.value)
+                    : 0,
+                due: dueInput
+                    ? dueInput.value.trim()
+                    : ""
+            });
+        });
+
+    return rows;
+}
+
+function handleInstallmentInput() {
+    updateInstallmentTotal();
+}
+
+function handleInstallmentClick(event) {
+    const removeButton = event.target.closest(
+        ".remove-installment-btn"
+    );
+
+    if (!removeButton) {
+        return;
+    }
+
+    const row = removeButton.closest(".installment-row");
+
+    if (row) {
+        row.remove();
+    }
+
+    updateInstallmentTotal();
+}
+
+function calculateInstallmentTotal(rows, price) {
+    return rows.reduce((total, row) => {
+        if (row.type === "percentage") {
+            return total + (price * row.value) / 100;
+        }
+
+        return total + row.value;
+    }, 0);
+}
+
+function updateInstallmentTotal() {
+    if (!installmentTotal) {
+        return;
+    }
+
+    const price = packagePrice
+        ? Number(packagePrice.value) || 0
+        : 0;
+
+    const rows = collectInstallments();
+    const total = calculateInstallmentTotal(
+        rows,
+        price
+    );
+
+    installmentTotal.textContent = formatCurrency(total);
+
+    installmentTotal.classList.remove(
+        "valid",
+        "invalid"
+    );
+
+    if (price <= 0 || rows.length === 0) {
+        return;
+    }
+
+    if (Math.abs(total - price) <= 0.01) {
+        installmentTotal.classList.add("valid");
+    } else {
+        installmentTotal.classList.add("invalid");
+    }
+}
+
+/* =========================================================
+   PAYMENT SUMMARY
+   ========================================================= */
+
+function getPaymentPlanSummary(paymentPlan, price) {
+    const plan = normalizePaymentPlan(paymentPlan);
+
+    if (plan.type === "full") {
+        return "Payment: Full payment";
+    }
+
+    if (plan.type === "advance") {
+        if (plan.advanceType === "percentage") {
+            return `Payment: ${plan.advanceValue}% advance`;
+        }
+
+        return `Payment: ${formatCurrency(
+            plan.advanceValue
+        )} advance`;
+    }
+
+    if (plan.type === "installments") {
+        const count = Array.isArray(plan.installments)
+            ? plan.installments.length
+            : 0;
+
+        return `Payment: ${count} installment${
+            count === 1 ? "" : "s"
+        }`;
+    }
+
+    return "Payment: Full payment";
+}
 
 /* =========================================================
    HELPERS
-========================================================= */
+   ========================================================= */
 
 function getCurrentService() {
+    if (!currentServiceId) {
+        return null;
+    }
 
-    return services.find(
-        function (service) {
-
-            return service.id ===
-                currentServiceId;
-        }
+    return (
+        services.find(
+            (service) => service.id === currentServiceId
+        ) || null
     );
 }
 
-
-function getStartingPrice(
-    service
-) {
-
-    if (
-        !service.packages ||
-        service.packages.length === 0
-    ) {
-
+function getStartingPrice(service) {
+    if (!service || !Array.isArray(service.packages)) {
         return 0;
     }
 
-    const prices =
-        service.packages
-            .map(
-                function (pkg) {
+    const prices = service.packages
+        .map((pkg) => Number(pkg.price))
+        .filter(
+            (price) =>
+                Number.isFinite(price) && price > 0
+        );
 
-                    return Number(
-                        pkg.price
-                    );
-                }
-            )
-            .filter(
-                function (price) {
-
-                    return Number.isFinite(
-                        price
-                    ) &&
-                    price > 0;
-                }
-            );
-
-    if (
-        prices.length === 0
-    ) {
-        return 0;
-    }
-
-    return Math.min.apply(
-        null,
-        prices
-    );
-}
-
-
-function normalizePositiveNumber(
-    value
-) {
-
-    const number =
-        Number(value);
-
-    return Number.isFinite(
-        number
-    ) && number > 0
-        ? number
+    return prices.length
+        ? Math.min(...prices)
         : 0;
 }
 
-
-function cleanText(
-    value,
-    fallback
-) {
-
-    if (
-        typeof value !==
-        "string"
-    ) {
-
-        return fallback;
-    }
-
-    const cleaned =
-        value.trim();
-
-    return cleaned ||
-        fallback;
-}
-
-
-function formatCurrency(
-    amount
-) {
-
-    return new Intl.NumberFormat(
-        "en-IN",
-        {
-            style:
-                "currency",
-
-            currency:
-                "INR",
-
-            maximumFractionDigits:
-                0
-        }
-    ).format(
-        Number(amount) || 0
+function getServiceName(serviceId) {
+    const service = services.find(
+        (item) => item.id === serviceId
     );
+
+    return service ? service.name : "";
 }
 
+function formatCurrency(value) {
+    const amount = Number(value) || 0;
 
-function createId() {
-
-    return (
-        Date.now().toString(36) +
-        "-" +
-        Math.random()
-            .toString(36)
-            .slice(2, 8)
-    );
+    return new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 0
+    }).format(amount);
 }
 
-
-function escapeHTML(
-    value
-) {
-
-    return String(value)
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
+function createId(prefix) {
+    return `${prefix}-${Date.now()}-${Math.random()
+        .toString(36)
+        .slice(2, 9)}`;
 }
 
+function cloneData(data) {
+    return JSON.parse(JSON.stringify(data));
+}
+
+function escapeHTML(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function escapeAttribute(value) {
+    return escapeHTML(value);
+}
 
 /* =========================================================
    NOTIFICATION
-========================================================= */
+   ========================================================= */
 
-let notificationTimer =
-    null;
+let notificationTimer = null;
 
+function showNotification(message, type = "success") {
+    if (!notification) {
+        console.log(`[${type}] ${message}`);
+        return;
+    }
 
-function showNotification(
-    message
-) {
+    notification.textContent = message;
 
-    notification.textContent =
-        message;
-
-    notification.classList.add(
-        "show"
+    notification.classList.remove(
+        "show",
+        "success",
+        "error"
     );
 
-    clearTimeout(
-        notificationTimer
-    );
+    notification.classList.add(type);
 
-    notificationTimer =
-        setTimeout(
-            function () {
+    /*
+     * Force reflow so repeated notifications animate correctly.
+     */
+    void notification.offsetWidth;
 
-                notification.classList.remove(
-                    "show"
-                );
+    notification.classList.add("show");
 
-            },
-            2500
-        );
+    clearTimeout(notificationTimer);
+
+    notificationTimer = setTimeout(() => {
+        notification.classList.remove("show");
+    }, 3000);
 }
+
+/* =========================================================
+   DASHBOARD / GLOBAL COMPATIBILITY
+   =========================================================
+   
+   These functions are exposed because your dashboard/user.js
+   may use them.
+   ========================================================= */
+
+window.getStoredServices = function () {
+    return cloneData(services);
+};
+
+window.saveServices = function (newServices) {
+    if (Array.isArray(newServices)) {
+        services = normalizeServices(newServices);
+    }
+
+    return persistServices();
+};
+
+window.getServiceName = function (serviceId) {
+    return getServiceName(serviceId);
+};
+
+window.ProfessionalStudioServices = {
+    get: function () {
+        return cloneData(services);
+    },
+
+    save: function (newServices) {
+        if (!Array.isArray(newServices)) {
+            return false;
+        }
+
+        services = normalizeServices(newServices);
+        return persistServices();
+    },
+
+    reload: function () {
+        loadServices();
+        renderServices();
+        return cloneData(services);
+    }
+};
+
+/* =========================================================
+   STORAGE UPDATE LISTENER
+   ========================================================= */
+
+window.addEventListener(
+    "professionalStudioServicesUpdated",
+    () => {
+        /*
+         * Keep the UI in sync if another Professional Studio
+         * module changes the services data.
+         */
+        if (!editorView || editorView.hidden) {
+            renderServices();
+        }
+    }
+);
