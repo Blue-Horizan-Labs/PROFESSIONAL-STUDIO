@@ -59,7 +59,6 @@ a {
     width: min(1400px, 92%);
     min-height: 78px;
     margin: auto;
-
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -76,15 +75,11 @@ a {
 .brand-mark {
     width: 38px;
     height: 38px;
-
     display: grid;
     place-items: center;
-
     background: #111;
     color: #fff;
-
     border-radius: 9px;
-
     font-size: 12px;
     font-weight: 800;
     letter-spacing: -0.5px;
@@ -105,14 +100,10 @@ a {
 
 .nav-links a {
     position: relative;
-
     color: #666;
-
     font-size: 13px;
     font-weight: 600;
-
-    transition:
-        color 0.2s ease;
+    transition: color 0.2s ease;
 }
 
 .nav-links a:hover {
@@ -125,28 +116,21 @@ a {
 
 .nav-links a.active-shop::after {
     content: "";
-
     position: absolute;
     left: 0;
     right: 0;
     bottom: -9px;
-
     height: 2px;
-
     background: #111;
 }
 
 .mobile-menu-btn {
     display: none;
-
     width: 42px;
     height: 42px;
-
     border: 1px solid #ddd;
     border-radius: 10px;
-
     background: #fff;
-
     align-items: center;
     justify-content: center;
     flex-direction: column;
@@ -176,41 +160,23 @@ a {
 .hero-content {
     width: min(1200px, 90%);
     margin: auto;
-
     padding: 105px 0 110px;
-
     text-align: center;
 }
 
 .eyebrow,
 .section-label {
     display: inline-block;
-
     color: #777;
-
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 1.8px;
 }
 
-.hero h1 {
-    max-width: 850px;
-    margin: 20px auto 22px;
-
-    font-family: "Playfair Display", Georgia, serif;
-
-    font-size: clamp(44px, 6vw, 78px);
-    font-weight: 600;
-    line-height: 1.05;
-    letter-spacing: -2.5px;
-}
-
 .hero p {
     max-width: 620px;
-    margin: auto;
-
+    margin: 20px auto 0;
     color: #666;
-
     font-size: 16px;
     line-height: 1.8;
 }
@@ -238,9 +204,7 @@ a {
 
 .section-heading h2 {
     margin-top: 12px;
-
     font-family: "Playfair Display", Georgia, serif;
-
     font-size: clamp(34px, 4vw, 52px);
     font-weight: 600;
     line-height: 1.1;
@@ -250,9 +214,7 @@ a {
 .section-heading p {
     max-width: 580px;
     margin-top: 15px;
-
     color: #707070;
-
     font-size: 15px;
     line-height: 1.8;
 }
@@ -285,10 +247,8 @@ a {
 
 .builder-card {
     background: #fff;
-
     border: 1px solid #e3e3e3;
     border-radius: 18px;
-
     overflow: hidden;
 }
 
@@ -308,7 +268,7 @@ a {
     gap: 20px;
 }
 
-.block-header > div:first-child {
+.block-header-main {
     display: flex;
     align-items: flex-start;
     gap: 16px;
@@ -317,15 +277,11 @@ a {
 .block-number {
     min-width: 31px;
     height: 31px;
-
     display: grid;
     place-items: center;
-
     border: 1px solid #ddd;
     border-radius: 50%;
-
     color: #666;
-
     font-size: 11px;
     font-weight: 700;
 }
@@ -338,15 +294,12 @@ a {
 
 .block-header p {
     margin-top: 3px;
-
     color: #777;
-
     font-size: 13px;
 }
 
 .storage-unit {
     color: #999;
-
     font-size: 12px;
     font-weight: 700;
     letter-spacing: 1px;
@@ -360,29 +313,21 @@ a {
 .storage-control {
     display: grid;
     grid-template-columns: 55px 1fr 55px;
-
     align-items: center;
-
     margin-top: 34px;
 }
 
 .step-btn {
     width: 55px;
     height: 55px;
-
     display: grid;
     place-items: center;
-
     border: 1px solid #ddd;
     border-radius: 11px;
-
     background: #fff;
-
     color: #111;
-
     font-size: 24px;
     font-weight: 400;
-
     transition:
         background 0.2s ease,
         border-color 0.2s ease;
@@ -399,18 +344,14 @@ a {
 
 .storage-display strong {
     display: inline-block;
-
     font-size: clamp(42px, 5vw, 62px);
     line-height: 1;
-
     letter-spacing: -2px;
 }
 
 .storage-display span {
     margin-left: 5px;
-
     color: #777;
-
     font-size: 15px;
     font-weight: 600;
 }
@@ -427,52 +368,38 @@ a {
 #storageSlider {
     width: 100%;
     height: 5px;
-
     appearance: none;
     -webkit-appearance: none;
-
     background: #dedede;
-
     border-radius: 20px;
-
     outline: none;
 }
 
 #storageSlider::-webkit-slider-thumb {
     appearance: none;
     -webkit-appearance: none;
-
     width: 22px;
     height: 22px;
-
     border: 4px solid #111;
     border-radius: 50%;
-
     background: #fff;
-
     cursor: pointer;
 }
 
 #storageSlider::-moz-range-thumb {
     width: 17px;
     height: 17px;
-
     border: 4px solid #111;
     border-radius: 50%;
-
     background: #fff;
-
     cursor: pointer;
 }
 
 .slider-labels {
     display: flex;
     justify-content: space-between;
-
     margin-top: 10px;
-
     color: #999;
-
     font-size: 11px;
 }
 
@@ -489,29 +416,21 @@ a {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 12px;
-
     margin-top: 30px;
 }
 
 .duration-option {
     position: relative;
-
     min-height: 145px;
-
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
-
     padding: 25px 15px;
-
     border: 1px solid #ddd;
     border-radius: 13px;
-
     background: #fff;
-
     color: #111;
-
     transition:
         border-color 0.2s ease,
         background 0.2s ease,
@@ -537,9 +456,7 @@ a {
 
 .duration-label {
     margin-top: 6px;
-
     color: #777;
-
     font-size: 12px;
     font-weight: 600;
 }
@@ -550,9 +467,7 @@ a {
 
 .duration-rate {
     margin-top: 13px;
-
     color: #555;
-
     font-size: 11px;
     font-weight: 700;
 }
@@ -565,17 +480,18 @@ a {
     position: absolute;
     top: -10px;
     right: 14px;
-
     padding: 4px 8px;
-
     border-radius: 5px;
-
     background: #111;
     color: #fff;
-
     font-size: 8px;
     font-weight: 800;
     letter-spacing: 1px;
+}
+
+.duration-option.selected .popular-badge {
+    background: #fff;
+    color: #111;
 }
 
 
@@ -587,7 +503,6 @@ a {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;
-
     margin-top: 28px;
 }
 
@@ -595,25 +510,19 @@ a {
     display: flex;
     align-items: center;
     gap: 10px;
-
     color: #444;
-
     font-size: 13px;
 }
 
 .feature-icon {
     width: 22px;
     height: 22px;
-
     display: grid;
     place-items: center;
-
+    flex-shrink: 0;
     border-radius: 50%;
-
     background: #f0f0f0;
-
     color: #111;
-
     font-size: 11px;
     font-weight: 800;
 }
@@ -626,20 +535,15 @@ a {
 .summary-card {
     position: sticky;
     top: 105px;
-
     overflow: hidden;
-
     background: #111;
     color: #fff;
-
     border-radius: 18px;
-
     padding: 38px;
 }
 
 .summary-eyebrow {
     color: #888;
-
     font-size: 10px;
     font-weight: 800;
     letter-spacing: 1.7px;
@@ -647,9 +551,7 @@ a {
 
 .summary-top h2 {
     margin-top: 16px;
-
     font-family: "Playfair Display", Georgia, serif;
-
     font-size: 36px;
     font-weight: 500;
     line-height: 1.08;
@@ -658,7 +560,6 @@ a {
 
 .summary-details {
     margin-top: 42px;
-
     border-top: 1px solid #303030;
 }
 
@@ -666,19 +567,14 @@ a {
     display: flex;
     align-items: center;
     justify-content: space-between;
-
     padding: 18px 0;
-
     border-bottom: 1px solid #303030;
-
     color: #999;
-
     font-size: 13px;
 }
 
 .summary-row strong {
     color: #fff;
-
     font-size: 14px;
 }
 
@@ -688,7 +584,6 @@ a {
 
 .summary-total > span {
     color: #888;
-
     font-size: 10px;
     font-weight: 800;
     letter-spacing: 1.7px;
@@ -697,13 +592,11 @@ a {
 .price {
     display: flex;
     align-items: flex-start;
-
     margin-top: 5px;
 }
 
 .price > span {
     margin-top: 11px;
-
     font-size: 21px;
 }
 
@@ -711,37 +604,28 @@ a {
     font-size: clamp(48px, 5vw, 62px);
     font-weight: 700;
     line-height: 1;
-
     letter-spacing: -2px;
 }
 
 .summary-total p {
     margin-top: 8px;
-
     color: #888;
-
     font-size: 12px;
 }
 
 .purchase-btn {
     width: 100%;
     min-height: 55px;
-
     display: flex;
     align-items: center;
     justify-content: space-between;
-
     padding: 0 19px;
-
     border: 0;
     border-radius: 10px;
-
     background: #fff;
     color: #111;
-
     font-size: 13px;
     font-weight: 700;
-
     transition:
         background 0.2s ease,
         transform 0.2s ease;
@@ -752,131 +636,16 @@ a {
     transform: translateY(-1px);
 }
 
-.purchase-btn span {
+.purchase-btn span:last-child {
     font-size: 20px;
 }
 
 .secure-note {
     margin-top: 15px;
-
     color: #777;
-
     font-size: 10px;
     line-height: 1.5;
     text-align: center;
-}
-
-
-/* =========================================================
-   PRICING SECTION
-========================================================= */
-
-.pricing-section {
-    padding: 105px 0;
-}
-
-.pricing-cards {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 18px;
-}
-
-.pricing-card {
-    position: relative;
-
-    padding: 35px;
-
-    background: #fff;
-
-    border: 1px solid #e1e1e1;
-    border-radius: 16px;
-}
-
-.pricing-card.featured {
-    border: 2px solid #111;
-}
-
-.pricing-badge {
-    position: absolute;
-    top: 18px;
-    right: 18px;
-
-    padding: 5px 8px;
-
-    background: #111;
-    color: #fff;
-
-    border-radius: 4px;
-
-    font-size: 8px;
-    font-weight: 800;
-    letter-spacing: 1px;
-}
-
-.pricing-duration {
-    color: #777;
-
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 1.4px;
-}
-
-.pricing-rate {
-    display: flex;
-    align-items: baseline;
-
-    margin-top: 17px;
-}
-
-.pricing-rate strong {
-    font-size: 43px;
-    line-height: 1;
-
-    letter-spacing: -2px;
-}
-
-.pricing-rate span {
-    margin-left: 5px;
-
-    color: #777;
-
-    font-size: 12px;
-}
-
-.pricing-card p {
-    min-height: 67px;
-
-    margin-top: 17px;
-
-    color: #707070;
-
-    font-size: 13px;
-    line-height: 1.7;
-}
-
-.pricing-select {
-    width: 100%;
-    min-height: 46px;
-
-    margin-top: 20px;
-
-    border: 1px solid #d8d8d8;
-    border-radius: 8px;
-
-    background: #fff;
-    color: #111;
-
-    font-size: 12px;
-    font-weight: 700;
-
-    transition:
-        background 0.2s ease,
-        color 0.2s ease;
-}
-
-.pricing-select:hover {
-    background: #111;
-    color: #fff;
 }
 
 
@@ -890,24 +659,20 @@ a {
 
 .process-inner {
     padding: 85px 7%;
-
     background: #fff;
-
     border: 1px solid #e2e2e2;
     border-radius: 20px;
 }
 
 .process-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     gap: 25px;
-
     margin-top: 60px;
 }
 
 .process-item {
     padding-right: 22px;
-
     border-right: 1px solid #e3e3e3;
 }
 
@@ -917,11 +682,8 @@ a {
 
 .process-number {
     display: block;
-
     margin-bottom: 27px;
-
     color: #999;
-
     font-size: 11px;
     font-weight: 800;
     letter-spacing: 1px;
@@ -934,9 +696,7 @@ a {
 
 .process-item p {
     margin-top: 10px;
-
     color: #777;
-
     font-size: 12px;
     line-height: 1.7;
 }
@@ -955,12 +715,9 @@ a {
     align-items: center;
     justify-content: space-between;
     gap: 50px;
-
     padding: 65px 7%;
-
     background: #111;
     color: #fff;
-
     border-radius: 20px;
 }
 
@@ -974,9 +731,7 @@ a {
 
 .info-content h2 {
     margin-top: 15px;
-
     font-family: "Playfair Display", Georgia, serif;
-
     font-size: clamp(32px, 4vw, 50px);
     font-weight: 500;
     line-height: 1.1;
@@ -985,40 +740,31 @@ a {
 
 .info-content p {
     max-width: 600px;
-
     margin-top: 20px;
-
     color: #999;
-
     font-size: 14px;
     line-height: 1.8;
 }
 
 .info-stat {
     min-width: 150px;
-
     display: flex;
     align-items: flex-end;
     flex-direction: column;
-
     text-align: right;
 }
 
 .info-stat strong {
     font-family: "Playfair Display", Georgia, serif;
-
     font-size: 75px;
     font-weight: 500;
     line-height: 1;
-
     color: #fff;
 }
 
 .info-stat span {
     margin-top: 10px;
-
     color: #777;
-
     font-size: 11px;
     font-weight: 700;
     line-height: 1.4;
@@ -1033,16 +779,13 @@ a {
 
 .footer {
     padding: 65px 0 25px;
-
     background: #fff;
-
     border-top: 1px solid #e4e4e4;
 }
 
 .footer-inner {
     width: min(1400px, 92%);
     margin: auto;
-
     display: flex;
     justify-content: space-between;
     gap: 60px;
@@ -1054,9 +797,7 @@ a {
 
 .footer-brand p {
     margin-top: 15px;
-
     color: #777;
-
     font-size: 12px;
 }
 
@@ -1073,9 +814,7 @@ a {
 
 .footer-links span {
     margin-bottom: 6px;
-
     color: #999;
-
     font-size: 9px;
     font-weight: 800;
     letter-spacing: 1.5px;
@@ -1083,7 +822,6 @@ a {
 
 .footer-links a {
     color: #666;
-
     font-size: 11px;
 }
 
@@ -1095,14 +833,10 @@ a {
     width: min(1400px, 92%);
     margin: 55px auto 0;
     padding-top: 20px;
-
     display: flex;
     justify-content: space-between;
-
     border-top: 1px solid #e7e7e7;
-
     color: #999;
-
     font-size: 10px;
 }
 
@@ -1111,7 +845,7 @@ a {
    RESPONSIVE
 ========================================================= */
 
-@media (max-width: 1150px) {
+@media (max-width: 1250px) {
 
     .nav-links {
         gap: 16px;
@@ -1119,15 +853,6 @@ a {
 
     .nav-links a {
         font-size: 12px;
-    }
-
-    .shop-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .summary-card {
-        position: relative;
-        top: 0;
     }
 
     .process-grid {
@@ -1138,9 +863,21 @@ a {
         border-right: 0;
     }
 
-    .process-item:nth-child(4),
-    .process-item:nth-child(5) {
-        margin-top: 20px;
+    .process-item:nth-child(n + 4) {
+        margin-top: 25px;
+    }
+}
+
+
+@media (max-width: 1150px) {
+
+    .shop-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .summary-card {
+        position: relative;
+        top: 0;
     }
 }
 
@@ -1158,12 +895,9 @@ a {
     .mobile-menu {
         width: 92%;
         margin: 0 auto;
-
         padding: 10px 0 20px;
-
         flex-direction: column;
         gap: 0;
-
         border-top: 1px solid #eee;
     }
 
@@ -1173,11 +907,8 @@ a {
 
     .mobile-menu a {
         padding: 14px 5px;
-
         border-bottom: 1px solid #eee;
-
         color: #666;
-
         font-size: 13px;
         font-weight: 600;
     }
@@ -1198,12 +929,16 @@ a {
         grid-template-columns: repeat(2, 1fr);
     }
 
-    .process-item:nth-child(3) {
+    .process-item {
         border-right: 1px solid #e3e3e3;
     }
 
     .process-item:nth-child(even) {
         border-right: 0;
+    }
+
+    .process-item:nth-child(n + 4) {
+        margin-top: 25px;
     }
 }
 
@@ -1227,17 +962,11 @@ a {
         padding: 70px 0 75px;
     }
 
-    .hero h1 {
-        font-size: 43px;
-        letter-spacing: -1.8px;
-    }
-
     .hero p {
         font-size: 14px;
     }
 
     .shop-section,
-    .pricing-section,
     .process-section {
         padding-top: 75px;
         padding-bottom: 75px;
@@ -1275,14 +1004,6 @@ a {
         padding: 30px 24px;
     }
 
-    .pricing-cards {
-        grid-template-columns: 1fr;
-    }
-
-    .pricing-card p {
-        min-height: auto;
-    }
-
     .process-inner {
         padding: 55px 25px;
     }
@@ -1293,10 +1014,10 @@ a {
     }
 
     .process-item,
-    .process-item:nth-child(3),
-    .process-item:nth-child(even) {
+    .process-item:nth-child(even),
+    .process-item:nth-child(n + 4) {
         padding: 24px 0;
-
+        margin-top: 0;
         border-right: 0;
         border-bottom: 1px solid #e3e3e3;
     }
@@ -1312,7 +1033,6 @@ a {
     .info-card {
         align-items: flex-start;
         flex-direction: column;
-
         padding: 50px 28px;
     }
 
@@ -1340,7 +1060,6 @@ a {
 
     .nav-container,
     .shop-section,
-    .pricing-section,
     .process-section,
     .info-section,
     .footer-inner,
@@ -1350,10 +1069,6 @@ a {
 
     .brand-name {
         font-size: 14px;
-    }
-
-    .hero h1 {
-        font-size: 38px;
     }
 
     .hero p {
@@ -1379,10 +1094,6 @@ a {
 
     .price strong {
         font-size: 51px;
-    }
-
-    .pricing-rate strong {
-        font-size: 39px;
     }
 
     .footer-links {

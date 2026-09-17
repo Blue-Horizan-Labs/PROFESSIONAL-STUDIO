@@ -2,7 +2,7 @@
    PROFESSIONAL STUDIO
    GALLERY SHOP
    COMPLETE JAVASCRIPT
-   ========================================================= */
+========================================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -14,18 +14,20 @@ document.addEventListener("DOMContentLoaded", () => {
         Cloudflare R2 Standard:
         $0.015 / GB / month
 
-        Working USD → INR conversion:
-        ₹95.30 / USD
+        Working conversion:
+        ₹100 = $1
 
         Professional Studio markup:
         50%
 
         Final customer rate:
-        $0.015 × ₹95.30 × 1.50
+        $0.015 × ₹100 × 1.50
+
+        = ₹2.25 / GB / month
     */
 
     const R2_USD_PER_GB_MONTH = 0.015;
-    const USD_TO_INR = 95.30;
+    const USD_TO_INR = 100;
     const PLATFORM_MARKUP = 0.50;
 
     const FINAL_PRICE_PER_GB_MONTH =
@@ -156,18 +158,24 @@ document.addEventListener("DOMContentLoaded", () => {
             newStorage;
 
         if (storageSlider) {
+
             storageSlider.value =
                 newStorage;
+
         }
 
         if (storageValue) {
+
             storageValue.textContent =
                 newStorage;
+
         }
 
         if (summaryStorage) {
+
             summaryStorage.textContent =
                 `${formatIndianNumber(newStorage)} GB`;
+
         }
 
         updatePrice();
@@ -188,22 +196,28 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
         if (totalPrice) {
+
             totalPrice.textContent =
                 formatIndianNumber(total);
+
         }
 
         if (summaryStorage) {
+
             summaryStorage.textContent =
                 `${formatIndianNumber(selectedStorage)} GB`;
+
         }
 
         if (summaryDuration) {
+
             summaryDuration.textContent =
                 `${selectedDuration} ${
                     selectedDuration === 1
                         ? "month"
                         : "months"
                 }`;
+
         }
 
     }
@@ -368,16 +382,22 @@ document.addEventListener("DOMContentLoaded", () => {
     function createGalleryPurchase(orderData) {
 
         /*
-            This is the frontend handoff between:
+            IMPORTANT CONNECTION
 
             Gallery Shop
                     ↓
+            professionalStudioPendingGallery
+                    ↓
             Client Galleries
 
-            Backend/Razorpay can replace this later.
+            Client Galleries depends on this exact
+            localStorage key and these core fields.
 
-            IMPORTANT:
-            Client Galleries reads this exact key.
+            Do not rename:
+            - professionalStudioPendingGallery
+            - storageGB
+            - durationMonths
+            - totalPriceINR
         */
 
         const purchaseId =
@@ -412,15 +432,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
         };
 
+
+        /* =================================================
+           CLIENT GALLERY HANDOFF
+        ================================================== */
+
         localStorage.setItem(
             "professionalStudioPendingGallery",
             JSON.stringify(purchaseData)
         );
 
-        /*
-            Also keep a lightweight purchase record.
-            This is useful later when the backend is added.
-        */
+
+        /* =================================================
+           PURCHASE HISTORY
+        ================================================== */
 
         let purchases = [];
 
@@ -449,6 +474,7 @@ document.addEventListener("DOMContentLoaded", () => {
             "professionalStudioGalleryPurchases",
             JSON.stringify(purchases)
         );
+
 
         return purchaseData;
 
@@ -485,6 +511,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 /*
                     FRONTEND PURCHASE FLOW
 
+                    Current frontend:
+
+                    1. Calculate selected package.
+                    2. Create purchase handoff.
+                    3. Save purchase record.
+                    4. Navigate to Client Galleries.
+
                     Production later:
 
                     1. Send orderData to backend.
@@ -494,9 +527,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     5. Verify payment server-side.
                     6. Create gallery.
                     7. Redirect to Client Galleries.
-
-                    For the current frontend build,
-                    we create the handoff immediately.
                 */
 
                 const purchase =
@@ -527,6 +557,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
 
 
+                /*
+                    IMPORTANT:
+                    Keep this destination connected
+                    to the Client Galleries page.
+                */
+
                 window.location.href =
                     "clientgallery.html";
 
@@ -546,8 +582,12 @@ document.addEventListener("DOMContentLoaded", () => {
             "click",
             () => {
 
-                mobileMenu.classList.toggle(
-                    "open"
+                const isOpen =
+                    mobileMenu.classList.toggle("open");
+
+                mobileMenuBtn.setAttribute(
+                    "aria-expanded",
+                    String(isOpen)
                 );
 
             }
@@ -569,6 +609,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     mobileMenu.classList.remove(
                         "open"
+                    );
+
+                    mobileMenuBtn.setAttribute(
+                        "aria-expanded",
+                        "false"
                     );
 
                 }
