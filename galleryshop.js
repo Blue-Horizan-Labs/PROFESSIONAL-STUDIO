@@ -2,7 +2,7 @@
    PROFESSIONAL STUDIO
    GALLERY SHOP
    COMPLETE JAVASCRIPT
-========================================================= */
+   ========================================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
         Cloudflare R2 Standard:
         $0.015 / GB / month
 
-        Current working USD → INR conversion:
+        Working USD → INR conversion:
         ₹95.30 / USD
 
         Professional Studio markup:
@@ -22,13 +22,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         Final customer rate:
         $0.015 × ₹95.30 × 1.50
-        = ₹2.14425 / GB / month
     */
 
     const R2_USD_PER_GB_MONTH = 0.015;
-
     const USD_TO_INR = 95.30;
-
     const PLATFORM_MARKUP = 0.50;
 
     const FINAL_PRICE_PER_GB_MONTH =
@@ -83,7 +80,9 @@ document.addEventListener("DOMContentLoaded", () => {
     ====================================================== */
 
     let selectedStorage =
-        Number(storageSlider.value);
+        storageSlider
+            ? Number(storageSlider.value)
+            : 100;
 
     let selectedDuration = 6;
 
@@ -93,9 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ====================================================== */
 
     const MIN_STORAGE = 10;
-
     const MAX_STORAGE = 1000;
-
     const STORAGE_STEP = 10;
 
 
@@ -137,6 +134,10 @@ document.addEventListener("DOMContentLoaded", () => {
         let newStorage =
             Number(value);
 
+        if (!Number.isFinite(newStorage)) {
+            newStorage = MIN_STORAGE;
+        }
+
         newStorage =
             Math.max(
                 MIN_STORAGE,
@@ -154,14 +155,20 @@ document.addEventListener("DOMContentLoaded", () => {
         selectedStorage =
             newStorage;
 
-        storageSlider.value =
-            newStorage;
+        if (storageSlider) {
+            storageSlider.value =
+                newStorage;
+        }
 
-        storageValue.textContent =
-            newStorage;
+        if (storageValue) {
+            storageValue.textContent =
+                newStorage;
+        }
 
-        summaryStorage.textContent =
-            `${formatIndianNumber(newStorage)} GB`;
+        if (summaryStorage) {
+            summaryStorage.textContent =
+                `${formatIndianNumber(newStorage)} GB`;
+        }
 
         updatePrice();
 
@@ -180,18 +187,24 @@ document.addEventListener("DOMContentLoaded", () => {
                 selectedDuration
             );
 
-        totalPrice.textContent =
-            formatIndianNumber(total);
+        if (totalPrice) {
+            totalPrice.textContent =
+                formatIndianNumber(total);
+        }
 
-        summaryStorage.textContent =
-            `${formatIndianNumber(selectedStorage)} GB`;
+        if (summaryStorage) {
+            summaryStorage.textContent =
+                `${formatIndianNumber(selectedStorage)} GB`;
+        }
 
-        summaryDuration.textContent =
-            `${selectedDuration} ${
-                selectedDuration === 1
-                    ? "month"
-                    : "months"
-            }`;
+        if (summaryDuration) {
+            summaryDuration.textContent =
+                `${selectedDuration} ${
+                    selectedDuration === 1
+                        ? "month"
+                        : "months"
+                }`;
+        }
 
     }
 
@@ -202,8 +215,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function selectDuration(months) {
 
-        selectedDuration =
+        const duration =
             Number(months);
+
+        if (!Number.isFinite(duration)) {
+            return;
+        }
+
+        selectedDuration =
+            duration;
 
         durationOptions.forEach(option => {
 
@@ -228,48 +248,62 @@ document.addEventListener("DOMContentLoaded", () => {
        STORAGE SLIDER
     ====================================================== */
 
-    storageSlider.addEventListener(
-        "input",
-        event => {
+    if (storageSlider) {
 
-            updateStorage(
-                event.target.value
-            );
+        storageSlider.addEventListener(
+            "input",
+            event => {
 
-        }
-    );
+                updateStorage(
+                    event.target.value
+                );
+
+            }
+        );
+
+    }
 
 
     /* =====================================================
        DECREASE STORAGE
     ====================================================== */
 
-    decreaseStorage.addEventListener(
-        "click",
-        () => {
+    if (decreaseStorage) {
 
-            updateStorage(
-                selectedStorage - STORAGE_STEP
-            );
+        decreaseStorage.addEventListener(
+            "click",
+            () => {
 
-        }
-    );
+                updateStorage(
+                    selectedStorage -
+                    STORAGE_STEP
+                );
+
+            }
+        );
+
+    }
 
 
     /* =====================================================
        INCREASE STORAGE
     ====================================================== */
 
-    increaseStorage.addEventListener(
-        "click",
-        () => {
+    if (increaseStorage) {
 
-            updateStorage(
-                selectedStorage + STORAGE_STEP
-            );
+        increaseStorage.addEventListener(
+            "click",
+            () => {
 
-        }
-    );
+                updateStorage(
+                    selectedStorage +
+                    STORAGE_STEP
+                );
+
+            }
+        );
+
+    }
 
 
     /* =====================================================
@@ -328,96 +362,221 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =====================================================
+       CREATE PURCHASE HANDOFF
+    ====================================================== */
+
+    function createGalleryPurchase(orderData) {
+
+        /*
+            This is the frontend handoff between:
+
+            Gallery Shop
+                    ↓
+            Client Galleries
+
+            Backend/Razorpay can replace this later.
+
+            IMPORTANT:
+            Client Galleries reads this exact key.
+        */
+
+        const purchaseId =
+            `purchase_${Date.now()}_${Math.random()
+                .toString(36)
+                .slice(2, 8)}`;
+
+        const purchaseData = {
+
+            purchaseId,
+
+            storageGB:
+                orderData.storageGB,
+
+            durationMonths:
+                orderData.durationMonths,
+
+            totalPriceINR:
+                orderData.totalPriceINR,
+
+            purchasedAt:
+                new Date().toISOString(),
+
+            source:
+                "gallery-shop",
+
+            paymentStatus:
+                "frontend-confirmed",
+
+            status:
+                "purchased"
+
+        };
+
+        localStorage.setItem(
+            "professionalStudioPendingGallery",
+            JSON.stringify(purchaseData)
+        );
+
+        /*
+            Also keep a lightweight purchase record.
+            This is useful later when the backend is added.
+        */
+
+        let purchases = [];
+
+        try {
+
+            purchases =
+                JSON.parse(
+                    localStorage.getItem(
+                        "professionalStudioGalleryPurchases"
+                    )
+                ) || [];
+
+        } catch (error) {
+
+            purchases = [];
+
+        }
+
+        if (!Array.isArray(purchases)) {
+            purchases = [];
+        }
+
+        purchases.push(purchaseData);
+
+        localStorage.setItem(
+            "professionalStudioGalleryPurchases",
+            JSON.stringify(purchases)
+        );
+
+        return purchaseData;
+
+    }
+
+
+    /* =====================================================
        PURCHASE BUTTON
     ====================================================== */
 
-    purchaseBtn.addEventListener(
-        "click",
-        () => {
+    if (purchaseBtn) {
 
-            const orderData = {
+        purchaseBtn.addEventListener(
+            "click",
+            () => {
 
-                storageGB:
-                    selectedStorage,
+                const orderData = {
 
-                durationMonths:
-                    selectedDuration,
-
-                totalPriceINR:
-                    calculatePrice(
+                    storageGB:
                         selectedStorage,
-                        selectedDuration
-                    )
 
-            };
+                    durationMonths:
+                        selectedDuration,
 
-            /*
-                In production:
+                    totalPriceINR:
+                        calculatePrice(
+                            selectedStorage,
+                            selectedDuration
+                        )
 
-                1. Send orderData to backend.
-                2. Backend recalculates price.
-                3. Backend creates Razorpay order.
-                4. Open Razorpay checkout.
-                5. Verify payment server-side.
-                6. Create gallery.
-            */
+                };
 
-            console.log(
-                "Gallery purchase:",
-                orderData
-            );
 
-            alert(
-                `Gallery selected\n\n` +
-                `Storage: ${selectedStorage} GB\n` +
-                `Duration: ${selectedDuration} months\n` +
-                `Total: ₹${formatIndianNumber(
-                    orderData.totalPriceINR
-                )}\n\n` +
-                `Checkout will be connected here.`
-            );
+                /*
+                    FRONTEND PURCHASE FLOW
 
-        }
-    );
+                    Production later:
+
+                    1. Send orderData to backend.
+                    2. Backend recalculates price.
+                    3. Backend creates Razorpay order.
+                    4. Open Razorpay checkout.
+                    5. Verify payment server-side.
+                    6. Create gallery.
+                    7. Redirect to Client Galleries.
+
+                    For the current frontend build,
+                    we create the handoff immediately.
+                */
+
+                const purchase =
+                    createGalleryPurchase(
+                        orderData
+                    );
+
+
+                console.log(
+                    "Gallery purchase created:",
+                    purchase
+                );
+
+
+                /*
+                    Give the browser a moment to finish
+                    the localStorage write before navigating.
+                */
+
+                alert(
+                    `Gallery purchased\n\n` +
+                    `Storage: ${selectedStorage} GB\n` +
+                    `Duration: ${selectedDuration} months\n` +
+                    `Total: ₹${formatIndianNumber(
+                        orderData.totalPriceINR
+                    )}\n\n` +
+                    `Your gallery is ready to set up.`
+                );
+
+
+                window.location.href =
+                    "clientgallery.html";
+
+            }
+        );
+
+    }
 
 
     /* =====================================================
        MOBILE MENU
     ====================================================== */
 
-    mobileMenuBtn.addEventListener(
-        "click",
-        () => {
+    if (mobileMenuBtn && mobileMenu) {
 
-            mobileMenu.classList.toggle(
-                "open"
-            );
-
-        }
-    );
-
-
-    /* =====================================================
-       CLOSE MOBILE MENU AFTER CLICK
-    ====================================================== */
-
-    const mobileLinks =
-        mobileMenu.querySelectorAll("a");
-
-    mobileLinks.forEach(link => {
-
-        link.addEventListener(
+        mobileMenuBtn.addEventListener(
             "click",
             () => {
 
-                mobileMenu.classList.remove(
+                mobileMenu.classList.toggle(
                     "open"
                 );
 
             }
         );
 
-    });
+
+        /* ================================================
+           CLOSE MOBILE MENU AFTER CLICK
+        ================================================= */
+
+        const mobileLinks =
+            mobileMenu.querySelectorAll("a");
+
+        mobileLinks.forEach(link => {
+
+            link.addEventListener(
+                "click",
+                () => {
+
+                    mobileMenu.classList.remove(
+                        "open"
+                    );
+
+                }
+            );
+
+        });
+
+    }
 
 
     /* =====================================================
@@ -425,7 +584,9 @@ document.addEventListener("DOMContentLoaded", () => {
     ====================================================== */
 
     updateStorage(
-        storageSlider.value
+        storageSlider
+            ? storageSlider.value
+            : MIN_STORAGE
     );
 
     selectDuration(6);
