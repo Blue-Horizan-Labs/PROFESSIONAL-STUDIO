@@ -1,28 +1,17 @@
 "use strict";
 
 /* =========================================================
-   PROFESSIONAL STUDIO
-   RECENT WORK / PORTFOLIO
-
-   STORAGE ARCHITECTURE
-
-   localStorage:
-   - album metadata
-   - photo metadata
-   - storage plan information
-
-   IndexedDB:
-   - actual image blobs
-
-   Future backend:
-   - localStorage metadata -> API/database
-   - IndexedDB blobs -> Cloudflare R2
-========================================================= */
+   RECENT WORK
+   Professional Studio
+   Frontend storage architecture:
+   - localStorage = album + storage metadata
+   - IndexedDB = actual image files
+   ========================================================= */
 
 
 /* =========================================================
    STORAGE CONFIGURATION
-========================================================= */
+   ========================================================= */
 
 const PORTFOLIO_STORAGE_KEY =
     "professionalStudio.portfolioStorage";
@@ -60,22 +49,22 @@ const DEFAULT_STORAGE_PLAN = "basic";
 
 /* =========================================================
    INDEXEDDB CONFIGURATION
-========================================================= */
+   ========================================================= */
 
-const PORTFOLIO_DB_NAME =
-    "ProfessionalStudioPortfolio";
+const DB_NAME =
+    "ProfessionalStudioDB";
 
-const PORTFOLIO_DB_VERSION = 1;
+const DB_VERSION = 1;
 
-const PORTFOLIO_BLOB_STORE =
-    "fileBlobs";
+const PHOTO_STORE =
+    "recentWorkPhotos";
 
-let portfolioDBPromise = null;
+let database = null;
 
 
 /* =========================================================
    STATE
-========================================================= */
+   ========================================================= */
 
 let selectedFiles = [];
 
@@ -87,27 +76,19 @@ let pendingDeleteId = null;
 
 let albumModalMode = "create";
 
-/*
-   Object URLs are temporary browser URLs.
-
-   They are created from IndexedDB blobs when needed
-   and revoked when no longer required.
-*/
-
-const objectURLCache = new Map();
-
 
 /* =========================================================
    INDEXEDDB
-========================================================= */
+   ========================================================= */
 
-function openPortfolioDatabase() {
+function openDatabase() {
 
-    if (portfolioDBPromise) {
-        return portfolioDBPromise;
-    }
+    return new Promise(function(resolve, reject) {
 
-    portfolioDBPromise = new Promise(function(resolve, reject) {
+        if (database) {
+            resolve(database);
+            return;
+        }
 
         if (!window.indexedDB) {
 
@@ -120,97 +101,61 @@ function openPortfolioDatabase() {
             return;
         }
 
-        const request = indexedDB.open(
-            PORTFOLIO_DB_NAME,
-            PORTFOLIO_DB_VERSION
-        );
-
-        request.onupgradeneeded = function(event) {
-
-            const db = event.target.result;
-
-            if (!db.objectStoreNames.contains(PORTFOLIO_BLOB_STORE)) {
-
-                db.createObjectStore(
-                    PORTFOLIO_BLOB_STORE,
-                    {
-                        keyPath: "id"
-                    }
-                );
-
-            }
-
-        };
-
-        request.onsuccess = function() {
-
-            const db = request.result;
-
-            db.onversionchange = function() {
-                db.close();
-            };
-
-            resolve(db);
-
-        };
-
-        request.onerror = function() {
-
-            reject(
-                request.error ||
-                new Error("Could not open portfolio database.")
-            );
-
-        };
-
-    });
-
-    return portfolioDBPromise;
-
-}
-
-
-/* =========================================================
-   STORE FILE BLOB
-========================================================= */
-
-async function storeFileBlob(fileId, file) {
-
-    const db =
-        await openPortfolioDatabase();
-
-    return new Promise(function(resolve, reject) {
-
-        const transaction =
-            db.transaction(
-                PORTFOLIO_BLOB_STORE,
-                "readwrite"
-            );
-
-        const store =
-            transaction.objectStore(
-                PORTFOLIO_BLOB_STORE
-            );
-
         const request =
-            store.put({
-                id: fileId,
-                blob: file,
-                type: file.type || "image/*",
-                size: file.size,
-                name: file.name
-            });
-
-        request.onsuccess = function() {
-            resolve();
-        };
-
-        request.onerror = function() {
-            reject(
-                request.error ||
-                new Error("Could not store image.")
+            window.indexedDB.open(
+                DB_NAME,
+                DB_VERSION
             );
-        };
+
+        request.onupgradeneeded =
+            function(event) {
+
+                const db =
+                    event.target.result;
+
+                if (!db.objectStoreNames.contains(PHOTO_STORE)) {
+
+                    const store =
+                        db.createObjectStore(
+                            PHOTO_STORE,
+                            {
+                                keyPath: "id"
+                            }
+                        );
+
+                    store.createIndex(
+                        "albumId",
+                        "albumId",
+                        {
+                            unique: false
+                        }
+                    );
+
+                }
+
+            };
+
+        request.onsuccess =
+            function(event) {
+
+                database =
+                    event.target.result;
+
+                resolve(database);
+
+            };
+
+        request.onerror =
+            function() {
+
+                reject(
+                    request.error ||
+                    new Error(
+                        "Could not open image storage."
+                    )
+                );
+
+            };
 
     });
 
@@ -218,197 +163,231 @@ async function storeFileBlob(fileId, file) {
 
 
 /* =========================================================
-   GET FILE BLOB
-========================================================= */
+   SAVE PHOTO BLOB
+   ========================================================= */
 
-async function getStoredFileBlob(fileId) {
+function savePhotoBlob(photoRecord) {
 
-    const db =
-        await openPortfolioDatabase();
+    return openDatabase()
+        .then(function(db) {
 
-    return new Promise(function(resolve, reject) {
+            return new Promise(
+                function(resolve, reject) {
 
-        const transaction =
-            db.transaction(
-                PORTFOLIO_BLOB_STORE,
-                "readonly"
+                    const transaction =
+                        db.transaction(
+                            PHOTO_STORE,
+                            "readwrite"
+                        );
+
+                    const store =
+                        transaction.objectStore(
+                            PHOTO_STORE
+                        );
+
+                    const request =
+                        store.put(
+                            photoRecord
+                        );
+
+                    request.onsuccess =
+                        function() {
+                            resolve();
+                        };
+
+                    request.onerror =
+                        function() {
+                            reject(
+                                request.error ||
+                                new Error(
+                                    "Could not save photo."
+                                )
+                            );
+                        };
+
+                }
             );
-
-        const store =
-            transaction.objectStore(
-                PORTFOLIO_BLOB_STORE
-            );
-
-        const request =
-            store.get(fileId);
-
-        request.onsuccess = function() {
-
-            const result =
-                request.result;
-
-            resolve(
-                result
-                    ? result.blob
-                    : null
-            );
-
-        };
-
-        request.onerror = function() {
-
-            reject(
-                request.error ||
-                new Error("Could not retrieve image.")
-            );
-
-        };
-
-    });
-
-}
-
-
-/* =========================================================
-   DELETE FILE BLOB
-========================================================= */
-
-async function deleteStoredFileBlob(fileId) {
-
-    try {
-
-        const db =
-            await openPortfolioDatabase();
-
-        await new Promise(function(resolve, reject) {
-
-            const transaction =
-                db.transaction(
-                    PORTFOLIO_BLOB_STORE,
-                    "readwrite"
-                );
-
-            const store =
-                transaction.objectStore(
-                    PORTFOLIO_BLOB_STORE
-                );
-
-            const request =
-                store.delete(fileId);
-
-            request.onsuccess = function() {
-                resolve();
-            };
-
-            request.onerror = function() {
-                reject(request.error);
-            };
 
         });
 
-    }
-    catch (error) {
+}
 
-        console.warn(
-            "Could not delete stored image:",
-            error
-        );
 
-    }
+/* =========================================================
+   GET PHOTO BLOB
+   ========================================================= */
+
+function getPhotoBlob(photoId) {
+
+    return openDatabase()
+        .then(function(db) {
+
+            return new Promise(
+                function(resolve, reject) {
+
+                    const transaction =
+                        db.transaction(
+                            PHOTO_STORE,
+                            "readonly"
+                        );
+
+                    const store =
+                        transaction.objectStore(
+                            PHOTO_STORE
+                        );
+
+                    const request =
+                        store.get(
+                            photoId
+                        );
+
+                    request.onsuccess =
+                        function() {
+
+                            resolve(
+                                request.result || null
+                            );
+
+                        };
+
+                    request.onerror =
+                        function() {
+
+                            reject(
+                                request.error ||
+                                new Error(
+                                    "Could not read photo."
+                                )
+                            );
+
+                        };
+
+                }
+            );
+
+        });
 
 }
 
 
 /* =========================================================
-   CREATE OBJECT URL
-========================================================= */
+   DELETE PHOTO BLOB
+   ========================================================= */
 
-async function getFileObjectURL(fileId) {
+function deletePhotoBlob(photoId) {
 
-    if (objectURLCache.has(fileId)) {
+    return openDatabase()
+        .then(function(db) {
 
-        return objectURLCache.get(fileId);
+            return new Promise(
+                function(resolve, reject) {
 
-    }
+                    const transaction =
+                        db.transaction(
+                            PHOTO_STORE,
+                            "readwrite"
+                        );
 
-    const blob =
-        await getStoredFileBlob(fileId);
+                    const store =
+                        transaction.objectStore(
+                            PHOTO_STORE
+                        );
 
-    if (!blob) {
-        return "";
-    }
+                    const request =
+                        store.delete(
+                            photoId
+                        );
 
-    const url =
-        URL.createObjectURL(blob);
+                    request.onsuccess =
+                        function() {
+                            resolve();
+                        };
 
-    objectURLCache.set(
-        fileId,
-        url
-    );
+                    request.onerror =
+                        function() {
 
-    return url;
+                            reject(
+                                request.error ||
+                                new Error(
+                                    "Could not delete photo."
+                                )
+                            );
 
-}
+                        };
 
+                }
+            );
 
-/* =========================================================
-   REVOKE OBJECT URL
-========================================================= */
-
-function revokeFileObjectURL(fileId) {
-
-    const url =
-        objectURLCache.get(fileId);
-
-    if (!url) {
-        return;
-    }
-
-    try {
-
-        URL.revokeObjectURL(url);
-
-    }
-    catch (error) {
-
-        /* Ignore cleanup errors. */
-
-    }
-
-    objectURLCache.delete(fileId);
+        });
 
 }
 
 
 /* =========================================================
-   REVOKE ALL OBJECT URLS
-========================================================= */
+   DELETE MULTIPLE PHOTO BLOBS
+   ========================================================= */
 
-function revokeAllObjectURLs() {
+function deletePhotoBlobs(photoIds) {
 
-    objectURLCache.forEach(function(url) {
+    if (!photoIds.length) {
+        return Promise.resolve();
+    }
 
-        try {
+    return openDatabase()
+        .then(function(db) {
 
-            URL.revokeObjectURL(url);
+            return new Promise(
+                function(resolve, reject) {
 
-        }
-        catch (error) {
+                    const transaction =
+                        db.transaction(
+                            PHOTO_STORE,
+                            "readwrite"
+                        );
 
-            /* Ignore cleanup errors. */
+                    const store =
+                        transaction.objectStore(
+                            PHOTO_STORE
+                        );
 
-        }
+                    photoIds.forEach(
+                        function(photoId) {
 
-    });
+                            store.delete(
+                                photoId
+                            );
 
-    objectURLCache.clear();
+                        }
+                    );
+
+                    transaction.oncomplete =
+                        function() {
+                            resolve();
+                        };
+
+                    transaction.onerror =
+                        function() {
+
+                            reject(
+                                transaction.error ||
+                                new Error(
+                                    "Could not delete photos."
+                                )
+                            );
+
+                        };
+
+                }
+            );
+
+        });
 
 }
 
 
 /* =========================================================
-   SUBSCRIPTION
-========================================================= */
+   GET CURRENT SUBSCRIPTION
+   ========================================================= */
 
 function getCurrentSubscription() {
 
@@ -458,7 +437,7 @@ function getCurrentSubscription() {
 
 /* =========================================================
    CURRENT STORAGE PLAN
-========================================================= */
+   ========================================================= */
 
 function getCurrentStoragePlan() {
 
@@ -480,8 +459,8 @@ function getCurrentStoragePlan() {
 
 
 /* =========================================================
-   PORTFOLIO STORAGE
-========================================================= */
+   GET PORTFOLIO STORAGE
+   ========================================================= */
 
 function getPortfolioStorage() {
 
@@ -504,6 +483,7 @@ function getPortfolioStorage() {
 
     };
 
+
     try {
 
         const saved =
@@ -522,8 +502,11 @@ function getPortfolioStorage() {
             ) {
 
                 storage = {
+
                     ...storage,
+
                     ...parsed
+
                 };
 
             }
@@ -534,123 +517,31 @@ function getPortfolioStorage() {
     catch (error) {
 
         console.warn(
-            "Could not read portfolio storage:",
+            "Could not read gallery storage:",
             error
         );
 
     }
 
 
-    /* -----------------------------------------------------
-       DATA SAFETY
-    ----------------------------------------------------- */
-
     if (!Array.isArray(storage.albums)) {
+
         storage.albums = [];
+
     }
+
 
     if (!Array.isArray(storage.files)) {
+
         storage.files = [];
+
     }
 
 
-    /* -----------------------------------------------------
-       NORMALIZE ALBUMS
-    ----------------------------------------------------- */
-
-    storage.albums =
-        storage.albums.map(function(album) {
-
-            return {
-
-                id:
-                    album.id ||
-                    createId("album"),
-
-                name:
-                    String(
-                        album.name || "Untitled Album"
-                    ),
-
-                coverFileId:
-                    album.coverFileId || null,
-
-                publicVisible:
-                    album.publicVisible !== false,
-
-                createdAt:
-                    album.createdAt ||
-                    new Date().toISOString(),
-
-                updatedAt:
-                    album.updatedAt ||
-                    album.createdAt ||
-                    new Date().toISOString()
-
-            };
-
-        });
-
-
-    /* -----------------------------------------------------
-       NORMALIZE FILE METADATA
-    ----------------------------------------------------- */
-
-    storage.files =
-        storage.files.map(function(file) {
-
-            return {
-
-                id:
-                    file.id ||
-                    createId("photo"),
-
-                albumId:
-                    file.albumId || null,
-
-                name:
-                    String(
-                        file.name || "Untitled"
-                    ),
-
-                sizeMB:
-                    Number(
-                        file.sizeMB || 0
-                    ),
-
-                sizeBytes:
-                    Number(
-                        file.sizeBytes ||
-                        (
-                            Number(file.sizeMB || 0) *
-                            1024 *
-                            1024
-                        )
-                    ),
-
-                type:
-                    file.type ||
-                    "image/*",
-
-                createdAt:
-                    file.createdAt ||
-                    new Date().toISOString(),
-
-                /*
-                   blobUrl is intentionally NOT persisted.
-
-                   The actual image lives in IndexedDB.
-                */
-
-                url: ""
-            };
-
-        });
-
-
-    /* -----------------------------------------------------
-       CURRENT SUBSCRIPTION ALWAYS CONTROLS LIMIT
-    ----------------------------------------------------- */
+    /*
+       The subscription determines
+       the current storage limit.
+    */
 
     storage.planId =
         plan.id;
@@ -659,9 +550,10 @@ function getPortfolioStorage() {
         plan.storageMB;
 
 
-    /* -----------------------------------------------------
-       CALCULATE ACTUAL STORAGE
-    ----------------------------------------------------- */
+    /*
+       Recalculate usage from actual
+       stored file metadata.
+    */
 
     storage.usedMB =
         storage.files.reduce(
@@ -669,12 +561,167 @@ function getPortfolioStorage() {
 
                 return (
                     total +
-                    Number(file.sizeMB || 0)
+                    Number(
+                        file.sizeMB || 0
+                    )
                 );
 
             },
             0
         );
+
+
+    /*
+       Ensure all albums have the
+       fields required by the current
+       frontend data model.
+    */
+
+    storage.albums =
+        storage.albums.map(
+            function(album) {
+
+                return {
+
+                    id:
+                        album.id ||
+                        createId("album"),
+
+                    name:
+                        album.name ||
+                        "Untitled Album",
+
+                    coverFileId:
+                        album.coverFileId ||
+                        null,
+
+                    isPublic:
+                        album.isPublic !== false,
+
+                    createdAt:
+                        album.createdAt ||
+                        new Date().toISOString()
+
+                };
+
+            }
+        );
+
+
+    /*
+       Ensure file metadata is valid.
+       Actual binary data lives in IndexedDB.
+    */
+
+    storage.files =
+        storage.files.map(
+            function(file) {
+
+                return {
+
+                    id:
+                        file.id ||
+                        createId("photo"),
+
+                    albumId:
+                        file.albumId,
+
+                    name:
+                        file.name ||
+                        "Untitled Photo",
+
+                    sizeMB:
+                        Number(
+                            file.sizeMB || 0
+                        ),
+
+                    sizeBytes:
+                        Number(
+                            file.sizeBytes ||
+                            (
+                                Number(file.sizeMB || 0) *
+                                1024 *
+                                1024
+                            )
+                        ),
+
+                    type:
+                        file.type ||
+                        "image/*",
+
+                    createdAt:
+                        file.createdAt ||
+                        new Date().toISOString(),
+
+                    /*
+                       blobKey is intentionally
+                       separate from URL.
+                    */
+
+                    blobKey:
+                        file.blobKey ||
+                        file.id
+
+                };
+
+            }
+        );
+
+
+    /*
+       Remove references to albums
+       that no longer exist.
+    */
+
+    storage.files =
+        storage.files.filter(
+            function(file) {
+
+                return storage.albums.some(
+                    function(album) {
+
+                        return (
+                            album.id ===
+                            file.albumId
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+
+    /*
+       Remove invalid album cover IDs.
+    */
+
+    storage.albums.forEach(
+        function(album) {
+
+            const coverExists =
+                storage.files.some(
+                    function(file) {
+
+                        return (
+                            file.albumId ===
+                            album.id &&
+                            file.id ===
+                            album.coverFileId
+                        );
+
+                    }
+                );
+
+            if (!coverExists) {
+
+                album.coverFileId =
+                    null;
+
+            }
+
+        }
+    );
 
 
     return storage;
@@ -684,32 +731,34 @@ function getPortfolioStorage() {
 
 /* =========================================================
    SAVE PORTFOLIO STORAGE
-========================================================= */
+   ========================================================= */
 
 function savePortfolioStorage(storage) {
 
-    try {
+    /*
+       Recalculate before saving.
+    */
 
-        localStorage.setItem(
-            PORTFOLIO_STORAGE_KEY,
-            JSON.stringify(storage)
+    storage.usedMB =
+        storage.files.reduce(
+            function(total, file) {
+
+                return (
+                    total +
+                    Number(
+                        file.sizeMB || 0
+                    )
+                );
+
+            },
+            0
         );
 
-    }
-    catch (error) {
 
-        console.error(
-            "Could not save portfolio metadata:",
-            error
-        );
-
-        showGlobalStorageError(
-            "Your browser could not save the portfolio information."
-        );
-
-        return false;
-
-    }
+    localStorage.setItem(
+        PORTFOLIO_STORAGE_KEY,
+        JSON.stringify(storage)
+    );
 
 
     renderStorage();
@@ -718,14 +767,27 @@ function savePortfolioStorage(storage) {
 
     renderActiveAlbum();
 
-    return true;
+
+    /*
+       Notify other Professional Studio
+       pages in the same browser.
+    */
+
+    window.dispatchEvent(
+        new CustomEvent(
+            "professionalStudioRecentWorkUpdated",
+            {
+                detail: storage
+            }
+        )
+    );
 
 }
 
 
 /* =========================================================
    FORMAT STORAGE
-========================================================= */
+   ========================================================= */
 
 function formatStorage(mb) {
 
@@ -738,6 +800,7 @@ function formatStorage(mb) {
         const gb =
             mb / 1024;
 
+
         if (gb >= 10) {
 
             return (
@@ -746,6 +809,7 @@ function formatStorage(mb) {
             );
 
         }
+
 
         return (
             gb
@@ -767,35 +831,31 @@ function formatStorage(mb) {
     }
 
 
-    if (mb > 0) {
-
-        return (
-            mb.toFixed(2) +
-            " MB"
-        );
-
-    }
-
-
-    return "0 MB";
+    return (
+        mb.toFixed(2) +
+        " MB"
+    );
 
 }
 
 
 /* =========================================================
    STORAGE STATUS
-========================================================= */
+   ========================================================= */
 
 function getStorageStatus() {
 
     const storage =
         getPortfolioStorage();
 
+
     const used =
         storage.usedMB;
 
+
     const limit =
         storage.limitMB;
+
 
     const available =
         Math.max(
@@ -803,10 +863,12 @@ function getStorageStatus() {
             limit - used
         );
 
+
     let percentage =
         limit > 0
             ? (used / limit) * 100
             : 100;
+
 
     percentage =
         Math.min(
@@ -853,7 +915,7 @@ function getStorageStatus() {
 
 /* =========================================================
    FILE SIZE
-========================================================= */
+   ========================================================= */
 
 function getFileSizeMB(file) {
 
@@ -868,54 +930,14 @@ function getFileSizeMB(file) {
 
 
 /* =========================================================
-   FILE VALIDATION
-========================================================= */
-
-function validateFiles(files) {
-
-    const validFiles = [];
-
-    const invalidFiles = [];
-
-    Array.from(files || []).forEach(function(file) {
-
-        if (
-            !file ||
-            !file.type ||
-            !file.type.startsWith("image/")
-        ) {
-
-            invalidFiles.push(file);
-
-            return;
-
-        }
-
-        validFiles.push(file);
-
-    });
-
-    return {
-
-        validFiles:
-            validFiles,
-
-        invalidFiles:
-            invalidFiles
-
-    };
-
-}
-
-
-/* =========================================================
    UPLOAD VALIDATION
-========================================================= */
+   ========================================================= */
 
 function validateUpload(files) {
 
     const status =
         getStorageStatus();
+
 
     const totalMB =
         files.reduce(
@@ -934,7 +956,8 @@ function validateUpload(files) {
     return {
 
         allowed:
-            totalMB <= status.availableMB,
+            totalMB <=
+            status.availableMB,
 
         totalMB:
             totalMB,
@@ -956,12 +979,13 @@ function validateUpload(files) {
 
 /* =========================================================
    RENDER STORAGE
-========================================================= */
+   ========================================================= */
 
 function renderStorage() {
 
     const status =
         getStorageStatus();
+
 
     const plan =
         getCurrentStoragePlan();
@@ -972,30 +996,36 @@ function renderStorage() {
             "planName"
         );
 
+
     const usedStorage =
         document.getElementById(
             "usedStorage"
         );
+
 
     const availableStorage =
         document.getElementById(
             "availableStorage"
         );
 
+
     const totalStorage =
         document.getElementById(
             "totalStorage"
         );
+
 
     const progress =
         document.getElementById(
             "storageProgress"
         );
 
+
     const badge =
         document.getElementById(
             "storageBadge"
         );
+
 
     const message =
         document.getElementById(
@@ -1058,14 +1088,18 @@ function renderStorage() {
             status.status;
 
 
-        if (status.status === "full") {
+        if (
+            status.status ===
+            "full"
+        ) {
 
             badge.textContent =
                 "Storage Full";
 
         }
         else if (
-            status.status === "warning"
+            status.status ===
+            "warning"
         ) {
 
             badge.textContent =
@@ -1084,14 +1118,18 @@ function renderStorage() {
 
     if (message) {
 
-        if (status.status === "full") {
+        if (
+            status.status ===
+            "full"
+        ) {
 
             message.textContent =
                 "Your storage is full. Delete existing work to make space or upgrade your plan.";
 
         }
         else if (
-            status.status === "warning"
+            status.status ===
+            "warning"
         ) {
 
             message.textContent =
@@ -1120,19 +1158,21 @@ function renderStorage() {
 
 /* =========================================================
    ALBUM HELPERS
-========================================================= */
+   ========================================================= */
 
 function getAlbumById(albumId) {
 
     const storage =
         getPortfolioStorage();
 
+
     return (
         storage.albums.find(
             function(album) {
 
                 return (
-                    album.id === albumId
+                    album.id ===
+                    albumId
                 );
 
             }
@@ -1148,11 +1188,13 @@ function getAlbumFiles(albumId) {
     const storage =
         getPortfolioStorage();
 
+
     return storage.files.filter(
         function(file) {
 
             return (
-                file.albumId === albumId
+                file.albumId ===
+                albumId
             );
 
         }
@@ -1170,7 +1212,9 @@ function getAlbumStorageMB(albumId) {
 
             return (
                 total +
-                Number(file.sizeMB || 0)
+                Number(
+                    file.sizeMB || 0
+                )
             );
 
         },
@@ -1182,7 +1226,7 @@ function getAlbumStorageMB(albumId) {
 
 /* =========================================================
    ALBUM MODAL
-========================================================= */
+   ========================================================= */
 
 function openCreateAlbumModal() {
 
@@ -1195,15 +1239,18 @@ function openCreateAlbumModal() {
             "albumModalTitle"
         );
 
+
     const input =
         document.getElementById(
             "albumNameInput"
         );
 
+
     const saveButton =
         document.getElementById(
             "saveAlbumButton"
         );
+
 
     const error =
         document.getElementById(
@@ -1262,14 +1309,13 @@ function openCreateAlbumModal() {
 }
 
 
-/* =========================================================
-   RENAME ALBUM MODAL
-========================================================= */
-
 function openRenameAlbumModal(albumId) {
 
     const album =
-        getAlbumById(albumId);
+        getAlbumById(
+            albumId
+        );
+
 
     if (!album) {
         return;
@@ -1285,15 +1331,18 @@ function openRenameAlbumModal(albumId) {
             "albumModalTitle"
         );
 
+
     const input =
         document.getElementById(
             "albumNameInput"
         );
 
+
     const saveButton =
         document.getElementById(
             "saveAlbumButton"
         );
+
 
     const error =
         document.getElementById(
@@ -1343,6 +1392,7 @@ function openRenameAlbumModal(albumId) {
             function() {
 
                 input.focus();
+
                 input.select();
 
             },
@@ -1356,7 +1406,7 @@ function openRenameAlbumModal(albumId) {
 
 /* =========================================================
    SAVE ALBUM
-========================================================= */
+   ========================================================= */
 
 function saveAlbumFromModal() {
 
@@ -1364,6 +1414,7 @@ function saveAlbumFromModal() {
         document.getElementById(
             "albumNameInput"
         );
+
 
     const error =
         document.getElementById(
@@ -1395,12 +1446,11 @@ function saveAlbumFromModal() {
         getPortfolioStorage();
 
 
-    /* -----------------------------------------------------
-       CREATE
-    ----------------------------------------------------- */
+    /* CREATE */
 
     if (
-        albumModalMode === "create"
+        albumModalMode ===
+        "create"
     ) {
 
         const duplicate =
@@ -1445,13 +1495,10 @@ function saveAlbumFromModal() {
             coverFileId:
                 null,
 
-            publicVisible:
+            isPublic:
                 true,
 
             createdAt:
-                new Date().toISOString(),
-
-            updatedAt:
                 new Date().toISOString()
 
         };
@@ -1482,9 +1529,7 @@ function saveAlbumFromModal() {
     }
 
 
-    /* -----------------------------------------------------
-       RENAME
-    ----------------------------------------------------- */
+    /* RENAME */
 
     const album =
         storage.albums.find(
@@ -1515,16 +1560,14 @@ function saveAlbumFromModal() {
             function(item) {
 
                 return (
-
-                    item.id !== album.id &&
-
+                    item.id !==
+                    album.id &&
                     String(
                         item.name || ""
                     )
                         .trim()
                         .toLowerCase() ===
                     name.toLowerCase()
-
                 );
 
             }
@@ -1548,9 +1591,6 @@ function saveAlbumFromModal() {
     album.name =
         name;
 
-    album.updatedAt =
-        new Date().toISOString();
-
 
     savePortfolioStorage(
         storage
@@ -1561,41 +1601,24 @@ function saveAlbumFromModal() {
         "albumModal"
     );
 
-
-    if (
-        activeAlbumId === album.id
-    ) {
-
-        const activeName =
-            document.getElementById(
-                "activeAlbumName"
-            );
-
-        if (activeName) {
-
-            activeName.textContent =
-                album.name;
-
-        }
-
-    }
-
 }
 
 
 /* =========================================================
    RENDER ALBUMS
-========================================================= */
+   ========================================================= */
 
 function renderAlbums() {
 
     const storage =
         getPortfolioStorage();
 
+
     const grid =
         document.getElementById(
             "albumGrid"
         );
+
 
     const emptyState =
         document.getElementById(
@@ -1610,7 +1633,9 @@ function renderAlbums() {
 
     if (!storage.albums.length) {
 
-        grid.innerHTML = "";
+        grid.innerHTML =
+            "";
+
 
         if (emptyState) {
 
@@ -1618,6 +1643,7 @@ function renderAlbums() {
                 "block";
 
         }
+
 
         return;
 
@@ -1683,13 +1709,20 @@ function renderAlbums() {
                                 return (
                                     total +
                                     Number(
-                                        file.sizeMB || 0
+                                        file.sizeMB ||
+                                        0
                                     )
                                 );
 
                             },
                             0
                         );
+
+
+                    const visibilityText =
+                        album.isPublic !== false
+                            ? "Public"
+                            : "Hidden";
 
 
                     return `
@@ -1703,15 +1736,20 @@ function renderAlbums() {
                                 ${
                                     coverFile
                                         ? `
-                                            <img
-                                                data-cover-file="${escapeAttribute(coverFile.id)}"
-                                                alt="${escapeAttribute(album.name || "Album")}"
-                                                loading="lazy">
+
+                                            <div
+                                                class="album-cover-empty"
+                                                data-cover-placeholder="${escapeAttribute(coverFile.id)}">
+                                                ▧
+                                            </div>
+
                                           `
                                         : `
+
                                             <div class="album-cover-empty">
                                                 ▧
                                             </div>
+
                                           `
                                 }
 
@@ -1760,6 +1798,10 @@ function renderAlbums() {
                                             : "photos"
                                     }
 
+                                    ·
+
+                                    ${visibilityText}
+
                                 </div>
 
 
@@ -1786,6 +1828,16 @@ function renderAlbums() {
 
 
                                     <button
+                                        class="album-action-button"
+                                        type="button"
+                                        data-toggle-visibility="${escapeAttribute(album.id)}">
+
+                                        ${visibilityText}
+
+                                    </button>
+
+
+                                    <button
                                         class="album-action-button album-delete-button"
                                         type="button"
                                         data-delete-album="${escapeAttribute(album.id)}">
@@ -1807,41 +1859,164 @@ function renderAlbums() {
             .join("");
 
 
-    /* -----------------------------------------------------
-       HYDRATE ALBUM COVERS
-    ----------------------------------------------------- */
+    /*
+       Load album cover images from IndexedDB.
+    */
 
-    grid
-        .querySelectorAll(
-            "[data-cover-file]"
-        )
-        .forEach(
-            async function(image) {
+    storage.albums.forEach(
+        function(album) {
 
-                const fileId =
-                    image.getAttribute(
-                        "data-cover-file"
+            let coverFile =
+                storage.files.find(
+                    function(file) {
+
+                        return (
+                            file.albumId ===
+                            album.id &&
+                            file.id ===
+                            album.coverFileId
+                        );
+
+                    }
+                );
+
+
+            if (!coverFile) {
+
+                coverFile =
+                    storage.files.find(
+                        function(file) {
+
+                            return (
+                                file.albumId ===
+                                album.id
+                            );
+
+                        }
                     );
-
-                const url =
-                    await getFileObjectURL(
-                        fileId
-                    );
-
-                if (url) {
-
-                    image.src =
-                        url;
-
-                }
 
             }
-        );
 
 
-    /* -----------------------------------------------------
-       OPEN
-    ----------------------------------------------------- */
+            if (!coverFile) {
+                return;
+            }
+
+
+            getPhotoBlob(
+                coverFile.blobKey
+            )
+                .then(
+                    function(record) {
+
+                        if (!record || !record.blob) {
+                            return;
+                        }
+
+
+                        const card =
+                            grid.querySelector(
+                                `[data-album-id="${CSS.escape(album.id)}"]`
+                            );
+
+
+                        if (!card) {
+                            return;
+                        }
+
+
+                        const cover =
+                            card.querySelector(
+                                ".album-cover"
+                            );
+
+
+                        if (!cover) {
+                            return;
+                        }
+
+
+                        const url =
+                            URL.createObjectURL(
+                                record.blob
+                            );
+
+
+                        const placeholder =
+                            cover.querySelector(
+                                "[data-cover-placeholder]"
+                            );
+
+
+                        if (placeholder) {
+
+                            placeholder.remove();
+
+                        }
+
+
+                        const img =
+                            document.createElement(
+                                "img"
+                            );
+
+
+                        img.src =
+                            url;
+
+                        img.alt =
+                            album.name ||
+                            "Album";
+
+                        img.loading =
+                            "lazy";
+
+
+                        img.onload =
+                            function() {
+
+                                URL.revokeObjectURL(
+                                    url
+                                );
+
+                            };
+
+
+                        img.onerror =
+                            function() {
+
+                                URL.revokeObjectURL(
+                                    url
+                                );
+
+                            };
+
+
+                        cover.insertBefore(
+                            img,
+                            cover.firstChild
+                        );
+
+                    }
+                )
+                .catch(
+                    function(error) {
+
+                        console.warn(
+                            "Could not load album cover:",
+                            error
+                        );
+
+                    }
+                );
+
+        }
+    );
+
+
+    /*
+       Album actions.
+    */
 
     grid
         .querySelectorAll(
@@ -1867,10 +2042,6 @@ function renderAlbums() {
         );
 
 
-    /* -----------------------------------------------------
-       RENAME
-    ----------------------------------------------------- */
-
     grid
         .querySelectorAll(
             "[data-rename-album]"
@@ -1895,9 +2066,29 @@ function renderAlbums() {
         );
 
 
-    /* -----------------------------------------------------
-       DELETE
-    ----------------------------------------------------- */
+    grid
+        .querySelectorAll(
+            "[data-toggle-visibility]"
+        )
+        .forEach(
+            function(button) {
+
+                button.addEventListener(
+                    "click",
+                    function() {
+
+                        toggleAlbumVisibility(
+                            button.getAttribute(
+                                "data-toggle-visibility"
+                            )
+                        );
+
+                    }
+                );
+
+            }
+        );
+
 
     grid
         .querySelectorAll(
@@ -1926,13 +2117,82 @@ function renderAlbums() {
 
 
 /* =========================================================
+   TOGGLE ALBUM VISIBILITY
+   ========================================================= */
+
+function toggleAlbumVisibility(albumId) {
+
+    const storage =
+        getPortfolioStorage();
+
+
+    const album =
+        storage.albums.find(
+            function(item) {
+
+                return (
+                    item.id ===
+                    albumId
+                );
+
+            }
+        );
+
+
+    if (!album) {
+        return;
+    }
+
+
+    album.isPublic =
+        album.isPublic === false;
+
+
+    savePortfolioStorage(
+        storage
+    );
+
+
+    if (
+        activeAlbumId ===
+        albumId
+    ) {
+
+        const status =
+            document.getElementById(
+                "uploadStatus"
+            );
+
+
+        if (status) {
+
+            status.className =
+                "upload-status success";
+
+
+            status.textContent =
+                album.isPublic
+                    ? "Album is now public."
+                    : "Album is now hidden from your public gallery.";
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
    OPEN ALBUM
-========================================================= */
+   ========================================================= */
 
 function openAlbum(albumId) {
 
     const album =
-        getAlbumById(albumId);
+        getAlbumById(
+            albumId
+        );
+
 
     if (!album) {
         return;
@@ -1947,6 +2207,7 @@ function openAlbum(albumId) {
         document.getElementById(
             "albumViewSection"
         );
+
 
     const activeName =
         document.getElementById(
@@ -1972,13 +2233,15 @@ function openAlbum(albumId) {
     }
 
 
-    selectedFiles = [];
+    selectedFiles =
+        [];
 
 
     const input =
         document.getElementById(
             "imageInput"
         );
+
 
     if (input) {
 
@@ -1995,8 +2258,13 @@ function openAlbum(albumId) {
     if (albumSection) {
 
         albumSection.scrollIntoView({
-            behavior: "smooth",
-            block: "start"
+
+            behavior:
+                "smooth",
+
+            block:
+                "start"
+
         });
 
     }
@@ -2006,12 +2274,13 @@ function openAlbum(albumId) {
 
 /* =========================================================
    CLOSE ALBUM
-========================================================= */
+   ========================================================= */
 
 function closeAlbumView() {
 
     activeAlbumId =
         null;
+
 
     selectedFiles =
         [];
@@ -2052,7 +2321,7 @@ function closeAlbumView() {
 
 /* =========================================================
    RENDER ACTIVE ALBUM
-========================================================= */
+   ========================================================= */
 
 function renderActiveAlbum() {
 
@@ -2087,20 +2356,24 @@ function renderActiveAlbum() {
             "activeAlbumName"
         );
 
+
     const activeMeta =
         document.getElementById(
             "activeAlbumMeta"
         );
+
 
     const photoCount =
         document.getElementById(
             "photoCount"
         );
 
+
     const photoGrid =
         document.getElementById(
             "photoGrid"
         );
+
 
     const emptyState =
         document.getElementById(
@@ -2160,7 +2433,9 @@ function renderActiveAlbum() {
 
     if (!files.length) {
 
-        photoGrid.innerHTML = "";
+        photoGrid.innerHTML =
+            "";
+
 
         if (emptyState) {
 
@@ -2169,6 +2444,7 @@ function renderActiveAlbum() {
             );
 
         }
+
 
         return;
 
@@ -2197,22 +2473,28 @@ function renderActiveAlbum() {
                     return `
 
                         <article
-                            class="photo-card">
+                            class="photo-card"
+                            data-photo-id="${escapeAttribute(file.id)}">
 
                             <div class="photo-image-wrap">
 
-                                <img
-                                    class="photo-image"
-                                    data-photo-file="${escapeAttribute(file.id)}"
-                                    alt="${escapeAttribute(file.name || "Photo")}"
-                                    loading="lazy">
+                                <div
+                                    class="photo-image-placeholder"
+                                    data-photo-placeholder="${escapeAttribute(file.id)}">
+
+                                    ▧
+
+                                </div>
+
 
                                 ${
                                     isCover
                                         ? `
+
                                             <span class="cover-badge">
                                                 Album Cover
                                             </span>
+
                                           `
                                         : ""
                                 }
@@ -2247,7 +2529,9 @@ function renderActiveAlbum() {
 
                                     ${
                                         isCover
+
                                             ? `
+
                                                 <button
                                                     class="photo-action-button"
                                                     type="button"
@@ -2256,8 +2540,11 @@ function renderActiveAlbum() {
                                                     Album Cover
 
                                                 </button>
+
                                               `
+
                                             : `
+
                                                 <button
                                                     class="photo-action-button"
                                                     type="button"
@@ -2266,6 +2553,7 @@ function renderActiveAlbum() {
                                                     Set Cover
 
                                                 </button>
+
                                               `
                                     }
 
@@ -2292,47 +2580,133 @@ function renderActiveAlbum() {
             .join("");
 
 
-    /* -----------------------------------------------------
-       HYDRATE IMAGES FROM INDEXEDDB
-    ----------------------------------------------------- */
+    /*
+       Load all image blobs.
+    */
 
-    photoGrid
-        .querySelectorAll(
-            "[data-photo-file]"
-        )
-        .forEach(
-            async function(image) {
+    files.forEach(
+        function(file) {
 
-                const fileId =
-                    image.getAttribute(
-                        "data-photo-file"
-                    );
+            getPhotoBlob(
+                file.blobKey
+            )
+                .then(
+                    function(record) {
 
-                const url =
-                    await getFileObjectURL(
-                        fileId
-                    );
-
-                if (url) {
-
-                    image.src =
-                        url;
-
-                }
-                else {
-
-                    image.alt =
-                        "Image unavailable";
-
-                }
-
-            }
-        );
+                        if (!record || !record.blob) {
+                            return;
+                        }
 
 
-    /* -----------------------------------------------------
-       SET COVER
-    ----------------------------------------------------- */
+                        const card =
+                            photoGrid.querySelector(
+                                `[data-photo-id="${CSS.escape(file.id)}"]`
+                            );
+
+
+                        if (!card) {
+                            return;
+                        }
+
+
+                        const imageWrap =
+                            card.querySelector(
+                                ".photo-image-wrap"
+                            );
+
+
+                        if (!imageWrap) {
+                            return;
+                        }
+
+
+                        const url =
+                            URL.createObjectURL(
+                                record.blob
+                            );
+
+
+                        const img =
+                            document.createElement(
+                                "img"
+                            );
+
+
+                        img.className =
+                            "photo-image";
+
+
+                        img.src =
+                            url;
+
+
+                        img.alt =
+                            file.name ||
+                            "Photo";
+
+
+                        img.loading =
+                            "lazy";
+
+
+                        img.onload =
+                            function() {
+
+                                const placeholder =
+                                    imageWrap.querySelector(
+                                        "[data-photo-placeholder]"
+                                    );
+
+
+                                if (placeholder) {
+
+                                    placeholder.remove();
+
+                                }
+
+
+                                URL.revokeObjectURL(
+                                    url
+                                );
+
+                            };
+
+
+                        img.onerror =
+                            function() {
+
+                                URL.revokeObjectURL(
+                                    url
+                                );
+
+                            };
+
+
+                        imageWrap.insertBefore(
+                            img,
+                            imageWrap.firstChild
+                        );
+
+                    }
+                )
+                .catch(
+                    function(error) {
+
+                        console.warn(
+                            "Could not load photo:",
+                            error
+                        );
+
+                    }
+                );
+
+        }
+    );
+
+
+    /*
+       Set cover buttons.
+    */
 
     photoGrid
         .querySelectorAll(
@@ -2358,9 +2732,9 @@ function renderActiveAlbum() {
         );
 
 
-    /* -----------------------------------------------------
-       DELETE PHOTO
-    ----------------------------------------------------- */
+    /*
+       Delete photo buttons.
+    */
 
     photoGrid
         .querySelectorAll(
@@ -2390,7 +2764,7 @@ function renderActiveAlbum() {
 
 /* =========================================================
    CREATE ALBUM
-========================================================= */
+   ========================================================= */
 
 function createAlbum() {
 
@@ -2401,12 +2775,15 @@ function createAlbum() {
 
 /* =========================================================
    DELETE ALBUM MODAL
-========================================================= */
+   ========================================================= */
 
 function openDeleteAlbumModal(albumId) {
 
     const album =
-        getAlbumById(albumId);
+        getAlbumById(
+            albumId
+        );
+
 
     if (!album) {
         return;
@@ -2415,6 +2792,7 @@ function openDeleteAlbumModal(albumId) {
 
     pendingDeleteType =
         "album";
+
 
     pendingDeleteId =
         albumId;
@@ -2425,10 +2803,12 @@ function openDeleteAlbumModal(albumId) {
             "deleteTitle"
         );
 
+
     const description =
         document.getElementById(
             "deleteDescription"
         );
+
 
     const confirmButton =
         document.getElementById(
@@ -2451,6 +2831,7 @@ function openDeleteAlbumModal(albumId) {
                 albumId
             ).length;
 
+
         const storage =
             getAlbumStorageMB(
                 albumId
@@ -2468,7 +2849,9 @@ function openDeleteAlbumModal(albumId) {
                     : " photos"
             ) +
             " will be removed. " +
-            formatStorage(storage) +
+            formatStorage(
+                storage
+            ) +
             " of storage will be freed.";
 
     }
@@ -2491,7 +2874,7 @@ function openDeleteAlbumModal(albumId) {
 
 /* =========================================================
    DELETE PHOTO MODAL
-========================================================= */
+   ========================================================= */
 
 function openDeletePhotoModal(fileId) {
 
@@ -2504,7 +2887,8 @@ function openDeletePhotoModal(fileId) {
             function(item) {
 
                 return (
-                    item.id === fileId
+                    item.id ===
+                    fileId
                 );
 
             }
@@ -2519,6 +2903,7 @@ function openDeletePhotoModal(fileId) {
     pendingDeleteType =
         "photo";
 
+
     pendingDeleteId =
         fileId;
 
@@ -2528,10 +2913,12 @@ function openDeletePhotoModal(fileId) {
             "deleteTitle"
         );
 
+
     const description =
         document.getElementById(
             "deleteDescription"
         );
+
 
     const confirmButton =
         document.getElementById(
@@ -2578,7 +2965,7 @@ function openDeletePhotoModal(fileId) {
 
 /* =========================================================
    CONFIRM DELETE
-========================================================= */
+   ========================================================= */
 
 function confirmDelete() {
 
@@ -2618,9 +3005,9 @@ function confirmDelete() {
 
 /* =========================================================
    DELETE PHOTO
-========================================================= */
+   ========================================================= */
 
-async function deletePhoto(fileId) {
+function deletePhoto(fileId) {
 
     const storage =
         getPortfolioStorage();
@@ -2631,7 +3018,8 @@ async function deletePhoto(fileId) {
             function(file) {
 
                 return (
-                    file.id === fileId
+                    file.id ===
+                    fileId
                 );
 
             }
@@ -2661,16 +3049,17 @@ async function deletePhoto(fileId) {
     );
 
 
-    /* -----------------------------------------------------
-       UPDATE COVER
-    ----------------------------------------------------- */
+    /*
+       Replace album cover if necessary.
+    */
 
     const album =
         storage.albums.find(
             function(item) {
 
                 return (
-                    item.id === albumId
+                    item.id ===
+                    albumId
                 );
 
             }
@@ -2679,7 +3068,8 @@ async function deletePhoto(fileId) {
 
     if (
         album &&
-        album.coverFileId === fileId
+        album.coverFileId ===
+        fileId
     ) {
 
         const replacement =
@@ -2700,29 +3090,36 @@ async function deletePhoto(fileId) {
                 ? replacement.id
                 : null;
 
-        album.updatedAt =
-            new Date().toISOString();
-
     }
 
 
-    /* -----------------------------------------------------
-       DELETE ACTUAL BLOB
-    ----------------------------------------------------- */
+    /*
+       Delete actual binary file
+       from IndexedDB.
+    */
 
-    await deleteStoredFileBlob(
-        fileId
-    );
+    deletePhotoBlob(
+        file.blobKey
+    )
+        .catch(
+            function(error) {
 
+                console.warn(
+                    "Could not remove photo blob:",
+                    error
+                );
 
-    revokeFileObjectURL(
-        fileId
-    );
+            }
+        )
+        .finally(
+            function() {
 
+                savePortfolioStorage(
+                    storage
+                );
 
-    savePortfolioStorage(
-        storage
-    );
+            }
+        );
 
 
     closeDeleteModal();
@@ -2739,6 +3136,7 @@ async function deletePhoto(fileId) {
         status.className =
             "upload-status success";
 
+
         status.textContent =
             "Photo deleted. " +
             formatStorage(
@@ -2753,9 +3151,9 @@ async function deletePhoto(fileId) {
 
 /* =========================================================
    DELETE ALBUM
-========================================================= */
+   ========================================================= */
 
-async function deleteAlbum(albumId) {
+function deleteAlbum(albumId) {
 
     const storage =
         getPortfolioStorage();
@@ -2766,7 +3164,8 @@ async function deleteAlbum(albumId) {
             function(album) {
 
                 return (
-                    album.id === albumId
+                    album.id ===
+                    albumId
                 );
 
             }
@@ -2806,7 +3205,8 @@ async function deleteAlbum(albumId) {
                 return (
                     total +
                     Number(
-                        file.sizeMB || 0
+                        file.sizeMB ||
+                        0
                     )
                 );
 
@@ -2815,29 +3215,18 @@ async function deleteAlbum(albumId) {
         );
 
 
-    /* -----------------------------------------------------
-       DELETE BLOBS
-    ----------------------------------------------------- */
+    const photoIds =
+        filesToDelete.map(
+            function(file) {
 
-    for (
-        const file
-        of filesToDelete
-    ) {
+                return (
+                    file.blobKey ||
+                    file.id
+                );
 
-        await deleteStoredFileBlob(
-            file.id
+            }
         );
 
-        revokeFileObjectURL(
-            file.id
-        );
-
-    }
-
-
-    /* -----------------------------------------------------
-       DELETE METADATA
-    ----------------------------------------------------- */
 
     storage.files =
         storage.files.filter(
@@ -2858,9 +3247,32 @@ async function deleteAlbum(albumId) {
     );
 
 
-    savePortfolioStorage(
-        storage
-    );
+    /*
+       Delete all actual image blobs.
+    */
+
+    deletePhotoBlobs(
+        photoIds
+    )
+        .catch(
+            function(error) {
+
+                console.warn(
+                    "Could not remove album photos:",
+                    error
+                );
+
+            }
+        )
+        .finally(
+            function() {
+
+                savePortfolioStorage(
+                    storage
+                );
+
+            }
+        );
 
 
     closeDeleteModal();
@@ -2887,6 +3299,7 @@ async function deleteAlbum(albumId) {
         status.className =
             "upload-status success";
 
+
         status.textContent =
             "Album deleted. " +
             formatStorage(
@@ -2901,7 +3314,7 @@ async function deleteAlbum(albumId) {
 
 /* =========================================================
    SET ALBUM COVER
-========================================================= */
+   ========================================================= */
 
 function setAlbumCover(fileId) {
 
@@ -2919,7 +3332,8 @@ function setAlbumCover(fileId) {
             function(item) {
 
                 return (
-                    item.id === fileId
+                    item.id ===
+                    fileId
                 );
 
             }
@@ -2958,9 +3372,6 @@ function setAlbumCover(fileId) {
     album.coverFileId =
         fileId;
 
-    album.updatedAt =
-        new Date().toISOString();
-
 
     savePortfolioStorage(
         storage
@@ -2978,6 +3389,7 @@ function setAlbumCover(fileId) {
         status.className =
             "upload-status success";
 
+
         status.textContent =
             '"' +
             file.name +
@@ -2990,45 +3402,43 @@ function setAlbumCover(fileId) {
 
 /* =========================================================
    FILE SELECTION
-========================================================= */
+   ========================================================= */
 
 function handleFileSelection(event) {
 
-    const selected =
+    selectedFiles =
         Array.from(
             event.target.files || []
         );
 
 
-    const validation =
-        validateFiles(
-            selected
-        );
-
+    /*
+       Only image files.
+    */
 
     selectedFiles =
-        validation.validFiles;
+        selectedFiles.filter(
+            function(file) {
+
+                return (
+                    file.type &&
+                    file.type.startsWith(
+                        "image/"
+                    )
+                );
+
+            }
+        );
 
 
     renderSelectedFiles();
-
-
-    if (
-        validation.invalidFiles.length
-    ) {
-
-        showUploadError(
-            "Only image files can be uploaded to Recent Work."
-        );
-
-    }
 
 }
 
 
 /* =========================================================
    SELECTED FILES
-========================================================= */
+   ========================================================= */
 
 function renderSelectedFiles() {
 
@@ -3036,6 +3446,7 @@ function renderSelectedFiles() {
         document.getElementById(
             "selectedFiles"
         );
+
 
     const uploadButton =
         document.getElementById(
@@ -3060,6 +3471,7 @@ function renderSelectedFiles() {
                 true;
 
         }
+
 
         return;
 
@@ -3169,7 +3581,7 @@ function renderSelectedFiles() {
 
 /* =========================================================
    UPLOAD
-========================================================= */
+   ========================================================= */
 
 async function uploadSelectedFiles() {
 
@@ -3204,12 +3616,12 @@ async function uploadSelectedFiles() {
         getPortfolioStorage();
 
 
-    const albumExists =
-        storage.albums.some(
-            function(album) {
+    const album =
+        storage.albums.find(
+            function(item) {
 
                 return (
-                    album.id ===
+                    item.id ===
                     activeAlbumId
                 );
 
@@ -3217,7 +3629,7 @@ async function uploadSelectedFiles() {
         );
 
 
-    if (!albumExists) {
+    if (!album) {
 
         showUploadError(
             "This album no longer exists."
@@ -3251,38 +3663,66 @@ async function uploadSelectedFiles() {
         );
 
 
-    if (status) {
-
-        status.className =
-            "upload-status";
-
-        status.textContent =
-            "Preparing your photos...";
-
-    }
-
-
-    const newFiles = [];
-
-
     try {
 
-        /* -------------------------------------------------
-           STORE EACH ORIGINAL FILE IN INDEXEDDB
-        ------------------------------------------------- */
+        const newFiles = [];
+
+
+        /*
+           Save every actual image
+           into IndexedDB first.
+        */
 
         for (
-            const file
-            of selectedFiles
+            let index = 0;
+            index < selectedFiles.length;
+            index++
         ) {
 
+            const file =
+                selectedFiles[index];
+
+
             const id =
-                createId("photo");
+                createId(
+                    "photo"
+                );
 
 
-            await storeFileBlob(
-                id,
-                file
+            const sizeMB =
+                getFileSizeMB(
+                    file
+                );
+
+
+            const photoRecord = {
+
+                id:
+                    id,
+
+                albumId:
+                    activeAlbumId,
+
+                blob:
+                    file,
+
+                name:
+                    file.name,
+
+                type:
+                    file.type,
+
+                sizeBytes:
+                    file.size,
+
+                createdAt:
+                    new Date().toISOString()
+
+            };
+
+
+            await savePhotoBlob(
+                photoRecord
             );
 
 
@@ -3298,7 +3738,7 @@ async function uploadSelectedFiles() {
                     file.name,
 
                 sizeMB:
-                    getFileSizeMB(file),
+                    sizeMB,
 
                 sizeBytes:
                     file.size,
@@ -3307,41 +3747,33 @@ async function uploadSelectedFiles() {
                     file.type,
 
                 createdAt:
-                    new Date().toISOString()
+                    photoRecord.createdAt,
+
+                blobKey:
+                    id
 
             });
 
         }
 
 
-        /* -------------------------------------------------
-           ADD METADATA
-        ------------------------------------------------- */
+        /*
+           Add metadata only after
+           the actual blobs are stored.
+        */
 
         storage.files.push(
             ...newFiles
         );
 
 
-        /* -------------------------------------------------
-           FIRST IMAGE BECOMES COVER
-        ------------------------------------------------- */
-
-        const album =
-            storage.albums.find(
-                function(item) {
-
-                    return (
-                        item.id ===
-                        activeAlbumId
-                    );
-
-                }
-            );
-
+        /*
+           Automatically select the
+           first uploaded image as cover
+           if no cover exists.
+        */
 
         if (
-            album &&
             !album.coverFileId &&
             newFiles.length
         ) {
@@ -3352,54 +3784,10 @@ async function uploadSelectedFiles() {
         }
 
 
-        if (album) {
+        savePortfolioStorage(
+            storage
+        );
 
-            album.updatedAt =
-                new Date().toISOString();
-
-        }
-
-
-        /* -------------------------------------------------
-           SAVE METADATA
-        ------------------------------------------------- */
-
-        const saved =
-            savePortfolioStorage(
-                storage
-            );
-
-
-        if (!saved) {
-
-            /*
-               Metadata could not be saved.
-
-               Remove the blobs we just created
-               so we do not leave orphaned files.
-            */
-
-            for (
-                const file
-                of newFiles
-            ) {
-
-                await deleteStoredFileBlob(
-                    file.id
-                );
-
-            }
-
-            throw new Error(
-                "Could not save portfolio metadata."
-            );
-
-        }
-
-
-        /* -------------------------------------------------
-           RESET SELECTION
-        ------------------------------------------------- */
 
         selectedFiles = [];
 
@@ -3421,6 +3809,7 @@ async function uploadSelectedFiles() {
 
             status.className =
                 "upload-status success";
+
 
             status.textContent =
                 newFiles.length +
@@ -3446,30 +3835,20 @@ async function uploadSelectedFiles() {
     catch (error) {
 
         console.error(
-            "Portfolio upload failed:",
+            "Upload failed:",
             error
         );
 
 
         /*
-           Clean up any blobs that were successfully
-           stored before the failure.
+           If the browser rejects
+           IndexedDB storage, explain
+           the problem without corrupting
+           metadata.
         */
 
-        for (
-            const file
-            of newFiles
-        ) {
-
-            await deleteStoredFileBlob(
-                file.id
-            );
-
-        }
-
-
         showUploadError(
-            "The photos could not be uploaded. Please try again."
+            "The photos could not be stored in this browser. Please check available browser storage and try again."
         );
 
     }
@@ -3477,11 +3856,14 @@ async function uploadSelectedFiles() {
 
         if (uploadButton) {
 
-            uploadButton.disabled =
-                !selectedFiles.length;
-
             uploadButton.textContent =
-                "Upload Photos";
+                "Upload to Album";
+
+            uploadButton.disabled =
+                selectedFiles.length === 0 ||
+                !validateUpload(
+                    selectedFiles
+                ).allowed;
 
         }
 
@@ -3492,7 +3874,7 @@ async function uploadSelectedFiles() {
 
 /* =========================================================
    UPLOAD ERROR
-========================================================= */
+   ========================================================= */
 
 function showUploadError(message) {
 
@@ -3510,6 +3892,7 @@ function showUploadError(message) {
     status.className =
         "upload-status error";
 
+
     status.textContent =
         message;
 
@@ -3517,21 +3900,8 @@ function showUploadError(message) {
 
 
 /* =========================================================
-   GLOBAL STORAGE ERROR
-========================================================= */
-
-function showGlobalStorageError(message) {
-
-    console.warn(
-        message
-    );
-
-}
-
-
-/* =========================================================
    MODAL HELPERS
-========================================================= */
+   ========================================================= */
 
 function openModal(modalId) {
 
@@ -3605,12 +3975,13 @@ function closeModal(modalId) {
 
 /* =========================================================
    DELETE MODAL CLOSE
-========================================================= */
+   ========================================================= */
 
 function closeDeleteModal() {
 
     pendingDeleteType =
         null;
+
 
     pendingDeleteId =
         null;
@@ -3625,7 +3996,7 @@ function closeDeleteModal() {
 
 /* =========================================================
    ALBUM MODAL CLOSE
-========================================================= */
+   ========================================================= */
 
 function closeAlbumModal() {
 
@@ -3642,19 +4013,23 @@ function closeAlbumModal() {
 
 /* =========================================================
    HELPERS
-========================================================= */
+   ========================================================= */
 
 function createId(prefix) {
 
     return (
 
         (prefix || "item") +
+
         "-" +
+
         Date.now().toString(36) +
+
         "-" +
+
         Math.random()
             .toString(36)
-            .slice(2, 8)
+            .slice(2, 10)
 
     );
 
@@ -3703,8 +4078,65 @@ function escapeAttribute(value) {
 
 
 /* =========================================================
+   CLEANUP OLD LOCALSTORAGE BLOB URL DATA
+   ========================================================= */
+
+function cleanupLegacyFileMetadata() {
+
+    const storage =
+        getPortfolioStorage();
+
+
+    let changed =
+        false;
+
+
+    storage.files =
+        storage.files.map(
+            function(file) {
+
+                /*
+                   Old version stored URL.
+                   Remove it from the new metadata
+                   model because blob URLs are temporary.
+                */
+
+                if (
+                    Object.prototype.hasOwnProperty.call(
+                        file,
+                        "url"
+                    )
+                ) {
+
+                    delete file.url;
+
+                    changed =
+                        true;
+
+                }
+
+
+                return file;
+
+            }
+        );
+
+
+    if (changed) {
+
+        localStorage.setItem(
+            PORTFOLIO_STORAGE_KEY,
+            JSON.stringify(storage)
+        );
+
+    }
+
+}
+
+
+/* =========================================================
    EVENTS
-========================================================= */
+   ========================================================= */
 
 function setupEvents() {
 
@@ -3713,85 +4145,102 @@ function setupEvents() {
             "createAlbumButton"
         );
 
+
     const emptyCreateAlbum =
         document.getElementById(
             "emptyCreateAlbum"
         );
+
 
     const saveAlbumButton =
         document.getElementById(
             "saveAlbumButton"
         );
 
+
     const cancelAlbumModalButton =
         document.getElementById(
             "cancelAlbumModal"
         );
+
 
     const closeAlbumModalButton =
         document.getElementById(
             "closeAlbumModal"
         );
 
+
     const albumModal =
         document.getElementById(
             "albumModal"
         );
+
 
     const albumNameInput =
         document.getElementById(
             "albumNameInput"
         );
 
+
     const imageInput =
         document.getElementById(
             "imageInput"
         );
+
 
     const uploadButton =
         document.getElementById(
             "uploadButton"
         );
 
+
     const backToAlbums =
         document.getElementById(
             "backToAlbums"
         );
+
 
     const renameAlbumButton =
         document.getElementById(
             "renameAlbumButton"
         );
 
+
     const deleteAlbumButton =
         document.getElementById(
             "deleteAlbumButton"
         );
+
 
     const cancelDelete =
         document.getElementById(
             "cancelDelete"
         );
 
+
     const closeDelete =
         document.getElementById(
             "closeDeleteModal"
         );
+
 
     const confirmDeleteButton =
         document.getElementById(
             "confirmDelete"
         );
 
+
     const deleteModal =
         document.getElementById(
             "deleteModal"
         );
 
+
     const mobileMenu =
         document.getElementById(
             "mobileMenu"
         );
+
 
     const sidebar =
         document.getElementById(
@@ -3799,9 +4248,7 @@ function setupEvents() {
         );
 
 
-    /* -----------------------------------------------------
-       CREATE ALBUM
-    ----------------------------------------------------- */
+    /* CREATE ALBUM */
 
     if (createAlbumButton) {
 
@@ -3823,9 +4270,7 @@ function setupEvents() {
     }
 
 
-    /* -----------------------------------------------------
-       ALBUM MODAL
-    ----------------------------------------------------- */
+    /* SAVE ALBUM */
 
     if (saveAlbumButton) {
 
@@ -3836,6 +4281,8 @@ function setupEvents() {
 
     }
 
+
+    /* CLOSE ALBUM MODAL */
 
     if (cancelAlbumModalButton) {
 
@@ -3856,6 +4303,8 @@ function setupEvents() {
 
     }
 
+
+    /* ENTER TO SAVE */
 
     if (albumNameInput) {
 
@@ -3880,6 +4329,8 @@ function setupEvents() {
     }
 
 
+    /* CLICK OUTSIDE ALBUM MODAL */
+
     if (albumModal) {
 
         albumModal.addEventListener(
@@ -3901,9 +4352,7 @@ function setupEvents() {
     }
 
 
-    /* -----------------------------------------------------
-       IMAGE INPUT
-    ----------------------------------------------------- */
+    /* FILE INPUT */
 
     if (imageInput) {
 
@@ -3915,9 +4364,7 @@ function setupEvents() {
     }
 
 
-    /* -----------------------------------------------------
-       UPLOAD
-    ----------------------------------------------------- */
+    /* UPLOAD */
 
     if (uploadButton) {
 
@@ -3929,9 +4376,7 @@ function setupEvents() {
     }
 
 
-    /* -----------------------------------------------------
-       ALBUM VIEW
-    ----------------------------------------------------- */
+    /* BACK TO ALBUMS */
 
     if (backToAlbums) {
 
@@ -3942,6 +4387,8 @@ function setupEvents() {
 
     }
 
+
+    /* RENAME ACTIVE ALBUM */
 
     if (renameAlbumButton) {
 
@@ -3963,6 +4410,8 @@ function setupEvents() {
     }
 
 
+    /* DELETE ACTIVE ALBUM */
+
     if (deleteAlbumButton) {
 
         deleteAlbumButton.addEventListener(
@@ -3983,9 +4432,7 @@ function setupEvents() {
     }
 
 
-    /* -----------------------------------------------------
-       DELETE MODAL
-    ----------------------------------------------------- */
+    /* DELETE MODAL */
 
     if (cancelDelete) {
 
@@ -4038,9 +4485,7 @@ function setupEvents() {
     }
 
 
-    /* -----------------------------------------------------
-       ESCAPE
-    ----------------------------------------------------- */
+    /* ESCAPE */
 
     document.addEventListener(
         "keydown",
@@ -4061,9 +4506,7 @@ function setupEvents() {
     );
 
 
-    /* -----------------------------------------------------
-       STORAGE SYNCHRONIZATION
-    ----------------------------------------------------- */
+    /* STORAGE SYNCHRONIZATION */
 
     window.addEventListener(
         "storage",
@@ -4088,9 +4531,25 @@ function setupEvents() {
     );
 
 
-    /* -----------------------------------------------------
-       MOBILE SIDEBAR
-    ----------------------------------------------------- */
+    /*
+       Custom same-page synchronization.
+    */
+
+    window.addEventListener(
+        "professionalStudioRecentWorkUpdated",
+        function() {
+
+            renderStorage();
+
+            renderAlbums();
+
+            renderActiveAlbum();
+
+        }
+    );
+
+
+    /* MOBILE SIDEBAR */
 
     if (
         mobileMenu &&
@@ -4108,18 +4567,10 @@ function setupEvents() {
             }
         );
 
-    }
-
-
-    /* -----------------------------------------------------
-       CLOSE MOBILE SIDEBAR WHEN NAV LINK IS CLICKED
-    ----------------------------------------------------- */
-
-    if (sidebar) {
 
         sidebar
             .querySelectorAll(
-                ".nav-link"
+                "a"
             )
             .forEach(
                 function(link) {
@@ -4144,22 +4595,8 @@ function setupEvents() {
 
 
 /* =========================================================
-   CLEAN ORPHANED OBJECT URLS ON PAGE EXIT
-========================================================= */
-
-window.addEventListener(
-    "beforeunload",
-    function() {
-
-        revokeAllObjectURLs();
-
-    }
-);
-
-
-/* =========================================================
    INITIALIZATION
-========================================================= */
+   ========================================================= */
 
 async function initializeRecentWork() {
 
@@ -4168,21 +4605,23 @@ async function initializeRecentWork() {
             "albumModal"
         );
 
+
     const deleteModal =
         document.getElementById(
             "deleteModal"
         );
 
 
-    /* -----------------------------------------------------
-       FORCE MODALS CLOSED
-    ----------------------------------------------------- */
+    /*
+       Force both modals closed.
+    */
 
     if (albumModal) {
 
         albumModal.classList.remove(
             "open"
         );
+
 
         albumModal.setAttribute(
             "aria-hidden",
@@ -4197,6 +4636,7 @@ async function initializeRecentWork() {
         deleteModal.classList.remove(
             "open"
         );
+
 
         deleteModal.setAttribute(
             "aria-hidden",
@@ -4213,38 +4653,45 @@ async function initializeRecentWork() {
     activeAlbumId =
         null;
 
+
     selectedFiles =
         [];
 
+
     pendingDeleteType =
         null;
+
 
     pendingDeleteId =
         null;
 
 
-    /* -----------------------------------------------------
-       OPEN DATABASE FIRST
-    ----------------------------------------------------- */
+    /*
+       Open IndexedDB before rendering.
+    */
 
     try {
 
-        await openPortfolioDatabase();
+        await openDatabase();
 
     }
     catch (error) {
 
         console.error(
-            "Portfolio storage database could not be opened:",
+            "Recent Work database initialization failed:",
             error
         );
 
     }
 
 
-    /* -----------------------------------------------------
-       RENDER
-    ----------------------------------------------------- */
+    /*
+       Clean metadata left by the
+       previous temporary blob URL system.
+    */
+
+    cleanupLegacyFileMetadata();
+
 
     renderStorage();
 
@@ -4261,7 +4708,7 @@ async function initializeRecentWork() {
 
 /* =========================================================
    START
-========================================================= */
+   ========================================================= */
 
 if (
     document.readyState ===
