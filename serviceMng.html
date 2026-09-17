@@ -31,10 +31,6 @@
 
 <body>
 
-    <!-- =========================================================
-         NAVIGATION
-    ========================================================== -->
-
     <header class="navbar">
 
         <div class="logo">
@@ -60,17 +56,9 @@
     </header>
 
 
-    <!-- =========================================================
-         MAIN
-    ========================================================== -->
-
     <main class="page">
 
         <div class="page-container">
-
-            <!-- =================================================
-                 SERVICES LIST
-            ================================================== -->
 
             <section id="servicesView" class="view">
 
@@ -103,10 +91,6 @@
 
                 </div>
 
-
-                <!-- =================================================
-                     SERVICES
-                ================================================== -->
 
                 <section class="services-section">
 
@@ -164,10 +148,6 @@
             </section>
 
 
-            <!-- =================================================
-                 SERVICE EDITOR
-            ================================================== -->
-
             <section
                 id="editorView"
                 class="view editor-view"
@@ -209,14 +189,14 @@
                     <div
                         class="status-indicator"
                         id="statusIndicator"
+                        role="button"
+                        tabindex="0"
+                        title="Click to change service status"
+                        aria-label="Change service status"
                     ></div>
 
                 </div>
 
-
-                <!-- =================================================
-                     SERVICE INFORMATION
-                ================================================== -->
 
                 <section class="editor-section">
 
@@ -322,10 +302,6 @@
                 </section>
 
 
-                <!-- =================================================
-                     PACKAGES
-                ================================================== -->
-
                 <section class="editor-section">
 
                     <div class="section-title package-section-heading">
@@ -367,10 +343,6 @@
 
                 </section>
 
-
-                <!-- =================================================
-                     PACKAGE EDITOR
-                ================================================== -->
 
                 <section
                     class="package-editor-section"
@@ -418,6 +390,7 @@
                                     type="text"
                                     id="packageName"
                                     placeholder="e.g. Premium"
+                                    maxlength="100"
                                 >
 
                             </div>
@@ -436,7 +409,7 @@
                                     <input
                                         type="number"
                                         id="packagePrice"
-                                        min="0"
+                                        min="1"
                                         step="100"
                                         placeholder="45000"
                                     >
@@ -490,24 +463,23 @@
 
                             </div>
 
-                        </div>
 
                             <div class="form-group">
 
                                 <label for="packageAlbum">
-                                    Album 
+                                    Album
                                 </label>
 
                                 <input
                                     type="text"
                                     id="packageAlbum"
-                                    placeholder="e.g. ₹5000"
+                                    placeholder="e.g. Included / ₹5000"
+                                    maxlength="100"
                                 >
 
                             </div>
 
                         </div>
-
 
 
                         <div class="form-group full-width">
@@ -525,10 +497,6 @@
 
                         </div>
 
-
-                        <!-- =================================================
-                             PAYMENT PLAN
-                        ================================================== -->
 
                         <div class="payment-plan-editor">
 
@@ -578,8 +546,6 @@
 
                             </div>
 
-
-                            <!-- ADVANCE PAYMENT -->
 
                             <div
                                 id="advancePaymentFields"
@@ -648,8 +614,6 @@
                             </div>
 
 
-                            <!-- CUSTOM INSTALLMENTS -->
-
                             <div
                                 id="installmentPaymentFields"
                                 class="payment-plan-fields"
@@ -676,7 +640,7 @@
                                         class="installment-total"
                                         id="installmentTotal"
                                     >
-                                        Total: ₹0
+                                        Total: ₹0 / ₹0
                                     </div>
 
                                 </div>
@@ -692,8 +656,6 @@
 
                         </div>
 
-
-                        <!-- PACKAGE ACTIONS -->
 
                         <div class="package-editor-actions">
 
@@ -720,13 +682,9 @@
                 </section>
 
 
-                <!-- =================================================
-                     SERVICE ACTIONS
-                ================================================== -->
-
                 <section class="editor-actions">
 
-                     <button
+                    <button
                         type="button"
                         class="delete-button"
                         id="deleteServiceBtn"
@@ -763,10 +721,6 @@
 
     </main>
 
-
-    <!-- =========================================================
-         DELETE DIALOG
-    ========================================================== -->
 
     <div
         class="dialog-overlay"
@@ -815,10 +769,6 @@
     </div>
 
 
-    <!-- =========================================================
-         NOTIFICATION
-    ========================================================== -->
-
     <div
         class="notification"
         id="notification"
@@ -826,7 +776,7 @@
         aria-live="polite"
     ></div>
 
-    
+
     <footer>
 
         <p>
@@ -840,6 +790,7 @@
             <a
                 href="https://bluehorizanlabs.vercel.app/"
                 target="_blank"
+                rel="noopener noreferrer"
             >
                 Bluehorizanlabs
             </a>

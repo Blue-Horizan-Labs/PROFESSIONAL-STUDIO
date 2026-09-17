@@ -11,6 +11,7 @@ let currentServiceId = null;
 
 let editingPackageId = null;
 let isCreatingService = false;
+let creatingPackageId = null;
 
 
 /* =========================================================
@@ -30,34 +31,61 @@ const DEFAULT_SERVICES = [
 
         packages: [
             {
-                id: "basic",
+                id: "wedding-basic",
                 name: "Basic",
                 price: 25000,
                 coverage: "4 hours",
                 photos: "150 edited photos",
                 delivery: "14 days",
+                album: "Not included",
                 description:
-                    "Essential wedding coverage for smaller celebrations."
+                    "Essential wedding coverage for smaller celebrations.",
+                paymentPlan: {
+                    type: "full",
+                    advance: {
+                        type: "percentage",
+                        value: 0
+                    },
+                    installments: []
+                }
             },
             {
-                id: "premium",
+                id: "wedding-premium",
                 name: "Premium",
                 price: 45000,
                 coverage: "8 hours",
                 photos: "350 edited photos",
                 delivery: "12 days",
+                album: "Included",
                 description:
-                    "Extended wedding coverage for a complete photography experience."
+                    "Extended wedding coverage for a complete photography experience.",
+                paymentPlan: {
+                    type: "advance",
+                    advance: {
+                        type: "percentage",
+                        value: 25
+                    },
+                    installments: []
+                }
             },
             {
-                id: "luxury",
+                id: "wedding-luxury",
                 name: "Luxury",
                 price: 70000,
                 coverage: "12 hours",
                 photos: "600 edited photos",
                 delivery: "10 days",
+                album: "Premium album included",
                 description:
-                    "Full-day premium coverage for large and detailed celebrations."
+                    "Full-day premium coverage for large and detailed celebrations.",
+                paymentPlan: {
+                    type: "advance",
+                    advance: {
+                        type: "percentage",
+                        value: 25
+                    },
+                    installments: []
+                }
             }
         ]
     },
@@ -74,34 +102,61 @@ const DEFAULT_SERVICES = [
 
         packages: [
             {
-                id: "basic",
+                id: "portrait-basic",
                 name: "Basic",
                 price: 5000,
                 coverage: "1 hour",
                 photos: "20 edited photos",
                 delivery: "7 days",
+                album: "Not included",
                 description:
-                    "A simple portrait session for a small set of final images."
+                    "A simple portrait session for a small set of final images.",
+                paymentPlan: {
+                    type: "full",
+                    advance: {
+                        type: "percentage",
+                        value: 0
+                    },
+                    installments: []
+                }
             },
             {
-                id: "premium",
+                id: "portrait-premium",
                 name: "Premium",
                 price: 9000,
                 coverage: "2 hours",
                 photos: "40 edited photos",
                 delivery: "5 days",
+                album: "Not included",
                 description:
-                    "Extended portrait session with more variety and final images."
+                    "Extended portrait session with more variety and final images.",
+                paymentPlan: {
+                    type: "advance",
+                    advance: {
+                        type: "percentage",
+                        value: 25
+                    },
+                    installments: []
+                }
             },
             {
-                id: "luxury",
+                id: "portrait-luxury",
                 name: "Luxury",
                 price: 15000,
                 coverage: "3 hours",
                 photos: "70 edited photos",
                 delivery: "4 days",
+                album: "Premium album included",
                 description:
-                    "Complete portrait experience with extended shooting time and more images."
+                    "Complete portrait experience with extended shooting time and more images.",
+                paymentPlan: {
+                    type: "advance",
+                    advance: {
+                        type: "percentage",
+                        value: 25
+                    },
+                    installments: []
+                }
             }
         ]
     }
@@ -112,30 +167,62 @@ const DEFAULT_SERVICES = [
    DOM
 ========================================================= */
 
-const servicesView = document.getElementById("servicesView");
-const editorView = document.getElementById("editorView");
+const servicesView =
+    document.getElementById("servicesView");
 
-const servicesList = document.getElementById("servicesList");
-const serviceCount = document.getElementById("serviceCount");
-const emptyState = document.getElementById("emptyState");
+const editorView =
+    document.getElementById("editorView");
 
-const addServiceBtn = document.getElementById("addServiceBtn");
-const emptyAddServiceBtn = document.getElementById("emptyAddServiceBtn");
-const backBtn = document.getElementById("backBtn");
+const servicesList =
+    document.getElementById("servicesList");
 
-const editorTitle = document.getElementById("editorTitle");
-const editorSubtitle = document.getElementById("editorSubtitle");
-const editorBreadcrumb = document.getElementById("editorBreadcrumb");
-const statusIndicator = document.getElementById("statusIndicator");
+const serviceCount =
+    document.getElementById("serviceCount");
 
-const serviceName = document.getElementById("serviceName");
-const serviceDescription = document.getElementById("serviceDescription");
-const coverageDuration = document.getElementById("coverageDuration");
-const deliveryTime = document.getElementById("deliveryTime");
-const coverageType = document.getElementById("coverageType");
+const emptyState =
+    document.getElementById("emptyState");
 
-const packagesList = document.getElementById("packagesList");
-const packageEmpty = document.getElementById("packageEmpty");
+const addServiceBtn =
+    document.getElementById("addServiceBtn");
+
+const emptyAddServiceBtn =
+    document.getElementById("emptyAddServiceBtn");
+
+const backBtn =
+    document.getElementById("backBtn");
+
+const editorTitle =
+    document.getElementById("editorTitle");
+
+const editorSubtitle =
+    document.getElementById("editorSubtitle");
+
+const editorBreadcrumb =
+    document.getElementById("editorBreadcrumb");
+
+const statusIndicator =
+    document.getElementById("statusIndicator");
+
+const serviceName =
+    document.getElementById("serviceName");
+
+const serviceDescription =
+    document.getElementById("serviceDescription");
+
+const coverageDuration =
+    document.getElementById("coverageDuration");
+
+const deliveryTime =
+    document.getElementById("deliveryTime");
+
+const coverageType =
+    document.getElementById("coverageType");
+
+const packagesList =
+    document.getElementById("packagesList");
+
+const packageEmpty =
+    document.getElementById("packageEmpty");
 
 const packageEditorSection =
     document.getElementById("packageEditorSection");
@@ -143,11 +230,24 @@ const packageEditorSection =
 const packageEditorTitle =
     document.getElementById("packageEditorTitle");
 
-const packageName = document.getElementById("packageName");
-const packagePrice = document.getElementById("packagePrice");
-const packageCoverage = document.getElementById("packageCoverage");
-const packagePhotos = document.getElementById("packagePhotos");
-const packageDelivery = document.getElementById("packageDelivery");
+const packageName =
+    document.getElementById("packageName");
+
+const packagePrice =
+    document.getElementById("packagePrice");
+
+const packageCoverage =
+    document.getElementById("packageCoverage");
+
+const packagePhotos =
+    document.getElementById("packagePhotos");
+
+const packageDelivery =
+    document.getElementById("packageDelivery");
+
+const packageAlbum =
+    document.getElementById("packageAlbum");
+
 const packageDescription =
     document.getElementById("packageDescription");
 
@@ -216,7 +316,11 @@ const notification =
    INITIALIZATION
 ========================================================= */
 
-document.addEventListener("DOMContentLoaded", init);
+document.addEventListener(
+    "DOMContentLoaded",
+    init
+);
+
 
 function init() {
 
@@ -316,14 +420,37 @@ function bindEvents() {
         updateInstallmentTotal
     );
 
+    statusIndicator.addEventListener(
+        "click",
+        toggleCurrentServiceStatus
+    );
+
+    statusIndicator.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (
+                event.key === "Enter" ||
+                event.key === " "
+            ) {
+
+                event.preventDefault();
+
+                toggleCurrentServiceStatus();
+            }
+        }
+    );
+
     deleteDialog.addEventListener(
         "click",
         function (event) {
 
-            if (event.target === deleteDialog) {
+            if (
+                event.target ===
+                deleteDialog
+            ) {
                 closeDeleteDialog();
             }
-
         }
     );
 
@@ -331,18 +458,17 @@ function bindEvents() {
         "keydown",
         function (event) {
 
-            if (event.key === "Escape") {
-
-                if (!deleteDialog.hidden) {
-                    closeDeleteDialog();
-                }
-
-                if (!packageEditorSection.hidden) {
-                    closePackageEditor();
-                }
-
+            if (event.key !== "Escape") {
+                return;
             }
 
+            if (!deleteDialog.hidden) {
+                closeDeleteDialog();
+            }
+
+            if (!packageEditorSection.hidden) {
+                closePackageEditor();
+            }
         }
     );
 }
@@ -360,7 +486,9 @@ function loadServices() {
     if (!storedServices) {
 
         services =
-            structuredClone(DEFAULT_SERVICES);
+            structuredClone(
+                DEFAULT_SERVICES
+            );
 
         saveServices();
 
@@ -370,14 +498,20 @@ function loadServices() {
     try {
 
         const parsed =
-            JSON.parse(storedServices);
+            JSON.parse(
+                storedServices
+            );
 
         if (!Array.isArray(parsed)) {
-            throw new Error("Invalid service data.");
+            throw new Error(
+                "Invalid service data."
+            );
         }
 
         services =
             normalizeServices(parsed);
+
+        saveServices();
 
     } catch (error) {
 
@@ -387,7 +521,9 @@ function loadServices() {
         );
 
         services =
-            structuredClone(DEFAULT_SERVICES);
+            structuredClone(
+                DEFAULT_SERVICES
+            );
 
         saveServices();
     }
@@ -400,7 +536,78 @@ function saveServices() {
         STORAGE_KEY,
         JSON.stringify(services)
     );
+
+    window.dispatchEvent(
+        new CustomEvent(
+            "professionalStudioServicesUpdated",
+            {
+                detail: {
+                    services:
+                        structuredClone(
+                            services
+                        )
+                }
+            }
+        )
+    );
 }
+
+
+/* =========================================================
+   DASHBOARD COMPATIBILITY API
+========================================================= */
+
+function getStoredServices() {
+
+    return structuredClone(
+        services
+    );
+}
+
+
+function getServiceName(service) {
+
+    if (
+        typeof service === "string"
+    ) {
+
+        return service;
+    }
+
+    if (
+        service &&
+        typeof service === "object"
+    ) {
+
+        return service.name || "Service";
+    }
+
+    return "Service";
+}
+
+
+window.ProfessionalStudioServices = {
+
+    get: function () {
+        return getStoredServices();
+    },
+
+    save: function (list) {
+
+        if (!Array.isArray(list)) {
+            return false;
+        }
+
+        services =
+            normalizeServices(list);
+
+        saveServices();
+
+        renderServices();
+
+        return true;
+    }
+};
 
 
 /* =========================================================
@@ -409,76 +616,112 @@ function saveServices() {
 
 function normalizeServices(list) {
 
-    return list.map(function (service) {
+    return list.map(
+        function (service) {
 
-        return {
-            id:
-                service.id ||
-                createId(),
+            const normalizedService = {
 
-            name:
-                service.name ||
-                "Untitled Service",
+                id:
+                    service.id ||
+                    createId(),
 
-            description:
-                service.description ||
-                "",
+                name:
+                    cleanText(
+                        service.name,
+                        "Untitled Service"
+                    ),
 
-            coverageDuration:
-                service.coverageDuration ||
-                "",
+                description:
+                    cleanText(
+                        service.description,
+                        ""
+                    ),
 
-            deliveryTime:
-                service.deliveryTime ||
-                "",
+                coverageDuration:
+                    cleanText(
+                        service.coverageDuration,
+                        ""
+                    ),
 
-            coverageType:
-                service.coverageType ||
-                "",
+                deliveryTime:
+                    cleanText(
+                        service.deliveryTime,
+                        ""
+                    ),
 
-            active:
-                service.active !== false,
+                coverageType:
+                    cleanText(
+                        service.coverageType,
+                        ""
+                    ),
 
-            packages:
-                Array.isArray(service.packages)
-                    ? service.packages.map(normalizePackage)
-                    : []
-        };
+                active:
+                    service.active !== false,
 
-    });
+                packages:
+                    Array.isArray(
+                        service.packages
+                    )
+                        ? service.packages.map(
+                            normalizePackage
+                        )
+                        : []
+            };
+
+            return normalizedService;
+        }
+    );
 }
 
 
 function normalizePackage(pkg) {
 
     return {
+
         id:
             pkg.id ||
             createId(),
 
         name:
-            pkg.name ||
-            "Package",
+            cleanText(
+                pkg.name,
+                "Package"
+            ),
 
         price:
-            Number(pkg.price) ||
-            0,
+            normalizePositiveNumber(
+                pkg.price
+            ),
 
         coverage:
-            pkg.coverage ||
-            "",
+            cleanText(
+                pkg.coverage,
+                ""
+            ),
 
         photos:
-            pkg.photos ||
-            "",
+            cleanText(
+                pkg.photos,
+                ""
+            ),
 
         delivery:
-            pkg.delivery ||
-            "",
+            cleanText(
+                pkg.delivery,
+                ""
+            ),
+
+        album:
+            cleanText(
+                pkg.album,
+                ""
+            ),
 
         description:
-            pkg.description ||
-            "",
+            cleanText(
+                pkg.description,
+                ""
+            ),
 
         paymentPlan:
             normalizePaymentPlan(
@@ -508,131 +751,142 @@ function renderServices() {
 
     emptyState.hidden = true;
 
-    services.forEach(function (service) {
+    services.forEach(
+        function (service) {
 
-        const card =
-            document.createElement("article");
+            const card =
+                document.createElement(
+                    "article"
+                );
 
-        card.className =
-            "service-card";
+            card.className =
+                "service-card";
 
-        const startingPrice =
-            getStartingPrice(service);
+            const startingPrice =
+                getStartingPrice(
+                    service
+                );
 
-        card.innerHTML = `
-            <div class="service-card-main">
+            card.innerHTML = `
+                <div class="service-card-main">
 
-                <div class="service-card-top">
+                    <div class="service-card-top">
 
-                    <h3>
-                        ${escapeHTML(service.name)}
-                    </h3>
-
-                    <span class="service-status ${
-                        service.active
-                            ? "active"
-                            : ""
-                    }">
-                        ${
-                            service.active
-                                ? "Active"
-                                : "Inactive"
-                        }
-                    </span>
-
-                </div>
-
-                <p class="service-description">
-                    ${escapeHTML(
-                        service.description ||
-                        "No description added yet."
-                    )}
-                </p>
-
-                <div class="service-meta">
-
-                    <div class="service-meta-item">
-
-                        <span class="service-meta-label">
-                            Starting from
-                        </span>
-
-                        <span class="service-meta-value">
-                            ${formatCurrency(
-                                startingPrice
-                            )}
-                        </span>
-
-                    </div>
-
-                    <div class="service-meta-item">
-
-                        <span class="service-meta-label">
-                            Packages
-                        </span>
-
-                        <span class="service-meta-value">
-                            ${service.packages.length}
-                        </span>
-
-                    </div>
-
-                    <div class="service-meta-item">
-
-                        <span class="service-meta-label">
-                            Coverage
-                        </span>
-
-                        <span class="service-meta-value">
+                        <h3>
                             ${escapeHTML(
-                                service.coverageDuration ||
-                                "Not set"
+                                service.name
                             )}
+                        </h3>
+
+                        <span class="service-status ${
+                            service.active
+                                ? "active"
+                                : ""
+                        }">
+                            ${
+                                service.active
+                                    ? "Active"
+                                    : "Inactive"
+                            }
                         </span>
+
+                    </div>
+
+                    <p class="service-description">
+                        ${escapeHTML(
+                            service.description ||
+                            "No description added yet."
+                        )}
+                    </p>
+
+                    <div class="service-meta">
+
+                        <div class="service-meta-item">
+
+                            <span class="service-meta-label">
+                                Starting from
+                            </span>
+
+                            <span class="service-meta-value">
+                                ${formatCurrency(
+                                    startingPrice
+                                )}
+                            </span>
+
+                        </div>
+
+                        <div class="service-meta-item">
+
+                            <span class="service-meta-label">
+                                Packages
+                            </span>
+
+                            <span class="service-meta-value">
+                                ${service.packages.length}
+                            </span>
+
+                        </div>
+
+                        <div class="service-meta-item">
+
+                            <span class="service-meta-label">
+                                Coverage
+                            </span>
+
+                            <span class="service-meta-value">
+                                ${escapeHTML(
+                                    service.coverageDuration ||
+                                    "Not set"
+                                )}
+                            </span>
+
+                        </div>
 
                     </div>
 
                 </div>
 
-            </div>
+                <div class="service-card-action">
 
-            <div class="service-card-action">
+                    <button
+                        type="button"
+                        class="text-button"
+                        data-action="edit"
+                        data-service-id="${escapeHTML(
+                            service.id
+                        )}"
+                    >
+                        Edit Service →
+                    </button>
 
-                <button
-                    type="button"
-                    class="text-button"
-                    data-action="edit"
-                    data-service-id="${escapeHTML(
-                        service.id
-                    )}"
-                >
-                    Edit Service →
-                </button>
+                </div>
+            `;
 
-            </div>
-        `;
-
-        servicesList.appendChild(card);
-    });
+            servicesList.appendChild(
+                card
+            );
+        }
+    );
 
     servicesList
         .querySelectorAll(
             '[data-action="edit"]'
         )
-        .forEach(function (button) {
+        .forEach(
+            function (button) {
 
-            button.addEventListener(
-                "click",
-                function () {
+                button.addEventListener(
+                    "click",
+                    function () {
 
-                    openService(
-                        button.dataset.serviceId
-                    );
-
-                }
-            );
-
-        });
+                        openService(
+                            button.dataset
+                                .serviceId
+                        );
+                    }
+                );
+            }
+        );
 }
 
 
@@ -643,9 +897,11 @@ function renderServices() {
 function openService(serviceId) {
 
     const service =
-        services.find(function (item) {
-            return item.id === serviceId;
-        });
+        services.find(
+            function (item) {
+                return item.id === serviceId;
+            }
+        );
 
     if (!service) {
         return;
@@ -657,7 +913,9 @@ function openService(serviceId) {
     isCreatingService =
         false;
 
-    populateEditor(service);
+    populateEditor(
+        service
+    );
 
     showEditor();
 }
@@ -702,9 +960,13 @@ function createService() {
     isCreatingService =
         true;
 
-    services.push(service);
+    services.push(
+        service
+    );
 
-    populateEditor(service);
+    populateEditor(
+        service
+    );
 
     showEditor();
 
@@ -752,11 +1014,15 @@ function populateEditor(service) {
         service.coverageType ||
         "";
 
-    updateStatusIndicator(service);
+    updateStatusIndicator(
+        service
+    );
 
     closePackageEditor();
 
-    renderPackages(service);
+    renderPackages(
+        service
+    );
 }
 
 
@@ -764,7 +1030,9 @@ function populateEditor(service) {
    STATUS
 ========================================================= */
 
-function updateStatusIndicator(service) {
+function updateStatusIndicator(
+    service
+) {
 
     statusIndicator.className =
         "status-indicator " +
@@ -778,6 +1046,37 @@ function updateStatusIndicator(service) {
         service.active
             ? "Active"
             : "Inactive";
+
+    statusIndicator.setAttribute(
+        "aria-label",
+        service.active
+            ? "Service is active. Click to deactivate."
+            : "Service is inactive. Click to activate."
+    );
+}
+
+
+function toggleCurrentServiceStatus() {
+
+    const service =
+        getCurrentService();
+
+    if (!service) {
+        return;
+    }
+
+    service.active =
+        !service.active;
+
+    updateStatusIndicator(
+        service
+    );
+
+    showNotification(
+        service.active
+            ? "Service activated."
+            : "Service deactivated."
+    );
 }
 
 
@@ -858,9 +1157,7 @@ function collectServiceData() {
 function saveService() {
 
     const service =
-        services.find(function (item) {
-            return item.id === currentServiceId;
-        });
+        getCurrentService();
 
     if (!service) {
         return;
@@ -870,7 +1167,9 @@ function saveService() {
         collectServiceData();
 
     const validation =
-        validateService(data);
+        validateService(
+            data
+        );
 
     if (!validation.valid) {
 
@@ -908,11 +1207,12 @@ function saveService() {
         "Service saved successfully."
     );
 
-    setTimeout(function () {
-
-        hideEditor();
-
-    }, 500);
+    setTimeout(
+        function () {
+            hideEditor();
+        },
+        500
+    );
 }
 
 
@@ -929,7 +1229,6 @@ function validateService(data) {
             message:
                 "Please enter a service name."
         };
-
     }
 
     if (!data.description) {
@@ -939,7 +1238,6 @@ function validateService(data) {
             message:
                 "Please add a service description."
         };
-
     }
 
     if (!data.coverageDuration) {
@@ -949,7 +1247,6 @@ function validateService(data) {
             message:
                 "Please enter the coverage duration."
         };
-
     }
 
     if (!data.deliveryTime) {
@@ -959,7 +1256,6 @@ function validateService(data) {
             message:
                 "Please enter the delivery time."
         };
-
     }
 
     if (!data.coverageType) {
@@ -969,7 +1265,6 @@ function validateService(data) {
             message:
                 "Please enter the location or coverage type."
         };
-
     }
 
     return {
@@ -989,11 +1284,11 @@ function cancelEditing() {
         services =
             services.filter(
                 function (service) {
+
                     return service.id !==
                         currentServiceId;
                 }
             );
-
     }
 
     hideEditor();
@@ -1022,152 +1317,175 @@ function renderPackages(service) {
     packageEmpty.hidden =
         packages.length !== 0;
 
-    packages.forEach(function (pkg) {
+    packages.forEach(
+        function (pkg) {
 
-        const card =
-            document.createElement("article");
+            const card =
+                document.createElement(
+                    "article"
+                );
 
-        card.className =
-            "package-card";
+            card.className =
+                "package-card";
 
-        card.innerHTML = `
-            <div class="package-card-content">
+            card.innerHTML = `
+                <div class="package-card-content">
 
-                <div class="package-card-top">
+                    <div class="package-card-top">
 
-                    <h3>
-                        ${escapeHTML(pkg.name)}
-                    </h3>
+                        <h3>
+                            ${escapeHTML(
+                                pkg.name
+                            )}
+                        </h3>
+
+                    </div>
+
+                    <div class="package-price">
+                        ${formatCurrency(
+                            pkg.price
+                        )}
+                    </div>
+
+                    <div class="package-details">
+
+                        <span class="package-detail">
+                            ${escapeHTML(
+                                pkg.coverage ||
+                                "Coverage not set"
+                            )}
+                        </span>
+
+                        <span class="package-detail">
+                            ${escapeHTML(
+                                pkg.photos ||
+                                "Photos not set"
+                            )}
+                        </span>
+
+                        <span class="package-detail">
+                            ${escapeHTML(
+                                pkg.delivery ||
+                                "Delivery not set"
+                            )}
+                        </span>
+
+                        ${
+                            pkg.album
+                                ? `
+                                    <span class="package-detail">
+                                        Album: ${escapeHTML(
+                                            pkg.album
+                                        )}
+                                    </span>
+                                `
+                                : ""
+                        }
+
+                    </div>
+
+                    ${
+                        pkg.description
+                            ? `
+                                <p class="package-description">
+                                    ${escapeHTML(
+                                        pkg.description
+                                    )}
+                                </p>
+                            `
+                            : ""
+                    }
+
+                    <div class="package-payment-summary">
+
+                        <span class="package-payment-label">
+                            Payment
+                        </span>
+
+                        <span class="package-payment-value">
+                            ${escapeHTML(
+                                getPaymentPlanSummary(
+                                    pkg.paymentPlan
+                                )
+                            )}
+                        </span>
+
+                    </div>
 
                 </div>
 
-                <div class="package-price">
-                    ${formatCurrency(pkg.price)}
-                </div>
+                <div class="package-actions">
 
-                <div class="package-details">
+                    <button
+                        type="button"
+                        class="text-button"
+                        data-package-action="edit"
+                        data-package-id="${escapeHTML(
+                            pkg.id
+                        )}"
+                    >
+                        Edit Package
+                    </button>
 
-                    <span class="package-detail">
-                        ${escapeHTML(
-                            pkg.coverage ||
-                            "Coverage not set"
-                        )}
-                    </span>
-
-                    <span class="package-detail">
-                        ${escapeHTML(
-                            pkg.photos ||
-                            "Photos not set"
-                        )}
-                    </span>
-
-                    <span class="package-detail">
-                        ${escapeHTML(
-                            pkg.delivery ||
-                            "Delivery not set"
-                        )}
-                    </span>
+                    <button
+                        type="button"
+                        class="text-button"
+                        data-package-action="delete"
+                        data-package-id="${escapeHTML(
+                            pkg.id
+                        )}"
+                    >
+                        Delete
+                    </button>
 
                 </div>
+            `;
 
-                ${
-                    pkg.description
-                        ? `
-                            <p class="package-description">
-                                ${escapeHTML(
-                                    pkg.description
-                                )}
-                            </p>
-                        `
-                        : ""
-                }
-
-                <div class="package-payment-summary">
-
-                    <span class="package-payment-label">
-                        Payment
-                    </span>
-
-                    <span class="package-payment-value">
-                        ${escapeHTML(
-                            getPaymentPlanSummary(
-                                pkg.paymentPlan,
-                                pkg.price
-                            )
-                        )}
-                    </span>
-
-                </div>
-
-            </div>
-
-            <div class="package-actions">
-
-                <button
-                    type="button"
-                    class="text-button"
-                    data-package-action="edit"
-                    data-package-id="${escapeHTML(
-                        pkg.id
-                    )}"
-                >
-                    Edit Package
-                </button>
-
-                <button
-                    type="button"
-                    class="text-button"
-                    data-package-action="delete"
-                    data-package-id="${escapeHTML(
-                        pkg.id
-                    )}"
-                >
-                    Delete
-                </button>
-
-            </div>
-        `;
-
-        packagesList.appendChild(card);
-    });
+            packagesList.appendChild(
+                card
+            );
+        }
+    );
 
     packagesList
         .querySelectorAll(
             '[data-package-action="edit"]'
         )
-        .forEach(function (button) {
+        .forEach(
+            function (button) {
 
-            button.addEventListener(
-                "click",
-                function () {
+                button.addEventListener(
+                    "click",
+                    function () {
 
-                    openPackageEditor(
-                        button.dataset.packageId
-                    );
-
-                }
-            );
-
-        });
+                        openPackageEditor(
+                            button.dataset
+                                .packageId
+                        );
+                    }
+                );
+            }
+        );
 
     packagesList
         .querySelectorAll(
             '[data-package-action="delete"]'
         )
-        .forEach(function (button) {
+        .forEach(
+            function (button) {
 
-            button.addEventListener(
-                "click",
-                function () {
+                button.addEventListener(
+                    "click",
+                    function () {
 
-                    deletePackage(
-                        button.dataset.packageId
-                    );
-
-                }
-            );
-
-        });
+                        deletePackage(
+                            button.dataset
+                                .packageId
+                        );
+                    }
+                );
+            }
+        );
 }
 
 
@@ -1184,13 +1502,22 @@ function createPackage() {
         return;
     }
 
+    if (editingPackageId) {
+
+        showNotification(
+            "Finish editing the current package first."
+        );
+
+        return;
+    }
+
     const pkg = {
 
         id:
             createId(),
 
         name:
-            "New Package",
+            "",
 
         price:
             0,
@@ -1204,6 +1531,9 @@ function createPackage() {
         delivery:
             "",
 
+        album:
+            "",
+
         description:
             "",
 
@@ -1211,11 +1541,16 @@ function createPackage() {
             createDefaultPaymentPlan()
     };
 
-    service.packages.push(pkg);
+    service.packages.push(
+        pkg
+    );
 
-    renderPackages(service);
+    creatingPackageId =
+        pkg.id;
 
-    openPackageEditor(pkg.id);
+    openPackageEditor(
+        pkg.id
+    );
 }
 
 
@@ -1223,7 +1558,9 @@ function createPackage() {
    OPEN PACKAGE EDITOR
 ========================================================= */
 
-function openPackageEditor(packageId) {
+function openPackageEditor(
+    packageId
+) {
 
     const service =
         getCurrentService();
@@ -1235,7 +1572,9 @@ function openPackageEditor(packageId) {
     const pkg =
         service.packages.find(
             function (item) {
-                return item.id === packageId;
+
+                return item.id ===
+                    packageId;
             }
         );
 
@@ -1248,15 +1587,16 @@ function openPackageEditor(packageId) {
 
     packageEditorTitle.textContent =
         pkg.name ||
-        "Edit Package";
+        "New Package";
 
     packageName.value =
         pkg.name ||
         "";
 
     packagePrice.value =
-        pkg.price ||
-        "";
+        pkg.price > 0
+            ? pkg.price
+            : "";
 
     packageCoverage.value =
         pkg.coverage ||
@@ -1268,6 +1608,10 @@ function openPackageEditor(packageId) {
 
     packageDelivery.value =
         pkg.delivery ||
+        "";
+
+    packageAlbum.value =
+        pkg.album ||
         "";
 
     packageDescription.value =
@@ -1286,11 +1630,14 @@ function openPackageEditor(packageId) {
         block: "start"
     });
 
-    setTimeout(function () {
+    setTimeout(
+        function () {
 
-        packageName.focus();
+            packageName.focus();
 
-    }, 250);
+        },
+        250
+    );
 }
 
 
@@ -1310,7 +1657,9 @@ function savePackage() {
     const pkg =
         service.packages.find(
             function (item) {
-                return item.id === editingPackageId;
+
+                return item.id ===
+                    editingPackageId;
             }
         );
 
@@ -1322,7 +1671,9 @@ function savePackage() {
         packageName.value.trim();
 
     const price =
-        Number(packagePrice.value);
+        Number(
+            packagePrice.value
+        );
 
     const coverage =
         packageCoverage.value.trim();
@@ -1333,11 +1684,16 @@ function savePackage() {
     const delivery =
         packageDelivery.value.trim();
 
+    const album =
+        packageAlbum.value.trim();
+
     const description =
         packageDescription.value.trim();
 
     const paymentResult =
-        collectPaymentPlan(price);
+        collectPaymentPlan(
+            price
+        );
 
     if (!name) {
 
@@ -1350,11 +1706,11 @@ function savePackage() {
 
     if (
         !Number.isFinite(price) ||
-        price < 0
+        price <= 0
     ) {
 
         showNotification(
-            "Please enter a valid package price."
+            "Please enter a package price greater than ₹0."
         );
 
         return;
@@ -1411,6 +1767,9 @@ function savePackage() {
     pkg.delivery =
         delivery;
 
+    pkg.album =
+        album;
+
     pkg.description =
         description;
 
@@ -1419,7 +1778,9 @@ function savePackage() {
 
     saveServices();
 
-    renderPackages(service);
+    renderPackages(
+        service
+    );
 
     closePackageEditor();
 
@@ -1435,10 +1796,39 @@ function savePackage() {
 
 function closePackageEditor() {
 
+    if (
+        creatingPackageId &&
+        editingPackageId ===
+            creatingPackageId
+    ) {
+
+        const service =
+            getCurrentService();
+
+        if (service) {
+
+            service.packages =
+                service.packages.filter(
+                    function (pkg) {
+
+                        return pkg.id !==
+                            creatingPackageId;
+                    }
+                );
+
+            renderPackages(
+                service
+            );
+        }
+    }
+
     packageEditorSection.hidden =
         true;
 
     editingPackageId =
+        null;
+
+    creatingPackageId =
         null;
 
     packageName.value =
@@ -1456,6 +1846,9 @@ function closePackageEditor() {
     packageDelivery.value =
         "";
 
+    packageAlbum.value =
+        "";
+
     packageDescription.value =
         "";
 
@@ -1469,23 +1862,36 @@ function closePackageEditor() {
    PAYMENT PLAN
 ========================================================= */
 
-function getPaymentPlanSummary(plan, price) {
+function getPaymentPlanSummary(
+    plan
+) {
 
     const normalized =
-        normalizePaymentPlan(plan);
+        normalizePaymentPlan(
+            plan
+        );
 
-    if (normalized.type === "full") {
+    if (
+        normalized.type ===
+        "full"
+    ) {
 
         return "Full payment";
     }
 
-    if (normalized.type === "advance") {
+    if (
+        normalized.type ===
+        "advance"
+    ) {
 
         const advance =
             normalized.advance;
 
-        return advance.type === "percentage"
+        return advance.type ===
+            "percentage"
+
             ? `${advance.value}% advance`
+
             : `${formatCurrency(
                 advance.value
             )} advance`;
@@ -1514,7 +1920,7 @@ function createDefaultPaymentPlan() {
                 "percentage",
 
             value:
-                25
+                0
         },
 
         installments:
@@ -1523,14 +1929,17 @@ function createDefaultPaymentPlan() {
 }
 
 
-function normalizePaymentPlan(plan) {
+function normalizePaymentPlan(
+    plan
+) {
 
     const defaults =
         createDefaultPaymentPlan();
 
     if (
         !plan ||
-        typeof plan !== "object"
+        typeof plan !==
+            "object"
     ) {
 
         return defaults;
@@ -1541,7 +1950,9 @@ function normalizePaymentPlan(plan) {
             "full",
             "advance",
             "installments"
-        ].includes(plan.type)
+        ].includes(
+            plan.type
+        )
             ? plan.type
             : defaults.type;
 
@@ -1550,7 +1961,9 @@ function normalizePaymentPlan(plan) {
         [
             "percentage",
             "fixed"
-        ].includes(plan.advance.type)
+        ].includes(
+            plan.advance.type
+        )
             ? plan.advance.type
             : defaults.advance.type;
 
@@ -1561,7 +1974,9 @@ function normalizePaymentPlan(plan) {
         );
 
     const installments =
-        Array.isArray(plan.installments)
+        Array.isArray(
+            plan.installments
+        )
             ? plan.installments.map(
                 function (item) {
 
@@ -1572,29 +1987,38 @@ function normalizePaymentPlan(plan) {
                             createId(),
 
                         name:
-                            item.name ||
-                            "Payment Stage",
+                            cleanText(
+                                item.name,
+                                "Payment Stage"
+                            ),
 
                         type:
                             [
                                 "percentage",
                                 "fixed"
-                            ].includes(item.type)
+                            ].includes(
+                                item.type
+                            )
                                 ? item.type
                                 : "percentage",
 
                         value:
                             Number.isFinite(
-                                Number(item.value)
+                                Number(
+                                    item.value
+                                )
                             )
-                                ? Number(item.value)
+                                ? Number(
+                                    item.value
+                                )
                                 : 0,
 
                         due:
-                            item.due ||
-                            ""
+                            cleanText(
+                                item.due,
+                                ""
+                            )
                     };
-
                 }
             )
             : [];
@@ -1613,8 +2037,11 @@ function normalizePaymentPlan(plan) {
                 Number.isFinite(
                     advanceValue
                 )
-                    ? advanceValue
-                    : 25
+                    ? Math.max(
+                        0,
+                        advanceValue
+                    )
+                    : defaults.advance.value
         },
 
         installments:
@@ -1623,10 +2050,14 @@ function normalizePaymentPlan(plan) {
 }
 
 
-function setPaymentPlanEditor(plan) {
+function setPaymentPlanEditor(
+    plan
+) {
 
     const normalized =
-        normalizePaymentPlan(plan);
+        normalizePaymentPlan(
+            plan
+        );
 
     paymentPlanType.value =
         normalized.type;
@@ -1648,8 +2079,9 @@ function setPaymentPlanEditor(plan) {
         normalized.installments.forEach(
             function (item) {
 
-                addInstallmentRow(item);
-
+                addInstallmentRow(
+                    item
+                );
             }
         );
 
@@ -1758,7 +2190,9 @@ function updateAdvancePaymentPrefix() {
 }
 
 
-function addInstallmentRow(data) {
+function addInstallmentRow(
+    data
+) {
 
     const item =
         data || {
@@ -1777,7 +2211,9 @@ function addInstallmentRow(data) {
         };
 
     const row =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
     row.className =
         "installment-row";
@@ -1864,8 +2300,9 @@ function addInstallmentRow(data) {
                     min="0"
                     step="1"
                     value="${
-                        Number(item.value) ||
-                        0
+                        Number(
+                            item.value
+                        ) || 0
                     }"
                     placeholder="25"
                 >
@@ -1900,7 +2337,9 @@ function addInstallmentRow(data) {
         </button>
     `;
 
-    installmentList.appendChild(row);
+    installmentList.appendChild(
+        row
+    );
 
     const typeInput =
         row.querySelector(
@@ -1927,7 +2366,8 @@ function addInstallmentRow(data) {
         function () {
 
             prefix.textContent =
-                typeInput.value === "fixed"
+                typeInput.value ===
+                "fixed"
                     ? "₹"
                     : "%";
 
@@ -1954,12 +2394,20 @@ function addInstallmentRow(data) {
 }
 
 
-function collectPaymentPlan(price) {
+/* =========================================================
+   COLLECT PAYMENT PLAN
+========================================================= */
+
+function collectPaymentPlan(
+    price
+) {
 
     const type =
         paymentPlanType.value;
 
-    if (type === "full") {
+    if (
+        type === "full"
+    ) {
 
         return {
 
@@ -1986,7 +2434,10 @@ function collectPaymentPlan(price) {
         };
     }
 
-    if (type === "advance") {
+
+    if (
+        type === "advance"
+    ) {
 
         const value =
             Number(
@@ -2012,7 +2463,8 @@ function collectPaymentPlan(price) {
         }
 
         if (
-            amountType === "percentage" &&
+            amountType ===
+                "percentage" &&
             value >= 100
         ) {
 
@@ -2027,9 +2479,9 @@ function collectPaymentPlan(price) {
         }
 
         if (
-            amountType === "fixed" &&
-            value >= price &&
-            price > 0
+            amountType ===
+                "fixed" &&
+            value >= price
         ) {
 
             return {
@@ -2067,6 +2519,7 @@ function collectPaymentPlan(price) {
         };
     }
 
+
     const rows =
         Array.from(
             installmentList.querySelectorAll(
@@ -2074,7 +2527,9 @@ function collectPaymentPlan(price) {
             )
         );
 
-    if (rows.length === 0) {
+    if (
+        rows.length === 0
+    ) {
 
         return {
 
@@ -2089,8 +2544,12 @@ function collectPaymentPlan(price) {
     const installments =
         [];
 
-    let calculatedTotal =
+    let percentageTotal =
         0;
+
+    let fixedTotal =
+        0;
+
 
     for (
         let i = 0;
@@ -2133,6 +2592,7 @@ function collectPaymentPlan(price) {
                 .value
                 .trim();
 
+
         if (!name) {
 
             return {
@@ -2144,6 +2604,7 @@ function collectPaymentPlan(price) {
                     `Please enter a name for payment stage ${i + 1}.`
             };
         }
+
 
         if (
             !Number.isFinite(value) ||
@@ -2160,6 +2621,7 @@ function collectPaymentPlan(price) {
             };
         }
 
+
         if (!due) {
 
             return {
@@ -2172,52 +2634,55 @@ function collectPaymentPlan(price) {
             };
         }
 
-        if (
-            amountType ===
-                "percentage" &&
-            value > 100
-        ) {
-
-            return {
-
-                valid:
-                    false,
-
-                message:
-                    `Payment stage ${i + 1} cannot exceed 100%.`
-            };
-        }
 
         if (
             amountType ===
-                "fixed" &&
-            price > 0 &&
-            value > price
+                "percentage"
         ) {
 
-            return {
+            if (
+                value > 100
+            ) {
 
-                valid:
-                    false,
+                return {
 
-                message:
-                    `Payment stage ${i + 1} cannot exceed the package price.`
-            };
+                    valid:
+                        false,
+
+                    message:
+                        `Payment stage ${i + 1} cannot exceed 100%.`
+                };
+            }
+
+            percentageTotal +=
+                value;
+
+        } else {
+
+            if (
+                value > price
+            ) {
+
+                return {
+
+                    valid:
+                        false,
+
+                    message:
+                        `Payment stage ${i + 1} cannot exceed the package price.`
+                };
+            }
+
+            fixedTotal +=
+                value;
         }
 
-        calculatedTotal +=
-            amountType ===
-            "percentage"
-                ? (
-                    price *
-                    value
-                ) / 100
-                : value;
 
         installments.push({
 
             id:
-                row.dataset.installmentId ||
+                row.dataset
+                    .installmentId ||
                 createId(),
 
             name:
@@ -2233,6 +2698,47 @@ function collectPaymentPlan(price) {
                 due
         });
     }
+
+
+    if (
+        percentageTotal >
+        100.01
+    ) {
+
+        return {
+
+            valid:
+                false,
+
+            message:
+                "Percentage payment stages cannot total more than 100%."
+        };
+    }
+
+
+    if (
+        fixedTotal >
+        price + 0.01
+    ) {
+
+        return {
+
+            valid:
+                false,
+
+            message:
+                "Fixed payment stages cannot exceed the package price."
+        };
+    }
+
+
+    const calculatedTotal =
+        (
+            price *
+            percentageTotal
+        ) / 100 +
+        fixedTotal;
+
 
     if (
         Math.abs(
@@ -2254,6 +2760,7 @@ function collectPaymentPlan(price) {
                 )}.`
         };
     }
+
 
     return {
 
@@ -2281,13 +2788,16 @@ function collectPaymentPlan(price) {
 }
 
 
+/* =========================================================
+   INSTALLMENT TOTAL
+========================================================= */
+
 function updateInstallmentTotal() {
 
     if (
         !installmentTotal ||
         !installmentList
     ) {
-
         return;
     }
 
@@ -2306,32 +2816,34 @@ function updateInstallmentTotal() {
     let total =
         0;
 
-    rows.forEach(function (row) {
+    rows.forEach(
+        function (row) {
 
-        const type =
-            row
-                .querySelector(
-                    ".installment-type"
-                )
-                .value;
-
-        const value =
-            Number(
+            const type =
                 row
                     .querySelector(
-                        ".installment-value"
+                        ".installment-type"
                     )
-                    .value
-            ) || 0;
+                    .value;
 
-        total +=
-            type === "percentage"
-                ? (
-                    price *
-                    value
-                ) / 100
-                : value;
-    });
+            const value =
+                Number(
+                    row
+                        .querySelector(
+                            ".installment-value"
+                        )
+                        .value
+                ) || 0;
+
+            total +=
+                type === "percentage"
+                    ? (
+                        price *
+                        value
+                    ) / 100
+                    : value;
+        }
+    );
 
     installmentTotal.textContent =
         `Total: ${formatCurrency(
@@ -2339,6 +2851,22 @@ function updateInstallmentTotal() {
         )} / ${formatCurrency(
             price
         )}`;
+
+    installmentTotal.classList.toggle(
+        "valid",
+        price > 0 &&
+        Math.abs(
+            total - price
+        ) <= 0.01
+    );
+
+    installmentTotal.classList.toggle(
+        "invalid",
+        price > 0 &&
+        Math.abs(
+            total - price
+        ) > 0.01
+    );
 }
 
 
@@ -2346,7 +2874,9 @@ function updateInstallmentTotal() {
    DELETE PACKAGE
 ========================================================= */
 
-function deletePackage(packageId) {
+function deletePackage(
+    packageId
+) {
 
     const service =
         getCurrentService();
@@ -2358,7 +2888,9 @@ function deletePackage(packageId) {
     const pkg =
         service.packages.find(
             function (item) {
-                return item.id === packageId;
+
+                return item.id ===
+                    packageId;
             }
         );
 
@@ -2378,13 +2910,17 @@ function deletePackage(packageId) {
     service.packages =
         service.packages.filter(
             function (item) {
-                return item.id !== packageId;
+
+                return item.id !==
+                    packageId;
             }
         );
 
     saveServices();
 
-    renderPackages(service);
+    renderPackages(
+        service
+    );
 
     closePackageEditor();
 
@@ -2406,6 +2942,15 @@ function openDeleteDialog() {
 
     deleteDialog.hidden =
         false;
+
+    setTimeout(
+        function () {
+
+            cancelDeleteBtn.focus();
+
+        },
+        0
+    );
 }
 
 
@@ -2422,10 +2967,18 @@ function deleteService() {
         return;
     }
 
+    const service =
+        getCurrentService();
+
+    if (!service) {
+        return;
+    }
+
     services =
         services.filter(
-            function (service) {
-                return service.id !==
+            function (item) {
+
+                return item.id !==
                     currentServiceId;
             }
         );
@@ -2450,6 +3003,7 @@ function getCurrentService() {
 
     return services.find(
         function (service) {
+
             return service.id ===
                 currentServiceId;
         }
@@ -2457,7 +3011,9 @@ function getCurrentService() {
 }
 
 
-function getStartingPrice(service) {
+function getStartingPrice(
+    service
+) {
 
     if (
         !service.packages ||
@@ -2469,23 +3025,27 @@ function getStartingPrice(service) {
 
     const prices =
         service.packages
-            .map(function (pkg) {
+            .map(
+                function (pkg) {
 
-                return Number(
-                    pkg.price
-                );
+                    return Number(
+                        pkg.price
+                    );
+                }
+            )
+            .filter(
+                function (price) {
 
-            })
-            .filter(function (price) {
+                    return Number.isFinite(
+                        price
+                    ) &&
+                    price > 0;
+                }
+            );
 
-                return Number.isFinite(
-                    price
-                ) &&
-                price >= 0;
-
-            });
-
-    if (prices.length === 0) {
+    if (
+        prices.length === 0
+    ) {
         return 0;
     }
 
@@ -2496,7 +3056,45 @@ function getStartingPrice(service) {
 }
 
 
-function formatCurrency(amount) {
+function normalizePositiveNumber(
+    value
+) {
+
+    const number =
+        Number(value);
+
+    return Number.isFinite(
+        number
+    ) && number > 0
+        ? number
+        : 0;
+}
+
+
+function cleanText(
+    value,
+    fallback
+) {
+
+    if (
+        typeof value !==
+        "string"
+    ) {
+
+        return fallback;
+    }
+
+    const cleaned =
+        value.trim();
+
+    return cleaned ||
+        fallback;
+}
+
+
+function formatCurrency(
+    amount
+) {
 
     return new Intl.NumberFormat(
         "en-IN",
@@ -2511,7 +3109,7 @@ function formatCurrency(amount) {
                 0
         }
     ).format(
-        amount || 0
+        Number(amount) || 0
     );
 }
 
@@ -2528,7 +3126,9 @@ function createId() {
 }
 
 
-function escapeHTML(value) {
+function escapeHTML(
+    value
+) {
 
     return String(value)
         .replace(
@@ -2561,7 +3161,10 @@ function escapeHTML(value) {
 let notificationTimer =
     null;
 
-function showNotification(message) {
+
+function showNotification(
+    message
+) {
 
     notification.textContent =
         message;

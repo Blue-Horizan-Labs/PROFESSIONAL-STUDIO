@@ -501,7 +501,15 @@ a {
     background: #f3f3f3;
     color: #888;
 }
+.status-indicator {
+    cursor: pointer;
+    user-select: none;
+}
 
+.status-indicator:focus-visible {
+    outline: 2px solid #111;
+    outline-offset: 2px;
+}
 
 /* =========================================================
    FORM CARD
