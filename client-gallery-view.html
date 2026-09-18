@@ -2,55 +2,32 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <title>Private Gallery | Professional Studio</title>
 
-    <title>Client Gallery | Professional Studio</title>
-
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com"
-    >
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap"
         rel="stylesheet"
     >
 
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-    >
-
-    <link
-        rel="stylesheet"
-        href="client-gallery-view.css"
-    >
+    <link rel="stylesheet" href="client-gallery-view.css">
 </head>
 
 <body>
 
-    <!-- =====================================================
-         PASSWORD SCREEN
-    ====================================================== -->
-
+    <!-- PASSWORD SCREEN -->
     <section
+        class="screen password-screen hidden"
         id="passwordScreen"
-        class="password-screen hidden"
     >
-        <div class="password-card">
+        <div class="access-card">
 
-            <div class="brand-mark">
-                <i class="fa-solid fa-camera"></i>
+            <div class="access-mark">
+                PS
             </div>
 
             <span class="eyebrow">
@@ -66,156 +43,141 @@
                 Enter the password provided by your photographer.
             </p>
 
-            <form id="passwordForm">
+            <form
+                id="passwordForm"
+                class="access-form"
+            >
 
-                <div class="input-group">
+                <label for="galleryPasswordInput">
+                    Gallery password
+                </label>
 
-                    <label for="galleryAccessPassword">
-                        Gallery Password
-                    </label>
-
-                    <div class="password-input">
-                        <input
-                            type="password"
-                            id="galleryAccessPassword"
-                            autocomplete="off"
-                            placeholder="Enter password"
-                            required
-                        >
-
-                        <button
-                            type="button"
-                            id="togglePassword"
-                            aria-label="Show password"
-                        >
-                            <i class="fa-regular fa-eye"></i>
-                        </button>
-                    </div>
-
-                </div>
+                <input
+                    id="galleryPasswordInput"
+                    type="password"
+                    autocomplete="current-password"
+                    placeholder="Enter password"
+                    required
+                >
 
                 <button
                     type="submit"
-                    class="primary-btn full-width"
+                    class="primary-btn"
                 >
-                    <i class="fa-solid fa-lock-open"></i>
                     Open Gallery
                 </button>
 
                 <p
+                    class="access-error hidden"
                     id="passwordError"
-                    class="form-error"
-                ></p>
+                >
+                    Incorrect password. Please try again.
+                </p>
 
             </form>
 
-            <div class="powered-by">
-                Professional Studio
-            </div>
-
         </div>
     </section>
 
 
-    <!-- =====================================================
-         EXPIRED SCREEN
-    ====================================================== -->
-
+    <!-- NOT FOUND -->
     <section
-        id="expiredScreen"
-        class="message-screen hidden"
-    >
-        <div class="message-card">
-
-            <div class="message-icon">
-                <i class="fa-regular fa-clock"></i>
-            </div>
-
-            <h1>Gallery Expired</h1>
-
-            <p>
-                This private gallery is no longer available.
-                Please contact your photographer if you need access.
-            </p>
-
-            <div class="powered-by">
-                Professional Studio
-            </div>
-
-        </div>
-    </section>
-
-
-    <!-- =====================================================
-         NOT FOUND SCREEN
-    ====================================================== -->
-
-    <section
+        class="screen message-screen hidden"
         id="notFoundScreen"
-        class="message-screen hidden"
     >
         <div class="message-card">
 
             <div class="message-icon">
-                <i class="fa-regular fa-images"></i>
+                ○
             </div>
 
-            <h1>Gallery Not Found</h1>
+            <span class="eyebrow">
+                PRIVATE GALLERY
+            </span>
+
+            <h1>
+                Gallery not found.
+            </h1>
 
             <p>
-                This gallery link is invalid or the gallery
-                is no longer available.
+                This private gallery link is invalid
+                or the gallery is no longer available.
             </p>
-
-            <div class="powered-by">
-                Professional Studio
-            </div>
 
         </div>
     </section>
 
 
-    <!-- =====================================================
-         MAIN GALLERY
-    ====================================================== -->
+    <!-- EXPIRED -->
+    <section
+        class="screen message-screen hidden"
+        id="expiredScreen"
+    >
+        <div class="message-card">
 
+            <div class="message-icon">
+                ×
+            </div>
+
+            <span class="eyebrow">
+                ACCESS PERIOD ENDED
+            </span>
+
+            <h1>
+                This gallery has expired.
+            </h1>
+
+            <p>
+                The access period for this private gallery
+                has ended. Please contact your photographer
+                if you need access again.
+            </p>
+
+        </div>
+    </section>
+
+
+    <!-- GALLERY APP -->
     <main
-        id="galleryApp"
         class="gallery-app hidden"
+        id="galleryApp"
     >
 
+        <!-- HEADER -->
         <header class="gallery-header">
 
             <div class="header-inner">
 
                 <div class="brand">
 
-                    <div class="brand-icon">
-                        <i class="fa-solid fa-camera"></i>
-                    </div>
-
-                    <span>
-                        Professional Studio
+                    <span class="brand-mark">
+                        PS
                     </span>
 
+                    <div>
+
+                        <span class="eyebrow">
+                            PROFESSIONAL STUDIO
+                        </span>
+
+                        <strong>
+                            Private Gallery
+                        </strong>
+
+                    </div>
+
                 </div>
+
 
                 <div class="header-actions">
 
                     <button
                         type="button"
-                        id="openSelectionSummary"
-                        class="header-btn selection-header-btn"
+                        class="secondary-btn hidden"
+                        id="downloadGalleryBtn"
                     >
-                        <i class="fa-regular fa-square-check"></i>
-
-                        <span>
-                            Selected
-                        </span>
-
-                        <strong id="headerSelectionCount">
-                            0
-                        </strong>
+                        <span>↓</span>
+                        Download Gallery
                     </button>
 
                 </div>
@@ -225,9 +187,10 @@
         </header>
 
 
-        <section class="gallery-hero">
+        <!-- HERO -->
+        <section class="hero">
 
-            <div class="hero-content">
+            <div class="hero-inner">
 
                 <span class="eyebrow">
                     YOUR PRIVATE GALLERY
@@ -237,31 +200,15 @@
                     Gallery
                 </h1>
 
-                <p
-                    id="galleryDescription"
-                    class="gallery-description"
-                ></p>
+                <p id="galleryDescription">
+                    Your photographs and videos are ready.
+                </p>
 
-                <div class="gallery-meta">
+                <div class="hero-meta">
 
-                    <span>
-                        <i class="fa-regular fa-images"></i>
+                    <span id="galleryClientName"></span>
 
-                        <strong id="heroMediaCount">
-                            0
-                        </strong>
-
-                        items
-                    </span>
-
-                    <span>
-                        <i class="fa-regular fa-calendar"></i>
-
-                        Available until
-                        <strong id="heroExpiry">
-                            -
-                        </strong>
-                    </span>
+                    <span id="galleryExpiry"></span>
 
                 </div>
 
@@ -270,148 +217,189 @@
         </section>
 
 
+        <!-- WEDDING ALBUM SELECTION -->
         <section
-            id="albumSelectionBar"
-            class="selection-bar hidden"
+            class="selection-panel hidden"
+            id="selectionPanel"
         >
 
-            <div class="selection-bar-info">
+            <div>
 
-                <div class="selection-bar-icon">
-                    <i class="fa-solid fa-book-open"></i>
-                </div>
+                <span class="eyebrow">
+                    WEDDING ALBUM
+                </span>
 
-                <div>
+                <h2>
+                    Select photos for your album.
+                </h2>
 
-                    <strong>
-                        Wedding Album Selection
-                    </strong>
-
-                    <p>
-                        Select the photos you want included
-                        in your physical album.
-                    </p>
-
-                </div>
+                <p id="selectionDescription">
+                    Choose the photographs you want
+                    included in your physical album.
+                </p>
 
             </div>
 
-            <div class="selection-counter">
 
-                <span>
-                    Selected
-                </span>
+            <div class="selection-status">
 
-                <strong id="selectionCount">
-                    0
+                <strong>
+
+                    <span id="selectionCount">
+                        0
+                    </span>
+
+                    <span id="selectionLimit"></span>
+
                 </strong>
 
-                <span id="selectionLimitText">
-                    photos
+                <span>
+                    photos selected
                 </span>
+
+            </div>
+
+
+            <div class="selection-actions">
+
+                <button
+                    type="button"
+                    class="secondary-btn"
+                    id="clearSelectionBtn"
+                >
+                    Clear Selection
+                </button>
+
+                <button
+                    type="button"
+                    class="primary-btn"
+                    id="submitSelectionBtn"
+                >
+                    Submit Selection
+                </button>
 
             </div>
 
         </section>
 
 
+        <!-- GALLERY CONTENT -->
         <section class="gallery-content">
 
-            <div class="section-navigation">
+            <!-- SECTIONS -->
+            <aside class="sections-sidebar">
 
-                <div class="section-navigation-title">
-                    <span>Gallery Sections</span>
-                </div>
+                <div class="sidebar-heading">
 
-                <div
-                    id="sectionNavigation"
-                    class="section-tabs"
-                ></div>
-
-            </div>
-
-
-            <div class="gallery-toolbar">
-
-                <div class="toolbar-left">
-
-                    <span
-                        id="currentSectionTitle"
-                        class="current-section-title"
-                    >
-                        All Photos
+                    <span class="eyebrow">
+                        SECTIONS
                     </span>
 
+                    <strong>
+                        Your gallery
+                    </strong>
+
+                </div>
+
+                <div id="sectionsList"></div>
+
+            </aside>
+
+
+            <!-- MEDIA -->
+            <section class="media-area">
+
+                <div class="media-toolbar">
+
+                    <div>
+
+                        <span
+                            class="eyebrow"
+                            id="activeSectionEyebrow"
+                        >
+                            GALLERY
+                        </span>
+
+                        <h2 id="activeSectionTitle">
+                            All photos
+                        </h2>
+
+                    </div>
+
                     <span
-                        id="currentSectionCount"
-                        class="current-section-count"
+                        class="media-count"
+                        id="mediaCount"
                     >
                         0 items
                     </span>
 
                 </div>
 
-                <div class="toolbar-right">
 
-                    <button
-                        type="button"
-                        class="filter-btn active"
-                        data-filter="all"
-                    >
-                        All
-                    </button>
+                <div
+                    class="media-grid"
+                    id="mediaGrid"
+                ></div>
 
-                    <button
-                        type="button"
-                        class="filter-btn"
-                        data-filter="photo"
-                    >
-                        Photos
-                    </button>
 
-                    <button
-                        type="button"
-                        class="filter-btn"
-                        data-filter="video"
-                    >
-                        Videos
-                    </button>
+                <div
+                    class="media-empty hidden"
+                    id="mediaEmpty"
+                >
+
+                    <div class="message-icon">
+                        □
+                    </div>
+
+                    <h3>
+                        No media here yet.
+                    </h3>
+
+                    <p>
+                        Your photographer has not
+                        added content to this section.
+                    </p>
 
                 </div>
 
-            </div>
+            </section>
+
+        </section>
 
 
-            <div
-                id="clientMediaGrid"
-                class="client-media-grid"
-            ></div>
+        <!-- CLIENT NOTE -->
+        <section
+            class="client-note-section hidden"
+            id="clientNoteSection"
+        >
 
-            <div
-                id="mediaEmptyState"
-                class="client-empty-state hidden"
-            >
+            <div class="note-card">
 
-                <div class="empty-icon">
-                    <i class="fa-regular fa-images"></i>
-                </div>
+                <span class="eyebrow">
+                    MESSAGE TO PHOTOGRAPHER
+                </span>
 
-                <h3>No media in this section</h3>
+                <h2>
+                    Add a note with your selection.
+                </h2>
 
-                <p>
-                    There are currently no photos or videos here.
-                </p>
+                <textarea
+                    id="generalComment"
+                    rows="4"
+                    maxlength="1000"
+                    placeholder="Optional message for your photographer..."
+                ></textarea>
 
             </div>
 
         </section>
 
 
+        <!-- FOOTER -->
         <footer class="gallery-footer">
 
             <span>
-                Private gallery powered by
-                <strong>Professional Studio</strong>
+                Private gallery powered by Professional Studio
             </span>
 
         </footer>
@@ -419,264 +407,95 @@
     </main>
 
 
-    <!-- =====================================================
-         MEDIA VIEWER
-    ====================================================== -->
-
+    <!-- MEDIA VIEWER -->
     <div
-        id="mediaViewer"
-        class="media-viewer"
+        class="viewer hidden"
+        id="viewer"
     >
 
-        <button
-            type="button"
-            id="closeViewer"
-            class="viewer-close"
-            aria-label="Close"
-        >
-            <i class="fa-solid fa-xmark"></i>
-        </button>
-
-        <button
-            type="button"
-            id="previousMedia"
-            class="viewer-navigation previous"
-            aria-label="Previous"
-        >
-            <i class="fa-solid fa-chevron-left"></i>
-        </button>
-
-        <div class="viewer-content">
-
-            <div
-                id="viewerMedia"
-                class="viewer-media"
-            ></div>
-
-            <div class="viewer-details">
-
-                <div>
-                    <h3 id="viewerMediaName">
-                        Photo
-                    </h3>
-
-                    <span id="viewerMediaPosition">
-                        1 / 1
-                    </span>
-                </div>
-
-                <div class="viewer-actions">
-
-                    <button
-                        type="button"
-                        id="viewerSelectBtn"
-                        class="viewer-action-btn"
-                    >
-                        <i class="fa-regular fa-square-check"></i>
-                        Select
-                    </button>
-
-                    <button
-                        type="button"
-                        id="viewerDownloadBtn"
-                        class="viewer-action-btn"
-                    >
-                        <i class="fa-solid fa-download"></i>
-                        Download
-                    </button>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <button
-            type="button"
-            id="nextMedia"
-            class="viewer-navigation next"
-            aria-label="Next"
-        >
-            <i class="fa-solid fa-chevron-right"></i>
-        </button>
-
-    </div>
+        <div
+            class="viewer-backdrop"
+            id="viewerBackdrop"
+        ></div>
 
 
-    <!-- =====================================================
-         SELECTION SUMMARY
-    ====================================================== -->
-
-    <div
-        id="selectionModal"
-        class="modal"
-    >
-
-        <div class="modal-backdrop"></div>
-
-        <div class="selection-modal-card">
-
-            <div class="modal-header">
-
-                <div>
-                    <span class="eyebrow">
-                        WEDDING ALBUM
-                    </span>
-
-                    <h2>
-                        Your Selected Photos
-                    </h2>
-                </div>
-
-                <button
-                    type="button"
-                    id="closeSelectionModal"
-                    class="modal-close"
-                >
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-
-            </div>
-
-            <div class="selection-modal-body">
-
-                <div class="selection-summary-top">
-
-                    <div class="summary-number">
-                        <strong id="summarySelectionCount">
-                            0
-                        </strong>
-
-                        <span>
-                            selected photos
-                        </span>
-                    </div>
-
-                    <p id="summaryLimitText">
-                        Select your favourite photos
-                        for the physical album.
-                    </p>
-
-                </div>
-
-                <div
-                    id="selectedMediaList"
-                    class="selected-media-list"
-                ></div>
-
-                <div
-                    id="selectionCommentArea"
-                    class="selection-comment-area"
-                >
-
-                    <label for="selectionGeneralComment">
-                        Note for photographer
-                    </label>
-
-                    <textarea
-                        id="selectionGeneralComment"
-                        rows="3"
-                        placeholder="Add an optional note..."
-                    ></textarea>
-
-                </div>
-
-            </div>
-
-            <div class="modal-footer">
-
-                <button
-                    type="button"
-                    id="closeSelectionModalBtn"
-                    class="secondary-btn"
-                >
-                    Continue Selecting
-                </button>
-
-                <button
-                    type="button"
-                    id="submitSelectionBtn"
-                    class="primary-btn"
-                >
-                    <i class="fa-solid fa-paper-plane"></i>
-                    Submit Selection
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- =====================================================
-         SUBMITTED SCREEN
-    ====================================================== -->
-
-    <div
-        id="submittedModal"
-        class="modal"
-    >
-
-        <div class="modal-backdrop"></div>
-
-        <div class="message-card submitted-card">
-
-            <div class="message-icon success">
-                <i class="fa-solid fa-check"></i>
-            </div>
-
-            <span class="eyebrow">
-                SELECTION SUBMITTED
-            </span>
-
-            <h2>
-                Your Wedding Album Selection Is Complete
-            </h2>
-
-            <p>
-                Your selected photos have been sent to
-                your photographer for review.
-            </p>
-
-            <div class="submitted-count">
-
-                <strong id="submittedCount">
-                    0
-                </strong>
-
-                photos selected
-
-            </div>
+        <div class="viewer-dialog">
 
             <button
                 type="button"
-                id="closeSubmittedModal"
-                class="primary-btn"
+                class="viewer-close"
+                id="viewerClose"
+                aria-label="Close"
             >
-                Back to Gallery
+                ×
             </button>
+
+
+            <button
+                type="button"
+                class="viewer-nav viewer-prev"
+                id="viewerPrev"
+                aria-label="Previous"
+            >
+                ‹
+            </button>
+
+
+            <div
+                class="viewer-media-wrap"
+                id="viewerMediaWrap"
+            ></div>
+
+
+            <button
+                type="button"
+                class="viewer-nav viewer-next"
+                id="viewerNext"
+                aria-label="Next"
+            >
+                ›
+            </button>
+
+
+            <div class="viewer-footer">
+
+                <div>
+
+                    <strong id="viewerTitle">
+                        Media
+                    </strong>
+
+                    <span id="viewerPosition"></span>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="secondary-btn hidden"
+                    id="viewerDownloadBtn"
+                >
+                    ↓ Download
+                </button>
+
+            </div>
 
         </div>
 
     </div>
 
 
-    <!-- =====================================================
-         TOAST
-    ====================================================== -->
-
+    <!-- TOAST -->
     <div
-        id="clientToast"
-        class="client-toast"
-    >
-        <i class="fa-solid fa-check"></i>
+        class="toast"
+        id="toast"
+    ></div>
 
-        <span id="clientToastMessage">
-            Done
-        </span>
-    </div>
 
+    <!-- ZIP GENERATION FOR FRONTEND PROTOTYPE -->
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"
+    ></script>
 
     <script src="client-gallery-view.js"></script>
 

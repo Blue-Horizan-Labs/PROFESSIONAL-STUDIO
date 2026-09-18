@@ -1,7 +1,7 @@
 /* =========================================================
    PROFESSIONAL STUDIO
-   PRIVATE CLIENT GALLERY
-   Client-Facing Gallery Controller
+   PRIVATE CLIENT GALLERY VIEW
+   FRONTEND PROTOTYPE
 ========================================================= */
 
 (() => {
@@ -9,7 +9,7 @@
 
 
     /* =========================================================
-       CONSTANTS
+       CONFIGURATION
     ========================================================= */
 
     const STORAGE_KEY =
@@ -18,7 +18,8 @@
     const DB_NAME =
         "professionalStudioDB";
 
-    const DB_VERSION = 2;
+    const DB_VERSION =
+        2;
 
     const MEDIA_STORE =
         "clientGalleryMedia";
@@ -32,65 +33,44 @@
     ========================================================= */
 
     const state = {
-        gallery: null,
 
         galleryId: null,
 
+        gallery: null,
+
         authenticated: false,
 
-        activeSectionId: null,
+        activeSectionId: "all",
 
-        mediaFilter: "all",
+        selectedMediaIds:
+            new Set(),
+
+        generalComment: "",
 
         visibleMedia: [],
 
         viewerIndex: -1,
 
-        selectedMediaIds: new Set(),
+        objectUrls:
+            new Map(),
 
-        comments: {},
-
-        generalComment: "",
-
-        objectUrls: new Set(),
+        viewerObjectUrls:
+            new Set(),
 
         db: null
+
     };
 
 
     /* =========================================================
-       DOM
+       DOM REFERENCES
     ========================================================= */
 
     const refs = {
+
         passwordScreen:
             document.getElementById(
                 "passwordScreen"
-            ),
-
-        passwordGalleryName:
-            document.getElementById(
-                "passwordGalleryName"
-            ),
-
-        passwordForm:
-            document.getElementById(
-                "passwordForm"
-            ),
-
-        galleryAccessPassword:
-            document.getElementById(
-                "galleryAccessPassword"
-            ),
-
-        togglePassword:
-            document.getElementById(
-                "togglePassword"
-            ),
-
-        passwordError:
-            document.getElementById(
-                "passwordError"
             ),
 
         expiredScreen:
@@ -108,6 +88,28 @@
                 "galleryApp"
             ),
 
+
+        passwordGalleryName:
+            document.getElementById(
+                "passwordGalleryName"
+            ),
+
+        passwordForm:
+            document.getElementById(
+                "passwordForm"
+            ),
+
+        passwordInput:
+            document.getElementById(
+                "galleryPasswordInput"
+            ),
+
+        passwordError:
+            document.getElementById(
+                "passwordError"
+            ),
+
+
         galleryTitle:
             document.getElementById(
                 "galleryTitle"
@@ -118,44 +120,31 @@
                 "galleryDescription"
             ),
 
-        heroMediaCount:
+        galleryClientName:
             document.getElementById(
-                "heroMediaCount"
+                "galleryClientName"
             ),
 
-        heroExpiry:
+        galleryExpiry:
             document.getElementById(
-                "heroExpiry"
+                "galleryExpiry"
             ),
 
-        sectionNavigation:
+
+        downloadGalleryBtn:
             document.getElementById(
-                "sectionNavigation"
+                "downloadGalleryBtn"
             ),
 
-        currentSectionTitle:
+
+        selectionPanel:
             document.getElementById(
-                "currentSectionTitle"
+                "selectionPanel"
             ),
 
-        currentSectionCount:
+        selectionDescription:
             document.getElementById(
-                "currentSectionCount"
-            ),
-
-        clientMediaGrid:
-            document.getElementById(
-                "clientMediaGrid"
-            ),
-
-        mediaEmptyState:
-            document.getElementById(
-                "mediaEmptyState"
-            ),
-
-        albumSelectionBar:
-            document.getElementById(
-                "albumSelectionBar"
+                "selectionDescription"
             ),
 
         selectionCount:
@@ -163,54 +152,14 @@
                 "selectionCount"
             ),
 
-        selectionLimitText:
+        selectionLimit:
             document.getElementById(
-                "selectionLimitText"
+                "selectionLimit"
             ),
 
-        headerSelectionCount:
+        clearSelectionBtn:
             document.getElementById(
-                "headerSelectionCount"
-            ),
-
-        openSelectionSummary:
-            document.getElementById(
-                "openSelectionSummary"
-            ),
-
-        selectionModal:
-            document.getElementById(
-                "selectionModal"
-            ),
-
-        closeSelectionModal:
-            document.getElementById(
-                "closeSelectionModal"
-            ),
-
-        closeSelectionModalBtn:
-            document.getElementById(
-                "closeSelectionModalBtn"
-            ),
-
-        summarySelectionCount:
-            document.getElementById(
-                "summarySelectionCount"
-            ),
-
-        summaryLimitText:
-            document.getElementById(
-                "summaryLimitText"
-            ),
-
-        selectedMediaList:
-            document.getElementById(
-                "selectedMediaList"
-            ),
-
-        selectionGeneralComment:
-            document.getElementById(
-                "selectionGeneralComment"
+                "clearSelectionBtn"
             ),
 
         submitSelectionBtn:
@@ -218,44 +167,87 @@
                 "submitSelectionBtn"
             ),
 
-        submittedModal:
+
+        sectionsList:
             document.getElementById(
-                "submittedModal"
+                "sectionsList"
             ),
 
-        submittedCount:
+        activeSectionEyebrow:
             document.getElementById(
-                "submittedCount"
+                "activeSectionEyebrow"
             ),
 
-        closeSubmittedModal:
+        activeSectionTitle:
             document.getElementById(
-                "closeSubmittedModal"
+                "activeSectionTitle"
             ),
 
-        mediaViewer:
+        mediaGrid:
             document.getElementById(
-                "mediaViewer"
+                "mediaGrid"
             ),
 
-        viewerMedia:
+        mediaCount:
             document.getElementById(
-                "viewerMedia"
+                "mediaCount"
             ),
 
-        viewerMediaName:
+        mediaEmpty:
             document.getElementById(
-                "viewerMediaName"
+                "mediaEmpty"
             ),
 
-        viewerMediaPosition:
+
+        clientNoteSection:
             document.getElementById(
-                "viewerMediaPosition"
+                "clientNoteSection"
             ),
 
-        viewerSelectBtn:
+        generalComment:
             document.getElementById(
-                "viewerSelectBtn"
+                "generalComment"
+            ),
+
+
+        viewer:
+            document.getElementById(
+                "viewer"
+            ),
+
+        viewerBackdrop:
+            document.getElementById(
+                "viewerBackdrop"
+            ),
+
+        viewerClose:
+            document.getElementById(
+                "viewerClose"
+            ),
+
+        viewerPrev:
+            document.getElementById(
+                "viewerPrev"
+            ),
+
+        viewerNext:
+            document.getElementById(
+                "viewerNext"
+            ),
+
+        viewerMediaWrap:
+            document.getElementById(
+                "viewerMediaWrap"
+            ),
+
+        viewerTitle:
+            document.getElementById(
+                "viewerTitle"
+            ),
+
+        viewerPosition:
+            document.getElementById(
+                "viewerPosition"
             ),
 
         viewerDownloadBtn:
@@ -263,185 +255,187 @@
                 "viewerDownloadBtn"
             ),
 
-        closeViewer:
-            document.getElementById(
-                "closeViewer"
-            ),
 
-        previousMedia:
+        toast:
             document.getElementById(
-                "previousMedia"
-            ),
-
-        nextMedia:
-            document.getElementById(
-                "nextMedia"
-            ),
-
-        clientToast:
-            document.getElementById(
-                "clientToast"
-            ),
-
-        clientToastMessage:
-            document.getElementById(
-                "clientToastMessage"
+                "toast"
             )
+
     };
 
 
+    let toastTimer = null;
+
+
     /* =========================================================
-       SCREEN CONTROLLER
-       
-       Exactly ONE of these states can be visible:
-       
-       1. Password
-       2. Expired
-       3. Not Found
-       4. Gallery
+       SCREEN MANAGEMENT
     ========================================================= */
 
     function hideAllScreens() {
-        refs.passwordScreen?.classList.add(
-            "hidden"
-        );
 
-        refs.expiredScreen?.classList.add(
-            "hidden"
-        );
+        refs.passwordScreen
+            ?.classList
+            .add("hidden");
 
-        refs.notFoundScreen?.classList.add(
-            "hidden"
-        );
+        refs.expiredScreen
+            ?.classList
+            .add("hidden");
 
-        refs.galleryApp?.classList.add(
-            "hidden"
-        );
+        refs.notFoundScreen
+            ?.classList
+            .add("hidden");
+
+        refs.galleryApp
+            ?.classList
+            .add("hidden");
     }
 
-    function showPasswordScreen() {
-        hideAllScreens();
 
-        if (!refs.passwordScreen) {
-            return;
-        }
+    function showPasswordScreen() {
+
+        hideAllScreens();
 
         refs.passwordGalleryName.textContent =
             state.gallery?.name ||
             "Private Gallery";
 
-        refs.passwordError.textContent = "";
+        refs.passwordScreen
+            .classList
+            .remove("hidden");
 
-        refs.passwordScreen.classList.remove(
-            "hidden"
-        );
+        setTimeout(() => {
 
-        refs.galleryAccessPassword?.focus();
+            refs.passwordInput?.focus();
+
+        }, 50);
     }
 
-    function showExpiredScreen() {
-        hideAllScreens();
-
-        refs.expiredScreen?.classList.remove(
-            "hidden"
-        );
-    }
 
     function showNotFoundScreen() {
+
         hideAllScreens();
 
-        refs.notFoundScreen?.classList.remove(
-            "hidden"
+        refs.notFoundScreen
+            .classList
+            .remove("hidden");
+    }
+
+
+    function showExpiredScreen() {
+
+        hideAllScreens();
+
+        refs.expiredScreen
+            .classList
+            .remove("hidden");
+    }
+
+
+    function showGalleryScreen() {
+
+        hideAllScreens();
+
+        refs.galleryApp
+            .classList
+            .remove("hidden");
+    }
+
+
+    /* =========================================================
+       LOCAL STORAGE
+    ========================================================= */
+
+    function loadGalleries() {
+
+        try {
+
+            const raw =
+                localStorage.getItem(
+                    STORAGE_KEY
+                );
+
+            if (!raw) {
+                return [];
+            }
+
+            const parsed =
+                JSON.parse(raw);
+
+            return Array.isArray(parsed)
+                ? parsed
+                : [];
+
+        } catch (error) {
+
+            console.error(
+                "Unable to load galleries:",
+                error
+            );
+
+            return [];
+        }
+    }
+
+
+    function saveGalleries(
+        galleries
+    ) {
+
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(galleries)
         );
     }
 
-    function showGalleryScreen() {
-        hideAllScreens();
 
-        refs.galleryApp?.classList.remove(
-            "hidden"
+    function getGallery() {
+
+        const galleries =
+            loadGalleries();
+
+        return galleries.find(
+            gallery =>
+                String(gallery.id) ===
+                String(state.galleryId)
+        ) || null;
+    }
+
+
+    function saveCurrentGallery() {
+
+        if (!state.gallery) {
+            return;
+        }
+
+        const galleries =
+            loadGalleries();
+
+        const index =
+            galleries.findIndex(
+                gallery =>
+                    String(gallery.id) ===
+                    String(state.gallery.id)
+            );
+
+        if (index === -1) {
+            return;
+        }
+
+        galleries[index] =
+            state.gallery;
+
+        saveGalleries(
+            galleries
         );
     }
 
 
     /* =========================================================
-       HELPERS
+       URL
     ========================================================= */
 
-    function escapeHTML(value) {
-        return String(value ?? "")
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-    }
-
-    function formatDate(dateValue) {
-        const date =
-            new Date(dateValue);
-
-        if (
-            Number.isNaN(
-                date.getTime()
-            )
-        ) {
-            return "-";
-        }
-
-        return date.toLocaleDateString(
-            "en-IN",
-            {
-                day: "numeric",
-                month: "short",
-                year: "numeric"
-            }
-        );
-    }
-
-    function formatSize(bytes) {
-        const value =
-            Number(bytes || 0);
-
-        if (
-            value >=
-            1024 * 1024 * 1024
-        ) {
-            return (
-                value /
-                (1024 * 1024 * 1024)
-            ).toFixed(2) + " GB";
-        }
-
-        if (
-            value >=
-            1024 * 1024
-        ) {
-            return (
-                value /
-                (1024 * 1024)
-            ).toFixed(1) + " MB";
-        }
-
-        return (
-            value /
-            1024
-        ).toFixed(0) + " KB";
-    }
-
-    function isImage(media) {
-        return String(
-            media?.type || ""
-        ).startsWith("image/");
-    }
-
-    function isVideo(media) {
-        return String(
-            media?.type || ""
-        ).startsWith("video/");
-    }
-
     function getGalleryIdFromURL() {
+
         const params =
             new URLSearchParams(
                 window.location.search
@@ -451,118 +445,89 @@
             params.get("gallery") ||
             params.get("id") ||
             ""
-        );
+        ).trim();
     }
 
-    function getGallery() {
-        try {
-            const raw =
-                localStorage.getItem(
-                    STORAGE_KEY
-                );
 
-            if (!raw) {
-                return null;
-            }
+    /* =========================================================
+       DATE / EXPIRY
+    ========================================================= */
 
-            const galleries =
-                JSON.parse(raw);
+    function isExpired(
+        gallery
+    ) {
 
-            if (
-                !Array.isArray(
-                    galleries
-                )
-            ) {
-                return null;
-            }
-
-            return (
-                galleries.find(
-                    gallery =>
-                        gallery.id ===
-                        state.galleryId
-                ) || null
-            );
-        } catch (error) {
-            console.error(
-                "Unable to load gallery:",
-                error
-            );
-
-            return null;
-        }
-    }
-
-    function daysLeft(dateValue) {
-        const target =
-            new Date(
-                dateValue
-            ).getTime();
-
-        if (!Number.isFinite(target)) {
-            return 0;
+        if (!gallery) {
+            return true;
         }
 
-        return Math.ceil(
-            (
-                target -
-                Date.now()
-            ) /
-                86400000
-        );
-    }
-
-    function isExpired(gallery) {
-        if (!gallery?.expiresAt) {
+        if (!gallery.expiresAt) {
             return false;
         }
 
-        return (
-            daysLeft(
+        const expiry =
+            new Date(
                 gallery.expiresAt
-            ) <= 0
+            ).getTime();
+
+        return (
+            Number.isFinite(expiry) &&
+            Date.now() >= expiry
         );
     }
 
-    function showToast(
-        message,
-        type = "success"
+
+    function formatDate(
+        value
     ) {
+
+        if (!value) {
+            return "";
+        }
+
+        const date =
+            new Date(value);
+
         if (
-            !refs.clientToast ||
-            !refs.clientToastMessage
+            Number.isNaN(
+                date.getTime()
+            )
         ) {
-            return;
+            return "";
         }
 
-        refs.clientToastMessage.textContent =
-            message;
+        return new Intl.DateTimeFormat(
+            "en-IN",
+            {
+                day: "numeric",
+                month: "short",
+                year: "numeric"
+            }
+        ).format(date);
+    }
 
-        refs.clientToast.classList.remove(
-            "error",
-            "warning"
-        );
 
-        if (type !== "success") {
-            refs.clientToast.classList.add(
-                type
-            );
+    function daysLeft(
+        gallery
+    ) {
+
+        if (!gallery?.expiresAt) {
+            return null;
         }
 
-        refs.clientToast.classList.add(
-            "show"
-        );
+        const difference =
+            new Date(
+                gallery.expiresAt
+            ).getTime() -
+            Date.now();
 
-        clearTimeout(
-            showToast.timeout
+        return Math.max(
+            0,
+            Math.ceil(
+                difference /
+                86400000
+            )
         );
-
-        showToast.timeout =
-            setTimeout(() => {
-                refs.clientToast.classList.remove(
-                    "show"
-                );
-            }, 3000);
     }
 
 
@@ -571,14 +536,20 @@
     ========================================================= */
 
     function openDatabase() {
+
         return new Promise(
-            (resolve, reject) => {
+            (
+                resolve,
+                reject
+            ) => {
+
                 if (
-                    !window.indexedDB
+                    !("indexedDB" in window)
                 ) {
+
                     reject(
                         new Error(
-                            "IndexedDB unavailable."
+                            "IndexedDB is unavailable."
                         )
                     );
 
@@ -593,37 +564,30 @@
 
                 request.onupgradeneeded =
                     event => {
+
                         const db =
-                            event.target
-                                .result;
+                            event.target.result;
 
                         if (
-                            !db.objectStoreNames.contains(
-                                MEDIA_STORE
-                            )
+                            !db.objectStoreNames
+                                .contains(
+                                    MEDIA_STORE
+                                )
                         ) {
-                            const store =
-                                db.createObjectStore(
-                                    MEDIA_STORE,
-                                    {
-                                        keyPath:
-                                            "id"
-                                    }
-                                );
 
-                            store.createIndex(
-                                "galleryId",
-                                "galleryId",
+                            db.createObjectStore(
+                                MEDIA_STORE,
                                 {
-                                    unique:
-                                        false
+                                    keyPath: "id"
                                 }
                             );
                         }
                     };
 
+
                 request.onsuccess =
                     event => {
+
                         state.db =
                             event.target.result;
 
@@ -632,294 +596,209 @@
                         );
                     };
 
+
                 request.onerror =
                     () => {
+
                         reject(
-                            request.error
+                            request.error ||
+                            new Error(
+                                "Could not open IndexedDB."
+                            )
                         );
                     };
+
             }
         );
     }
 
-    async function getMediaBlob(
+
+    function getMediaBlob(
         mediaId
     ) {
-        if (!state.db) {
-            await openDatabase();
-        }
 
         return new Promise(
-            (resolve, reject) => {
-                const tx =
+            (
+                resolve,
+                reject
+            ) => {
+
+                if (!state.db) {
+                    resolve(null);
+                    return;
+                }
+
+                const transaction =
                     state.db.transaction(
                         MEDIA_STORE,
                         "readonly"
                     );
 
-                const request =
-                    tx.objectStore(
+                const store =
+                    transaction.objectStore(
                         MEDIA_STORE
-                    ).get(mediaId);
+                    );
+
+                const request =
+                    store.get(mediaId);
+
 
                 request.onsuccess =
                     () => {
+
+                        const record =
+                            request.result;
+
+                        if (!record) {
+                            resolve(null);
+                            return;
+                        }
+
                         resolve(
-                            request.result ||
-                                null
+                            record.blob ||
+                            record.file ||
+                            null
                         );
                     };
 
+
                 request.onerror =
                     () => {
+
                         reject(
                             request.error
                         );
                     };
+
             }
         );
     }
 
 
     /* =========================================================
-       LOCAL STORAGE GALLERY UPDATES
+       MEDIA HELPERS
     ========================================================= */
 
-    function saveGalleryChanges() {
-        try {
-            const raw =
-                localStorage.getItem(
-                    STORAGE_KEY
-                );
+    function isVideoMedia(
+        media
+    ) {
 
-            if (!raw) return false;
-
-            const galleries =
-                JSON.parse(raw);
-
-            if (
-                !Array.isArray(
-                    galleries
-                )
-            ) {
-                return false;
-            }
-
-            const index =
-                galleries.findIndex(
-                    gallery =>
-                        gallery.id ===
-                        state.gallery.id
-                );
-
-            if (index === -1) {
-                return false;
-            }
-
-            galleries[index] =
-                state.gallery;
-
-            localStorage.setItem(
-                STORAGE_KEY,
-                JSON.stringify(
-                    galleries
-                )
-            );
-
-            window.dispatchEvent(
-                new CustomEvent(
-                    "professionalStudioClientGalleryUpdated"
-                )
-            );
-
-            return true;
-        } catch (error) {
-            console.error(
-                "Unable to save client gallery:",
-                error
-            );
-
+        if (!media) {
             return false;
         }
-    }
 
+        if (
+            media.type === "video" ||
+            media.mediaType === "video"
+        ) {
+            return true;
+        }
 
-    /* =========================================================
-       PASSWORD
-    ========================================================= */
+        const mime =
+            String(
+                media.mimeType ||
+                media.fileType ||
+                ""
+            ).toLowerCase();
 
-    function checkPasswordRequired() {
-        return Boolean(
-            state.gallery
-                ?.passwordEnabled
+        return mime.startsWith(
+            "video/"
         );
     }
 
-    function authenticate() {
-        /*
-         * No gallery should ever reach this point.
-         * Still protect the function in case something
-         * changes during initialization.
-         */
-        if (!state.gallery) {
-            showNotFoundScreen();
-            return;
-        }
 
-        /*
-         * Expiration always wins over password access.
-         */
-        if (
-            isExpired(
-                state.gallery
-            )
-        ) {
-            showExpiredScreen();
-            return;
-        }
-
-        /*
-         * Gallery does not require a password.
-         */
-        if (
-            !checkPasswordRequired()
-        ) {
-            state.authenticated =
-                true;
-
-            openGallery();
-
-            return;
-        }
-
-        /*
-         * Valid active gallery that requires
-         * authentication.
-         */
-        showPasswordScreen();
-    }
-
-    function handlePasswordSubmit(
-        event
+    function isPhoto(
+        media
     ) {
-        event.preventDefault();
 
-        if (!state.gallery) {
-            showNotFoundScreen();
-            return;
-        }
-
-        if (
-            isExpired(
-                state.gallery
-            )
-        ) {
-            showExpiredScreen();
-            return;
-        }
-
-        const entered =
-            refs.galleryAccessPassword
-                ?.value
-                ?.trim() || "";
-
-        const correctPassword =
-            String(
-                state.gallery.password ||
-                    ""
-            ).trim();
-
-        if (
-            entered !==
-            correctPassword
-        ) {
-            refs.passwordError.textContent =
-                "Incorrect password. Please try again.";
-
-            refs.galleryAccessPassword.value =
-                "";
-
-            refs.galleryAccessPassword.focus();
-
-            return;
-        }
-
-        refs.passwordError.textContent =
-            "";
-
-        state.authenticated =
-            true;
-
-        openGallery();
+        return !isVideoMedia(
+            media
+        );
     }
 
 
-    /* =========================================================
-       OPEN GALLERY
-    ========================================================= */
+    function getMediaName(
+        media
+    ) {
 
-    async function openGallery() {
-        if (!state.gallery) {
-            showNotFoundScreen();
-            return;
-        }
-
-        if (
-            isExpired(
-                state.gallery
-            )
-        ) {
-            showExpiredScreen();
-            return;
-        }
-
-        if (
-            !state.authenticated
-        ) {
-            authenticate();
-            return;
-        }
-
-        /*
-         * This is the only place where the
-         * actual gallery application becomes visible.
-         */
-        showGalleryScreen();
-
-        renderGalleryHeader();
-
-        setupSections();
-
-        setupSelectionMode();
-
-        if (!state.activeSectionId) {
-            state.activeSectionId =
-                "all";
-        }
-
-        await renderMedia();
+        return (
+            media.name ||
+            media.fileName ||
+            media.filename ||
+            `media-${media.id}`
+        );
     }
 
-    function renderGalleryHeader() {
-        refs.galleryTitle.textContent =
-            state.gallery.name ||
-            "Client Gallery";
 
-        refs.galleryDescription.textContent =
-            state.gallery.description ||
-            "A private collection prepared for you by your photographer.";
+    function sanitizeFileName(
+        name
+    ) {
 
-        refs.heroExpiry.textContent =
-            formatDate(
-                state.gallery.expiresAt
+        return String(
+            name ||
+            "Untitled"
+        )
+            .replace(
+                /[<>:"/\\|?*\x00-\x1F]/g,
+                "_"
+            )
+            .replace(
+                /\s+/g,
+                " "
+            )
+            .trim()
+            .replace(
+                /\.+$/,
+                ""
+            )
+            .slice(
+                0,
+                150
+            ) ||
+            "Untitled";
+    }
+
+
+    function getMediaUrl(
+        mediaId,
+        blob
+    ) {
+
+        if (
+            state.objectUrls.has(
+                mediaId
+            )
+        ) {
+
+            return state.objectUrls.get(
+                mediaId
+            );
+        }
+
+        const url =
+            URL.createObjectURL(
+                blob
             );
 
-        refs.heroMediaCount.textContent =
-            Array.isArray(
-                state.gallery.media
-            )
-                ? state.gallery.media.length
-                : 0;
+        state.objectUrls.set(
+            mediaId,
+            url
+        );
+
+        return url;
+    }
+
+
+    function revokeViewerUrls() {
+
+        state.viewerObjectUrls.forEach(
+            url =>
+                URL.revokeObjectURL(
+                    url
+                )
+        );
+
+        state.viewerObjectUrls.clear();
     }
 
 
@@ -927,325 +806,585 @@
        SECTIONS
     ========================================================= */
 
-    function setupSections() {
-        if (
-            !refs.sectionNavigation
-        ) {
-            return;
+    function getAlbums() {
+
+        return Array.isArray(
+            state.gallery?.albums
+        )
+            ? state.gallery.albums
+            : [];
+    }
+
+
+    function getWeddingAlbum() {
+
+        return getAlbums().find(
+            album =>
+                album.system === true ||
+                album.name ===
+                WEDDING_ALBUM_NAME
+        ) || null;
+    }
+
+
+    function getSectionName(
+        sectionId
+    ) {
+
+        if (!sectionId) {
+            return "Unsorted";
         }
 
+        const album =
+            getAlbums().find(
+                item =>
+                    item.id ===
+                    sectionId
+            );
+
+        return (
+            album?.name ||
+            "Unsorted"
+        );
+    }
+
+
+    function setupSections() {
+
         const sections =
-            Array.isArray(
-                state.gallery.albums
-            )
-                ? state.gallery.albums
-                : [];
+            getAlbums();
 
-        const allTab = `
-            <button
-                type="button"
-                class="section-tab ${
-                    state.activeSectionId ===
-                    "all"
-                        ? "active"
-                        : ""
-                }"
-                data-section-id="all"
-            >
-                All Photos
-            </button>
-        `;
+        refs.sectionsList.innerHTML =
+            "";
 
-        const sectionTabs =
-            sections
-                .map(section => {
-                    const isWedding =
-                        String(
-                            section.name
-                        )
-                            .trim()
-                            .toUpperCase() ===
-                        WEDDING_ALBUM_NAME;
 
-                    return `
-                        <button
-                            type="button"
-                            class="section-tab ${
-                                isWedding
-                                    ? "wedding-album"
-                                    : ""
-                            } ${
-                                state.activeSectionId ===
-                                section.id
-                                    ? "active"
-                                    : ""
-                            }"
-                            data-section-id="${escapeHTML(
-                                section.id
-                            )}"
-                        >
-                            ${
-                                isWedding
-                                    ? '<i class="fa-solid fa-book-open"></i> '
-                                    : ""
-                            }
-                            ${escapeHTML(
-                                section.name
-                            )}
-                        </button>
-                    `;
-                })
-                .join("");
+        /* ALL MEDIA */
 
-        refs.sectionNavigation.innerHTML =
-            allTab +
-            sectionTabs;
+        const allButton =
+            document.createElement(
+                "button"
+            );
 
-        refs.sectionNavigation
-            .querySelectorAll(
-                "[data-section-id]"
-            )
-            .forEach(button => {
+        allButton.type =
+            "button";
+
+        allButton.className =
+            "section-button";
+
+        allButton.dataset.sectionId =
+            "all";
+
+        allButton.textContent =
+            "All media";
+
+
+        if (
+            state.activeSectionId ===
+            "all"
+        ) {
+
+            allButton.classList.add(
+                "active"
+            );
+        }
+
+
+        allButton.addEventListener(
+            "click",
+            () => {
+
+                state.activeSectionId =
+                    "all";
+
+                setupSections();
+
+                renderMedia();
+            }
+        );
+
+
+        refs.sectionsList.appendChild(
+            allButton
+        );
+
+
+        /* SECTIONS */
+
+        sections.forEach(
+            section => {
+
+                const button =
+                    document.createElement(
+                        "button"
+                    );
+
+                button.type =
+                    "button";
+
+                button.className =
+                    "section-button";
+
+                button.dataset.sectionId =
+                    section.id;
+
+                button.textContent =
+                    section.name ||
+                    "Untitled Section";
+
+
+                if (
+                    String(
+                        state.activeSectionId
+                    ) ===
+                    String(section.id)
+                ) {
+
+                    button.classList.add(
+                        "active"
+                    );
+                }
+
+
                 button.addEventListener(
                     "click",
-                    async () => {
+                    () => {
+
                         state.activeSectionId =
-                            button.dataset
-                                .sectionId;
+                            section.id;
 
                         setupSections();
 
-                        await renderMedia();
+                        renderMedia();
                     }
                 );
-            });
+
+
+                refs.sectionsList.appendChild(
+                    button
+                );
+            }
+        );
     }
 
 
     /* =========================================================
-       SELECTION MODE
+       SELECTION
     ========================================================= */
 
-    function setupSelectionMode() {
-        const selection =
-            state.gallery
-                .albumSelection;
+    function getAlbumSelection() {
 
-        if (
-            !selection ||
-            !selection.enabled
-        ) {
-            refs.albumSelectionBar.classList.add(
-                "hidden"
-            );
-
-            return;
-        }
-
-        refs.albumSelectionBar.classList.remove(
-            "hidden"
+        return (
+            state.gallery?.albumSelection ||
+            null
         );
-
-        if (
-            selection.status ===
-                "approved" ||
-            selection.status ===
-                "submitted"
-        ) {
-            refs.selectionLimitText.textContent =
-                "photos • selection locked";
-        } else if (
-            selection.maxSelections
-        ) {
-            refs.selectionLimitText.textContent =
-                `of ${selection.maxSelections}`;
-        } else {
-            refs.selectionLimitText.textContent =
-                "photos";
-        }
-
-        updateSelectionUI();
     }
+
+
+    function selectionEnabled() {
+
+        return (
+            getAlbumSelection()?.enabled ===
+            true
+        );
+    }
+
 
     function isSelectionLocked() {
+
         const status =
-            state.gallery
-                ?.albumSelection
-                ?.status;
+            getAlbumSelection()?.status;
 
         return (
+            status === "submitted" ||
             status === "approved" ||
-            status === "submitted"
+            status === "closed"
         );
     }
+
 
     function getSelectionLimit() {
+
         const limit =
-            state.gallery
-                ?.albumSelection
-                ?.maxSelections;
-
-        if (
-            limit === null ||
-            limit === undefined ||
-            limit === ""
-        ) {
-            return null;
-        }
-
-        return Number(limit);
-    }
-
-    function canSelectMore() {
-        const limit =
-            getSelectionLimit();
-
-        if (limit === null) {
-            return true;
-        }
-
-        return (
-            state.selectedMediaIds
-                .size < limit
-        );
-    }
-
-    function isSelected(mediaId) {
-        return state.selectedMediaIds.has(
-            mediaId
-        );
-    }
-
-    function toggleSelection(
-        mediaId
-    ) {
-        if (
-            !state.gallery
-                ?.albumSelection
-                ?.enabled
-        ) {
-            return;
-        }
-
-        if (
-            isSelectionLocked()
-        ) {
-            showToast(
-                "This selection has been submitted and is currently locked.",
-                "warning"
+            Number(
+                getAlbumSelection()?.maxSelections
             );
 
+        return (
+            Number.isFinite(limit) &&
+            limit > 0
+        )
+            ? limit
+            : null;
+    }
+
+
+    function restoreExistingSelection() {
+
+        state.selectedMediaIds =
+            new Set();
+
+        const weddingAlbum =
+            getWeddingAlbum();
+
+        const weddingAlbumId =
+            weddingAlbum?.id;
+
+        if (!weddingAlbumId) {
             return;
         }
 
         const media =
-            state.gallery.media.find(
-                item =>
-                    item.id === mediaId
-            );
+            getGalleryMedia();
 
-        if (!media) return;
 
-        if (!isImage(media.type)) {
-            showToast(
-                "Only photos can be selected for the Wedding Album.",
-                "warning"
-            );
+        media.forEach(
+            item => {
 
+                if (
+                    !isVideoMedia(item) &&
+                    String(
+                        item.sectionId
+                    ) ===
+                    String(
+                        weddingAlbumId
+                    )
+                ) {
+
+                    state.selectedMediaIds.add(
+                        item.id
+                    );
+                }
+            }
+        );
+
+
+        state.generalComment =
+            state.gallery
+                ?.albumSelection
+                ?.generalComment ||
+            "";
+    }
+
+
+    function updateSelectionUI() {
+
+        const enabled =
+            selectionEnabled();
+
+
+        refs.selectionPanel.classList.toggle(
+            "hidden",
+            !enabled
+        );
+
+        refs.clientNoteSection.classList.toggle(
+            "hidden",
+            !enabled
+        );
+
+
+        if (!enabled) {
             return;
         }
 
+
+        const count =
+            state.selectedMediaIds.size;
+
+        const limit =
+            getSelectionLimit();
+
+
+        refs.selectionCount.textContent =
+            count;
+
+
+        refs.selectionLimit.textContent =
+            limit
+                ? ` / ${limit}`
+                : "";
+
+
+        refs.selectionDescription.textContent =
+            limit
+                ? `Choose up to ${limit} photos for your physical album.`
+                : "Choose the photographs you want included in your physical album.";
+
+
+        refs.generalComment.value =
+            state.generalComment;
+
+
+        const locked =
+            isSelectionLocked();
+
+
+        refs.submitSelectionBtn.disabled =
+            locked;
+
+        refs.clearSelectionBtn.disabled =
+            locked;
+
+        refs.generalComment.disabled =
+            locked;
+
+
+        refs.submitSelectionBtn.textContent =
+            locked
+                ? "Selection Submitted"
+                : "Submit Selection";
+    }
+
+
+    function toggleSelection(
+        mediaId
+    ) {
+
         if (
-            isSelected(mediaId)
+            !selectionEnabled() ||
+            isSelectionLocked()
         ) {
+            return;
+        }
+
+
+        const media =
+            getGalleryMedia().find(
+                item =>
+                    item.id ===
+                    mediaId
+            );
+
+
+        if (
+            !media ||
+            isVideoMedia(media)
+        ) {
+            return;
+        }
+
+
+        const selected =
+            state.selectedMediaIds.has(
+                mediaId
+            );
+
+
+        if (selected) {
+
             state.selectedMediaIds.delete(
                 mediaId
             );
 
-            delete state.comments[
-                mediaId
-            ];
         } else {
+
+            const limit =
+                getSelectionLimit();
+
+
             if (
-                !canSelectMore()
+                limit &&
+                state.selectedMediaIds.size >=
+                limit
             ) {
-                const limit =
-                    getSelectionLimit();
 
                 showToast(
-                    `You can select a maximum of ${limit} photos.`,
-                    "warning"
+                    `You can select a maximum of ${limit} photos.`
                 );
 
                 return;
             }
+
 
             state.selectedMediaIds.add(
                 mediaId
             );
         }
 
+
         updateSelectionUI();
 
         renderMedia();
-
-        if (
-            refs.selectionModal.classList.contains(
-                "open"
-            )
-        ) {
-            renderSelectionSummary();
-        }
     }
 
-    function updateSelectionUI() {
-        const count =
-            state.selectedMediaIds.size;
+
+    function clearSelection() {
 
         if (
-            refs.selectionCount
+            !selectionEnabled() ||
+            isSelectionLocked()
         ) {
-            refs.selectionCount.textContent =
-                count;
+            return;
         }
 
-        if (
-            refs.headerSelectionCount
-        ) {
-            refs.headerSelectionCount.textContent =
-                count;
-        }
+        state.selectedMediaIds.clear();
+
+        updateSelectionUI();
+
+        renderMedia();
+    }
+
+
+    async function submitSelection() {
 
         if (
-            refs.summarySelectionCount
+            !selectionEnabled() ||
+            isSelectionLocked()
         ) {
-            refs.summarySelectionCount.textContent =
-                count;
+            return;
         }
+
+
+        if (
+            state.selectedMediaIds.size ===
+            0
+        ) {
+
+            showToast(
+                "Please select at least one photo."
+            );
+
+            return;
+        }
+
 
         const limit =
             getSelectionLimit();
 
-        if (
-            refs.selectionLimitText &&
-            state.gallery
-                ?.albumSelection
-                ?.enabled
-        ) {
-            refs.selectionLimitText.textContent =
-                limit === null
-                    ? "photos"
-                    : `of ${limit}`;
-        }
 
         if (
-            refs.summaryLimitText
+            limit &&
+            state.selectedMediaIds.size >
+            limit
         ) {
-            refs.summaryLimitText.textContent =
-                limit === null
-                    ? "Select your favourite photos for the physical album."
-                    : `You can select up to ${limit} photos for the physical album.`;
+
+            showToast(
+                `You can select a maximum of ${limit} photos.`
+            );
+
+            return;
         }
+
+
+        const confirmed =
+            window.confirm(
+                `Submit ${state.selectedMediaIds.size} selected photo(s) to your photographer?`
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        const weddingAlbum =
+            getWeddingAlbum();
+
+
+        if (!weddingAlbum) {
+
+            showToast(
+                "The Wedding Album section is not available.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        const media =
+            getGalleryMedia();
+
+
+        media.forEach(
+            item => {
+
+                if (
+                    state.selectedMediaIds.has(
+                        item.id
+                    )
+                ) {
+
+                    /*
+                     * IMPORTANT:
+                     *
+                     * The actual media file/blob
+                     * is NOT copied.
+                     *
+                     * Only the metadata's
+                     * sectionId is changed.
+                     */
+
+                    if (
+                        String(
+                            item.sectionId
+                        ) !==
+                        String(
+                            weddingAlbum.id
+                        )
+                    ) {
+
+                        item.previousSectionId =
+                            item.sectionId ||
+                            null;
+                    }
+
+
+                    item.sectionId =
+                        weddingAlbum.id;
+                }
+            }
+        );
+
+
+        state.gallery.albumSelection =
+            state.gallery.albumSelection ||
+            {};
+
+
+        state.gallery.albumSelection.enabled =
+            true;
+
+
+        state.gallery.albumSelection.status =
+            "submitted";
+
+
+        state.gallery.albumSelection.selectedMediaIds =
+            Array.from(
+                state.selectedMediaIds
+            );
+
+
+        state.generalComment =
+            refs.generalComment.value.trim();
+
+
+        state.gallery.albumSelection.generalComment =
+            state.generalComment;
+
+
+        state.gallery.albumSelection.submittedAt =
+            new Date().toISOString();
+
+
+        state.gallery.albumSelection.submittedBy =
+            "client";
+
+
+        saveCurrentGallery();
+
+
+        updateSelectionUI();
+
+        setupSections();
+
+        await renderMedia();
+
+
+        showToast(
+            "Your Wedding Album selection has been submitted."
+        );
     }
 
 
@@ -1253,540 +1392,526 @@
        MEDIA
     ========================================================= */
 
-    function getCurrentMedia() {
-        let media =
-            Array.isArray(
-                state.gallery.media
-            )
-                ? [
-                      ...state.gallery
-                          .media
-                  ]
-                : [];
+    function getGalleryMedia() {
 
-        if (
-            state.activeSectionId &&
-            state.activeSectionId !==
-                "all"
-        ) {
-            media =
-                media.filter(
-                    item =>
-                        item.sectionId ===
-                        state.activeSectionId
-                );
-        }
-
-        if (
-            state.mediaFilter ===
-            "photo"
-        ) {
-            media =
-                media.filter(
-                    item =>
-                        isImage(item.type)
-                );
-        }
-
-        if (
-            state.mediaFilter ===
-            "video"
-        ) {
-            media =
-                media.filter(
-                    item =>
-                        isVideo(item.type)
-                );
-        }
-
-        return media;
+        return Array.isArray(
+            state.gallery?.media
+        )
+            ? state.gallery.media
+            : [];
     }
 
-    async function renderMedia() {
-        if (
-            !refs.clientMediaGrid
-        ) {
-            return;
-        }
 
-        revokeObjectUrls();
+    function getVisibleMedia() {
 
         const media =
-            getCurrentMedia();
+            getGalleryMedia();
 
-        state.visibleMedia =
-            media;
-
-        updateCurrentSectionInfo(
-            media
-        );
-
-        if (!media.length) {
-            refs.clientMediaGrid.innerHTML =
-                "";
-
-            refs.mediaEmptyState.classList.remove(
-                "hidden"
-            );
-
-            return;
-        }
-
-        refs.mediaEmptyState.classList.add(
-            "hidden"
-        );
-
-        const cards =
-            await Promise.all(
-                media.map(
-                    item =>
-                        buildMediaCard(
-                            item
-                        )
-                )
-            );
-
-        refs.clientMediaGrid.innerHTML =
-            cards.join("");
-
-        bindMediaCards();
-    }
-
-    function updateCurrentSectionInfo(
-        media
-    ) {
-        let title =
-            "All Photos";
 
         if (
-            state.activeSectionId &&
-            state.activeSectionId !==
-                "all"
+            state.activeSectionId ===
+            "all"
         ) {
-            const section =
-                state.gallery.albums?.find(
-                    item =>
-                        item.id ===
-                        state.activeSectionId
-                );
-
-            if (section) {
-                title =
-                    section.name;
-            }
+            return media;
         }
 
-        refs.currentSectionTitle.textContent =
-            title;
 
-        refs.currentSectionCount.textContent =
+        return media.filter(
+            item =>
+                String(
+                    item.sectionId
+                ) ===
+                String(
+                    state.activeSectionId
+                )
+        );
+    }
+
+
+    async function renderMedia() {
+
+        revokeViewerUrls();
+
+
+        const media =
+            getVisibleMedia();
+
+
+        state.visibleMedia =
+            media.slice();
+
+
+        refs.mediaGrid.innerHTML =
+            "";
+
+
+        const sectionName =
+            state.activeSectionId === "all"
+                ? "All media"
+                : getSectionName(
+                    state.activeSectionId
+                );
+
+
+        refs.activeSectionEyebrow.textContent =
+            state.activeSectionId === "all"
+                ? "GALLERY"
+                : "SECTION";
+
+
+        refs.activeSectionTitle.textContent =
+            sectionName;
+
+
+        refs.mediaCount.textContent =
             `${media.length} ${
                 media.length === 1
                     ? "item"
                     : "items"
             }`;
-    }
 
-    async function buildMediaCard(
-        media
-    ) {
-        let mediaHTML = "";
 
-        try {
-            const record =
-                await getMediaBlob(
-                    media.id
-                );
-
-            if (
-                record?.blob
-            ) {
-                const url =
-                    URL.createObjectURL(
-                        record.blob
-                    );
-
-                state.objectUrls.add(
-                    url
-                );
-
-                if (
-                    isImage(media.type)
-                ) {
-                    mediaHTML = `
-                        <img
-                            src="${url}"
-                            alt="${escapeHTML(
-                                media.name
-                            )}"
-                            loading="lazy"
-                        >
-                    `;
-                } else if (
-                    isVideo(media.type)
-                ) {
-                    mediaHTML = `
-                        <video
-                            src="${url}"
-                            preload="metadata"
-                        ></video>
-                    `;
-                }
-            }
-        } catch (error) {
-            console.error(
-                "Unable to load media:",
-                error
-            );
-        }
-
-        if (!mediaHTML) {
-            mediaHTML = `
-                <div
-                    style="
-                        width:100%;
-                        height:100%;
-                        display:flex;
-                        align-items:center;
-                        justify-content:center;
-                        color:#999;
-                        background:#f2f2f2;
-                    "
-                >
-                    <i class="fa-regular fa-file"></i>
-                </div>
-            `;
-        }
-
-        const selected =
-            isSelected(media.id);
-
-        const selectionEnabled =
-            Boolean(
-                state.gallery
-                    ?.albumSelection
-                    ?.enabled
-            );
-
-        const locked =
-            isSelectionLocked();
-
-        return `
-            <article
-                class="client-media-card ${
-                    selected
-                        ? "selected"
-                        : ""
-                }"
-                data-media-id="${escapeHTML(
-                    media.id
-                )}"
-            >
-
-                ${mediaHTML}
-
-                <div class="media-overlay">
-
-                    ${
-                        selectionEnabled &&
-                        isImage(media.type)
-                            ? `
-                                <div class="media-top-actions">
-
-                                    <button
-                                        type="button"
-                                        class="media-select-btn"
-                                        data-action="select"
-                                        data-media-id="${escapeHTML(
-                                            media.id
-                                        )}"
-                                        ${
-                                            locked
-                                                ? "disabled"
-                                                : ""
-                                        }
-                                        aria-label="${
-                                            selected
-                                                ? "Remove selection"
-                                                : "Select photo"
-                                        }"
-                                    >
-                                        <i class="${
-                                            selected
-                                                ? "fa-solid fa-check"
-                                                : "fa-regular fa-square"
-                                        }"></i>
-                                    </button>
-
-                                </div>
-                            `
-                            : ""
-                    }
-
-                    <div class="media-bottom">
-
-                        <span
-                            class="media-name"
-                            title="${escapeHTML(
-                                media.name
-                            )}"
-                        >
-                            ${escapeHTML(
-                                media.name
-                            )}
-                        </span>
-
-                        <span class="media-type">
-                            ${
-                                isVideo(
-                                    media.type
-                                )
-                                    ? '<i class="fa-solid fa-play"></i>'
-                                    : '<i class="fa-regular fa-image"></i>'
-                            }
-                        </span>
-
-                    </div>
-
-                </div>
-
-                ${
-                    selected
-                        ? `
-                            <span class="selection-check">
-                                <i class="fa-solid fa-check"></i>
-                            </span>
-                        `
-                        : ""
-                }
-
-                ${
-                    isVideo(
-                        media.type
-                    )
-                        ? `
-                            <span class="video-indicator">
-                                <i class="fa-solid fa-play"></i>
-                            </span>
-                        `
-                        : ""
-                }
-
-            </article>
-        `;
-    }
-
-    function bindMediaCards() {
-        refs.clientMediaGrid
-            .querySelectorAll(
-                ".client-media-card"
-            )
-            .forEach(card => {
-                card.addEventListener(
-                    "click",
-                    event => {
-                        const selectButton =
-                            event.target.closest(
-                                '[data-action="select"]'
-                            );
-
-                        if (
-                            selectButton
-                        ) {
-                            event.stopPropagation();
-
-                            toggleSelection(
-                                selectButton
-                                    .dataset
-                                    .mediaId
-                            );
-
-                            return;
-                        }
-
-                        const mediaId =
-                            card.dataset
-                                .mediaId;
-
-                        openViewer(
-                            mediaId
-                        );
-                    }
-                );
-            });
-    }
-
-    function revokeObjectUrls() {
-        state.objectUrls.forEach(
-            url => {
-                try {
-                    URL.revokeObjectURL(
-                        url
-                    );
-                } catch (_) {}
-            }
+        refs.mediaEmpty.classList.toggle(
+            "hidden",
+            media.length > 0
         );
 
-        state.objectUrls.clear();
-    }
 
+        for (
+            let index = 0;
+            index < media.length;
+            index++
+        ) {
 
-    /* =========================================================
-       MEDIA VIEWER
-    ========================================================= */
-
-    async function openViewer(
-        mediaId
-    ) {
-        const index =
-            state.visibleMedia.findIndex(
-                media =>
-                    media.id ===
-                    mediaId
+            await renderMediaCard(
+                media[index],
+                index
             );
-
-        if (index === -1) {
-            return;
         }
 
-        state.viewerIndex =
-            index;
 
-        refs.mediaViewer.classList.add(
-            "open"
-        );
-
-        await renderViewerMedia();
+        updateSelectionUI();
     }
 
-    async function renderViewerMedia() {
-        const media =
-            state.visibleMedia[
-                state.viewerIndex
-            ];
 
-        if (!media) return;
+    async function renderMediaCard(
+        media,
+        index
+    ) {
 
-        refs.viewerMedia.innerHTML =
-            "";
+        const card =
+            document.createElement(
+                "article"
+            );
 
-        const record =
+
+        card.className =
+            "media-card";
+
+
+        card.dataset.mediaId =
+            media.id;
+
+
+        const blob =
             await getMediaBlob(
                 media.id
             );
 
-        if (!record?.blob) {
-            refs.viewerMedia.innerHTML = `
-                <div
-                    style="
-                        color:white;
-                        text-align:center;
-                    "
-                >
-                    Media unavailable
+
+        if (!blob) {
+
+            card.innerHTML = `
+                <div style="
+                    width:100%;
+                    height:100%;
+                    display:grid;
+                    place-items:center;
+                    color:#777;
+                    font-size:10px;
+                    padding:20px;
+                    text-align:center;
+                ">
+                    Media unavailable in this browser.
                 </div>
             `;
+
+
+            refs.mediaGrid.appendChild(
+                card
+            );
 
             return;
         }
 
+
         const url =
-            URL.createObjectURL(
-                record.blob
+            getMediaUrl(
+                media.id,
+                blob
             );
 
-        state.objectUrls.add(
-            url
-        );
 
         if (
-            isImage(media.type)
+            isVideoMedia(media)
         ) {
-            const img =
-                document.createElement(
-                    "img"
-                );
 
-            img.src = url;
-            img.alt =
-                media.name;
-
-            refs.viewerMedia.appendChild(
-                img
-            );
-        } else if (
-            isVideo(media.type)
-        ) {
             const video =
                 document.createElement(
                     "video"
                 );
 
-            video.src = url;
-            video.controls = true;
-            video.autoplay = true;
+            video.src =
+                url;
 
-            refs.viewerMedia.appendChild(
+            video.muted =
+                true;
+
+            video.playsInline =
+                true;
+
+            video.preload =
+                "metadata";
+
+
+            card.appendChild(
                 video
+            );
+
+        } else {
+
+            const image =
+                document.createElement(
+                    "img"
+                );
+
+            image.src =
+                url;
+
+            image.alt =
+                getMediaName(
+                    media
+                );
+
+            image.loading =
+                "lazy";
+
+
+            card.appendChild(
+                image
             );
         }
 
-        refs.viewerMediaName.textContent =
-            media.name;
 
-        refs.viewerMediaPosition.textContent =
-            `${state.viewerIndex + 1} / ${state.visibleMedia.length}`;
+        const overlay =
+            document.createElement(
+                "div"
+            );
 
-        const selected =
-            isSelected(
+
+        overlay.className =
+            "media-card-overlay";
+
+
+        overlay.innerHTML = `
+            <span class="media-card-name">
+                ${escapeHTML(
+                    getMediaName(media)
+                )}
+            </span>
+
+            <span class="media-type">
+                ${
+                    isVideoMedia(media)
+                        ? "VIDEO"
+                        : "PHOTO"
+                }
+            </span>
+        `;
+
+
+        card.appendChild(
+            overlay
+        );
+
+
+        /*
+         * WEDDING ALBUM SELECTION
+         *
+         * Videos are intentionally excluded.
+         */
+
+        if (
+            selectionEnabled() &&
+            !isVideoMedia(media)
+        ) {
+
+            const selectButton =
+                document.createElement(
+                    "button"
+                );
+
+
+            selectButton.type =
+                "button";
+
+
+            selectButton.className =
+                "select-media-btn";
+
+
+            const selected =
+                state.selectedMediaIds.has(
+                    media.id
+                );
+
+
+            selectButton.textContent =
+                selected
+                    ? "✓"
+                    : "Select";
+
+
+            selectButton.title =
+                selected
+                    ? "Remove from Wedding Album"
+                    : "Select for Wedding Album";
+
+
+            selectButton.addEventListener(
+                "click",
+                event => {
+
+                    event.stopPropagation();
+
+                    toggleSelection(
+                        media.id
+                    );
+                }
+            );
+
+
+            card.appendChild(
+                selectButton
+            );
+
+
+            if (selected) {
+
+                card.classList.add(
+                    "selected"
+                );
+            }
+
+
+            if (
+                isSelectionLocked()
+            ) {
+
+                selectButton.disabled =
+                    true;
+            }
+        }
+
+
+        card.addEventListener(
+            "click",
+            () => {
+
+                openViewer(
+                    index
+                );
+            }
+        );
+
+
+        refs.mediaGrid.appendChild(
+            card
+        );
+    }
+
+
+    /* =========================================================
+       VIEWER
+    ========================================================= */
+
+    function openViewer(
+        index
+    ) {
+
+        if (
+            index < 0 ||
+            index >=
+            state.visibleMedia.length
+        ) {
+            return;
+        }
+
+
+        state.viewerIndex =
+            index;
+
+
+        renderViewer();
+
+
+        refs.viewer.classList.remove(
+            "hidden"
+        );
+
+
+        document.body.style.overflow =
+            "hidden";
+    }
+
+
+    async function renderViewer() {
+
+        const media =
+            state.visibleMedia[
+                state.viewerIndex
+            ];
+
+
+        if (!media) {
+            return;
+        }
+
+
+        revokeViewerUrls();
+
+
+        refs.viewerMediaWrap.innerHTML =
+            "";
+
+
+        const blob =
+            await getMediaBlob(
                 media.id
             );
 
-        refs.viewerSelectBtn.classList.toggle(
-            "selected",
-            selected
-        );
 
-        refs.viewerSelectBtn.innerHTML =
-            selected
-                ? `
-                    <i class="fa-solid fa-check"></i>
-                    Selected
-                `
-                : `
-                    <i class="fa-regular fa-square-check"></i>
-                    Select
-                `;
+        if (!blob) {
 
-        const downloadsEnabled =
-            Boolean(
-                state.gallery
-                    .downloadsEnabled
+            refs.viewerMediaWrap.innerHTML = `
+                <div style="
+                    color:#fff;
+                    text-align:center;
+                    font-size:12px;
+                ">
+                    Media unavailable.
+                </div>
+            `;
+
+            return;
+        }
+
+
+        const url =
+            URL.createObjectURL(
+                blob
             );
 
-        refs.viewerDownloadBtn.style.display =
-            downloadsEnabled
-                ? "flex"
-                : "none";
-    }
 
-    function closeViewer() {
-        refs.mediaViewer.classList.remove(
-            "open"
+        state.viewerObjectUrls.add(
+            url
         );
 
-        refs.viewerMedia.innerHTML =
-            "";
 
-        state.viewerIndex = -1;
+        if (
+            isVideoMedia(media)
+        ) {
+
+            const video =
+                document.createElement(
+                    "video"
+                );
+
+            video.src =
+                url;
+
+            video.controls =
+                true;
+
+            video.autoplay =
+                true;
+
+            video.playsInline =
+                true;
+
+
+            refs.viewerMediaWrap.appendChild(
+                video
+            );
+
+        } else {
+
+            const image =
+                document.createElement(
+                    "img"
+                );
+
+            image.src =
+                url;
+
+            image.alt =
+                getMediaName(
+                    media
+                );
+
+
+            refs.viewerMediaWrap.appendChild(
+                image
+            );
+        }
+
+
+        refs.viewerTitle.textContent =
+            getMediaName(
+                media
+            );
+
+
+        refs.viewerPosition.textContent =
+            `${state.viewerIndex + 1} / ${state.visibleMedia.length}`;
+
+
+        const downloadsEnabled =
+            state.gallery
+                .downloadsEnabled ===
+            true;
+
+
+        refs.viewerDownloadBtn.classList.toggle(
+            "hidden",
+            !downloadsEnabled
+        );
     }
 
-    async function previousViewerMedia() {
+
+    function closeViewer() {
+
+        refs.viewer.classList.add(
+            "hidden"
+        );
+
+
+        document.body.style.overflow =
+            "";
+
+
+        revokeViewerUrls();
+    }
+
+
+    function viewerPrevious() {
+
         if (
             !state.visibleMedia.length
         ) {
             return;
         }
+
 
         state.viewerIndex =
             (
@@ -1796,15 +1921,19 @@
             ) %
             state.visibleMedia.length;
 
-        await renderViewerMedia();
+
+        renderViewer();
     }
 
-    async function nextViewerMedia() {
+
+    function viewerNext() {
+
         if (
             !state.visibleMedia.length
         ) {
             return;
         }
+
 
         state.viewerIndex =
             (
@@ -1813,835 +1942,1072 @@
             ) %
             state.visibleMedia.length;
 
-        await renderViewerMedia();
+
+        renderViewer();
     }
 
 
     /* =========================================================
-       DOWNLOAD
+       INDIVIDUAL DOWNLOAD
     ========================================================= */
 
     async function downloadMedia(
-        mediaId
+        media
     ) {
+
         if (
-            !state.gallery
-                .downloadsEnabled
+            state.gallery
+                .downloadsEnabled !==
+            true
         ) {
+
             showToast(
-                "Downloads are disabled for this gallery.",
-                "warning"
+                "Downloads are disabled for this gallery."
             );
 
             return;
         }
 
-        const media =
-            state.gallery.media.find(
-                item =>
-                    item.id ===
-                    mediaId
+
+        const blob =
+            await getMediaBlob(
+                media.id
             );
 
-        if (!media) return;
+
+        if (!blob) {
+
+            showToast(
+                "This media file is unavailable.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+
+        const anchor =
+            document.createElement(
+                "a"
+            );
+
+
+        anchor.href =
+            url;
+
+
+        anchor.download =
+            sanitizeFileName(
+                getMediaName(
+                    media
+                )
+            );
+
+
+        document.body.appendChild(
+            anchor
+        );
+
+
+        anchor.click();
+
+
+        anchor.remove();
+
+
+        setTimeout(
+            () => {
+
+                URL.revokeObjectURL(
+                    url
+                );
+
+            },
+            2000
+        );
+
+
+        state.gallery.downloads =
+            Number(
+                state.gallery.downloads ||
+                0
+            ) + 1;
+
+
+        saveCurrentGallery();
+
+
+        showToast(
+            "Download started."
+        );
+    }
+
+
+    /* =========================================================
+       DOWNLOAD ENTIRE GALLERY
+    ========================================================= */
+
+    async function downloadEntireGallery() {
+
+        if (!state.gallery) {
+            return;
+        }
+
+
+        if (
+            state.gallery
+                .downloadsEnabled !==
+            true
+        ) {
+
+            showToast(
+                "Downloads are disabled for this gallery."
+            );
+
+            return;
+        }
+
+
+        if (
+            typeof JSZip ===
+            "undefined"
+        ) {
+
+            showToast(
+                "Gallery download is unavailable.",
+                "error"
+            );
+
+            console.error(
+                "JSZip was not loaded."
+            );
+
+            return;
+        }
+
+
+        const media =
+            getGalleryMedia().filter(
+                item =>
+                    isPhoto(item) ||
+                    isVideoMedia(item)
+            );
+
+
+        if (!media.length) {
+
+            showToast(
+                "There is no downloadable content in this gallery."
+            );
+
+            return;
+        }
+
+
+        const originalHTML =
+            refs.downloadGalleryBtn.innerHTML;
+
 
         try {
-            const record =
-                await getMediaBlob(
-                    mediaId
+
+            refs.downloadGalleryBtn.disabled =
+                true;
+
+
+            showToast(
+                "Preparing your gallery download..."
+            );
+
+
+            const zip =
+                new JSZip();
+
+
+            /*
+             * ROOT FOLDER
+             *
+             * Example:
+             *
+             * My Wedding/
+             * ├── Ceremony/
+             * ├── Reception/
+             * ├── WEDDING ALBUM/
+             * └── Unsorted/
+             */
+
+            const rootFolder =
+                zip.folder(
+                    sanitizeFileName(
+                        state.gallery.name ||
+                        "Gallery"
+                    )
                 );
 
-            if (!record?.blob) {
-                throw new Error(
-                    "Media unavailable"
+
+            const albums =
+                getAlbums();
+
+
+            const folderObjects =
+                new Map();
+
+
+            albums.forEach(
+                album => {
+
+                    const name =
+                        sanitizeFileName(
+                            album.name ||
+                            "Untitled Section"
+                        );
+
+
+                    folderObjects.set(
+                        album.id,
+                        rootFolder.folder(
+                            name
+                        )
+                    );
+                }
+            );
+
+
+            const unsortedFolder =
+                rootFolder.folder(
+                    "Unsorted"
                 );
+
+
+            /*
+             * Track duplicate filenames
+             * separately inside every folder.
+             */
+
+            const usedNamesByFolder =
+                new Map();
+
+
+            let added =
+                0;
+
+            let skipped =
+                0;
+
+
+            for (
+                const item of media
+            ) {
+
+                const blob =
+                    await getMediaBlob(
+                        item.id
+                    );
+
+
+                if (!blob) {
+
+                    skipped++;
+
+                    continue;
+                }
+
+
+                let folder =
+                    folderObjects.get(
+                        item.sectionId
+                    );
+
+
+                if (!folder) {
+
+                    folder =
+                        unsortedFolder;
+                }
+
+
+                const folderKey =
+                    item.sectionId ||
+                    "unsorted";
+
+
+                if (
+                    !usedNamesByFolder.has(
+                        folderKey
+                    )
+                ) {
+
+                    usedNamesByFolder.set(
+                        folderKey,
+                        new Set()
+                    );
+                }
+
+
+                const fileName =
+                    getUniqueFileName(
+                        getMediaName(
+                            item
+                        ),
+                        usedNamesByFolder.get(
+                            folderKey
+                        )
+                    );
+
+
+                /*
+                 * IMPORTANT:
+                 *
+                 * This adds the existing blob
+                 * to the ZIP.
+                 *
+                 * It does NOT create another
+                 * permanent gallery copy.
+                 */
+
+                folder.file(
+                    fileName,
+                    blob
+                );
+
+
+                added++;
+
+
+                const percent =
+                    Math.round(
+                        (
+                            added /
+                            media.length
+                        ) * 100
+                    );
+
+
+                refs.downloadGalleryBtn.innerHTML = `
+                    <span>↓</span>
+                    Preparing ${percent}%
+                `;
             }
+
+
+            if (!added) {
+
+                showToast(
+                    "No downloadable files were found.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            refs.downloadGalleryBtn.innerHTML =
+                `<span>↓</span> Creating ZIP...`;
+
+
+            const zipBlob =
+                await zip.generateAsync(
+                    {
+                        type: "blob",
+
+                        compression:
+                            "DEFLATE",
+
+                        compressionOptions: {
+                            level: 6
+                        }
+                    },
+
+                    metadata => {
+
+                        refs.downloadGalleryBtn.innerHTML = `
+                            <span>↓</span>
+                            Creating ZIP ${Math.round(
+                                metadata.percent
+                            )}%
+                        `;
+                    }
+                );
+
 
             const url =
                 URL.createObjectURL(
-                    record.blob
+                    zipBlob
                 );
 
-            const link =
+
+            const anchor =
                 document.createElement(
                     "a"
                 );
 
-            link.href = url;
 
-            link.download =
-                media.name ||
-                "download";
+            anchor.href =
+                url;
+
+
+            anchor.download =
+                `${sanitizeFileName(
+                    state.gallery.name ||
+                    "Gallery"
+                )}.zip`;
+
 
             document.body.appendChild(
-                link
+                anchor
             );
 
-            link.click();
 
-            link.remove();
+            anchor.click();
 
-            setTimeout(() => {
-                URL.revokeObjectURL(
-                    url
-                );
-            }, 1000);
+
+            anchor.remove();
+
+
+            setTimeout(
+                () => {
+
+                    URL.revokeObjectURL(
+                        url
+                    );
+
+                },
+                5000
+            );
+
+
+            /*
+             * Prototype download counter.
+             *
+             * Backend will later replace this
+             * with a real download event.
+             */
 
             state.gallery.downloads =
                 Number(
-                    state.gallery
-                        .downloads || 0
-                ) + 1;
+                    state.gallery.downloads ||
+                    0
+                ) + added;
 
-            saveGalleryChanges();
+
+            saveCurrentGallery();
+
 
             showToast(
-                "Download started."
+                skipped
+                    ? `Download started. ${skipped} file(s) were unavailable.`
+                    : "Your gallery download has started."
             );
+
+
         } catch (error) {
+
             console.error(
-                "Download failed:",
+                "Gallery ZIP creation failed:",
                 error
             );
 
+
             showToast(
-                "Unable to download this file.",
+                "Unable to prepare the gallery download.",
                 "error"
             );
+
+
+        } finally {
+
+            refs.downloadGalleryBtn.disabled =
+                false;
+
+
+            refs.downloadGalleryBtn.innerHTML =
+                originalHTML;
         }
+    }
+
+
+    function getUniqueFileName(
+        name,
+        usedNames
+    ) {
+
+        const clean =
+            sanitizeFileName(
+                name
+            );
+
+
+        if (
+            !usedNames.has(
+                clean
+            )
+        ) {
+
+            usedNames.add(
+                clean
+            );
+
+            return clean;
+        }
+
+
+        const dot =
+            clean.lastIndexOf(
+                "."
+            );
+
+
+        const base =
+            dot > 0
+                ? clean.slice(
+                    0,
+                    dot
+                )
+                : clean;
+
+
+        const extension =
+            dot > 0
+                ? clean.slice(
+                    dot
+                )
+                : "";
+
+
+        let number =
+            2;
+
+
+        let candidate =
+            `${base} (${number})${extension}`;
+
+
+        while (
+            usedNames.has(
+                candidate
+            )
+        ) {
+
+            number++;
+
+
+            candidate =
+                `${base} (${number})${extension}`;
+        }
+
+
+        usedNames.add(
+            candidate
+        );
+
+
+        return candidate;
     }
 
 
     /* =========================================================
-       SELECTION SUMMARY
+       HEADER
     ========================================================= */
 
-    async function openSelectionModal() {
-        if (
-            !state.gallery
-                ?.albumSelection
-                ?.enabled
-        ) {
-            showToast(
-                "Album Selection is not enabled for this gallery.",
-                "warning"
+    function renderGalleryHeader() {
+
+        refs.galleryTitle.textContent =
+            state.gallery.name ||
+            "Private Gallery";
+
+
+        refs.galleryDescription.textContent =
+            state.gallery.description ||
+            "Your photographs and videos are ready.";
+
+
+        refs.galleryClientName.textContent =
+            state.gallery.clientName
+                ? `For ${state.gallery.clientName}`
+                : "";
+
+
+        const remaining =
+            daysLeft(
+                state.gallery
             );
+
+
+        const expiry =
+            formatDate(
+                state.gallery.expiresAt
+            );
+
+
+        refs.galleryExpiry.textContent =
+            expiry
+                ? `Available until ${expiry}${
+                    remaining !== null
+                        ? ` · ${remaining} days left`
+                        : ""
+                }`
+                : "";
+
+
+        /*
+         * The Download Gallery button
+         * only appears when the photographer
+         * has enabled downloads.
+         */
+
+        refs.downloadGalleryBtn.classList.toggle(
+            "hidden",
+            state.gallery
+                .downloadsEnabled !==
+            true
+        );
+    }
+
+
+    /* =========================================================
+       AUTHENTICATION
+    ========================================================= */
+
+    function authenticate() {
+
+        if (!state.gallery) {
+
+            showNotFoundScreen();
 
             return;
         }
 
-        await renderSelectionSummary();
-
-        refs.selectionModal.classList.add(
-            "open"
-        );
-    }
-
-    function closeSelectionModal() {
-        refs.selectionModal.classList.remove(
-            "open"
-        );
-    }
-
-    async function renderSelectionSummary() {
-        updateSelectionUI();
-
-        const selected =
-            state.gallery.media.filter(
-                media =>
-                    state.selectedMediaIds.has(
-                        media.id
-                    )
-            );
 
         if (
-            refs.selectionGeneralComment
+            isExpired(
+                state.gallery
+            )
         ) {
-            refs.selectionGeneralComment.value =
-                state.generalComment;
-        }
 
-        if (
-            !selected.length
-        ) {
-            refs.selectedMediaList.innerHTML =
-                `
-                    <div class="client-empty-state">
-                        <div class="empty-icon">
-                            <i class="fa-regular fa-square-check"></i>
-                        </div>
-
-                        <h3>No photos selected</h3>
-
-                        <p>
-                            Go back to the gallery and select your favourite photos.
-                        </p>
-                    </div>
-                `;
+            showExpiredScreen();
 
             return;
         }
 
-        const items =
-            await Promise.all(
-                selected.map(
-                    media =>
-                        buildSelectedMediaItem(
-                            media
-                        )
-                )
-            );
 
-        refs.selectedMediaList.innerHTML =
-            items.join("");
+        if (
+            state.gallery.visible ===
+            false
+        ) {
 
-        bindSelectedMediaEvents();
+            showNotFoundScreen();
+
+            return;
+        }
+
+
+        if (
+            !state.gallery.passwordEnabled
+        ) {
+
+            state.authenticated =
+                true;
+
+            openGallery();
+
+            return;
+        }
+
+
+        showPasswordScreen();
     }
 
-    async function buildSelectedMediaItem(
-        media
+
+    function handlePasswordSubmit(
+        event
     ) {
-        let thumbnail = "";
 
-        try {
-            const record =
-                await getMediaBlob(
-                    media.id
-                );
+        event.preventDefault();
 
-            if (
-                record?.blob
-            ) {
-                const url =
-                    URL.createObjectURL(
-                        record.blob
+
+        if (!state.gallery) {
+
+            showNotFoundScreen();
+
+            return;
+        }
+
+
+        const entered =
+            refs.passwordInput.value;
+
+
+        const expected =
+            String(
+                state.gallery.password ||
+                ""
+            );
+
+
+        if (
+            entered === expected &&
+            expected.length > 0
+        ) {
+
+            state.authenticated =
+                true;
+
+
+            refs.passwordError
+                .classList
+                .add("hidden");
+
+
+            refs.passwordInput.value =
+                "";
+
+
+            openGallery();
+
+
+            return;
+        }
+
+
+        refs.passwordError
+            .classList
+            .remove("hidden");
+
+
+        refs.passwordInput.select();
+    }
+
+
+    /* =========================================================
+       OPEN GALLERY
+    ========================================================= */
+
+    async function openGallery() {
+
+        if (!state.gallery) {
+
+            showNotFoundScreen();
+
+            return;
+        }
+
+
+        if (
+            isExpired(
+                state.gallery
+            )
+        ) {
+
+            showExpiredScreen();
+
+            return;
+        }
+
+
+        if (!state.authenticated) {
+
+            authenticate();
+
+            return;
+        }
+
+
+        showGalleryScreen();
+
+
+        renderGalleryHeader();
+
+
+        setupSections();
+
+
+        restoreExistingSelection();
+
+
+        if (!state.activeSectionId) {
+
+            state.activeSectionId =
+                "all";
+        }
+
+
+        await renderMedia();
+    }
+
+
+    /* =========================================================
+       HTML ESCAPING
+    ========================================================= */
+
+    function escapeHTML(
+        value
+    ) {
+
+        return String(
+            value ?? ""
+        )
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+            .replace(
+                /</g,
+                "&lt;"
+            )
+            .replace(
+                />/g,
+                "&gt;"
+            )
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+            .replace(
+                /'/g,
+                "&#039;"
+            );
+    }
+
+
+    /* =========================================================
+       TOAST
+    ========================================================= */
+
+    function showToast(
+        message,
+        type = "normal"
+    ) {
+
+        refs.toast.textContent =
+            message;
+
+
+        refs.toast.classList.toggle(
+            "error",
+            type === "error"
+        );
+
+
+        refs.toast.classList.add(
+            "show"
+        );
+
+
+        clearTimeout(
+            toastTimer
+        );
+
+
+        toastTimer =
+            setTimeout(
+                () => {
+
+                    refs.toast.classList.remove(
+                        "show"
                     );
 
-                state.objectUrls.add(
-                    url
-                );
+                },
+                3000
+            );
+    }
 
-                thumbnail = `
-                    <img
-                        src="${url}"
-                        alt="${escapeHTML(
-                            media.name
-                        )}"
-                    >
-                `;
+
+    /* =========================================================
+       EVENT BINDINGS
+    ========================================================= */
+
+    function bindEvents() {
+
+        refs.passwordForm.addEventListener(
+            "submit",
+            handlePasswordSubmit
+        );
+
+
+        refs.downloadGalleryBtn.addEventListener(
+            "click",
+            downloadEntireGallery
+        );
+
+
+        refs.clearSelectionBtn.addEventListener(
+            "click",
+            clearSelection
+        );
+
+
+        refs.submitSelectionBtn.addEventListener(
+            "click",
+            submitSelection
+        );
+
+
+        refs.generalComment.addEventListener(
+            "input",
+            event => {
+
+                state.generalComment =
+                    event.target.value;
             }
-        } catch (_) {}
-
-        return `
-            <div
-                class="selected-media-item"
-                data-media-id="${escapeHTML(
-                    media.id
-                )}"
-            >
-
-                <div class="selected-media-thumb">
-                    ${thumbnail}
-                </div>
-
-                <div class="selected-media-info">
-
-                    <strong>
-                        ${escapeHTML(
-                            media.name
-                        )}
-                    </strong>
-
-                    <span>
-                        ${formatSize(
-                            media.sizeBytes
-                        )}
-                    </span>
-
-                </div>
-
-                <button
-                    type="button"
-                    class="selected-media-remove"
-                    data-remove-selected="${escapeHTML(
-                        media.id
-                    )}"
-                    ${
-                        isSelectionLocked()
-                            ? "disabled"
-                            : ""
-                    }
-                    title="Remove"
-                >
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-
-            </div>
-        `;
-    }
-
-    function bindSelectedMediaEvents() {
-        refs.selectedMediaList
-            .querySelectorAll(
-                "[data-remove-selected]"
-            )
-            .forEach(button => {
-                button.addEventListener(
-                    "click",
-                    async () => {
-                        toggleSelection(
-                            button.dataset
-                                .removeSelected
-                        );
-
-                        await renderSelectionSummary();
-                    }
-                );
-            });
-    }
+        );
 
 
-    /* =========================================================
-       SUBMIT SELECTION
-    ========================================================= */
+        refs.viewerClose.addEventListener(
+            "click",
+            closeViewer
+        );
 
-    function submitSelection() {
-        if (
-            !state.gallery
-                ?.albumSelection
-                ?.enabled
-        ) {
-            return;
-        }
 
-        if (
-            isSelectionLocked()
-        ) {
-            showToast(
-                "This selection has already been submitted.",
-                "warning"
-            );
+        refs.viewerBackdrop.addEventListener(
+            "click",
+            closeViewer
+        );
 
-            return;
-        }
 
-        const count =
-            state.selectedMediaIds.size;
+        refs.viewerPrev.addEventListener(
+            "click",
+            viewerPrevious
+        );
 
-        const limit =
-            getSelectionLimit();
 
-        if (
-            limit !== null &&
-            count > limit
-        ) {
-            showToast(
-                `You have selected ${count} photos, but the limit is ${limit}.`,
-                "warning"
-            );
+        refs.viewerNext.addEventListener(
+            "click",
+            viewerNext
+        );
 
-            return;
-        }
 
-        if (count === 0) {
-            showToast(
-                "Please select at least one photo.",
-                "warning"
-            );
+        refs.viewerDownloadBtn.addEventListener(
+            "click",
+            async () => {
 
-            return;
-        }
+                const media =
+                    state.visibleMedia[
+                        state.viewerIndex
+                    ];
 
-        state.generalComment =
-            refs.selectionGeneralComment
-                ?.value
-                ?.trim() || "";
 
-        const weddingAlbum =
-            state.gallery.albums?.find(
-                album =>
-                    String(
-                        album.name
-                    )
-                        .trim()
-                        .toUpperCase() ===
-                    WEDDING_ALBUM_NAME
-            );
+                if (media) {
 
-        if (weddingAlbum) {
-            state.gallery.media.forEach(
-                media => {
-                    if (
-                        state.selectedMediaIds.has(
-                            media.id
-                        )
-                    ) {
-                        media.sectionId =
-                            weddingAlbum.id;
-                    }
+                    await downloadMedia(
+                        media
+                    );
                 }
-            );
-        }
-
-        state.gallery.albumSelection =
-            state.gallery
-                .albumSelection || {};
-
-        state.gallery.albumSelection
-            .selectedMediaIds =
-            Array.from(
-                state.selectedMediaIds
-            );
-
-        state.gallery.albumSelection
-            .status =
-            "submitted";
-
-        state.gallery.albumSelection
-            .submittedAt =
-            new Date().toISOString();
-
-        state.gallery.albumSelection
-            .submittedBy =
-            "client";
-
-        state.gallery.albumSelection
-            .photographerApproved =
-            false;
-
-        state.gallery.albumSelection
-            .approvedAt =
-            null;
-
-        state.gallery.clientAlbumComment =
-            state.generalComment;
-
-        saveGalleryChanges();
-
-        refs.submittedCount.textContent =
-            count;
-
-        closeSelectionModal();
-
-        refs.submittedModal.classList.add(
-            "open"
+            }
         );
 
-        updateSelectionUI();
 
-        showToast(
-            "Your album selection has been submitted."
-        );
-    }
-
-
-    /* =========================================================
-       FILTERS
-    ========================================================= */
-
-    function bindFilters() {
-        document
-            .querySelectorAll(
-                ".filter-btn"
-            )
-            .forEach(button => {
-                button.addEventListener(
-                    "click",
-                    async () => {
-                        document
-                            .querySelectorAll(
-                                ".filter-btn"
-                            )
-                            .forEach(
-                                item =>
-                                    item.classList.remove(
-                                        "active"
-                                    )
-                            );
-
-                        button.classList.add(
-                            "active"
-                        );
-
-                        state.mediaFilter =
-                            button.dataset
-                                .filter ||
-                            "all";
-
-                        await renderMedia();
-                    }
-                );
-            });
-    }
-
-
-    /* =========================================================
-       PASSWORD VISIBILITY
-    ========================================================= */
-
-    function togglePasswordVisibility() {
-        const input =
-            refs.galleryAccessPassword;
-
-        if (!input) return;
-
-        const showing =
-            input.type === "text";
-
-        input.type =
-            showing
-                ? "password"
-                : "text";
-
-        refs.togglePassword.innerHTML =
-            showing
-                ? '<i class="fa-regular fa-eye"></i>'
-                : '<i class="fa-regular fa-eye-slash"></i>';
-
-        refs.togglePassword.setAttribute(
-            "aria-label",
-            showing
-                ? "Show password"
-                : "Hide password"
-        );
-    }
-
-
-    /* =========================================================
-       KEYBOARD
-    ========================================================= */
-
-    function bindKeyboard() {
         document.addEventListener(
             "keydown",
-            async event => {
+            event => {
+
+                if (
+                    refs.viewer.classList.contains(
+                        "hidden"
+                    )
+                ) {
+                    return;
+                }
+
 
                 if (
                     event.key ===
                     "Escape"
                 ) {
 
-                    if (
-                        refs.mediaViewer.classList.contains(
-                            "open"
-                        )
-                    ) {
-                        closeViewer();
-                        return;
-                    }
-
-                    if (
-                        refs.selectionModal.classList.contains(
-                            "open"
-                        )
-                    ) {
-                        closeSelectionModal();
-                        return;
-                    }
-
-                    if (
-                        refs.submittedModal.classList.contains(
-                            "open"
-                        )
-                    ) {
-                        refs.submittedModal.classList.remove(
-                            "open"
-                        );
-                    }
+                    closeViewer();
                 }
+
 
                 if (
-                    refs.mediaViewer.classList.contains(
-                        "open"
-                    )
+                    event.key ===
+                    "ArrowLeft"
                 ) {
 
-                    if (
-                        event.key ===
-                        "ArrowLeft"
-                    ) {
-                        await previousViewerMedia();
-                    }
+                    viewerPrevious();
+                }
 
-                    if (
-                        event.key ===
-                        "ArrowRight"
-                    ) {
-                        await nextViewerMedia();
-                    }
+
+                if (
+                    event.key ===
+                    "ArrowRight"
+                ) {
+
+                    viewerNext();
                 }
             }
         );
-    }
 
 
-    /* =========================================================
-       EVENTS
-    ========================================================= */
+        /*
+         * Update the client gallery if
+         * photographer-side data changes
+         * in another browser tab.
+         */
 
-    function bindEvents() {
-
-        refs.passwordForm?.addEventListener(
-            "submit",
-            handlePasswordSubmit
-        );
-
-        refs.togglePassword?.addEventListener(
-            "click",
-            togglePasswordVisibility
-        );
-
-        refs.openSelectionSummary?.addEventListener(
-            "click",
-            openSelectionModal
-        );
-
-        refs.closeSelectionModal?.addEventListener(
-            "click",
-            closeSelectionModal
-        );
-
-        refs.closeSelectionModalBtn?.addEventListener(
-            "click",
-            closeSelectionModal
-        );
-
-        refs.submitSelectionBtn?.addEventListener(
-            "click",
-            submitSelection
-        );
-
-        refs.closeSubmittedModal?.addEventListener(
-            "click",
-            () => {
-                refs.submittedModal.classList.remove(
-                    "open"
-                );
-            }
-        );
-
-        refs.closeViewer?.addEventListener(
-            "click",
-            closeViewer
-        );
-
-        refs.previousMedia?.addEventListener(
-            "click",
-            previousViewerMedia
-        );
-
-        refs.nextMedia?.addEventListener(
-            "click",
-            nextViewerMedia
-        );
-
-        refs.viewerSelectBtn?.addEventListener(
-            "click",
-            () => {
-
-                const media =
-                    state.visibleMedia[
-                        state.viewerIndex
-                    ];
-
-                if (!media) return;
-
-                toggleSelection(
-                    media.id
-                );
-
-                renderViewerMedia();
-            }
-        );
-
-        refs.viewerDownloadBtn?.addEventListener(
-            "click",
-            () => {
-
-                const media =
-                    state.visibleMedia[
-                        state.viewerIndex
-                    ];
-
-                if (!media) return;
-
-                downloadMedia(
-                    media.id
-                );
-            }
-        );
-
-        refs.selectionModal?.addEventListener(
-            "click",
+        window.addEventListener(
+            "storage",
             event => {
 
                 if (
-                    event.target ===
-                    refs.selectionModal
-                        .querySelector(
-                            ".modal-backdrop"
-                        )
+                    event.key !==
+                    STORAGE_KEY
                 ) {
-                    closeSelectionModal();
+                    return;
                 }
-            }
-        );
 
-        refs.submittedModal?.addEventListener(
-            "click",
-            event => {
+
+                if (!state.gallery) {
+                    return;
+                }
+
+
+                const updated =
+                    getGallery();
+
+
+                if (!updated) {
+
+                    showNotFoundScreen();
+
+                    return;
+                }
+
+
+                state.gallery =
+                    updated;
+
 
                 if (
-                    event.target ===
-                    refs.submittedModal
-                        .querySelector(
-                            ".modal-backdrop"
-                        )
+                    isExpired(
+                        state.gallery
+                    )
                 ) {
-                    refs.submittedModal.classList.remove(
-                        "open"
-                    );
+
+                    showExpiredScreen();
+
+                    return;
+                }
+
+
+                if (
+                    state.authenticated
+                ) {
+
+                    renderGalleryHeader();
+
+                    setupSections();
+
+                    restoreExistingSelection();
+
+                    renderMedia();
                 }
             }
         );
-
-        bindFilters();
-
-        bindKeyboard();
-    }
-
-
-    /* =========================================================
-       EXISTING SELECTION RESTORE
-    ========================================================= */
-
-    function restoreExistingSelection() {
-
-        if (
-            !state.gallery
-                ?.albumSelection
-                ?.enabled
-        ) {
-            return;
-        }
-
-        const weddingAlbum =
-            state.gallery.albums?.find(
-                album =>
-                    String(
-                        album.name
-                    )
-                        .trim()
-                        .toUpperCase() ===
-                    WEDDING_ALBUM_NAME
-            );
-
-        if (!weddingAlbum) {
-            return;
-        }
-
-        /*
-         * WEDDING ALBUM is the source of truth.
-         *
-         * We do not duplicate media.
-         * The selected photo simply belongs
-         * to the Wedding Album section.
-         */
-        const selected =
-            state.gallery.media
-                .filter(
-                    media =>
-                        media.sectionId ===
-                        weddingAlbum.id &&
-                        isImage(media.type)
-                )
-                .map(
-                    media =>
-                        media.id
-                );
-
-        state.selectedMediaIds =
-            new Set(selected);
-    }
-
-
-    /* =========================================================
-       INITIALIZATION
-    ========================================================= */
-
-    async function init() {
-
-        /*
-         * Start with every major screen hidden.
-         * This prevents the HTML from briefly showing
-         * the password screen before JavaScript decides
-         * what the correct state should be.
-         */
-        hideAllScreens();
-
-        state.galleryId =
-            getGalleryIdFromURL();
-
-        /*
-         * No gallery ID in the URL.
-         */
-        if (!state.galleryId) {
-            showNotFoundScreen();
-            return;
-        }
-
-        /*
-         * Try to load the requested gallery.
-         */
-        state.gallery =
-            getGallery();
-
-        /*
-         * Gallery ID exists in URL but does not
-         * correspond to a stored gallery.
-         */
-        if (!state.gallery) {
-            showNotFoundScreen();
-            return;
-        }
-
-        /*
-         * Expiration is checked before password access.
-         */
-        if (
-            isExpired(
-                state.gallery
-            )
-        ) {
-            showExpiredScreen();
-            return;
-        }
-
-        /*
-         * IndexedDB contains the actual media blobs.
-         */
-        try {
-            await openDatabase();
-        } catch (error) {
-            console.error(
-                "IndexedDB unavailable:",
-                error
-            );
-        }
-
-        restoreExistingSelection();
-
-        bindEvents();
-
-        /*
-         * authenticate() decides between:
-         *
-         * - password screen
-         * - gallery
-         *
-         * and re-checks expiration.
-         */
-        authenticate();
     }
 
 
@@ -2649,84 +3015,126 @@
        PUBLIC API
     ========================================================= */
 
-    window.ProfessionalStudioClientGallery = {
+    window.ProfessionalStudioClientGalleryView = {
 
-        getGallery() {
-            return state.gallery;
-        },
+        getGallery: () =>
+            state.gallery,
 
-        getSelectedMedia() {
-            return state.gallery?.media
-                ?.filter(media =>
-                    state.selectedMediaIds.has(
-                        media.id
-                    )
-                ) || [];
-        },
 
-        getSelectedMediaIds() {
-            return Array.from(
+        getSelectedMediaIds: () =>
+            Array.from(
                 state.selectedMediaIds
-            );
-        },
+            ),
 
-        isAuthenticated() {
-            return state.authenticated;
-        },
 
-        refresh() {
+        submitSelection,
+
+
+        downloadMedia,
+
+
+        downloadEntireGallery,
+
+
+        refresh: async () => {
+
             state.gallery =
                 getGallery();
 
+
             if (!state.gallery) {
+
                 showNotFoundScreen();
-                return Promise.resolve();
+
+                return;
             }
+
 
             if (
                 isExpired(
                     state.gallery
                 )
             ) {
+
                 showExpiredScreen();
-                return Promise.resolve();
+
+                return;
             }
+
 
             if (
-                !state.authenticated &&
-                checkPasswordRequired()
+                state.authenticated
             ) {
-                showPasswordScreen();
-                return Promise.resolve();
+
+                await openGallery();
             }
-
-            restoreExistingSelection();
-
-            renderGalleryHeader();
-
-            setupSections();
-
-            setupSelectionMode();
-
-            return renderMedia();
         }
+
     };
 
 
     /* =========================================================
-       START
+       INIT
     ========================================================= */
 
-    if (
-        document.readyState ===
-        "loading"
-    ) {
-        document.addEventListener(
-            "DOMContentLoaded",
-            init
-        );
-    } else {
-        init();
+    async function init() {
+
+        state.galleryId =
+            getGalleryIdFromURL();
+
+
+        if (!state.galleryId) {
+
+            showNotFoundScreen();
+
+            return;
+        }
+
+
+        state.gallery =
+            getGallery();
+
+
+        if (!state.gallery) {
+
+            showNotFoundScreen();
+
+            return;
+        }
+
+
+        if (
+            isExpired(
+                state.gallery
+            )
+        ) {
+
+            showExpiredScreen();
+
+            return;
+        }
+
+
+        try {
+
+            await openDatabase();
+
+        } catch (error) {
+
+            console.warn(
+                "IndexedDB unavailable:",
+                error
+            );
+        }
+
+
+        bindEvents();
+
+
+        authenticate();
     }
+
+
+    init();
 
 })();
