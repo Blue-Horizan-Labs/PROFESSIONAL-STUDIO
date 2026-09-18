@@ -858,8 +858,6 @@
             "";
 
 
-        /* ALL MEDIA */
-
         const allButton =
             document.createElement(
                 "button"
@@ -907,8 +905,6 @@
             allButton
         );
 
-
-        /* SECTIONS */
 
         sections.forEach(
             section => {
@@ -989,10 +985,40 @@
     }
 
 
+    function getSelectionStatus() {
+
+        return (
+            getAlbumSelection()?.status ||
+            (selectionEnabled()
+                ? "open"
+                : "closed")
+        );
+    }
+
+
+    function getSelectionStatusLabel() {
+
+        const status =
+            getSelectionStatus();
+
+        const labels = {
+            open: "Selection open",
+            submitted: "Selection submitted",
+            approved: "Selection approved",
+            closed: "Selection closed"
+        };
+
+        return (
+            labels[status] ||
+            "Selection open"
+        );
+    }
+
+
     function isSelectionLocked() {
 
         const status =
-            getAlbumSelection()?.status;
+            getSelectionStatus();
 
         return (
             status === "submitted" ||
@@ -1071,19 +1097,33 @@
         const enabled =
             selectionEnabled();
 
+        const status =
+            getSelectionStatus();
+
+        /*
+         * Keep the status visible even when
+         * the photographer has closed the
+         * selection feature.
+         */
+        const showPanel =
+            enabled ||
+            status === "submitted" ||
+            status === "approved" ||
+            status === "closed";
+
 
         refs.selectionPanel.classList.toggle(
             "hidden",
-            !enabled
+            !showPanel
         );
 
         refs.clientNoteSection.classList.toggle(
             "hidden",
-            !enabled
+            !showPanel
         );
 
 
-        if (!enabled) {
+        if (!showPanel) {
             return;
         }
 
@@ -1098,17 +1138,32 @@
         refs.selectionCount.textContent =
             count;
 
-
         refs.selectionLimit.textContent =
             limit
                 ? ` / ${limit}`
                 : "";
 
 
+        const statusDescription = {
+
+            submitted:
+                "Your selection has been submitted. Your photographer is reviewing it.",
+
+            approved:
+                "Your Wedding Album selection has been approved by your photographer.",
+
+            closed:
+                "Wedding Album selection is currently closed by your photographer."
+        };
+
+
         refs.selectionDescription.textContent =
-            limit
-                ? `Choose up to ${limit} photos for your physical album.`
-                : "Choose the photographs you want included in your physical album.";
+            statusDescription[status] ||
+            (
+                limit
+                    ? `Choose up to ${limit} photos for your physical album.`
+                    : "Choose the photographs you want included in your physical album."
+            );
 
 
         refs.generalComment.value =
@@ -1130,9 +1185,13 @@
 
 
         refs.submitSelectionBtn.textContent =
-            locked
-                ? "Selection Submitted"
-                : "Submit Selection";
+            status === "approved"
+                ? "Selection Approved"
+                : status === "closed"
+                    ? "Selection Closed"
+                    : status === "submitted"
+                        ? "Selection Submitted"
+                        : "Submit Selection";
     }
 
 
@@ -1311,8 +1370,7 @@
                      * The actual media file/blob
                      * is NOT copied.
                      *
-                     * Only the metadata's
-                     * sectionId is changed.
+                     * Only metadata is changed.
                      */
 
                     if (
@@ -1348,6 +1406,17 @@
 
         state.gallery.albumSelection.status =
             "submitted";
+
+
+        /*
+         * A fresh client submission always
+         * clears the previous approval state.
+         */
+        state.gallery.albumSelection.photographerApproved =
+            false;
+
+        state.gallery.albumSelection.approvedAt =
+            null;
 
 
         state.gallery.albumSelection.selectedMediaIds =
@@ -2029,7 +2098,7 @@
                 );
 
             },
-            2000
+            5000
         );
 
 
@@ -2261,8 +2330,6 @@
 
 
                 /*
-                 * IMPORTANT:
-                 *
                  * This adds the existing blob
                  * to the ZIP.
                  *
@@ -2381,13 +2448,6 @@
             );
 
 
-            /*
-             * Prototype download counter.
-             *
-             * Backend will later replace this
-             * with a real download event.
-             */
-
             state.gallery.downloads =
                 Number(
                     state.gallery.downloads ||
@@ -2423,7 +2483,6 @@
 
             refs.downloadGalleryBtn.disabled =
                 false;
-
 
             refs.downloadGalleryBtn.innerHTML =
                 originalHTML;
@@ -2553,12 +2612,6 @@
                 }`
                 : "";
 
-
-        /*
-         * The Download Gallery button
-         * only appears when the photographer
-         * has enabled downloads.
-         */
 
         refs.downloadGalleryBtn.classList.toggle(
             "hidden",
@@ -2943,12 +2996,6 @@
         );
 
 
-        /*
-         * Update the client gallery if
-         * photographer-side data changes
-         * in another browser tab.
-         */
-
         window.addEventListener(
             "storage",
             event => {
@@ -3121,10 +3168,17 @@
 
         } catch (error) {
 
-            console.warn(
-                "IndexedDB unavailable:",
+            console.error(
+                "IndexedDB initialization failed:",
                 error
             );
+
+            showToast(
+                "Gallery storage could not be opened in this browser.",
+                "error"
+            );
+
+            return;
         }
 
 
