@@ -39,8 +39,7 @@
         editingAlbumId: null,
         mediaObjectUrls: new Set(),
         coverObjectUrls: new Set(),
-        db: null,
-        zipLibraryPromise: null
+        db: null
     };
 
     /* =========================================================
@@ -50,31 +49,38 @@
     const refs = {
         galleryGrid: document.getElementById("galleryGrid"),
         gallerySearch: document.getElementById("gallerySearch"),
-        galleryFilter: document.getElementById("galleryFilter"),
+        galleryFilter: document.getElementById("statusFilter"),
 
         totalGalleries: document.getElementById("totalGalleries"),
         activeGalleries: document.getElementById("activeGalleries"),
         expiringGalleries: document.getElementById("expiringGalleries"),
-        storageUsed: document.getElementById("storageUsed"),
+        storageUsed: document.getElementById("totalStorage"),
 
         galleryModal: document.getElementById("galleryModal"),
-        modalGalleryTitle: document.getElementById("modalGalleryTitle"),
-        modalGalleryClient: document.getElementById("modalGalleryClient"),
+        modalGalleryTitle: document.getElementById("modalGalleryName"),
+        modalGalleryClient: document.getElementById("modalClientName"),
         closeGalleryModal: document.getElementById("closeGalleryModal"),
 
+        modalDescription: document.getElementById("modalDescription"),
+        modalCreatedAt: document.getElementById("modalCreatedAt"),
+        modalDuration: document.getElementById("modalDuration"),
+        modalStatus: document.getElementById("modalStatus"),
+        modalStorageText: document.getElementById("modalStorageText"),
         modalStorageUsed: document.getElementById("modalStorageUsed"),
         modalStorageLimit: document.getElementById("modalStorageLimit"),
         modalStorageProgress: document.getElementById("modalStorageProgress"),
 
-        modalExpiryDate: document.getElementById("modalExpiryDate"),
-        modalDaysLeft: document.getElementById("modalDaysLeft"),
+        modalExpiryDate: document.getElementById("modalExpiry"),
+        modalDaysLeft: document.getElementById("modalExpiryStatus"),
+        modalExpiryDuration: document.getElementById("modalExpiryDuration"),
+        modalExpiryNote: document.getElementById("modalExpiryNote"),
 
-        galleryClientLink: document.getElementById("galleryClientLink"),
-        copyGalleryLink: document.getElementById("copyGalleryLink"),
+        galleryClientLink: document.getElementById("modalGalleryLink"),
+        copyGalleryLink: document.getElementById("copyLinkBtn"),
 
         mediaGrid: document.getElementById("mediaGrid"),
         mediaUpload: document.getElementById("mediaUpload"),
-        uploadMediaBtn: document.getElementById("uploadMediaBtn"),
+        uploadZone: document.getElementById("uploadZone"),
 
         albumsGrid: document.getElementById("albumsGrid"),
         createAlbumBtn: document.getElementById("createAlbumBtn"),
@@ -83,6 +89,7 @@
         albumForm: document.getElementById("albumForm"),
         albumName: document.getElementById("albumName"),
         cancelAlbum: document.getElementById("cancelAlbum"),
+        closeAlbumModal: document.getElementById("closeAlbumModal"),
 
         passwordEnabled: document.getElementById("passwordEnabled"),
         galleryPassword: document.getElementById("galleryPassword"),
@@ -92,10 +99,6 @@
         downloadsEnabled: document.getElementById("downloadsEnabled"),
         galleryVisible: document.getElementById("galleryVisible"),
 
-        modalPassword: document.getElementById("modalPassword"),
-        modalDownloads: document.getElementById("modalDownloads"),
-        modalVisibility: document.getElementById("modalVisibility"),
-
         deleteGalleryBtn: document.getElementById("deleteGalleryBtn"),
 
         toast: document.getElementById("toast"),
@@ -103,11 +106,13 @@
 
         sendToClientBtn: document.getElementById("sendToClientBtn"),
 
-        quickUploadBtn: document.getElementById("quickUploadBtn"),
-        quickAlbumBtn: document.getElementById("quickAlbumBtn"),
-
         mobileMenuBtn: document.getElementById("mobileMenuBtn"),
-        sidebar: document.querySelector(".sidebar")
+        mobileMenu: document.getElementById("mobileMenu"),
+
+        gallerySettingsForm: document.getElementById("gallerySettingsForm"),
+        editGalleryName: document.getElementById("editGalleryName"),
+        editClientName: document.getElementById("editClientName"),
+        editGalleryDescription: document.getElementById("editGalleryDescription")
     };
 
     /* =========================================================
@@ -228,13 +233,9 @@
 
         refs.toastMessage.textContent = message;
 
-        refs.toast.classList.remove(
-            "success",
-            "error",
-            "warning"
-        );
-
+        refs.toast.classList.remove("success", "error", "warning");
         refs.toast.classList.add(type);
+
         refs.toast.classList.add("show");
 
         clearTimeout(showToast.timeout);
@@ -261,43 +262,23 @@
     function openDatabase() {
         return new Promise((resolve, reject) => {
             if (!window.indexedDB) {
-                reject(
-                    new Error(
-                        "IndexedDB is not supported by this browser."
-                    )
-                );
-
+                reject(new Error("IndexedDB is not supported by this browser."));
                 return;
             }
 
-            const request = indexedDB.open(
-                DB_NAME,
-                DB_VERSION
-            );
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
 
             request.onupgradeneeded = event => {
                 const db = event.target.result;
 
-                if (
-                    !db.objectStoreNames.contains(
-                        MEDIA_STORE
-                    )
-                ) {
-                    const store =
-                        db.createObjectStore(
-                            MEDIA_STORE,
-                            {
-                                keyPath: "id"
-                            }
-                        );
+                if (!db.objectStoreNames.contains(MEDIA_STORE)) {
+                    const store = db.createObjectStore(MEDIA_STORE, {
+                        keyPath: "id"
+                    });
 
-                    store.createIndex(
-                        "galleryId",
-                        "galleryId",
-                        {
-                            unique: false
-                        }
-                    );
+                    store.createIndex("galleryId", "galleryId", {
+                        unique: false
+                    });
                 }
             };
 
@@ -312,12 +293,7 @@
             };
 
             request.onerror = () => {
-                reject(
-                    request.error ||
-                        new Error(
-                            "Unable to open IndexedDB."
-                        )
-                );
+                reject(request.error || new Error("Unable to open IndexedDB."));
             };
         });
     }
@@ -332,11 +308,8 @@
 
     function idbRequest(request) {
         return new Promise((resolve, reject) => {
-            request.onsuccess = () =>
-                resolve(request.result);
-
-            request.onerror = () =>
-                reject(request.error);
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
         });
     }
 
@@ -344,13 +317,8 @@
         const db = await ensureDB();
 
         return new Promise((resolve, reject) => {
-            const tx = db.transaction(
-                MEDIA_STORE,
-                "readwrite"
-            );
-
-            const store =
-                tx.objectStore(MEDIA_STORE);
+            const tx = db.transaction(MEDIA_STORE, "readwrite");
+            const store = tx.objectStore(MEDIA_STORE);
 
             store.put(record);
 
@@ -363,31 +331,19 @@
     async function getMediaFile(mediaId) {
         const db = await ensureDB();
 
-        const tx = db.transaction(
-            MEDIA_STORE,
-            "readonly"
-        );
+        const tx = db.transaction(MEDIA_STORE, "readonly");
+        const store = tx.objectStore(MEDIA_STORE);
 
-        const store =
-            tx.objectStore(MEDIA_STORE);
-
-        return idbRequest(
-            store.get(mediaId)
-        );
+        return idbRequest(store.get(mediaId));
     }
 
     async function deleteMediaFile(mediaId) {
         const db = await ensureDB();
 
         return new Promise((resolve, reject) => {
-            const tx = db.transaction(
-                MEDIA_STORE,
-                "readwrite"
-            );
+            const tx = db.transaction(MEDIA_STORE, "readwrite");
 
-            tx.objectStore(
-                MEDIA_STORE
-            ).delete(mediaId);
+            tx.objectStore(MEDIA_STORE).delete(mediaId);
 
             tx.oncomplete = () => resolve();
             tx.onerror = () => reject(tx.error);
@@ -401,13 +357,8 @@
         const db = await ensureDB();
 
         return new Promise((resolve, reject) => {
-            const tx = db.transaction(
-                MEDIA_STORE,
-                "readwrite"
-            );
-
-            const store =
-                tx.objectStore(MEDIA_STORE);
+            const tx = db.transaction(MEDIA_STORE, "readwrite");
+            const store = tx.objectStore(MEDIA_STORE);
 
             mediaIds.forEach(id => {
                 store.delete(id);
@@ -423,24 +374,14 @@
         const db = await ensureDB();
 
         return new Promise((resolve, reject) => {
-            const tx = db.transaction(
-                MEDIA_STORE,
-                "readonly"
-            );
+            const tx = db.transaction(MEDIA_STORE, "readonly");
+            const store = tx.objectStore(MEDIA_STORE);
+            const index = store.index("galleryId");
 
-            const store =
-                tx.objectStore(MEDIA_STORE);
-
-            const index =
-                store.index("galleryId");
-
-            const request =
-                index.getAll(galleryId);
+            const request = index.getAll(galleryId);
 
             request.onsuccess = () => {
-                resolve(
-                    request.result || []
-                );
+                resolve(request.result || []);
             };
 
             request.onerror = () => {
@@ -455,31 +396,20 @@
 
     function loadGalleries() {
         try {
-            const raw =
-                localStorage.getItem(
-                    STORAGE_KEY
-                );
+            const raw = localStorage.getItem(STORAGE_KEY);
 
             if (!raw) {
                 state.galleries = [];
                 return;
             }
 
-            const parsed =
-                JSON.parse(raw);
+            const parsed = JSON.parse(raw);
 
-            state.galleries =
-                Array.isArray(parsed)
-                    ? parsed.map(
-                          normalizeGallery
-                      )
-                    : [];
+            state.galleries = Array.isArray(parsed)
+                ? parsed.map(normalizeGallery)
+                : [];
         } catch (error) {
-            console.error(
-                "Failed to load galleries:",
-                error
-            );
-
+            console.error("Failed to load galleries:", error);
             state.galleries = [];
         }
     }
@@ -488,9 +418,7 @@
         try {
             localStorage.setItem(
                 STORAGE_KEY,
-                JSON.stringify(
-                    state.galleries
-                )
+                JSON.stringify(state.galleries)
             );
 
             window.dispatchEvent(
@@ -501,10 +429,7 @@
 
             return true;
         } catch (error) {
-            console.error(
-                "Failed to save galleries:",
-                error
-            );
+            console.error("Failed to save galleries:", error);
 
             showToast(
                 "Unable to save gallery information. Storage may be full.",
@@ -519,365 +444,191 @@
        NORMALIZATION
     ========================================================= */
 
-    function normalizeMedia(
-        media,
-        galleryId
-    ) {
-        const id =
-            media?.id ||
-            createId("media");
+    function normalizeMedia(media, galleryId) {
+        const id = media?.id || createId("media");
 
         return {
             id,
+            galleryId: media?.galleryId || galleryId,
+            name: media?.name || "Untitled",
+            sizeMB: Number(media?.sizeMB || 0),
+            sizeBytes: Number(media?.sizeBytes || 0),
+            type: media?.type || "",
+            createdAt: media?.createdAt || new Date().toISOString(),
 
-            galleryId:
-                media?.galleryId ||
-                galleryId,
+            /*
+             * sectionId is the only folder relationship.
+             * WEDDING ALBUM selection changes this value.
+             * The actual blob remains in IndexedDB exactly once.
+             */
+            sectionId: media?.sectionId || null,
 
-            name:
-                media?.name ||
-                "Untitled",
-
-            sizeMB:
-                Number(
-                    media?.sizeMB || 0
-                ),
-
-            sizeBytes:
-                Number(
-                    media?.sizeBytes || 0
-                ),
-
-            type:
-                media?.type || "",
-
-            createdAt:
-                media?.createdAt ||
-                new Date().toISOString(),
-
-            sectionId:
-                media?.sectionId ||
-                null,
-
+            /*
+             * Used when a selected photo is removed from
+             * WEDDING ALBUM so it can return to its previous section.
+             */
             previousSectionId:
-                media?.previousSectionId !==
-                undefined
+                media?.previousSectionId !== undefined
                     ? media.previousSectionId
                     : null,
 
-            isCover:
-                Boolean(
-                    media?.isCover
-                ),
+            isCover: Boolean(media?.isCover),
 
-            clientComment:
-                media?.clientComment ||
-                ""
+            /*
+             * Optional client note for album selection.
+             */
+            clientComment: media?.clientComment || ""
         };
     }
 
-    function normalizeAlbum(
-        album,
-        galleryId
-    ) {
+    function normalizeAlbum(album, galleryId) {
         return {
-            id:
-                album?.id ||
-                createId("album"),
-
-            galleryId:
-                album?.galleryId ||
-                galleryId,
-
-            name:
-                album?.name ||
-                "Untitled Section",
-
-            createdAt:
-                album?.createdAt ||
-                new Date().toISOString(),
-
+            id: album?.id || createId("album"),
+            galleryId: album?.galleryId || galleryId,
+            name: album?.name || "Untitled Section",
+            createdAt: album?.createdAt || new Date().toISOString(),
             updatedAt:
                 album?.updatedAt ||
                 album?.createdAt ||
                 new Date().toISOString(),
-
-            system:
-                Boolean(
-                    album?.system
-                )
+            system: Boolean(album?.system)
         };
     }
 
-    function createWeddingAlbumSection(
-        galleryId
-    ) {
+    function createWeddingAlbumSection(galleryId) {
         return {
             id: createId("album"),
-
             galleryId,
-
-            name:
-                WEDDING_ALBUM_NAME,
-
-            createdAt:
-                new Date().toISOString(),
-
-            updatedAt:
-                new Date().toISOString(),
-
+            name: WEDDING_ALBUM_NAME,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
             system: true
         };
     }
 
-    function normalizeGallery(
-        gallery
-    ) {
+    function normalizeGallery(gallery) {
         const normalized = {
-            id:
-                gallery?.id ||
-                createId("gallery"),
+            id: gallery?.id || createId("gallery"),
+            name: gallery?.name || "Untitled Gallery",
+            clientName: gallery?.clientName || "",
+            description: gallery?.description || "",
 
-            name:
-                gallery?.name ||
-                "Untitled Gallery",
+            storageGB: Number(gallery?.storageGB || 10),
+            storageUsedGB: Number(gallery?.storageUsedGB || 0),
 
-            clientName:
-                gallery?.clientName ||
-                "",
-
-            description:
-                gallery?.description ||
-                "",
-
-            storageGB:
-                Number(
-                    gallery?.storageGB ||
-                        10
-                ),
-
-            storageUsedGB:
-                Number(
-                    gallery?.storageUsedGB ||
-                        0
-                ),
-
-            durationMonths:
-                Number(
-                    gallery?.durationMonths ||
-                        6
-                ),
+            durationMonths: Number(gallery?.durationMonths || 6),
 
             createdAt:
-                gallery?.createdAt ||
-                new Date().toISOString(),
+                gallery?.createdAt || new Date().toISOString(),
 
             expiresAt:
                 gallery?.expiresAt ||
                 addMonths(
-                    gallery?.createdAt ||
-                        new Date().toISOString(),
-                    Number(
-                        gallery?.durationMonths ||
-                            6
-                    )
+                    gallery?.createdAt || new Date().toISOString(),
+                    Number(gallery?.durationMonths || 6)
                 ),
 
             galleryLink:
                 gallery?.galleryLink ||
-                `${
-                    window.location.origin
-                }/client-gallery-view.html?gallery=${encodeURIComponent(
+                `${window.location.origin}/client-gallery-view.html?gallery=${encodeURIComponent(
                     gallery?.id || ""
                 )}`,
 
-            password:
-                gallery?.password ||
-                "",
-
+            password: gallery?.password || "",
             passwordEnabled:
-                gallery?.passwordEnabled !==
-                undefined
-                    ? Boolean(
-                          gallery.passwordEnabled
-                      )
+                gallery?.passwordEnabled !== undefined
+                    ? Boolean(gallery.passwordEnabled)
                     : false,
 
             downloadsEnabled:
-                gallery?.downloadsEnabled !==
-                undefined
-                    ? Boolean(
-                          gallery.downloadsEnabled
-                      )
+                gallery?.downloadsEnabled !== undefined
+                    ? Boolean(gallery.downloadsEnabled)
                     : true,
 
             visible:
-                gallery?.visible !==
-                undefined
-                    ? Boolean(
-                          gallery.visible
-                      )
+                gallery?.visible !== undefined
+                    ? Boolean(gallery.visible)
                     : true,
 
             deliveryStatus:
-                gallery?.deliveryStatus ||
-                "draft",
+                gallery?.deliveryStatus || "draft",
 
-            sentAt:
-                gallery?.sentAt ||
-                null,
+            sentAt: gallery?.sentAt || null,
 
-            downloads:
-                Number(
-                    gallery?.downloads ||
-                        0
-                ),
+            downloads: Number(gallery?.downloads || 0),
+            views: Number(gallery?.views || 0),
 
-            views:
-                Number(
-                    gallery?.views ||
-                        0
-                ),
+            media: Array.isArray(gallery?.media)
+                ? gallery.media.map(item =>
+                      normalizeMedia(item, gallery?.id)
+                  )
+                : [],
 
-            media:
-                Array.isArray(
-                    gallery?.media
-                )
-                    ? gallery.media.map(
-                          item =>
-                              normalizeMedia(
-                                  item,
-                                  gallery?.id
-                              )
-                      )
-                    : [],
-
-            albums:
-                Array.isArray(
-                    gallery?.albums
-                )
-                    ? gallery.albums.map(
-                          item =>
-                              normalizeAlbum(
-                                  item,
-                                  gallery?.id
-                              )
-                      )
-                    : []
+            albums: Array.isArray(gallery?.albums)
+                ? gallery.albums.map(item =>
+                      normalizeAlbum(item, gallery?.id)
+                  )
+                : []
         };
 
         /*
          * Every gallery gets a WEDDING ALBUM section.
-         * This is metadata only.
+         * This is metadata only. It does not create any files.
          */
-        let weddingAlbum =
-            normalized.albums.find(
-                album =>
-                    String(
-                        album.name
-                    )
-                        .trim()
-                        .toUpperCase() ===
-                    WEDDING_ALBUM_NAME
-            );
+        let weddingAlbum = normalized.albums.find(
+            album =>
+                String(album.name).trim().toUpperCase() ===
+                WEDDING_ALBUM_NAME
+        );
 
         if (!weddingAlbum) {
-            weddingAlbum =
-                createWeddingAlbumSection(
-                    normalized.id
-                );
-
-            normalized.albums.push(
-                weddingAlbum
-            );
+            weddingAlbum = createWeddingAlbumSection(normalized.id);
+            normalized.albums.push(weddingAlbum);
         }
 
         weddingAlbum.system = true;
 
-        const albumMediaIds =
-            new Set(
-                normalized.media
-                    .filter(
-                        media =>
-                            media.sectionId ===
-                            weddingAlbum.id
-                    )
-                    .map(
-                        media =>
-                            media.id
-                    )
-            );
+        const albumMediaIds = new Set(
+            normalized.media
+                .filter(
+                    media => media.sectionId === weddingAlbum.id
+                )
+                .map(media => media.id)
+        );
 
         const existingSelection =
-            gallery?.albumSelection ||
-            {};
-
-        let status =
-            existingSelection.status;
-
-        if (
-            !status ||
-            ![
-                "open",
-                "submitted",
-                "approved",
-                "closed"
-            ].includes(status)
-        ) {
-            status =
-                existingSelection.enabled
-                    ? "open"
-                    : "closed";
-        }
-
-        /*
-         * Important:
-         * CLOSED stays CLOSED.
-         * We do NOT automatically reopen it.
-         */
-        if (
-            existingSelection.enabled ===
-            false
-        ) {
-            status = "closed";
-        }
+            gallery?.albumSelection || {};
 
         normalized.albumSelection = {
             enabled:
-                existingSelection.enabled !==
-                undefined
-                    ? Boolean(
-                          existingSelection.enabled
-                      )
+                existingSelection.enabled !== undefined
+                    ? Boolean(existingSelection.enabled)
                     : false,
 
             maxSelections:
-                existingSelection.maxSelections ===
-                    null ||
-                existingSelection.maxSelections ===
-                    undefined
+                existingSelection.maxSelections === null ||
+                existingSelection.maxSelections === undefined
                     ? null
                     : Math.max(
                           1,
-                          Number(
-                              existingSelection.maxSelections
-                          )
+                          Number(existingSelection.maxSelections)
                       ),
 
-            status,
-
-            selectedMediaIds:
-                Array.from(
-                    albumMediaIds
+            status:
+                existingSelection.status ||
+                (
+                    existingSelection.enabled
+                        ? "open"
+                        : "closed"
                 ),
 
+            selectedMediaIds: Array.from(albumMediaIds),
+
             submittedAt:
-                existingSelection.submittedAt ||
-                null,
+                existingSelection.submittedAt || null,
 
             submittedBy:
-                existingSelection.submittedBy ||
-                "client",
+                existingSelection.submittedBy || "client",
 
             photographerApproved:
                 Boolean(
@@ -885,24 +636,15 @@
                 ),
 
             approvedAt:
-                existingSelection.approvedAt ||
-                null
+                existingSelection.approvedAt || null
         };
 
-        if (
-            normalized.albumSelection.status ===
-            "approved"
-        ) {
-            normalized.albumSelection.photographerApproved =
-                true;
-        }
-
-        if (
-            normalized.albumSelection.status ===
-            "closed"
-        ) {
-            normalized.albumSelection.photographerApproved =
-                false;
+        /*
+         * Keep selection metadata synchronized with actual
+         * WEDDING ALBUM membership.
+         */
+        if (!normalized.albumSelection.enabled) {
+            normalized.albumSelection.status = "closed";
         }
 
         return normalized;
@@ -912,13 +654,8 @@
        GALLERY STATUS
     ========================================================= */
 
-    function getGalleryStatus(
-        gallery
-    ) {
-        const daysLeft =
-            daysBetween(
-                gallery.expiresAt
-            );
+    function getGalleryStatus(gallery) {
+        const daysLeft = daysBetween(gallery.expiresAt);
 
         if (daysLeft <= 0) {
             return "expired";
@@ -931,33 +668,17 @@
         return "active";
     }
 
-    function getStatusLabel(
-        gallery
-    ) {
-        const status =
-            getGalleryStatus(
-                gallery
-            );
+    function getStatusLabel(gallery) {
+        const status = getGalleryStatus(gallery);
 
-        if (status === "expired") {
-            return "Expired";
-        }
-
-        if (status === "expiring") {
-            return "Expiring Soon";
-        }
+        if (status === "expired") return "Expired";
+        if (status === "expiring") return "Expiring Soon";
 
         return "Active";
     }
 
-    function syncGalleryStatus(
-        gallery
-    ) {
-        gallery.status =
-            getGalleryStatus(
-                gallery
-            );
-
+    function syncGalleryStatus(gallery) {
+        gallery.status = getGalleryStatus(gallery);
         return gallery.status;
     }
 
@@ -966,172 +687,64 @@
     ========================================================= */
 
     function getSelectedGallery() {
-        return (
-            state.galleries.find(
-                gallery =>
-                    gallery.id ===
-                    state.selectedGalleryId
-            ) || null
-        );
+        return state.galleries.find(
+            gallery => gallery.id === state.selectedGalleryId
+        ) || null;
     }
 
     function getGalleryById(id) {
-        return (
-            state.galleries.find(
-                gallery =>
-                    gallery.id === id
-            ) || null
-        );
+        return state.galleries.find(
+            gallery => gallery.id === id
+        ) || null;
     }
 
-    function getWeddingAlbum(
-        gallery
-    ) {
+    function getWeddingAlbum(gallery) {
         if (!gallery) return null;
 
-        return (
-            gallery.albums.find(
-                album =>
-                    String(
-                        album.name
-                    )
-                        .trim()
-                        .toUpperCase() ===
-                    WEDDING_ALBUM_NAME
-            ) || null
-        );
+        return gallery.albums.find(
+            album =>
+                String(album.name).trim().toUpperCase() ===
+                WEDDING_ALBUM_NAME
+        ) || null;
     }
 
-    function getWeddingAlbumMedia(
-        gallery
-    ) {
-        const weddingAlbum =
-            getWeddingAlbum(
-                gallery
-            );
+    function getWeddingAlbumMedia(gallery) {
+        const weddingAlbum = getWeddingAlbum(gallery);
 
-        if (!weddingAlbum) {
-            return [];
-        }
+        if (!weddingAlbum) return [];
 
         return gallery.media.filter(
-            media =>
-                media.sectionId ===
-                weddingAlbum.id
+            media => media.sectionId === weddingAlbum.id
         );
     }
 
-    function getWeddingAlbumCount(
-        gallery
-    ) {
-        return getWeddingAlbumMedia(
-            gallery
-        ).filter(isPhoto).length;
-    }
-
-    function getWeddingAlbumStatus(
-        gallery
-    ) {
-        return (
-            gallery?.albumSelection
-                ?.status ||
-            (
-                gallery?.albumSelection
-                    ?.enabled
-                    ? "open"
-                    : "closed"
-            )
-        );
-    }
-
-    function isWeddingAlbumLocked(
-        gallery
-    ) {
-        const status =
-            getWeddingAlbumStatus(
-                gallery
-            );
-
-        return (
-            status === "submitted" ||
-            status === "approved" ||
-            status === "closed"
-        );
-    }
-
-    function getWeddingAlbumStatusLabel(
-        gallery
-    ) {
-        const status =
-            getWeddingAlbumStatus(
-                gallery
-            );
-
-        const labels = {
-            open: "Open",
-            submitted: "Submitted",
-            approved: "Approved",
-            closed: "Closed"
-        };
-
-        return (
-            labels[status] ||
-            "Closed"
-        );
-    }
-
-    function syncWeddingAlbumSelection(
-        gallery
-    ) {
+    function syncWeddingAlbumSelection(gallery) {
         if (!gallery) return;
 
-        const weddingAlbum =
-            getWeddingAlbum(
-                gallery
-            );
+        const weddingAlbum = getWeddingAlbum(gallery);
 
         if (!weddingAlbum) return;
 
         gallery.albumSelection =
-            gallery.albumSelection ||
-            {};
+            gallery.albumSelection || {};
 
         gallery.albumSelection.selectedMediaIds =
             gallery.media
                 .filter(
                     media =>
                         media.sectionId ===
-                        weddingAlbum.id &&
-                        isPhoto(media)
+                        weddingAlbum.id
                 )
-                .map(
-                    media =>
-                        media.id
-                );
+                .map(media => media.id);
 
-        /*
-         * CLOSED MUST STAY CLOSED.
-         *
-         * The old implementation automatically changed
-         * closed -> open whenever enabled was true.
-         * That made "Disable" and "Close" unreliable.
-         *
-         * Reopening is now explicit only.
-         */
-        if (
-            !gallery.albumSelection
-                .enabled
+        if (!gallery.albumSelection.enabled) {
+            gallery.albumSelection.status = "closed";
+        } else if (
+            !["open", "submitted", "approved", "closed"].includes(
+                gallery.albumSelection.status
+            )
         ) {
-            gallery.albumSelection.status =
-                "closed";
-        }
-
-        if (
-            gallery.albumSelection.status ===
-            "approved"
-        ) {
-            gallery.albumSelection.photographerApproved =
-                true;
+            gallery.albumSelection.status = "open";
         }
     }
 
@@ -1143,14 +756,12 @@
         let pending = null;
 
         try {
-            const raw =
-                localStorage.getItem(
-                    PENDING_PURCHASE_KEY
-                );
+            const raw = localStorage.getItem(
+                PENDING_PURCHASE_KEY
+            );
 
             if (raw) {
-                pending =
-                    JSON.parse(raw);
+                pending = JSON.parse(raw);
             }
         } catch (error) {
             console.error(
@@ -1159,17 +770,17 @@
             );
         }
 
-        if (!pending) {
-            return false;
-        }
+        if (!pending) return false;
 
-        const alreadyExists =
-            state.galleries.some(
-                gallery =>
-                    gallery.purchaseId &&
-                    gallery.purchaseId ===
-                        pending.purchaseId
-            );
+        /*
+         * Prevent duplicate creation if the same purchase is
+         * somehow processed twice.
+         */
+        const alreadyExists = state.galleries.some(
+            gallery =>
+                gallery.purchaseId &&
+                gallery.purchaseId === pending.purchaseId
+        );
 
         if (alreadyExists) {
             localStorage.removeItem(
@@ -1179,107 +790,92 @@
             return false;
         }
 
-        const now =
-            new Date().toISOString();
+        const now = new Date().toISOString();
 
-        const galleryId =
-            createId("gallery");
+        const galleryId = createId("gallery");
 
-        const durationMonths =
-            Number(
-                pending.durationMonths ||
-                    6
-            );
+        const durationMonths = Number(
+            pending.durationMonths || 6
+        );
 
-        const storageGB =
-            Number(
-                pending.storageGB ||
-                    10
-            );
+        const storageGB = Number(
+            pending.storageGB || 10
+        );
 
-        const weddingAlbum =
-            createWeddingAlbumSection(
-                galleryId
-            );
+        const weddingAlbum = createWeddingAlbumSection(
+            galleryId
+        );
 
-        const gallery =
-            normalizeGallery({
-                id: galleryId,
+        const gallery = normalizeGallery({
+            id: galleryId,
 
-                purchaseId:
-                    pending.purchaseId ||
-                    createId(
-                        "purchase"
-                    ),
+            purchaseId:
+                pending.purchaseId ||
+                createId("purchase"),
 
-                name:
-                    pending.galleryName ||
-                    "New Client Gallery",
+            name:
+                pending.galleryName ||
+                "New Client Gallery",
 
-                clientName:
-                    pending.clientName ||
-                    "",
+            clientName:
+                pending.clientName || "",
 
-                description:
-                    pending.description ||
-                    "",
+            description:
+                pending.description || "",
 
-                storageGB,
+            storageGB,
 
-                storageUsedGB: 0,
+            storageUsedGB: 0,
 
-                durationMonths,
+            durationMonths,
 
-                createdAt: now,
+            createdAt: now,
 
-                expiresAt:
-                    pending.expiresAt ||
-                    addMonths(
-                        now,
-                        durationMonths
-                    ),
+            expiresAt:
+                pending.expiresAt ||
+                addMonths(now, durationMonths),
 
-                galleryLink:
-                    `${window.location.origin}/client-gallery-view.html?gallery=${encodeURIComponent(
-                        galleryId
-                    )}`,
+            galleryLink:
+                `${window.location.origin}/client-gallery-view.html?gallery=${encodeURIComponent(
+                    galleryId
+                )}`,
 
-                password: "",
+            password: "",
 
-                passwordEnabled: false,
+            passwordEnabled: false,
 
-                downloadsEnabled: true,
+            downloadsEnabled: true,
 
-                visible: true,
+            visible: true,
 
-                deliveryStatus: "draft",
+            deliveryStatus: "draft",
 
-                sentAt: null,
+            sentAt: null,
 
-                downloads: 0,
+            downloads: 0,
 
-                views: 0,
+            views: 0,
 
-                media: [],
+            media: [],
 
-                albums: [
-                    weddingAlbum
-                ],
+            albums: [weddingAlbum],
 
-                albumSelection: {
-                    enabled: false,
-                    maxSelections: null,
-                    status: "closed",
-                    selectedMediaIds: [],
-                    submittedAt: null,
-                    submittedBy:
-                        "client",
-                    photographerApproved:
-                        false,
-                    approvedAt: null
-                }
-            });
+            albumSelection: {
+                enabled: false,
+                maxSelections: null,
+                status: "closed",
+                selectedMediaIds: [],
+                submittedAt: null,
+                submittedBy: "client",
+                photographerApproved: false,
+                approvedAt: null
+            }
+        });
 
+        /*
+         * Keep the source of the purchase.
+         * This is important for future backend integration.
+         */
         gallery.source =
             pending.source ||
             "gallery-shop";
@@ -1292,9 +888,7 @@
             pending.status ||
             "purchased";
 
-        state.galleries.unshift(
-            gallery
-        );
+        state.galleries.unshift(gallery);
 
         const purchaseHistoryRaw =
             localStorage.getItem(
@@ -1304,49 +898,41 @@
         let purchaseHistory = [];
 
         try {
-            purchaseHistory =
-                purchaseHistoryRaw
-                    ? JSON.parse(
-                          purchaseHistoryRaw
-                      )
-                    : [];
+            purchaseHistory = purchaseHistoryRaw
+                ? JSON.parse(purchaseHistoryRaw)
+                : [];
         } catch (_) {
             purchaseHistory = [];
         }
 
-        if (
-            !Array.isArray(
-                purchaseHistory
-            )
-        ) {
+        if (!Array.isArray(purchaseHistory)) {
             purchaseHistory = [];
         }
 
         purchaseHistory.unshift({
             ...pending,
-            galleryId:
-                gallery.id,
-            createdGalleryAt:
-                now
+            galleryId: gallery.id,
+            createdGalleryAt: now
         });
 
         try {
             localStorage.setItem(
                 PURCHASE_HISTORY_KEY,
-                JSON.stringify(
-                    purchaseHistory
-                )
+                JSON.stringify(purchaseHistory)
             );
         } catch (_) {}
 
         saveGalleries();
 
+        /*
+         * Consume the purchase handoff only after the gallery
+         * has successfully been created.
+         */
         localStorage.removeItem(
             PENDING_PURCHASE_KEY
         );
 
-        state.selectedGalleryId =
-            gallery.id;
+        state.selectedGalleryId = gallery.id;
 
         showToast(
             "Gallery purchased and added to Client Galleries."
@@ -1362,134 +948,88 @@
     async function renderPage() {
         loadGalleries();
 
-        state.galleries.forEach(
-            syncGalleryStatus
-        );
+        state.galleries.forEach(syncGalleryStatus);
 
         renderStats();
-
         await renderGalleryGrid();
     }
 
     function renderStats() {
-        const total =
-            state.galleries.length;
+        const total = state.galleries.length;
 
         let active = 0;
         let expiring = 0;
         let storage = 0;
 
-        state.galleries.forEach(
-            gallery => {
-                const status =
-                    getGalleryStatus(
-                        gallery
-                    );
+        state.galleries.forEach(gallery => {
+            const status = getGalleryStatus(gallery);
 
-                if (
-                    status ===
-                    "active"
-                ) {
-                    active++;
-                }
-
-                if (
-                    status ===
-                    "expiring"
-                ) {
-                    expiring++;
-                }
-
-                storage += Number(
-                    gallery.storageUsedGB ||
-                        0
-                );
+            if (status === "active") {
+                active++;
             }
-        );
 
-        if (
-            refs.totalGalleries
-        ) {
-            refs.totalGalleries.textContent =
-                total;
+            if (status === "expiring") {
+                expiring++;
+            }
+
+            storage += Number(
+                gallery.storageUsedGB || 0
+            );
+        });
+
+        if (refs.totalGalleries) {
+            refs.totalGalleries.textContent = total;
         }
 
-        if (
-            refs.activeGalleries
-        ) {
-            refs.activeGalleries.textContent =
-                active;
+        if (refs.activeGalleries) {
+            refs.activeGalleries.textContent = active;
         }
 
-        if (
-            refs.expiringGalleries
-        ) {
-            refs.expiringGalleries.textContent =
-                expiring;
+        if (refs.expiringGalleries) {
+            refs.expiringGalleries.textContent = expiring;
         }
 
-        if (
-            refs.storageUsed
-        ) {
+        if (refs.storageUsed) {
             refs.storageUsed.textContent =
-                formatGB(
-                    storage
-                );
+                formatGB(storage);
         }
     }
 
     async function renderGalleryGrid() {
-        if (!refs.galleryGrid) {
-            return;
-        }
+        if (!refs.galleryGrid) return;
 
-        revokeSet(
-            state.coverObjectUrls
-        );
+        revokeSet(state.coverObjectUrls);
 
-        const search =
-            state.searchTerm
-                .trim()
-                .toLowerCase();
+        const search = state.searchTerm
+            .trim()
+            .toLowerCase();
 
         const filter =
-            refs.galleryFilter
-                ?.value ||
-            "all";
+            refs.galleryFilter?.value || "all";
 
-        let galleries = [
-            ...state.galleries
-        ];
+        let galleries = [...state.galleries];
 
         if (search) {
-            galleries =
-                galleries.filter(
-                    gallery => {
-                        return (
-                            gallery.name
-                                .toLowerCase()
-                                .includes(
-                                    search
-                                ) ||
-                            gallery.clientName
-                                .toLowerCase()
-                                .includes(
-                                    search
-                                )
-                        );
-                    }
+            galleries = galleries.filter(gallery => {
+                return (
+                    gallery.name
+                        .toLowerCase()
+                        .includes(search) ||
+                    gallery.clientName
+                        .toLowerCase()
+                        .includes(search)
                 );
+            });
         }
 
         if (filter !== "all") {
-            galleries =
-                galleries.filter(
-                    gallery =>
-                        getGalleryStatus(
-                            gallery
-                        ) ===
-                        filter
-                );
+            galleries = galleries.filter(gallery => {
+                if (filter === "expired") return getGalleryStatus(gallery) === "expired";
+                if (filter === "sent") return gallery.deliveryStatus === "sent" && getGalleryStatus(gallery) !== "expired";
+                if (filter === "preparing") return gallery.deliveryStatus !== "sent" && !gallery._readyToDeliver && getGalleryStatus(gallery) !== "expired";
+                if (filter === "ready") return gallery.deliveryStatus !== "sent" && gallery._readyToDeliver && getGalleryStatus(gallery) !== "expired";
+                return true;
+            });
         }
 
         if (!galleries.length) {
@@ -1518,15 +1058,12 @@
             return;
         }
 
-        const cards =
-            await Promise.all(
-                galleries.map(
-                    gallery =>
-                        buildGalleryCard(
-                            gallery
-                        )
-                )
-            );
+        const cards = await Promise.all(
+            galleries.map(
+                gallery =>
+                    buildGalleryCard(gallery)
+            )
+        );
 
         refs.galleryGrid.innerHTML =
             cards.join("");
@@ -1534,18 +1071,10 @@
         bindGalleryCardEvents();
     }
 
-    async function buildGalleryCard(
-        gallery
-    ) {
-        const status =
-            getGalleryStatus(
-                gallery
-            );
-
+    async function buildGalleryCard(gallery) {
+        const status = getGalleryStatus(gallery);
         const weddingMedia =
-            getWeddingAlbumMedia(
-                gallery
-            );
+            getWeddingAlbumMedia(gallery);
 
         let coverHTML = `
             <div class="gallery-cover-placeholder">
@@ -1555,12 +1084,10 @@
 
         const coverMedia =
             gallery.media.find(
-                media =>
-                    media.isCover
+                media => media.isCover
             ) ||
             gallery.media.find(
-                media =>
-                    isPhoto(media)
+                media => isPhoto(media)
             );
 
         if (coverMedia) {
@@ -1570,17 +1097,13 @@
                         coverMedia.id
                     );
 
-                if (
-                    blobRecord?.blob
-                ) {
+                if (blobRecord?.blob) {
                     const url =
                         URL.createObjectURL(
                             blobRecord.blob
                         );
 
-                    state.coverObjectUrls.add(
-                        url
-                    );
+                    state.coverObjectUrls.add(url);
 
                     coverHTML = `
                         <img
@@ -1601,15 +1124,9 @@
         }
 
         const deliveryLabel =
-            gallery.deliveryStatus ===
-            "sent"
+            gallery.deliveryStatus === "sent"
                 ? "Sent to Client"
                 : "Not Sent";
-
-        const albumStatus =
-            getWeddingAlbumStatus(
-                gallery
-            );
 
         return `
             <article
@@ -1622,9 +1139,7 @@
                     ${coverHTML}
 
                     <span class="gallery-status ${status}">
-                        ${getStatusLabel(
-                            gallery
-                        )}
+                        ${getStatusLabel(gallery)}
                     </span>
                 </div>
 
@@ -1652,7 +1167,7 @@
                         <i class="fa-regular fa-user"></i>
                         ${escapeHTML(
                             gallery.clientName ||
-                                "No client name"
+                            "No client name"
                         )}
                     </p>
 
@@ -1676,15 +1191,13 @@
                     <div class="gallery-card-meta">
                         <span>
                             <i class="fa-regular fa-calendar"></i>
-                            ${
-                                daysBetween(
-                                    gallery.expiresAt
-                                ) > 0
-                                    ? `${daysBetween(
-                                          gallery.expiresAt
-                                      )} days left`
-                                    : "Expired"
-                            }
+                            ${daysBetween(
+                                gallery.expiresAt
+                            ) > 0
+                                ? `${daysBetween(
+                                      gallery.expiresAt
+                                  )} days left`
+                                : "Expired"}
                         </span>
 
                         <span>
@@ -1693,9 +1206,7 @@
                     </div>
 
                     ${
-                        gallery.albumSelection
-                            ?.enabled ||
-                        weddingMedia.length
+                        gallery.albumSelection?.enabled
                             ? `
                                 <div class="gallery-card-meta">
                                     <span>
@@ -1704,18 +1215,10 @@
                                         ${weddingMedia.length}
                                         ${
                                             gallery.albumSelection
-                                                ?.maxSelections
+                                                .maxSelections
                                                 ? ` / ${gallery.albumSelection.maxSelections}`
                                                 : ""
                                         }
-                                    </span>
-
-                                    <span>
-                                        ${escapeHTML(
-                                            getWeddingAlbumStatusLabel(
-                                                gallery
-                                            )
-                                        )}
                                     </span>
                                 </div>
                             `
@@ -1738,20 +1241,15 @@
 
     function bindGalleryCardEvents() {
         document
-            .querySelectorAll(
-                ".open-gallery-btn"
-            )
+            .querySelectorAll(".open-gallery-btn")
             .forEach(button => {
                 button.addEventListener(
                     "click",
                     () => {
                         const id =
-                            button.dataset
-                                .galleryId;
+                            button.dataset.galleryId;
 
-                        openGalleryModal(
-                            id
-                        );
+                        openGalleryModal(id);
                     }
                 );
             });
@@ -1761,119 +1259,60 @@
        OPEN / CLOSE GALLERY
     ========================================================= */
 
-    async function openGalleryModal(
-        galleryId
-    ) {
+    async function openGalleryModal(galleryId) {
         const gallery =
-            getGalleryById(
-                galleryId
-            );
+            getGalleryById(galleryId);
 
         if (!gallery) return;
 
-        state.selectedGalleryId =
-            galleryId;
+        state.selectedGalleryId = galleryId;
+        state.activeTab = "overview";
+        state.mediaFilter = "all";
 
-        state.activeTab =
-            "overview";
+        syncWeddingAlbumSelection(gallery);
 
-        state.mediaFilter =
-            "all";
+        renderModalHeader(gallery);
+        renderModalOverview(gallery);
+        renderAlbums(gallery);
+        renderSettings(gallery);
+        renderWeddingAlbumStatus(gallery);
+        renderWeddingAlbumManagement(gallery);
 
-        syncWeddingAlbumSelection(
-            gallery
-        );
+        switchTab("overview");
 
-        renderModalHeader(
-            gallery
-        );
-
-        renderModalOverview(
-            gallery
-        );
-
-        renderAlbums(
-            gallery
-        );
-
-        renderSettings(
-            gallery
-        );
-
-        renderWeddingAlbumManagement(
-            gallery
-        );
-
-        renderWeddingAlbumStatus(
-            gallery
-        );
-
-        switchTab(
-            "overview"
-        );
-
-        if (
-            refs.galleryModal
-        ) {
-            refs.galleryModal.classList.add(
-                "open"
-            );
+        if (refs.galleryModal) {
+            refs.galleryModal.classList.add("open");
         }
 
-        await renderMedia(
-            gallery
-        );
-
-        renderModalOverview(
-            gallery
-        );
-
-        renderAlbums(
-            gallery
-        );
-
-        renderWeddingAlbumManagement(
-            gallery
-        );
-
-        renderWeddingAlbumStatus(
-            gallery
-        );
+        await renderMedia(gallery);
+        renderModalOverview(gallery);
+        renderAlbums(gallery);
+        renderWeddingAlbumStatus(gallery);
+        renderWeddingAlbumManagement(gallery);
     }
 
     function closeGalleryModal() {
-        if (
-            refs.galleryModal
-        ) {
-            refs.galleryModal.classList.remove(
-                "open"
-            );
+        if (refs.galleryModal) {
+            refs.galleryModal.classList.remove("open");
         }
 
-        revokeSet(
-            state.mediaObjectUrls
-        );
+        revokeSet(state.mediaObjectUrls);
 
-        state.selectedGalleryId =
-            null;
+        state.selectedGalleryId = null;
     }
 
-    function renderModalHeader(
-        gallery
-    ) {
-        if (
-            refs.modalGalleryTitle
-        ) {
-            refs.modalGalleryTitle.textContent =
-                gallery.name;
+    function renderModalHeader(gallery) {
+        if (refs.modalGalleryTitle) {
+            refs.modalGalleryTitle.textContent = gallery.name || "Client Gallery";
         }
 
-        if (
-            refs.modalGalleryClient
-        ) {
-            refs.modalGalleryClient.textContent =
-                gallery.clientName ||
-                "No client assigned";
+        if (refs.modalGalleryClient) {
+            refs.modalGalleryClient.textContent = gallery.clientName || "No client assigned";
+        }
+
+        if (refs.modalStatus) {
+            refs.modalStatus.textContent = getGalleryStatus(gallery).toUpperCase();
+            refs.modalStatus.className = `status-pill ${getGalleryStatus(gallery)}`;
         }
     }
 
@@ -1881,70 +1320,44 @@
        MODAL OVERVIEW
     ========================================================= */
 
-    function renderModalOverview(
-        gallery
-    ) {
+    function renderModalOverview(gallery) {
         if (!gallery) return;
 
         const used =
-            Number(
-                gallery.storageUsedGB ||
-                    0
-            );
+            Number(gallery.storageUsedGB || 0);
 
         const limit =
-            Number(
-                gallery.storageGB ||
-                    0
-            );
+            Number(gallery.storageGB || 0);
 
         const percent =
             limit > 0
                 ? Math.min(
                       100,
-                      (used /
-                          limit) *
-                          100
+                      (used / limit) * 100
                   )
                 : 0;
 
-        if (
-            refs.modalStorageUsed
-        ) {
+        if (refs.modalStorageUsed) {
             refs.modalStorageUsed.textContent =
-                formatGB(
-                    used
-                );
+                formatGB(used);
         }
 
-        if (
-            refs.modalStorageLimit
-        ) {
+        if (refs.modalStorageLimit) {
             refs.modalStorageLimit.textContent =
-                formatGB(
-                    limit
-                );
+                formatGB(limit);
         }
 
-        if (
-            refs.modalStorageProgress
-        ) {
+        if (refs.modalStorageProgress) {
             refs.modalStorageProgress.style.width =
                 `${percent}%`;
         }
 
-        if (
-            refs.modalExpiryDate
-        ) {
+        if (refs.modalExpiryDate) {
             refs.modalExpiryDate.textContent =
-                formatDate(
-                    gallery.expiresAt
-                );
+                formatDate(gallery.expiresAt);
         }
 
-        if (
-            refs.modalDaysLeft
-        ) {
+        if (refs.modalDaysLeft) {
             const days =
                 daysBetween(
                     gallery.expiresAt
@@ -1956,805 +1369,955 @@
                     : "Expired";
         }
 
-        if (
-            refs.galleryClientLink
-        ) {
-            refs.galleryClientLink.value =
-                gallery.galleryLink;
+        if (refs.modalStorageText) {
+            refs.modalStorageText.textContent = `${formatGB(used)} used of ${formatGB(limit)}`;
         }
 
-        updateDeliveryReadiness(
-            gallery
-        );
+        if (refs.modalDescription) refs.modalDescription.textContent = gallery.description || "No description";
+        if (refs.modalCreatedAt) refs.modalCreatedAt.textContent = formatDate(gallery.createdAt);
+        if (refs.modalDuration) refs.modalDuration.textContent = `${gallery.durationMonths || "-"} month${Number(gallery.durationMonths) === 1 ? "" : "s"}`;
+        if (refs.modalExpiryDuration) refs.modalExpiryDuration.textContent = `${gallery.durationMonths || "-"} month${Number(gallery.durationMonths) === 1 ? "" : "s"}`;
+        if (refs.galleryClientLink) refs.galleryClientLink.value = gallery.galleryLink;
+
+        updateDeliveryReadiness(gallery);
     }
 
     /* =========================================================
-       WEDDING ALBUM
-       MANAGEMENT PANEL
+       WEDDING ALBUM MANAGEMENT PANEL
     ========================================================= */
 
     function ensureWeddingAlbumStyles() {
-        if (
-            document.getElementById(
-                "professionalStudioWeddingAlbumStyles"
-            )
-        ) {
+        if (document.getElementById("professionalStudioAlbumStyles")) {
             return;
         }
 
-        const style =
-            document.createElement(
-                "style"
-            );
-
-        style.id =
-            "professionalStudioWeddingAlbumStyles";
-
+        const style = document.createElement("style");
+        style.id = "professionalStudioAlbumStyles";
         style.textContent = `
-            .ps-wedding-album-panel {
+            .ps-album-management-panel {
                 margin: 0 0 24px;
-                padding: 22px;
+                padding: 20px;
                 border: 1px solid #e7e7e7;
-                border-radius: 14px;
-                background: #ffffff;
-                box-shadow: 0 8px 30px rgba(0,0,0,.04);
+                border-radius: 16px;
+                background: #fff;
+                box-shadow: 0 6px 24px rgba(0,0,0,.04);
             }
 
-            .ps-wedding-album-header {
+            .ps-album-management-head {
                 display: flex;
                 align-items: flex-start;
                 justify-content: space-between;
-                gap: 20px;
-                margin-bottom: 20px;
+                gap: 18px;
+                margin-bottom: 18px;
             }
 
-            .ps-wedding-album-title {
-                display: flex;
-                align-items: flex-start;
-                gap: 12px;
-            }
-
-            .ps-wedding-album-icon {
-                width: 42px;
-                height: 42px;
-                flex: 0 0 42px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border-radius: 10px;
-                background: #f4f4f4;
-                color: #111111;
-            }
-
-            .ps-wedding-album-title h3 {
-                margin: 0 0 5px;
-                font-size: 17px;
-            }
-
-            .ps-wedding-album-title p {
+            .ps-album-management-title {
                 margin: 0;
-                color: #777;
+                font-size: 18px;
+                line-height: 1.3;
+                color: #161616;
+            }
+
+            .ps-album-management-subtitle {
+                margin: 6px 0 0;
+                color: #737373;
                 font-size: 13px;
                 line-height: 1.5;
             }
 
-            .ps-wedding-status {
+            .ps-album-status-pill {
                 display: inline-flex;
                 align-items: center;
-                gap: 6px;
+                justify-content: center;
                 padding: 7px 11px;
                 border-radius: 999px;
-                background: #f4f4f4;
                 font-size: 12px;
                 font-weight: 700;
                 white-space: nowrap;
+                background: #f3f3f3;
+                color: #555;
             }
 
-            .ps-wedding-status.open {
-                background: #eef8f1;
-                color: #24703b;
+            .ps-album-status-pill.open {
+                background: #eef7ef;
+                color: #2d6a34;
             }
 
-            .ps-wedding-status.submitted {
-                background: #fff7e8;
-                color: #8a5a00;
+            .ps-album-status-pill.submitted {
+                background: #fff5df;
+                color: #8a5b00;
             }
 
-            .ps-wedding-status.approved {
-                background: #edf5ff;
-                color: #245d91;
+            .ps-album-status-pill.approved {
+                background: #edf3ff;
+                color: #315ea8;
             }
 
-            .ps-wedding-status.closed {
+            .ps-album-status-pill.closed {
                 background: #f1f1f1;
                 color: #666;
             }
 
-            .ps-wedding-album-stats {
+            .ps-album-management-grid {
                 display: grid;
                 grid-template-columns: repeat(3, minmax(0, 1fr));
                 gap: 12px;
                 margin-bottom: 18px;
             }
 
-            .ps-wedding-stat {
+            .ps-album-stat {
                 padding: 14px;
                 border: 1px solid #ededed;
-                border-radius: 10px;
+                border-radius: 12px;
                 background: #fafafa;
             }
 
-            .ps-wedding-stat span {
+            .ps-album-stat-label {
                 display: block;
+                margin-bottom: 5px;
                 font-size: 11px;
                 text-transform: uppercase;
-                letter-spacing: .07em;
-                color: #888;
-                margin-bottom: 5px;
+                letter-spacing: .06em;
+                color: #8a8a8a;
             }
 
-            .ps-wedding-stat strong {
+            .ps-album-stat-value {
+                display: block;
                 font-size: 16px;
-                color: #111;
-            }
-
-            .ps-wedding-album-controls {
-                display: grid;
-                grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr);
-                gap: 14px;
-                align-items: end;
-            }
-
-            .ps-wedding-control {
-                display: flex;
-                flex-direction: column;
-                gap: 7px;
-            }
-
-            .ps-wedding-control label {
-                font-size: 12px;
                 font-weight: 700;
-                color: #444;
+                color: #202020;
             }
 
-            .ps-wedding-control input,
-            .ps-wedding-control select {
-                width: 100%;
-                min-height: 42px;
-                padding: 0 12px;
-                border: 1px solid #ddd;
-                border-radius: 8px;
-                background: #fff;
-                box-sizing: border-box;
-                font: inherit;
-            }
-
-            .ps-wedding-control small {
-                color: #888;
-                font-size: 11px;
-                line-height: 1.4;
-            }
-
-            .ps-wedding-actions {
+            .ps-album-management-actions {
                 display: flex;
                 flex-wrap: wrap;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .ps-album-management-actions button {
+                cursor: pointer;
+            }
+
+            .ps-album-management-actions button:disabled {
+                cursor: not-allowed;
+                opacity: .5;
+            }
+
+            .ps-album-limit-control {
+                display: flex;
+                align-items: center;
                 gap: 9px;
-                margin-top: 16px;
+                margin-right: auto;
             }
 
-            .ps-wedding-actions button {
-                min-height: 40px;
-            }
-
-            .ps-wedding-review {
-                margin-top: 17px;
-                padding: 13px 15px;
-                border-radius: 9px;
-                background: #f8f8f8;
+            .ps-album-limit-control label {
                 font-size: 13px;
-                line-height: 1.55;
                 color: #555;
             }
 
-            .ps-wedding-review strong {
-                color: #222;
+            .ps-album-limit-control input {
+                width: 90px;
+                min-height: 38px;
+                padding: 0 10px;
+                border: 1px solid #ddd;
+                border-radius: 9px;
+                box-sizing: border-box;
+                background: #fff;
             }
 
-            .ps-wedding-download {
-                margin-left: auto;
+            .ps-album-management-note {
+                margin: 14px 0 0;
+                padding: 11px 13px;
+                border-radius: 10px;
+                background: #f7f7f7;
+                color: #666;
+                font-size: 12px;
+                line-height: 1.5;
             }
 
-            @media (max-width: 700px) {
-                .ps-wedding-album-header {
+            .ps-album-review-strip {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                margin-top: 14px;
+                padding-top: 14px;
+                border-top: 1px solid #ededed;
+                font-size: 13px;
+                color: #555;
+            }
+
+            .ps-album-download-btn {
+                display: inline-flex;
+                align-items: center;
+                gap: 7px;
+            }
+
+            @media (max-width: 760px) {
+                .ps-album-management-head {
                     flex-direction: column;
                 }
 
-                .ps-wedding-album-stats {
+                .ps-album-management-grid {
                     grid-template-columns: 1fr;
                 }
 
-                .ps-wedding-album-controls {
-                    grid-template-columns: 1fr;
-                }
-
-                .ps-wedding-actions {
-                    flex-direction: column;
-                }
-
-                .ps-wedding-actions button {
+                .ps-album-limit-control {
                     width: 100%;
+                    margin-right: 0;
                 }
 
-                .ps-wedding-download {
-                    margin-left: 0;
+                .ps-album-management-actions {
+                    align-items: stretch;
                 }
             }
         `;
 
-        document.head.appendChild(
-            style
+        document.head.appendChild(style);
+    }
+
+    function getAlbumSelectionStatusLabel(status) {
+        switch (status) {
+            case "submitted":
+                return "Submitted by Client";
+            case "approved":
+                return "Approved";
+            case "closed":
+                return "Closed";
+            case "open":
+            default:
+                return "Open";
+        }
+    }
+
+    function getAlbumSelectionSummary(gallery) {
+        const selection = gallery?.albumSelection || {};
+        const selectedCount =
+            Array.isArray(selection.selectedMediaIds)
+                ? selection.selectedMediaIds.length
+                : getWeddingAlbumMedia(gallery).length;
+
+        const limit = selection.maxSelections;
+        const status = selection.enabled
+            ? (selection.status || "open")
+            : "closed";
+
+        return {
+            selection,
+            selectedCount,
+            limit,
+            status
+        };
+    }
+
+    function getModalInsertionPoint() {
+        if (!refs.galleryModal) return null;
+
+        return (
+            refs.galleryModal.querySelector(".tab-content") ||
+            refs.galleryModal.querySelector(".modal-body") ||
+            refs.galleryModal.querySelector(".modal-content") ||
+            refs.galleryModal.firstElementChild ||
+            refs.galleryModal
         );
     }
 
-    function getSectionsTabContainer() {
-        const sectionsTab =
-            document.getElementById(
-                "tab-sections"
-            );
-
-        if (!sectionsTab) {
-            return null;
-        }
-
-        return sectionsTab;
-    }
-
-    function renderWeddingAlbumManagement(
-        gallery
-    ) {
-        if (!gallery) return;
-
-        const container =
-            getSectionsTabContainer();
-
-        if (!container) return;
+    function ensureWeddingAlbumManagementPanel() {
+        if (!refs.galleryModal) return null;
 
         ensureWeddingAlbumStyles();
 
-        let panel =
-            container.querySelector(
-                ".ps-wedding-album-panel"
-            );
-
-        if (!panel) {
-            panel =
-                document.createElement(
-                    "section"
-                );
-
-            panel.className =
-                "ps-wedding-album-panel";
-
-            /*
-             * Put the management panel above
-             * the existing sections/cards.
-             */
-            container.insertBefore(
-                panel,
-                refs.albumsGrid ||
-                    container.firstChild
-            );
-        }
-
-        syncWeddingAlbumSelection(
-            gallery
+        let panel = refs.galleryModal.querySelector(
+            "#professionalStudioAlbumManagement"
         );
 
-        const selection =
-            gallery.albumSelection ||
-            {};
+        if (panel) return panel;
 
-        const status =
-            getWeddingAlbumStatus(
-                gallery
-            );
+        panel = document.createElement("section");
+        panel.id = "professionalStudioAlbumManagement";
+        panel.className = "ps-album-management-panel";
 
-        const count =
-            getWeddingAlbumCount(
-                gallery
-            );
+        const insertionPoint = getModalInsertionPoint();
 
-        const limit =
-            selection.maxSelections;
+        if (!insertionPoint) return null;
+
+        insertionPoint.parentNode.insertBefore(
+            panel,
+            insertionPoint
+        );
+
+        return panel;
+    }
+
+    function renderWeddingAlbumManagement(gallery) {
+        if (!gallery) return;
+
+        const panel = ensureWeddingAlbumManagementPanel();
+        if (!panel) return;
+
+        const {
+            selection,
+            selectedCount,
+            limit,
+            status
+        } = getAlbumSelectionSummary(gallery);
+
+        const enabled = Boolean(selection.enabled);
+        const submitted =
+            status === "submitted" ||
+            status === "approved";
 
         const locked =
-            isWeddingAlbumLocked(
-                gallery
-            );
+            status === "submitted" ||
+            status === "approved" ||
+            status === "closed";
 
-        const statusClass =
-            escapeHTML(status);
+        const selectedText =
+            limit === null || limit === undefined
+                ? `${selectedCount} selected`
+                : `${selectedCount} / ${limit} selected`;
 
-        const submittedText =
-            selection.submittedAt
-                ? `Submitted ${formatDateTime(
-                      selection.submittedAt
-                  )}`
-                : "Not submitted yet";
-
-        const approvedText =
-            selection.approvedAt
-                ? `Approved ${formatDateTime(
-                      selection.approvedAt
-                  )}`
-                : "Not approved";
-
-        const limitValue =
-            limit === null ||
-            limit === undefined
-                ? ""
-                : String(limit);
-
-        let primaryAction = "";
-
-        if (!selection.enabled) {
-            primaryAction = `
-                <button
-                    type="button"
-                    class="primary-btn ps-enable-wedding"
-                >
-                    <i class="fa-solid fa-check"></i>
-                    Enable Album Selection
-                </button>
-            `;
-        } else if (
-            status === "submitted"
-        ) {
-            primaryAction = `
-                <button
-                    type="button"
-                    class="primary-btn ps-approve-wedding"
-                >
-                    <i class="fa-solid fa-check-double"></i>
-                    Approve Selection
-                </button>
-
-                <button
-                    type="button"
-                    class="secondary-btn ps-reopen-wedding"
-                >
-                    <i class="fa-solid fa-rotate-left"></i>
-                    Reopen for Changes
-                </button>
-            `;
-        } else if (
-            status === "approved"
-        ) {
-            primaryAction = `
-                <button
-                    type="button"
-                    class="secondary-btn ps-reopen-wedding"
-                >
-                    <i class="fa-solid fa-rotate-left"></i>
-                    Reopen for Changes
-                </button>
-            `;
-        } else if (
-            status === "closed"
-        ) {
-            primaryAction = `
-                <button
-                    type="button"
-                    class="primary-btn ps-reopen-wedding"
-                >
-                    <i class="fa-solid fa-folder-open"></i>
-                    Reopen Selection
-                </button>
-            `;
-        } else {
-            primaryAction = `
-                <button
-                    type="button"
-                    class="secondary-btn ps-disable-wedding"
-                >
-                    <i class="fa-solid fa-lock"></i>
-                    Close Selection
-                </button>
-            `;
-        }
-
-        const downloadDisabled =
-            count === 0
-                ? "disabled"
-                : "";
+        const submittedText = selection.submittedAt
+            ? formatDateTime(selection.submittedAt)
+            : "Not submitted";
 
         panel.innerHTML = `
-            <div class="ps-wedding-album-header">
-                <div class="ps-wedding-album-title">
-                    <div class="ps-wedding-album-icon">
-                        <i class="fa-regular fa-images"></i>
-                    </div>
-
-                    <div>
-                        <h3>WEDDING ALBUM</h3>
-
-                        <p>
-                            Let your client select the photographs
-                            they want included in their physical album.
-                            Selected photos are moved into this section
-                            without creating another copy of the file.
-                        </p>
-                    </div>
+            <div class="ps-album-management-head">
+                <div>
+                    <h3 class="ps-album-management-title">
+                        WEDDING ALBUM
+                    </h3>
+                    <p class="ps-album-management-subtitle">
+                        Manage the client's photo selection for the physical album.
+                        Selected photos stay in one storage location and are only moved
+                        between sections through metadata.
+                    </p>
                 </div>
 
-                <span class="ps-wedding-status ${statusClass}">
-                    <i class="fa-regular fa-circle"></i>
+                <span class="ps-album-status-pill ${escapeHTML(status)}">
                     ${escapeHTML(
-                        getWeddingAlbumStatusLabel(
-                            gallery
-                        )
+                        enabled
+                            ? getAlbumSelectionStatusLabel(status)
+                            : "Selection Disabled"
                     )}
                 </span>
             </div>
 
-            <div class="ps-wedding-album-stats">
-                <div class="ps-wedding-stat">
-                    <span>Selected Photos</span>
-                    <strong>
-                        ${count}
-                        ${
-                            limit !== null &&
-                            limit !== undefined
-                                ? ` / ${limit}`
-                                : ""
-                        }
-                    </strong>
+            <div class="ps-album-management-grid">
+                <div class="ps-album-stat">
+                    <span class="ps-album-stat-label">
+                        Selected Photos
+                    </span>
+                    <span class="ps-album-stat-value">
+                        ${escapeHTML(selectedText)}
+                    </span>
                 </div>
 
-                <div class="ps-wedding-stat">
-                    <span>Client Selection</span>
-                    <strong>
-                        ${
-                            selection.enabled
-                                ? "Enabled"
-                                : "Disabled"
-                        }
-                    </strong>
+                <div class="ps-album-stat">
+                    <span class="ps-album-stat-label">
+                        Client Submission
+                    </span>
+                    <span class="ps-album-stat-value">
+                        ${escapeHTML(submittedText)}
+                    </span>
                 </div>
 
-                <div class="ps-wedding-stat">
-                    <span>Review Status</span>
-                    <strong>
-                        ${escapeHTML(
-                            getWeddingAlbumStatusLabel(
-                                gallery
-                            )
-                        )}
-                    </strong>
+                <div class="ps-album-stat">
+                    <span class="ps-album-stat-label">
+                        Selection Mode
+                    </span>
+                    <span class="ps-album-stat-value">
+                        ${enabled ? "Enabled" : "Disabled"}
+                    </span>
                 </div>
             </div>
 
-            <div class="ps-wedding-album-controls">
-                <div class="ps-wedding-control">
-                    <label for="psWeddingAlbumLimit">
-                        Maximum photos
+            <div class="ps-album-management-actions">
+                <div class="ps-album-limit-control">
+                    <label for="psAlbumLimitInput">
+                        Max photos
                     </label>
 
                     <input
-                        id="psWeddingAlbumLimit"
                         type="number"
+                        id="psAlbumLimitInput"
                         min="1"
                         step="1"
-                        value="${escapeHTML(
-                            limitValue
-                        )}"
-                        placeholder="Unlimited"
-                        ${
-                            locked
-                                ? "disabled"
-                                : ""
-                        }
+                        placeholder="No limit"
+                        value="${
+                            limit === null ||
+                            limit === undefined
+                                ? ""
+                                : escapeHTML(limit)
+                        }"
+                        ${!enabled || locked ? "disabled" : ""}
                     >
-
-                    <small>
-                        Leave empty for unlimited selections.
-                    </small>
                 </div>
-
-                <div class="ps-wedding-control">
-                    <label>
-                        Photographer controls
-                    </label>
-
-                    <div class="ps-wedding-actions">
-                        ${primaryAction}
-
-                        <button
-                            type="button"
-                            class="secondary-btn ps-save-wedding-limit"
-                            ${
-                                !selection.enabled ||
-                                locked
-                                    ? "disabled"
-                                    : ""
-                            }
-                        >
-                            <i class="fa-solid fa-sliders"></i>
-                            Save Limit
-                        </button>
-
-                        <button
-                            type="button"
-                            class="secondary-btn ps-download-wedding"
-                            ${downloadDisabled}
-                        >
-                            <i class="fa-solid fa-download"></i>
-                            Download Selected
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="ps-wedding-review">
-                <strong>Selection timeline:</strong>
-                ${escapeHTML(
-                    submittedText
-                )}
-                &nbsp; • &nbsp;
-                ${escapeHTML(
-                    approvedText
-                )}
 
                 ${
-                    locked
+                    enabled
                         ? `
-                            <br>
-                            <strong>Editing:</strong>
+                            <button
+                                type="button"
+                                class="secondary-btn"
+                                id="psSaveAlbumLimitBtn"
+                                ${locked ? "disabled" : ""}
+                            >
+                                Save Limit
+                            </button>
+
                             ${
-                                status ===
-                                "closed"
-                                    ? "Selection is closed."
-                                    : "Selection is locked until you reopen it."
+                                status === "submitted"
+                                    ? `
+                                        <button
+                                            type="button"
+                                            class="primary-btn"
+                                            id="psApproveAlbumBtn"
+                                        >
+                                            <i class="fa-solid fa-check"></i>
+                                            Approve Selection
+                                        </button>
+                                    `
+                                    : ""
+                            }
+
+                            ${
+                                status === "submitted" ||
+                                status === "approved"
+                                    ? `
+                                        <button
+                                            type="button"
+                                            class="secondary-btn"
+                                            id="psReopenAlbumBtn"
+                                        >
+                                            Reopen Selection
+                                        </button>
+                                    `
+                                    : ""
+                            }
+
+                            <button
+                                type="button"
+                                class="secondary-btn ps-album-download-btn"
+                                id="psDownloadAlbumBtn"
+                                ${
+                                    selectedCount === 0
+                                        ? "disabled"
+                                        : ""
+                                }
+                            >
+                                <i class="fa-solid fa-download"></i>
+                                Download Selected
+                            </button>
+
+                            ${
+                                status === "open"
+                                    ? `
+                                        <button
+                                            type="button"
+                                            class="secondary-btn"
+                                            id="psCloseAlbumBtn"
+                                        >
+                                            Close Selection
+                                        </button>
+                                    `
+                                    : ""
+                            }
+
+                            ${
+                                status === "closed"
+                                    ? `
+                                        <button
+                                            type="button"
+                                            class="secondary-btn"
+                                            id="psOpenAlbumBtn"
+                                        >
+                                            Enable Selection
+                                        </button>
+                                    `
+                                    : ""
                             }
                         `
-                        : ""
+                        : `
+                            <button
+                                type="button"
+                                class="primary-btn"
+                                id="psEnableAlbumBtn"
+                            >
+                                Enable Album Selection
+                            </button>
+                        `
+                }
+            </div>
+
+            <div class="ps-album-management-note">
+                ${
+                    status === "submitted"
+                        ? "The client has submitted the selection. Review the WEDDING ALBUM section below, then approve it or reopen it for changes."
+                        : status === "approved"
+                        ? "The selection is approved and locked. Reopen it if the client needs to make further changes."
+                        : status === "closed"
+                        ? "Album Selection is closed. Existing WEDDING ALBUM photos remain untouched."
+                        : "When the client submits their selection, the selected photos will appear in WEDDING ALBUM without creating duplicate files."
                 }
             </div>
         `;
 
-        bindWeddingAlbumManagementEvents(
-            gallery
-        );
+        bindWeddingAlbumManagementEvents(gallery);
     }
 
-    function bindWeddingAlbumManagementEvents(
-        gallery
-    ) {
-        const panel =
-            getSectionsTabContainer()
-                ?.querySelector(
-                    ".ps-wedding-album-panel"
-                );
+    function bindWeddingAlbumManagementEvents(gallery) {
+        const enableBtn = document.getElementById(
+            "psEnableAlbumBtn"
+        );
 
-        if (!panel) return;
-
-        const enableButton =
-            panel.querySelector(
-                ".ps-enable-wedding"
+        enableBtn?.addEventListener("click", () => {
+            enableWeddingAlbumSelection(
+                gallery.id,
+                null
             );
 
-        const disableButton =
-            panel.querySelector(
-                ".ps-disable-wedding"
+            renderWeddingAlbumManagement(gallery);
+            renderGalleryGrid();
+        });
+
+        const saveLimitBtn = document.getElementById(
+            "psSaveAlbumLimitBtn"
+        );
+
+        saveLimitBtn?.addEventListener("click", () => {
+            const input = document.getElementById(
+                "psAlbumLimitInput"
             );
 
-        const approveButton =
-            panel.querySelector(
-                ".ps-approve-wedding"
-            );
+            const raw = input?.value?.trim() || "";
 
-        const reopenButton =
-            panel.querySelector(
-                ".ps-reopen-wedding"
-            );
-
-        const saveLimitButton =
-            panel.querySelector(
-                ".ps-save-wedding-limit"
-            );
-
-        const downloadButton =
-            panel.querySelector(
-                ".ps-download-wedding"
-            );
-
-        const limitInput =
-            panel.querySelector(
-                "#psWeddingAlbumLimit"
-            );
-
-        enableButton?.addEventListener(
-            "click",
-            () => {
-                const limit =
-                    parseWeddingLimit(
-                        limitInput?.value
-                    );
-
-                if (
-                    limit === "invalid"
-                ) {
-                    showToast(
-                        "Enter a valid photo limit.",
-                        "warning"
-                    );
-
-                    return;
-                }
-
-                enableWeddingAlbumSelection(
+            if (!raw) {
+                setWeddingAlbumLimit(
                     gallery.id,
-                    limit
+                    null
                 );
+            } else {
+                const value = Number(raw);
 
-                refreshSelectedGalleryUI();
-            }
-        );
-
-        disableButton?.addEventListener(
-            "click",
-            () => {
-                const confirmed =
-                    window.confirm(
-                        "Close Wedding Album selection? Existing selected photos will remain in WEDDING ALBUM, but the client will no longer be able to make changes."
+                if (!Number.isInteger(value) || value < 1) {
+                    showToast(
+                        "Maximum selection must be a whole number of at least 1.",
+                        "warning"
                     );
-
-                if (!confirmed) return;
-
-                disableWeddingAlbumSelection(
-                    gallery.id
-                );
-
-                refreshSelectedGalleryUI();
-            }
-        );
-
-        approveButton?.addEventListener(
-            "click",
-            () => {
-                const confirmed =
-                    window.confirm(
-                        "Approve this Wedding Album selection? The client will no longer be able to change the selected photos until you reopen it."
-                    );
-
-                if (!confirmed) return;
-
-                if (
-                    approveWeddingAlbumSelection(
-                        gallery.id
-                    )
-                ) {
-                    refreshSelectedGalleryUI();
+                    return;
                 }
-            }
-        );
-
-        reopenButton?.addEventListener(
-            "click",
-            () => {
-                const confirmed =
-                    window.confirm(
-                        "Reopen Wedding Album selection for the client?"
-                    );
-
-                if (!confirmed) return;
 
                 if (
-                    reopenWeddingAlbumSelection(
-                        gallery.id
-                    )
-                ) {
-                    refreshSelectedGalleryUI();
-                }
-            }
-        );
-
-        saveLimitButton?.addEventListener(
-            "click",
-            () => {
-                const limit =
-                    parseWeddingLimit(
-                        limitInput?.value
-                    );
-
-                if (
-                    limit === "invalid"
+                    value <
+                    getWeddingAlbumMedia(gallery).length
                 ) {
                     showToast(
-                        "Enter a valid photo limit.",
+                        `There are already ${getWeddingAlbumMedia(gallery).length} photos in WEDDING ALBUM. Remove some photos before lowering the limit.`,
                         "warning"
+                    );
+                    return;
+                }
+
+                setWeddingAlbumLimit(
+                    gallery.id,
+                    value
+                );
+            }
+
+            renderWeddingAlbumManagement(gallery);
+            renderGalleryGrid();
+        });
+
+        const approveBtn = document.getElementById(
+            "psApproveAlbumBtn"
+        );
+
+        approveBtn?.addEventListener("click", () => {
+            const count =
+                getWeddingAlbumMedia(gallery).length;
+
+            if (!count) {
+                showToast(
+                    "There are no selected photos to approve.",
+                    "warning"
+                );
+                return;
+            }
+
+            const confirmed = window.confirm(
+                `Approve the WEDDING ALBUM selection with ${count} photo${count === 1 ? "" : "s"}?`
+            );
+
+            if (!confirmed) return;
+
+            if (
+                approveWeddingAlbumSelection(
+                    gallery.id
+                )
+            ) {
+                renderWeddingAlbumManagement(gallery);
+                renderMedia(gallery);
+                renderAlbums(gallery);
+                renderGalleryGrid();
+            }
+        });
+
+        const reopenBtn = document.getElementById(
+            "psReopenAlbumBtn"
+        );
+
+        reopenBtn?.addEventListener("click", () => {
+            const confirmed = window.confirm(
+                "Reopen the WEDDING ALBUM selection? The client will be able to change their selection again."
+            );
+
+            if (!confirmed) return;
+
+            if (
+                reopenWeddingAlbumSelection(
+                    gallery.id
+                )
+            ) {
+                renderWeddingAlbumManagement(gallery);
+                renderMedia(gallery);
+                renderAlbums(gallery);
+                renderGalleryGrid();
+            }
+        });
+
+        const downloadBtn = document.getElementById(
+            "psDownloadAlbumBtn"
+        );
+
+        downloadBtn?.addEventListener("click", () => {
+            downloadSelectedWeddingAlbum(gallery.id);
+        });
+
+        const closeBtn = document.getElementById(
+            "psCloseAlbumBtn"
+        );
+
+        closeBtn?.addEventListener("click", () => {
+            const confirmed = window.confirm(
+                "Close Album Selection? Existing selected photos will remain in WEDDING ALBUM, but no further selection changes will be allowed."
+            );
+
+            if (!confirmed) return;
+
+            disableWeddingAlbumSelection(
+                gallery.id
+            );
+
+            renderWeddingAlbumManagement(gallery);
+            renderMedia(gallery);
+            renderAlbums(gallery);
+            renderGalleryGrid();
+        });
+
+        const openBtn = document.getElementById(
+            "psOpenAlbumBtn"
+        );
+
+        openBtn?.addEventListener("click", () => {
+            enableWeddingAlbumSelection(
+                gallery.id,
+                gallery.albumSelection?.maxSelections ?? null
+            );
+
+            renderWeddingAlbumManagement(gallery);
+            renderMedia(gallery);
+            renderAlbums(gallery);
+            renderGalleryGrid();
+        });
+    }
+
+    function loadJSZip() {
+        if (window.JSZip) {
+            return Promise.resolve(window.JSZip);
+        }
+
+        if (window.__professionalStudioJSZipPromise) {
+            return window.__professionalStudioJSZipPromise;
+        }
+
+        window.__professionalStudioJSZipPromise =
+            new Promise((resolve, reject) => {
+                const existing = document.querySelector(
+                    'script[data-professional-studio-jszip]'
+                );
+
+                if (existing) {
+                    existing.addEventListener(
+                        "load",
+                        () => resolve(window.JSZip)
+                    );
+
+                    existing.addEventListener(
+                        "error",
+                        () =>
+                            reject(
+                                new Error(
+                                    "Unable to load ZIP library."
+                                )
+                            )
                     );
 
                     return;
                 }
 
-                if (
-                    setWeddingAlbumLimit(
-                        gallery.id,
-                        limit
-                    )
-                ) {
-                    refreshSelectedGalleryUI();
+                const script =
+                    document.createElement("script");
 
-                    showToast(
-                        "Wedding Album selection limit saved."
+                script.src =
+                    "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";
+                script.async = true;
+                script.dataset.professionalStudioJszip =
+                    "true";
+
+                script.onload = () => {
+                    if (window.JSZip) {
+                        resolve(window.JSZip);
+                    } else {
+                        reject(
+                            new Error(
+                                "ZIP library loaded without JSZip."
+                            )
+                        );
+                    }
+                };
+
+                script.onerror = () => {
+                    reject(
+                        new Error(
+                            "Unable to load ZIP library."
+                        )
                     );
-                }
-            }
-        );
+                };
 
-        downloadButton?.addEventListener(
-            "click",
-            async () => {
-                await downloadWeddingAlbumPhotos(
-                    gallery.id
-                );
-            }
-        );
+                document.head.appendChild(script);
+            });
+
+        return window.__professionalStudioJSZipPromise;
     }
 
-    function parseWeddingLimit(
-        value
-    ) {
-        const text =
-            String(
-                value ?? ""
-            ).trim();
+    function getSafeFileName(name, fallback = "file") {
+        const cleaned = String(name || fallback)
+            .replace(/[<>:"/\\|?*\u0000-\u001F]/g, "_")
+            .replace(/\s+/g, " ")
+            .trim();
 
-        if (!text) {
-            return null;
-        }
-
-        const number =
-            Number(text);
-
-        if (
-            !Number.isFinite(
-                number
-            ) ||
-            number < 1
-        ) {
-            return "invalid";
-        }
-
-        return Math.floor(
-            number
-        );
+        return cleaned || fallback;
     }
 
-    function renderWeddingAlbumStatus(
-        gallery
+    function splitFileName(name) {
+        const safe = getSafeFileName(name, "photo");
+        const dot = safe.lastIndexOf(".");
+
+        if (dot <= 0) {
+            return {
+                base: safe,
+                extension: ""
+            };
+        }
+
+        return {
+            base: safe.slice(0, dot),
+            extension: safe.slice(dot)
+        };
+    }
+
+    function createUniqueZipName(
+        usedNames,
+        originalName
     ) {
+        const parts =
+            splitFileName(originalName);
+
+        let candidate =
+            `${parts.base}${parts.extension}`;
+
+        let index = 2;
+
+        while (usedNames.has(candidate.toLowerCase())) {
+            candidate =
+                `${parts.base} (${index})${parts.extension}`;
+            index++;
+        }
+
+        usedNames.add(
+            candidate.toLowerCase()
+        );
+
+        return candidate;
+    }
+
+    async function downloadSelectedWeddingAlbum(
+        galleryId
+    ) {
+        const gallery =
+            getGalleryById(galleryId);
+
         if (!gallery) return;
 
-        syncWeddingAlbumSelection(
-            gallery
-        );
+        const selectedMedia =
+            getWeddingAlbumMedia(gallery)
+                .filter(isPhoto);
 
-        const weddingAlbum =
-            getWeddingAlbum(
-                gallery
+        if (!selectedMedia.length) {
+            showToast(
+                "There are no selected photos to download.",
+                "warning"
             );
-
-        if (!weddingAlbum) {
             return;
         }
 
-        const count =
-            getWeddingAlbumCount(
-                gallery
+        try {
+            showToast(
+                "Preparing selected photos...",
+                "success"
             );
 
+            const JSZip =
+                await loadJSZip();
+
+            const zip = new JSZip();
+            const rootName =
+                getSafeFileName(
+                    `${gallery.name} - WEDDING ALBUM`,
+                    "Wedding Album"
+                );
+
+            const folder =
+                zip.folder(rootName);
+
+            const usedNames = new Set();
+
+            let added = 0;
+
+            for (
+                const media of selectedMedia
+            ) {
+                const record =
+                    await getMediaFile(
+                        media.id
+                    );
+
+                if (!record?.blob) {
+                    continue;
+                }
+
+                const filename =
+                    createUniqueZipName(
+                        usedNames,
+                        media.name
+                    );
+
+                folder.file(
+                    filename,
+                    record.blob
+                );
+
+                added++;
+            }
+
+            if (!added) {
+                showToast(
+                    "The selected photo files could not be found in local storage.",
+                    "error"
+                );
+                return;
+            }
+
+            const blob =
+                await zip.generateAsync(
+                    {
+                        type: "blob",
+                        compression: "STORE"
+                    },
+                    metadata => {
+                        if (
+                            metadata.percent >= 0 &&
+                            metadata.percent < 100 &&
+                            Math.round(
+                                metadata.percent
+                            ) % 25 === 0
+                        ) {
+                            // Progress is intentionally quiet.
+                            // The toast remains stable while the ZIP is built.
+                        }
+                    }
+                );
+
+            const url =
+                URL.createObjectURL(blob);
+
+            const link =
+                document.createElement("a");
+
+            link.href = url;
+            link.download =
+                `${rootName}.zip`;
+
+            document.body.appendChild(
+                link
+            );
+
+            link.click();
+            link.remove();
+
+            setTimeout(
+                () =>
+                    URL.revokeObjectURL(
+                        url
+                    ),
+                5000
+            );
+
+            showToast(
+                `${added} selected photo${added === 1 ? "" : "s"} downloaded.`
+            );
+        } catch (error) {
+            console.error(
+                "Unable to download Wedding Album selection:",
+                error
+            );
+
+            showToast(
+                "Unable to prepare the selected photo download.",
+                "error"
+            );
+        }
+    }
+
+    /* =========================================================
+       WEDDING ALBUM
+    ========================================================= */
+
+    function renderWeddingAlbumStatus(gallery) {
+        if (!gallery) return;
+
+        /*
+         * No extra HTML is injected here.
+         *
+         * The existing Albums/Sections area and Media Grid
+         * are used for the WEDDING ALBUM feature.
+         */
+
+        syncWeddingAlbumSelection(gallery);
+
+        const weddingAlbum =
+            getWeddingAlbum(gallery);
+
+        if (!weddingAlbum) return;
+
+        const count =
+            getWeddingAlbumMedia(gallery).length;
+
+        /*
+         * Update the existing WEDDING ALBUM card if present.
+         */
         const card =
             refs.albumsGrid?.querySelector(
                 `[data-album-id="${CSS.escape(
@@ -2762,7 +2325,10 @@
                 )}"]`
             );
 
-        if (!card) return;
+        if (!card) {
+            renderWeddingAlbumManagement(gallery);
+            return;
+        }
 
         const countElement =
             card.querySelector(
@@ -2771,94 +2337,37 @@
 
         if (countElement) {
             countElement.textContent =
-                `${count} ${
-                    count === 1
-                        ? "photo"
-                        : "photos"
-                }`;
+                `${count} ${count === 1 ? "photo" : "photos"}`;
         }
+
+        renderWeddingAlbumManagement(gallery);
     }
-
-    function refreshSelectedGalleryUI() {
-        const gallery =
-            getSelectedGallery();
-
-        if (!gallery) return;
-
-        syncWeddingAlbumSelection(
-            gallery
-        );
-
-        renderModalHeader(
-            gallery
-        );
-
-        renderModalOverview(
-            gallery
-        );
-
-        renderAlbums(
-            gallery
-        );
-
-        renderWeddingAlbumManagement(
-            gallery
-        );
-
-        renderWeddingAlbumStatus(
-            gallery
-        );
-
-        renderGalleryGrid();
-
-        renderMedia(
-            gallery
-        );
-    }
-
-    /* =========================================================
-       WEDDING ALBUM ENABLE / DISABLE
-    ========================================================= */
 
     function enableWeddingAlbumSelection(
         galleryId,
         maxSelections = null
     ) {
         const gallery =
-            getGalleryById(
-                galleryId
-            );
+            getGalleryById(galleryId);
 
-        if (!gallery) {
-            return false;
-        }
+        if (!gallery) return false;
 
         gallery.albumSelection =
-            gallery.albumSelection ||
-            {};
+            gallery.albumSelection || {};
 
-        gallery.albumSelection.enabled =
-            true;
+        gallery.albumSelection.enabled = true;
 
         gallery.albumSelection.maxSelections =
             maxSelections === null ||
             maxSelections === "" ||
-            maxSelections ===
-                undefined
+            maxSelections === undefined
                 ? null
                 : Math.max(
                       1,
-                      Number(
-                          maxSelections
-                      )
+                      Number(maxSelections)
                   );
 
-        /*
-         * Explicitly enabling/reopening makes
-         * the workflow OPEN.
-         */
-        gallery.albumSelection.status =
-            "open";
+        gallery.albumSelection.status = "open";
 
         gallery.albumSelection.photographerApproved =
             false;
@@ -2866,13 +2375,7 @@
         gallery.albumSelection.approvedAt =
             null;
 
-        /*
-         * A new/reopened selection should not
-         * carry the previous approval timestamp.
-         */
-        syncWeddingAlbumSelection(
-            gallery
-        );
+        syncWeddingAlbumSelection(gallery);
 
         saveGalleries();
 
@@ -2882,17 +2385,9 @@
             state.selectedGalleryId ===
             gallery.id
         ) {
-            renderAlbums(
-                gallery
-            );
-
-            renderWeddingAlbumManagement(
-                gallery
-            );
-
-            renderWeddingAlbumStatus(
-                gallery
-            );
+            renderAlbums(gallery);
+            renderWeddingAlbumStatus(gallery);
+            renderWeddingAlbumManagement(gallery);
         }
 
         return true;
@@ -2902,37 +2397,23 @@
         galleryId
     ) {
         const gallery =
-            getGalleryById(
-                galleryId
-            );
+            getGalleryById(galleryId);
 
-        if (!gallery) {
-            return false;
-        }
+        if (!gallery) return false;
 
         gallery.albumSelection =
-            gallery.albumSelection ||
-            {};
+            gallery.albumSelection || {};
 
-        gallery.albumSelection.enabled =
-            false;
-
-        gallery.albumSelection.status =
-            "closed";
-
-        gallery.albumSelection.photographerApproved =
-            false;
+        gallery.albumSelection.enabled = false;
+        gallery.albumSelection.status = "closed";
 
         /*
-         * Existing selected photos remain in
-         * WEDDING ALBUM.
+         * Existing selected photos remain in the
+         * WEDDING ALBUM section.
          *
-         * We do not delete or duplicate media.
+         * Disabling the feature does NOT delete or
+         * duplicate media.
          */
-        syncWeddingAlbumSelection(
-            gallery
-        );
-
         saveGalleries();
 
         renderGalleryGrid();
@@ -2941,25 +2422,10 @@
             state.selectedGalleryId ===
             gallery.id
         ) {
-            renderAlbums(
-                gallery
-            );
-
-            renderWeddingAlbumManagement(
-                gallery
-            );
-
-            renderWeddingAlbumStatus(
-                gallery
-            );
-
-            renderModalOverview(
-                gallery
-            );
-
-            renderMedia(
-                gallery
-            );
+            renderAlbums(gallery);
+            renderWeddingAlbumStatus(gallery);
+            renderModalOverview(gallery);
+            renderWeddingAlbumManagement(gallery);
         }
 
         return true;
@@ -2970,56 +2436,32 @@
         maxSelections
     ) {
         const gallery =
-            getGalleryById(
-                galleryId
-            );
+            getGalleryById(galleryId);
 
-        if (!gallery) {
-            return false;
-        }
-
-        if (
-            isWeddingAlbumLocked(
-                gallery
-            )
-        ) {
-            showToast(
-                "Reopen the Wedding Album selection before changing its limit.",
-                "warning"
-            );
-
-            return false;
-        }
+        if (!gallery) return false;
 
         const value =
             maxSelections === null ||
             maxSelections === "" ||
-            maxSelections ===
-                undefined
+            maxSelections === undefined
                 ? null
                 : Math.max(
                       1,
-                      Number(
-                          maxSelections
-                      )
+                      Number(maxSelections)
                   );
 
         gallery.albumSelection =
-            gallery.albumSelection ||
-            {};
+            gallery.albumSelection || {};
 
         gallery.albumSelection.maxSelections =
             value;
 
-        syncWeddingAlbumSelection(
-            gallery
-        );
+        syncWeddingAlbumSelection(gallery);
 
         if (
             value !== null &&
             gallery.albumSelection
-                .selectedMediaIds
-                .length >
+                .selectedMediaIds.length >
                 value
         ) {
             showToast(
@@ -3030,32 +2472,27 @@
 
         saveGalleries();
 
+        if (state.selectedGalleryId === gallery.id) {
+            renderWeddingAlbumManagement(gallery);
+            renderGalleryGrid();
+        }
+
         return true;
     }
-
-    /* =========================================================
-       WEDDING ALBUM APPROVAL
-    ========================================================= */
 
     function approveWeddingAlbumSelection(
         galleryId
     ) {
         const gallery =
-            getGalleryById(
-                galleryId
-            );
+            getGalleryById(galleryId);
 
-        if (!gallery) {
-            return false;
-        }
+        if (!gallery) return false;
 
-        syncWeddingAlbumSelection(
-            gallery
-        );
+        syncWeddingAlbumSelection(gallery);
 
         if (
             !gallery.albumSelection
-                ?.enabled
+                .enabled
         ) {
             showToast(
                 "Album Selection is not enabled.",
@@ -3065,23 +2502,9 @@
             return false;
         }
 
-        if (
-            gallery.albumSelection
-                .status !==
-            "submitted"
-        ) {
-            showToast(
-                "The client must submit the Wedding Album selection before you can approve it.",
-                "warning"
-            );
-
-            return false;
-        }
-
         const count =
             gallery.albumSelection
-                .selectedMediaIds
-                .length;
+                .selectedMediaIds.length;
 
         const limit =
             gallery.albumSelection
@@ -3118,24 +2541,10 @@
             state.selectedGalleryId ===
             gallery.id
         ) {
-            renderAlbums(
-                gallery
-            );
-
-            renderWeddingAlbumManagement(
-                gallery
-            );
-
-            renderWeddingAlbumStatus(
-                gallery
-            );
-
-            renderMedia(
-                gallery
-            );
+            renderAlbums(gallery);
+            renderWeddingAlbumStatus(gallery);
+            renderWeddingAlbumManagement(gallery);
         }
-
-        renderGalleryGrid();
 
         return true;
     }
@@ -3144,26 +2553,12 @@
         galleryId
     ) {
         const gallery =
-            getGalleryById(
-                galleryId
-            );
+            getGalleryById(galleryId);
 
-        if (!gallery) {
-            return false;
-        }
+        if (!gallery) return false;
 
         gallery.albumSelection =
-            gallery.albumSelection ||
-            {};
-
-        /*
-         * Explicit reopen.
-         *
-         * This is the ONLY normal path that turns
-         * submitted / approved / closed back to OPEN.
-         */
-        gallery.albumSelection.enabled =
-            true;
+            gallery.albumSelection || {};
 
         gallery.albumSelection.status =
             "open";
@@ -3173,14 +2568,6 @@
 
         gallery.albumSelection.approvedAt =
             null;
-
-        /*
-         * Keep selected photos where they are.
-         * The client can add/remove them after reopening.
-         */
-        syncWeddingAlbumSelection(
-            gallery
-        );
 
         saveGalleries();
 
@@ -3192,49 +2579,33 @@
             state.selectedGalleryId ===
             gallery.id
         ) {
-            renderAlbums(
-                gallery
-            );
-
-            renderWeddingAlbumManagement(
-                gallery
-            );
-
-            renderWeddingAlbumStatus(
-                gallery
-            );
-
-            renderMedia(
-                gallery
-            );
+            renderAlbums(gallery);
+            renderWeddingAlbumStatus(gallery);
+            renderWeddingAlbumManagement(gallery);
         }
-
-        renderGalleryGrid();
 
         return true;
     }
 
-    /* =========================================================
-       MOVE PHOTO INTO WEDDING ALBUM
-    ========================================================= */
-
+    /*
+     * Move a photo into WEDDING ALBUM.
+     *
+     * IMPORTANT:
+     * This DOES NOT copy the Blob.
+     * It only changes sectionId in localStorage metadata.
+     */
     function moveMediaToWeddingAlbum(
         galleryId,
         mediaId
     ) {
         const gallery =
-            getGalleryById(
-                galleryId
-            );
+            getGalleryById(galleryId);
 
-        if (!gallery) {
-            return false;
-        }
+        if (!gallery) return false;
 
         if (
             !gallery.albumSelection ||
-            !gallery.albumSelection
-                .enabled
+            !gallery.albumSelection.enabled
         ) {
             showToast(
                 "Album Selection is not enabled.",
@@ -3245,9 +2616,10 @@
         }
 
         if (
-            isWeddingAlbumLocked(
-                gallery
-            )
+            gallery.albumSelection.status ===
+                "approved" ||
+            gallery.albumSelection.status ===
+                "submitted"
         ) {
             showToast(
                 "This selection is locked. Reopen it before making changes.",
@@ -3259,14 +2631,10 @@
 
         const media =
             gallery.media.find(
-                item =>
-                    item.id ===
-                    mediaId
+                item => item.id === mediaId
             );
 
-        if (!media) {
-            return false;
-        }
+        if (!media) return false;
 
         if (!isPhoto(media)) {
             showToast(
@@ -3278,13 +2646,9 @@
         }
 
         const weddingAlbum =
-            getWeddingAlbum(
-                gallery
-            );
+            getWeddingAlbum(gallery);
 
-        if (!weddingAlbum) {
-            return false;
-        }
+        if (!weddingAlbum) return false;
 
         if (
             media.sectionId ===
@@ -3294,9 +2658,8 @@
         }
 
         const currentCount =
-            getWeddingAlbumCount(
-                gallery
-            );
+            getWeddingAlbumMedia(gallery)
+                .length;
 
         const maxSelections =
             gallery.albumSelection
@@ -3304,8 +2667,7 @@
 
         if (
             maxSelections !== null &&
-            currentCount >=
-                maxSelections
+            currentCount >= maxSelections
         ) {
             showToast(
                 `You can select a maximum of ${maxSelections} photos.`,
@@ -3316,77 +2678,46 @@
         }
 
         /*
-         * Remember original folder.
-         *
-         * IMPORTANT:
-         * No Blob is copied.
-         * Only sectionId changes.
+         * Remember where the photo came from.
+         * The file itself is never duplicated.
          */
         media.previousSectionId =
-            media.sectionId ||
-            null;
+            media.sectionId || null;
 
         media.sectionId =
             weddingAlbum.id;
 
-        syncWeddingAlbumSelection(
-            gallery
-        );
+        syncWeddingAlbumSelection(gallery);
 
         saveGalleries();
 
+        if (state.selectedGalleryId === gallery.id) {
+            renderWeddingAlbumManagement(gallery);
+        }
+
         return true;
     }
-
-    /* =========================================================
-       REMOVE PHOTO FROM WEDDING ALBUM
-    ========================================================= */
 
     function removeMediaFromWeddingAlbum(
         galleryId,
         mediaId
     ) {
         const gallery =
-            getGalleryById(
-                galleryId
-            );
+            getGalleryById(galleryId);
 
-        if (!gallery) {
-            return false;
-        }
-
-        if (
-            isWeddingAlbumLocked(
-                gallery
-            )
-        ) {
-            showToast(
-                "This selection is locked. Reopen it before making changes.",
-                "warning"
-            );
-
-            return false;
-        }
+        if (!gallery) return false;
 
         const weddingAlbum =
-            getWeddingAlbum(
-                gallery
-            );
+            getWeddingAlbum(gallery);
 
-        if (!weddingAlbum) {
-            return false;
-        }
+        if (!weddingAlbum) return false;
 
         const media =
             gallery.media.find(
-                item =>
-                    item.id ===
-                    mediaId
+                item => item.id === mediaId
             );
 
-        if (!media) {
-            return false;
-        }
+        if (!media) return false;
 
         if (
             media.sectionId !==
@@ -3395,11 +2726,17 @@
             return false;
         }
 
+        /*
+         * Restore the previous folder.
+         *
+         * If the previous folder no longer exists,
+         * leave the photo unassigned.
+         */
         const previousSection =
             gallery.albums.find(
                 album =>
                     album.id ===
-                        media.previousSectionId &&
+                    media.previousSectionId &&
                     album.id !==
                         weddingAlbum.id
             );
@@ -3409,21 +2746,18 @@
                 ? previousSection.id
                 : null;
 
-        media.previousSectionId =
-            null;
+        media.previousSectionId = null;
 
-        syncWeddingAlbumSelection(
-            gallery
-        );
+        syncWeddingAlbumSelection(gallery);
 
         saveGalleries();
 
+        if (state.selectedGalleryId === gallery.id) {
+            renderWeddingAlbumManagement(gallery);
+        }
+
         return true;
     }
-
-    /* =========================================================
-       CLIENT COMMENTS
-    ========================================================= */
 
     function addClientComment(
         galleryId,
@@ -3431,29 +2765,19 @@
         comment
     ) {
         const gallery =
-            getGalleryById(
-                galleryId
-            );
+            getGalleryById(galleryId);
 
-        if (!gallery) {
-            return false;
-        }
+        if (!gallery) return false;
 
         const media =
             gallery.media.find(
-                item =>
-                    item.id ===
-                    mediaId
+                item => item.id === mediaId
             );
 
-        if (!media) {
-            return false;
-        }
+        if (!media) return false;
 
         media.clientComment =
-            String(
-                comment || ""
-            ).trim();
+            String(comment || "").trim();
 
         saveGalleries();
 
@@ -3461,397 +2785,14 @@
     }
 
     /* =========================================================
-       WEDDING ALBUM ZIP DOWNLOAD
-    ========================================================= */
-
-    function loadJSZip() {
-        if (
-            window.JSZip
-        ) {
-            return Promise.resolve(
-                window.JSZip
-            );
-        }
-
-        if (
-            state.zipLibraryPromise
-        ) {
-            return state.zipLibraryPromise;
-        }
-
-        state.zipLibraryPromise =
-            new Promise(
-                (
-                    resolve,
-                    reject
-                ) => {
-                    const existing =
-                        document.querySelector(
-                            'script[data-professional-studio-jszip]'
-                        );
-
-                    if (existing) {
-                        existing.addEventListener(
-                            "load",
-                            () => {
-                                if (
-                                    window.JSZip
-                                ) {
-                                    resolve(
-                                        window.JSZip
-                                    );
-                                } else {
-                                    reject(
-                                        new Error(
-                                            "JSZip failed to initialize."
-                                        )
-                                    );
-                                }
-                            }
-                        );
-
-                        existing.addEventListener(
-                            "error",
-                            () => {
-                                reject(
-                                    new Error(
-                                        "Unable to load JSZip."
-                                    )
-                                );
-                            }
-                        );
-
-                        return;
-                    }
-
-                    const script =
-                        document.createElement(
-                            "script"
-                        );
-
-                    script.src =
-                        "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";
-
-                    script.async =
-                        true;
-
-                    script.dataset.professionalStudioJszip =
-                        "true";
-
-                    script.onload =
-                        () => {
-                            if (
-                                window.JSZip
-                            ) {
-                                resolve(
-                                    window.JSZip
-                                );
-                            } else {
-                                reject(
-                                    new Error(
-                                        "JSZip failed to initialize."
-                                    )
-                                );
-                            }
-                        };
-
-                    script.onerror =
-                        () => {
-                            reject(
-                                new Error(
-                                    "Unable to load JSZip."
-                                )
-                            );
-                        };
-
-                    document.head.appendChild(
-                        script
-                    );
-                }
-            );
-
-        return state.zipLibraryPromise;
-    }
-
-    function sanitizeFileName(
-        value
-    ) {
-        return String(
-            value || "file"
-        )
-            .replace(
-                /[<>:"/\\|?*\x00-\x1F]/g,
-                "_"
-            )
-            .replace(
-                /\s+/g,
-                " "
-            )
-            .trim()
-            .slice(
-                0,
-                180
-            );
-    }
-
-    function ensureUniqueFileName(
-        name,
-        usedNames
-    ) {
-        const original =
-            sanitizeFileName(
-                name
-            );
-
-        if (
-            !usedNames.has(
-                original
-            )
-        ) {
-            usedNames.add(
-                original
-            );
-
-            return original;
-        }
-
-        const dotIndex =
-            original.lastIndexOf(
-                "."
-            );
-
-        const base =
-            dotIndex > 0
-                ? original.slice(
-                      0,
-                      dotIndex
-                  )
-                : original;
-
-        const extension =
-            dotIndex > 0
-                ? original.slice(
-                      dotIndex
-                  )
-                : "";
-
-        let counter = 2;
-        let candidate =
-            `${base} (${counter})${extension}`;
-
-        while (
-            usedNames.has(
-                candidate
-            )
-        ) {
-            counter++;
-
-            candidate =
-                `${base} (${counter})${extension}`;
-        }
-
-        usedNames.add(
-            candidate
-        );
-
-        return candidate;
-    }
-
-    async function downloadWeddingAlbumPhotos(
-        galleryId
-    ) {
-        const gallery =
-            getGalleryById(
-                galleryId
-            );
-
-        if (!gallery) {
-            return false;
-        }
-
-        const selectedPhotos =
-            getWeddingAlbumMedia(
-                gallery
-            ).filter(
-                media =>
-                    isPhoto(media)
-            );
-
-        if (!selectedPhotos.length) {
-            showToast(
-                "There are no selected photos to download.",
-                "warning"
-            );
-
-            return false;
-        }
-
-        try {
-            showToast(
-                "Preparing selected Wedding Album photos..."
-            );
-
-            const JSZip =
-                await loadJSZip();
-
-            const zip =
-                new JSZip();
-
-            const folder =
-                zip.folder(
-                    sanitizeFileName(
-                        gallery.name
-                    ) ||
-                        "Gallery"
-                );
-
-            const usedNames =
-                new Set();
-
-            let added = 0;
-
-            for (
-                const media of
-                    selectedPhotos
-            ) {
-                try {
-                    const record =
-                        await getMediaFile(
-                            media.id
-                        );
-
-                    if (
-                        !record?.blob
-                    ) {
-                        continue;
-                    }
-
-                    const filename =
-                        ensureUniqueFileName(
-                            media.name ||
-                                `photo-${media.id}`,
-                            usedNames
-                        );
-
-                    folder.file(
-                        filename,
-                        record.blob
-                    );
-
-                    added++;
-                } catch (
-                    mediaError
-                ) {
-                    console.warn(
-                        "Unable to add media to ZIP:",
-                        media.id,
-                        mediaError
-                    );
-                }
-            }
-
-            if (!added) {
-                showToast(
-                    "None of the selected photo files could be loaded.",
-                    "error"
-                );
-
-                return false;
-            }
-
-            const blob =
-                await zip.generateAsync(
-                    {
-                        type: "blob",
-                        compression:
-                            "STORE"
-                    },
-                    metadata => {
-                        /*
-                         * Kept intentionally quiet.
-                         * Large gallery ZIPs can take time.
-                         */
-                    }
-                );
-
-            const url =
-                URL.createObjectURL(
-                    blob
-                );
-
-            const link =
-                document.createElement(
-                    "a"
-                );
-
-            link.href = url;
-
-            link.download =
-                `${sanitizeFileName(
-                    gallery.name
-                ) || "gallery"}-wedding-album.zip`;
-
-            document.body.appendChild(
-                link
-            );
-
-            link.click();
-
-            link.remove();
-
-            setTimeout(() => {
-                URL.revokeObjectURL(
-                    url
-                );
-            }, 1000);
-
-            gallery.downloads =
-                Number(
-                    gallery.downloads ||
-                        0
-                ) + 1;
-
-            saveGalleries();
-
-            showToast(
-                `${added} selected ${
-                    added === 1
-                        ? "photo"
-                        : "photos"
-                } downloaded as a ZIP.`
-            );
-
-            return true;
-        } catch (error) {
-            console.error(
-                "Wedding Album ZIP download failed:",
-                error
-            );
-
-            showToast(
-                "Unable to create the Wedding Album ZIP.",
-                "error"
-            );
-
-            return false;
-        }
-    }
-
-    /* =========================================================
        ALBUMS / SECTIONS
     ========================================================= */
 
-    function renderAlbums(
-        gallery
-    ) {
-        if (!refs.albumsGrid) {
-            return;
-        }
+    function renderAlbums(gallery) {
+        if (!refs.albumsGrid) return;
 
         const albums =
-            Array.isArray(
-                gallery.albums
-            )
+            Array.isArray(gallery.albums)
                 ? gallery.albums
                 : [];
 
@@ -3867,110 +2808,101 @@
 
         refs.albumsGrid.innerHTML =
             albums
-                .map(
-                    album => {
-                        const count =
-                            gallery.media.filter(
-                                media =>
-                                    media.sectionId ===
-                                    album.id
-                            ).length;
+                .map(album => {
+                    const count =
+                        gallery.media.filter(
+                            media =>
+                                media.sectionId ===
+                                album.id
+                        ).length;
 
-                        const isWedding =
-                            String(
-                                album.name
-                            )
-                                .trim()
-                                .toUpperCase() ===
-                            WEDDING_ALBUM_NAME;
+                    const isWedding =
+                        String(
+                            album.name
+                        )
+                            .trim()
+                            .toUpperCase() ===
+                        WEDDING_ALBUM_NAME;
 
-                        return `
-                            <div
-                                class="album-card ${
-                                    isWedding
-                                        ? "wedding-album-card"
-                                        : ""
-                                }"
-                                data-album-id="${escapeHTML(
-                                    album.id
-                                )}"
-                            >
-                                <div class="album-card-icon">
-                                    <i class="fa-regular fa-folder"></i>
-                                </div>
-
-                                <div class="album-card-info">
-                                    <h4>
-                                        ${escapeHTML(
-                                            album.name
-                                        )}
-                                    </h4>
-
-                                    <span class="album-card-count">
-                                        ${count}
-                                        ${
-                                            count ===
-                                            1
-                                                ? "photo"
-                                                : "photos"
-                                        }
-                                    </span>
-                                </div>
-
-                                <div class="album-card-actions">
-                                    ${
-                                        isWedding
-                                            ? `
-                                                <span
-                                                    class="album-system-label"
-                                                    title="System section"
-                                                >
-                                                    <i class="fa-solid fa-shield-halved"></i>
-                                                </span>
-                                            `
-                                            : `
-                                                <button
-                                                    type="button"
-                                                    class="icon-btn edit-album-btn"
-                                                    data-album-id="${escapeHTML(
-                                                        album.id
-                                                    )}"
-                                                    title="Rename section"
-                                                >
-                                                    <i class="fa-solid fa-pen"></i>
-                                                </button>
-
-                                                <button
-                                                    type="button"
-                                                    class="icon-btn danger delete-album-btn"
-                                                    data-album-id="${escapeHTML(
-                                                        album.id
-                                                    )}"
-                                                    title="Delete section"
-                                                >
-                                                    <i class="fa-solid fa-trash"></i>
-                                                </button>
-                                            `
-                                    }
-                                </div>
+                    return `
+                        <div
+                            class="album-card ${
+                                isWedding
+                                    ? "wedding-album-card"
+                                    : ""
+                            }"
+                            data-album-id="${escapeHTML(
+                                album.id
+                            )}"
+                        >
+                            <div class="album-card-icon">
+                                <i class="fa-regular fa-folder"></i>
                             </div>
-                        `;
-                    }
-                )
+
+                            <div class="album-card-info">
+                                <h4>
+                                    ${escapeHTML(
+                                        album.name
+                                    )}
+                                </h4>
+
+                                <span class="album-card-count">
+                                    ${count}
+                                    ${
+                                        count === 1
+                                            ? "photo"
+                                            : "photos"
+                                    }
+                                </span>
+                            </div>
+
+                            <div class="album-card-actions">
+                                ${
+                                    isWedding
+                                        ? `
+                                            <span
+                                                class="album-system-label"
+                                                title="System section"
+                                            >
+                                                <i class="fa-solid fa-shield-halved"></i>
+                                            </span>
+                                        `
+                                        : `
+                                            <button
+                                                type="button"
+                                                class="icon-btn edit-album-btn"
+                                                data-album-id="${escapeHTML(
+                                                    album.id
+                                                )}"
+                                                title="Rename section"
+                                            >
+                                                <i class="fa-solid fa-pen"></i>
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                class="icon-btn danger delete-album-btn"
+                                                data-album-id="${escapeHTML(
+                                                    album.id
+                                                )}"
+                                                title="Delete section"
+                                            >
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        `
+                                }
+                            </div>
+                        </div>
+                    `;
+                })
                 .join("");
 
         bindAlbumEvents();
-
-        renderWeddingAlbumStatus(
-            gallery
-        );
     }
 
     function bindAlbumEvents() {
         document
-            .querySelectorAll(
-                ".edit-album-btn"
-            )
+            .querySelectorAll(".edit-album-btn")
             .forEach(button => {
                 button.addEventListener(
                     "click",
@@ -3978,17 +2910,14 @@
                         event.stopPropagation();
 
                         openAlbumModal(
-                            button.dataset
-                                .albumId
+                            button.dataset.albumId
                         );
                     }
                 );
             });
 
         document
-            .querySelectorAll(
-                ".delete-album-btn"
-            )
+            .querySelectorAll(".delete-album-btn")
             .forEach(button => {
                 button.addEventListener(
                     "click",
@@ -3996,17 +2925,14 @@
                         event.stopPropagation();
 
                         deleteAlbum(
-                            button.dataset
-                                .albumId
+                            button.dataset.albumId
                         );
                     }
                 );
             });
 
         document
-            .querySelectorAll(
-                ".album-card"
-            )
+            .querySelectorAll(".album-card")
             .forEach(card => {
                 card.addEventListener(
                     "click",
@@ -4020,12 +2946,9 @@
                         }
 
                         const albumId =
-                            card.dataset
-                                .albumId;
+                            card.dataset.albumId;
 
-                        switchTab(
-                            "media"
-                        );
+                        switchTab("media");
 
                         state.mediaFilter =
                             "all";
@@ -4039,12 +2962,8 @@
             });
     }
 
-    function openAlbumModal(
-        albumId = null
-    ) {
-        if (!refs.albumModal) {
-            return;
-        }
+    function openAlbumModal(albumId = null) {
+        if (!refs.albumModal) return;
 
         state.editingAlbumId =
             albumId || null;
@@ -4052,21 +2971,16 @@
         const gallery =
             getSelectedGallery();
 
-        if (!gallery) {
-            return;
-        }
+        if (!gallery) return;
 
         if (albumId) {
             const album =
                 gallery.albums.find(
                     item =>
-                        item.id ===
-                        albumId
+                        item.id === albumId
                 );
 
-            if (!album) {
-                return;
-            }
+            if (!album) return;
 
             if (album.system) {
                 showToast(
@@ -4083,40 +2997,30 @@
             }
         } else {
             if (refs.albumName) {
-                refs.albumName.value =
-                    "";
+                refs.albumName.value = "";
             }
         }
 
-        refs.albumModal.classList.add(
-            "open"
-        );
+        refs.albumModal.classList.add("open");
     }
 
     function closeAlbumModal() {
-        if (
-            refs.albumModal
-        ) {
+        if (refs.albumModal) {
             refs.albumModal.classList.remove(
                 "open"
             );
         }
 
-        state.editingAlbumId =
-            null;
+        state.editingAlbumId = null;
     }
 
-    function saveAlbum(
-        event
-    ) {
+    function saveAlbum(event) {
         event.preventDefault();
 
         const gallery =
             getSelectedGallery();
 
-        if (!gallery) {
-            return;
-        }
+        if (!gallery) return;
 
         const name =
             refs.albumName?.value
@@ -4163,9 +3067,7 @@
             return;
         }
 
-        if (
-            state.editingAlbumId
-        ) {
+        if (state.editingAlbumId) {
             const album =
                 gallery.albums.find(
                     item =>
@@ -4173,16 +3075,11 @@
                         state.editingAlbumId
                 );
 
-            if (
-                !album ||
-                album.system
-            ) {
+            if (!album || album.system) {
                 return;
             }
 
-            album.name =
-                name;
-
+            album.name = name;
             album.updatedAt =
                 new Date().toISOString();
 
@@ -4191,21 +3088,13 @@
             );
         } else {
             gallery.albums.push({
-                id: createId(
-                    "album"
-                ),
-
-                galleryId:
-                    gallery.id,
-
+                id: createId("album"),
+                galleryId: gallery.id,
                 name,
-
                 createdAt:
                     new Date().toISOString(),
-
                 updatedAt:
                     new Date().toISOString(),
-
                 system: false
             });
 
@@ -4218,39 +3107,22 @@
 
         closeAlbumModal();
 
-        renderAlbums(
-            gallery
-        );
-
-        renderWeddingAlbumManagement(
-            gallery
-        );
-
-        renderWeddingAlbumStatus(
-            gallery
-        );
+        renderAlbums(gallery);
+        renderWeddingAlbumStatus(gallery);
     }
 
-    function deleteAlbum(
-        albumId
-    ) {
+    function deleteAlbum(albumId) {
         const gallery =
             getSelectedGallery();
 
-        if (!gallery) {
-            return;
-        }
+        if (!gallery) return;
 
         const album =
             gallery.albums.find(
-                item =>
-                    item.id ===
-                    albumId
+                item => item.id === albumId
             );
 
-        if (!album) {
-            return;
-        }
+        if (!album) return;
 
         if (album.system) {
             showToast(
@@ -4266,53 +3138,32 @@
                 `Delete the section "${album.name}"? Photos inside it will remain in the gallery but become unassigned.`
             );
 
-        if (!confirmed) {
-            return;
-        }
+        if (!confirmed) return;
 
-        gallery.media.forEach(
-            media => {
-                if (
-                    media.sectionId ===
-                    albumId
-                ) {
-                    media.sectionId =
-                        null;
-
-                    media.previousSectionId =
-                        null;
-                }
+        /*
+         * Do not delete media.
+         * Only remove the section relationship.
+         */
+        gallery.media.forEach(media => {
+            if (media.sectionId === albumId) {
+                media.sectionId = null;
+                media.previousSectionId = null;
             }
-        );
+        });
 
         gallery.albums =
             gallery.albums.filter(
                 item =>
-                    item.id !==
-                    albumId
+                    item.id !== albumId
             );
 
-        syncWeddingAlbumSelection(
-            gallery
-        );
+        syncWeddingAlbumSelection(gallery);
 
         saveGalleries();
 
-        renderAlbums(
-            gallery
-        );
-
-        renderMedia(
-            gallery
-        );
-
-        renderModalOverview(
-            gallery
-        );
-
-        renderWeddingAlbumManagement(
-            gallery
-        );
+        renderAlbums(gallery);
+        renderMedia(gallery);
+        renderModalOverview(gallery);
 
         showToast(
             "Section deleted successfully."
@@ -4323,82 +3174,83 @@
        SETTINGS
     ========================================================= */
 
-    function renderSettings(
-        gallery
-    ) {
-        if (!gallery) {
-            return;
-        }
+    function renderSettings(gallery) {
+        if (!gallery) return;
 
-        if (
-            refs.passwordEnabled
-        ) {
+        if (refs.passwordEnabled) {
             refs.passwordEnabled.checked =
                 Boolean(
                     gallery.passwordEnabled
                 );
         }
 
-        if (
-            refs.galleryPassword
-        ) {
+        if (refs.galleryPassword) {
             refs.galleryPassword.value =
-                gallery.password ||
-                "";
+                gallery.password || "";
         }
 
-        if (
-            refs.downloadsEnabled
-        ) {
+        if (refs.downloadsEnabled) {
             refs.downloadsEnabled.checked =
                 Boolean(
                     gallery.downloadsEnabled
                 );
         }
 
-        if (
-            refs.galleryVisible
-        ) {
-            refs.galleryVisible.checked =
-                Boolean(
-                    gallery.visible
-                );
+        if (refs.galleryVisible) {
+            refs.galleryVisible.checked = Boolean(gallery.visible);
         }
 
-        updateSettingsSummary(
-            gallery
-        );
+        if (refs.editGalleryName) refs.editGalleryName.value = gallery.name || "";
+        if (refs.editClientName) refs.editClientName.value = gallery.clientName || "";
+        if (refs.editGalleryDescription) refs.editGalleryDescription.value = gallery.description || "";
+
+        updateSettingsSummary(gallery);
     }
 
-    function updateSettingsSummary(
-        gallery
-    ) {
-        if (
-            refs.modalPassword
-        ) {
+    function updateSettingsSummary(gallery) {
+        if (refs.modalPassword) {
             refs.modalPassword.textContent =
                 gallery.passwordEnabled
                     ? "Protected"
                     : "Not protected";
         }
 
-        if (
-            refs.modalDownloads
-        ) {
+        if (refs.modalDownloads) {
             refs.modalDownloads.textContent =
                 gallery.downloadsEnabled
                     ? "Enabled"
                     : "Disabled";
         }
 
-        if (
-            refs.modalVisibility
-        ) {
+        if (refs.modalVisibility) {
             refs.modalVisibility.textContent =
                 gallery.visible
                     ? "Visible"
                     : "Hidden";
         }
+    }
+
+    function saveGalleryInformation(event) {
+        event?.preventDefault();
+
+        const gallery = getSelectedGallery();
+        if (!gallery) return;
+
+        const name = refs.editGalleryName?.value.trim() || "";
+        if (!name) {
+            showToast("Gallery name is required.", "warning");
+            return;
+        }
+
+        gallery.name = name;
+        gallery.clientName = refs.editClientName?.value.trim() || "";
+        gallery.description = refs.editGalleryDescription?.value.trim() || "";
+
+        saveGalleries();
+        renderModalHeader(gallery);
+        renderModalOverview(gallery);
+        renderGalleryGrid();
+        showToast("Gallery information saved.");
     }
 
     function generateGalleryPassword() {
@@ -4407,11 +3259,7 @@
 
         let password = "";
 
-        for (
-            let i = 0;
-            i < 10;
-            i++
-        ) {
+        for (let i = 0; i < 10; i++) {
             password +=
                 chars[
                     Math.floor(
@@ -4421,9 +3269,7 @@
                 ];
         }
 
-        if (
-            refs.galleryPassword
-        ) {
+        if (refs.galleryPassword) {
             refs.galleryPassword.value =
                 password;
         }
@@ -4433,24 +3279,18 @@
         const gallery =
             getSelectedGallery();
 
-        if (!gallery) {
-            return;
-        }
+        if (!gallery) return;
 
         const enabled =
             refs.passwordEnabled
-                ? refs.passwordEnabled
-                      .checked
+                ? refs.passwordEnabled.checked
                 : false;
 
         const password =
             refs.galleryPassword?.value
                 ?.trim() || "";
 
-        if (
-            enabled &&
-            !password
-        ) {
+        if (enabled && !password) {
             showToast(
                 "Enter a password or generate one.",
                 "warning"
@@ -4463,15 +3303,11 @@
             enabled;
 
         gallery.password =
-            enabled
-                ? password
-                : "";
+            enabled ? password : "";
 
         saveGalleries();
 
-        updateSettingsSummary(
-            gallery
-        );
+        updateSettingsSummary(gallery);
 
         showToast(
             enabled
@@ -4484,62 +3320,42 @@
         const gallery =
             getSelectedGallery();
 
-        if (!gallery) {
-            return;
-        }
+        if (!gallery) return;
 
         gallery.downloadsEnabled =
             refs.downloadsEnabled
-                ? refs.downloadsEnabled
-                      .checked
+                ? refs.downloadsEnabled.checked
                 : true;
 
         saveGalleries();
 
-        updateSettingsSummary(
-            gallery
-        );
-
-        updateDeliveryReadiness(
-            gallery
-        );
+        updateSettingsSummary(gallery);
+        updateDeliveryReadiness(gallery);
     }
 
     function saveVisibilitySetting() {
         const gallery =
             getSelectedGallery();
 
-        if (!gallery) {
-            return;
-        }
+        if (!gallery) return;
 
         gallery.visible =
             refs.galleryVisible
-                ? refs.galleryVisible
-                      .checked
+                ? refs.galleryVisible.checked
                 : true;
 
         saveGalleries();
 
-        updateSettingsSummary(
-            gallery
-        );
-
-        updateDeliveryReadiness(
-            gallery
-        );
+        updateSettingsSummary(gallery);
+        updateDeliveryReadiness(gallery);
     }
 
     /* =========================================================
        DELIVERY READINESS
     ========================================================= */
 
-    function updateDeliveryReadiness(
-        gallery
-    ) {
-        if (!gallery) {
-            return;
-        }
+    function updateDeliveryReadiness(gallery) {
+        if (!gallery) return;
 
         const hasName =
             Boolean(
@@ -4552,8 +3368,7 @@
             );
 
         const hasMedia =
-            gallery.media.length >
-            0;
+            gallery.media.length > 0;
 
         const accessReady =
             gallery.visible &&
@@ -4566,12 +3381,10 @@
 
         const storageReady =
             Number(
-                gallery.storageUsedGB ||
-                    0
+                gallery.storageUsedGB || 0
             ) <=
             Number(
-                gallery.storageGB ||
-                    0
+                gallery.storageGB || 0
             );
 
         const ready =
@@ -4582,15 +3395,14 @@
             storageReady &&
             gallery.downloadsEnabled;
 
-        if (
-            refs.sendToClientBtn
-        ) {
+        gallery._readyToDeliver = ready;
+
+        if (refs.sendToClientBtn) {
             refs.sendToClientBtn.disabled =
                 !ready ||
                 getGalleryStatus(
                     gallery
-                ) ===
-                    "expired";
+                ) === "expired";
         }
 
         const readinessContainer =
@@ -4598,9 +3410,7 @@
                 ".delivery-readiness"
             );
 
-        if (
-            !readinessContainer
-        ) {
+        if (!readinessContainer) {
             return;
         }
 
@@ -4634,51 +3444,36 @@
         gallery,
         sectionFilter = null
     ) {
-        if (
-            !refs.mediaGrid ||
-            !gallery
-        ) {
+        if (!refs.mediaGrid || !gallery) {
             return;
         }
 
-        revokeSet(
-            state.mediaObjectUrls
-        );
+        revokeSet(state.mediaObjectUrls);
 
-        let media =
-            [...gallery.media];
+        let media = [...gallery.media];
 
         if (sectionFilter) {
-            media =
-                media.filter(
-                    item =>
-                        item.sectionId ===
-                        sectionFilter
-                );
+            media = media.filter(
+                item =>
+                    item.sectionId ===
+                    sectionFilter
+            );
         }
 
         if (
-            state.mediaFilter ===
-            "photo"
+            state.mediaFilter === "photo"
         ) {
-            media =
-                media.filter(
-                    item =>
-                        isPhoto(item)
-                );
+            media = media.filter(
+                item => isPhoto(item)
+            );
         }
 
         if (
-            state.mediaFilter ===
-            "video"
+            state.mediaFilter === "video"
         ) {
-            media =
-                media.filter(
-                    item =>
-                        isVideoMedia(
-                            item
-                        )
-                );
+            media = media.filter(
+                item => isVideoMedia(item)
+            );
         }
 
         if (!media.length) {
@@ -4700,24 +3495,23 @@
         }
 
         const weddingAlbum =
-            getWeddingAlbum(
-                gallery
-            );
+            getWeddingAlbum(gallery);
 
         const weddingAlbumId =
-            weddingAlbum?.id ||
-            null;
+            weddingAlbum?.id || null;
 
         const selectionEnabled =
             Boolean(
-                gallery.albumSelection
-                    ?.enabled
+                gallery.albumSelection?.enabled
             );
 
         const selectionLocked =
-            isWeddingAlbumLocked(
-                gallery
-            );
+            gallery.albumSelection?.status ===
+                "approved" ||
+            gallery.albumSelection?.status ===
+                "submitted" ||
+            gallery.albumSelection?.status ===
+                "closed";
 
         const htmlParts =
             await Promise.all(
@@ -4758,9 +3552,7 @@
                     media.id
                 );
 
-            if (
-                record?.blob
-            ) {
+            if (record?.blob) {
                 const url =
                     URL.createObjectURL(
                         record.blob
@@ -4770,11 +3562,7 @@
                     url
                 );
 
-                if (
-                    isImage(
-                        media.type
-                    )
-                ) {
+                if (isImage(media.type)) {
                     mediaHTML = `
                         <img
                             src="${url}"
@@ -4785,9 +3573,7 @@
                         >
                     `;
                 } else if (
-                    isVideo(
-                        media.type
-                    )
+                    isVideo(media.type)
                 ) {
                     mediaHTML = `
                         <video
@@ -4958,9 +3744,7 @@
                         const gallery =
                             getSelectedGallery();
 
-                        if (!gallery) {
-                            return;
-                        }
+                        if (!gallery) return;
 
                         const success =
                             moveMediaToWeddingAlbum(
@@ -4975,10 +3759,6 @@
                             );
 
                             renderAlbums(
-                                gallery
-                            );
-
-                            renderWeddingAlbumManagement(
                                 gallery
                             );
 
@@ -5001,9 +3781,7 @@
                         const gallery =
                             getSelectedGallery();
 
-                        if (!gallery) {
-                            return;
-                        }
+                        if (!gallery) return;
 
                         const success =
                             removeMediaFromWeddingAlbum(
@@ -5021,10 +3799,6 @@
                                 gallery
                             );
 
-                            renderWeddingAlbumManagement(
-                                gallery
-                            );
-
                             renderGalleryGrid();
                         }
                     }
@@ -5032,47 +3806,12 @@
             });
 
         document
-            .querySelectorAll(
-                ".remove-media"
-            )
+            .querySelectorAll(".remove-media")
             .forEach(button => {
                 button.addEventListener(
                     "click",
                     async event => {
                         event.stopPropagation();
-
-                        const gallery =
-                            getSelectedGallery();
-
-                        if (!gallery) {
-                            return;
-                        }
-
-                        const media =
-                            gallery.media.find(
-                                item =>
-                                    item.id ===
-                                    button.dataset
-                                        .mediaId
-                            );
-
-                        if (
-                            media &&
-                            media.sectionId ===
-                                getWeddingAlbum(
-                                    gallery
-                                )?.id &&
-                            isWeddingAlbumLocked(
-                                gallery
-                            )
-                        ) {
-                            showToast(
-                                "This selected Wedding Album photo is locked. Reopen the selection before removing it.",
-                                "warning"
-                            );
-
-                            return;
-                        }
 
                         await removeMedia(
                             button.dataset
@@ -5083,9 +3822,7 @@
             });
 
         document
-            .querySelectorAll(
-                ".set-cover"
-            )
+            .querySelectorAll(".set-cover")
             .forEach(button => {
                 button.addEventListener(
                     "click",
@@ -5105,9 +3842,7 @@
        UPLOAD
     ========================================================= */
 
-    async function uploadFiles(
-        files
-    ) {
+    async function uploadFiles(files) {
         const gallery =
             getSelectedGallery();
 
@@ -5129,36 +3864,25 @@
 
         const totalBytes =
             selectedFiles.reduce(
-                (
-                    sum,
-                    file
-                ) =>
+                (sum, file) =>
                     sum +
-                    Number(
-                        file.size ||
-                            0
-                    ),
+                    Number(file.size || 0),
                 0
             );
 
         const currentBytes =
             gallery.media.reduce(
-                (
-                    sum,
-                    media
-                ) =>
+                (sum, media) =>
                     sum +
                     Number(
-                        media.sizeBytes ||
-                            0
+                        media.sizeBytes || 0
                     ),
                 0
             );
 
         const limitBytes =
             Number(
-                gallery.storageGB ||
-                    0
+                gallery.storageGB || 0
             ) *
             1024 *
             1024 *
@@ -5179,93 +3903,62 @@
             return;
         }
 
-        const createdMedia =
-            [];
+        const createdMedia = [];
 
         try {
             await ensureDB();
 
-            for (
-                const file of
-                    selectedFiles
-            ) {
+            for (const file of selectedFiles) {
                 const mediaId =
-                    createId(
-                        "media"
-                    );
+                    createId("media");
 
-                const media =
-                    normalizeMedia(
-                        {
-                            id: mediaId,
-
-                            galleryId:
-                                gallery.id,
-
-                            name:
-                                file.name,
-
-                            sizeMB:
-                                bytesToMB(
-                                    file.size
-                                ),
-
-                            sizeBytes:
-                                file.size,
-
-                            type:
-                                file.type ||
-                                "application/octet-stream",
-
-                            createdAt:
-                                new Date().toISOString(),
-
-                            sectionId:
-                                null,
-
-                            previousSectionId:
-                                null,
-
-                            isCover:
-                                false,
-
-                            clientComment:
-                                ""
-                        },
-                        gallery.id
-                    );
+                const media = normalizeMedia(
+                    {
+                        id: mediaId,
+                        galleryId:
+                            gallery.id,
+                        name: file.name,
+                        sizeMB:
+                            bytesToMB(
+                                file.size
+                            ),
+                        sizeBytes:
+                            file.size,
+                        type:
+                            file.type ||
+                            "application/octet-stream",
+                        createdAt:
+                            new Date().toISOString(),
+                        sectionId: null,
+                        previousSectionId:
+                            null,
+                        isCover: false,
+                        clientComment: ""
+                    },
+                    gallery.id
+                );
 
                 /*
                  * Actual file goes into IndexedDB.
                  */
-                await putMediaFile(
-                    {
-                        id: mediaId,
+                await putMediaFile({
+                    id: mediaId,
+                    galleryId: gallery.id,
+                    blob: file,
+                    name: file.name,
+                    type: file.type,
+                    sizeBytes: file.size,
+                    createdAt:
+                        media.createdAt
+                });
 
-                        galleryId:
-                            gallery.id,
-
-                        blob: file,
-
-                        name:
-                            file.name,
-
-                        type:
-                            file.type,
-
-                        sizeBytes:
-                            file.size,
-
-                        createdAt:
-                            media.createdAt
-                    }
-                );
-
-                createdMedia.push(
-                    media
-                );
+                createdMedia.push(media);
             }
 
+            /*
+             * First uploaded image becomes cover if
+             * the gallery does not already have one.
+             */
             const hasCover =
                 gallery.media.some(
                     media =>
@@ -5276,14 +3969,10 @@
                 const firstPhoto =
                     createdMedia.find(
                         media =>
-                            isPhoto(
-                                media
-                            )
+                            isPhoto(media)
                     );
 
-                if (
-                    firstPhoto
-                ) {
+                if (firstPhoto) {
                     firstPhoto.isCover =
                         true;
                 }
@@ -5293,17 +3982,16 @@
                 ...createdMedia
             );
 
-            recalculateStorage(
-                gallery
-            );
+            recalculateStorage(gallery);
 
-            if (
-                !saveGalleries()
-            ) {
+            if (!saveGalleries()) {
+                /*
+                 * Roll back IndexedDB if metadata could
+                 * not be persisted.
+                 */
                 await deleteMediaFiles(
                     createdMedia.map(
-                        media =>
-                            media.id
+                        media => media.id
                     )
                 );
 
@@ -5326,8 +4014,7 @@
 
             showToast(
                 `${createdMedia.length} ${
-                    createdMedia.length ===
-                    1
+                    createdMedia.length === 1
                         ? "file"
                         : "files"
                 } uploaded successfully.`
@@ -5337,18 +4024,8 @@
                 gallery
             );
 
-            renderAlbums(
-                gallery
-            );
-
-            renderModalOverview(
-                gallery
-            );
-
-            renderWeddingAlbumManagement(
-                gallery
-            );
-
+            renderAlbums(gallery);
+            renderModalOverview(gallery);
             renderGalleryGrid();
         } catch (error) {
             console.error(
@@ -5356,9 +4033,10 @@
                 error
             );
 
-            if (
-                createdMedia.length
-            ) {
+            /*
+             * Best-effort rollback.
+             */
+            if (createdMedia.length) {
                 try {
                     await deleteMediaFiles(
                         createdMedia.map(
@@ -5375,91 +4053,49 @@
             );
         }
 
-        if (
-            refs.mediaUpload
-        ) {
-            refs.mediaUpload.value =
-                "";
+        if (refs.mediaUpload) {
+            refs.mediaUpload.value = "";
         }
     }
 
-    function recalculateStorage(
-        gallery
-    ) {
+    function recalculateStorage(gallery) {
         const bytes =
             gallery.media.reduce(
-                (
-                    sum,
-                    media
-                ) =>
+                (sum, media) =>
                     sum +
                     Number(
-                        media.sizeBytes ||
-                            0
+                        media.sizeBytes || 0
                     ),
                 0
             );
 
         gallery.storageUsedGB =
-            bytesToGB(
-                bytes
-            );
+            bytesToGB(bytes);
     }
 
     /* =========================================================
        MEDIA DELETE
     ========================================================= */
 
-    async function removeMedia(
-        mediaId
-    ) {
+    async function removeMedia(mediaId) {
         const gallery =
             getSelectedGallery();
 
-        if (!gallery) {
-            return;
-        }
+        if (!gallery) return;
 
         const media =
             gallery.media.find(
-                item =>
-                    item.id ===
-                    mediaId
+                item => item.id === mediaId
             );
 
-        if (!media) {
-            return;
-        }
-
-        const weddingAlbum =
-            getWeddingAlbum(
-                gallery
-            );
-
-        if (
-            weddingAlbum &&
-            media.sectionId ===
-                weddingAlbum.id &&
-            isWeddingAlbumLocked(
-                gallery
-            )
-        ) {
-            showToast(
-                "This selected Wedding Album photo is locked. Reopen the selection before deleting it.",
-                "warning"
-            );
-
-            return;
-        }
+        if (!media) return;
 
         const confirmed =
             window.confirm(
                 `Remove "${media.name}" from this gallery?`
             );
 
-        if (!confirmed) {
-            return;
-        }
+        if (!confirmed) return;
 
         try {
             await deleteMediaFile(
@@ -5482,17 +4118,14 @@
         gallery.media =
             gallery.media.filter(
                 item =>
-                    item.id !==
-                    mediaId
+                    item.id !== mediaId
             );
 
         syncWeddingAlbumSelection(
             gallery
         );
 
-        recalculateStorage(
-            gallery
-        );
+        recalculateStorage(gallery);
 
         saveGalleries();
 
@@ -5500,18 +4133,8 @@
             gallery
         );
 
-        renderAlbums(
-            gallery
-        );
-
-        renderModalOverview(
-            gallery
-        );
-
-        renderWeddingAlbumManagement(
-            gallery
-        );
-
+        renderAlbums(gallery);
+        renderModalOverview(gallery);
         renderGalleryGrid();
 
         showToast(
@@ -5529,20 +4152,15 @@
         const gallery =
             getSelectedGallery();
 
-        if (!gallery) {
-            return;
-        }
+        if (!gallery) return;
 
         const media =
             gallery.media.find(
                 item =>
-                    item.id ===
-                    mediaId
+                    item.id === mediaId
             );
 
-        if (!media) {
-            return;
-        }
+        if (!media) return;
 
         if (!isPhoto(media)) {
             showToast(
@@ -5553,13 +4171,10 @@
             return;
         }
 
-        gallery.media.forEach(
-            item => {
-                item.isCover =
-                    item.id ===
-                    mediaId;
-            }
-        );
+        gallery.media.forEach(item => {
+            item.isCover =
+                item.id === mediaId;
+        });
 
         saveGalleries();
 
@@ -5568,10 +4183,7 @@
         );
 
         renderGalleryGrid();
-
-        await renderMedia(
-            gallery
-        );
+        await renderMedia(gallery);
     }
 
     /* =========================================================
@@ -5582,9 +4194,7 @@
         const gallery =
             getSelectedGallery();
 
-        if (!gallery) {
-            return;
-        }
+        if (!gallery) return;
 
         try {
             await navigator.clipboard.writeText(
@@ -5595,9 +4205,11 @@
                 "Client gallery link copied."
             );
         } catch (error) {
-            if (
-                refs.galleryClientLink
-            ) {
+            /*
+             * Fallback for browsers where
+             * clipboard API is unavailable.
+             */
+            if (refs.galleryClientLink) {
                 refs.galleryClientLink.select();
 
                 try {
@@ -5626,9 +4238,7 @@
         const gallery =
             getSelectedGallery();
 
-        if (!gallery) {
-            return;
-        }
+        if (!gallery) return;
 
         updateDeliveryReadiness(
             gallery
@@ -5645,8 +4255,7 @@
             );
 
         const hasMedia =
-            gallery.media.length >
-            0;
+            gallery.media.length > 0;
 
         const accessReady =
             gallery.visible &&
@@ -5659,12 +4268,10 @@
 
         const storageReady =
             Number(
-                gallery.storageUsedGB ||
-                    0
+                gallery.storageUsedGB || 0
             ) <=
             Number(
-                gallery.storageGB ||
-                    0
+                gallery.storageGB || 0
             );
 
         const ready =
@@ -5687,8 +4294,7 @@
         if (
             getGalleryStatus(
                 gallery
-            ) ===
-            "expired"
+            ) === "expired"
         ) {
             showToast(
                 "This gallery has expired.",
@@ -5704,19 +4310,16 @@
         gallery.sentAt =
             new Date().toISOString();
 
-        gallery.visible =
-            true;
+        /*
+         * Sending to the client automatically makes
+         * the gallery visible.
+         */
+        gallery.visible = true;
 
         saveGalleries();
 
-        renderSettings(
-            gallery
-        );
-
-        renderModalOverview(
-            gallery
-        );
-
+        renderSettings(gallery);
+        renderModalOverview(gallery);
         renderGalleryGrid();
 
         showToast(
@@ -5732,24 +4335,19 @@
         const gallery =
             getSelectedGallery();
 
-        if (!gallery) {
-            return;
-        }
+        if (!gallery) return;
 
         const confirmed =
             window.confirm(
                 `Delete "${gallery.name}" permanently? This will remove all gallery media.`
             );
 
-        if (!confirmed) {
-            return;
-        }
+        if (!confirmed) return;
 
         try {
             await deleteMediaFiles(
                 gallery.media.map(
-                    media =>
-                        media.id
+                    media => media.id
                 )
             );
         } catch (error) {
@@ -5767,8 +4365,7 @@
         state.galleries =
             state.galleries.filter(
                 item =>
-                    item.id !==
-                    gallery.id
+                    item.id !== gallery.id
             );
 
         saveGalleries();
@@ -5776,7 +4373,6 @@
         closeGalleryModal();
 
         renderStats();
-
         await renderGalleryGrid();
 
         showToast(
@@ -5788,9 +4384,7 @@
        TABS
     ========================================================= */
 
-    function switchTab(
-        tabName
-    ) {
+    function switchTab(tabName) {
         state.activeTab =
             tabName;
 
@@ -5812,61 +4406,40 @@
                 ".tab-content"
             );
 
-        contents.forEach(
-            content => {
-                content.classList.toggle(
-                    "active",
-                    content.id ===
-                        `tab-${tabName}`
-                );
-            }
-        );
+        contents.forEach(content => {
+            content.classList.toggle(
+                "active",
+                content.id ===
+                    `tab-${tabName}`
+            );
+        });
 
         const gallery =
             getSelectedGallery();
 
-        if (!gallery) {
-            return;
-        }
+        if (!gallery) return;
 
-        if (
-            tabName ===
-            "overview"
-        ) {
+        if (tabName === "overview") {
             renderModalOverview(
                 gallery
             );
         }
 
-        if (
-            tabName ===
-            "media"
-        ) {
-            renderMedia(
-                gallery
-            );
+        if (tabName === "media") {
+            renderMedia(gallery);
         }
 
-        if (
-            tabName ===
-            "sections"
-        ) {
-            renderAlbums(
-                gallery
-            );
-
-            renderWeddingAlbumManagement(
-                gallery
-            );
+        if (tabName === "albums" || tabName === "sections") {
+            renderAlbums(gallery);
+            renderWeddingAlbumManagement(gallery);
         }
 
-        if (
-            tabName ===
-            "settings"
-        ) {
-            renderSettings(
-                gallery
-            );
+        if (tabName === "access") {
+            renderSettings(gallery);
+        }
+
+        if (tabName === "settings") {
+            renderSettings(gallery);
         }
     }
 
@@ -5874,22 +4447,16 @@
        MEDIA FILTER
     ========================================================= */
 
-    function setMediaFilter(
-        filter
-    ) {
+    function setMediaFilter(filter) {
         state.mediaFilter =
             filter || "all";
 
         const gallery =
             getSelectedGallery();
 
-        if (!gallery) {
-            return;
-        }
+        if (!gallery) return;
 
-        renderMedia(
-            gallery
-        );
+        renderMedia(gallery);
     }
 
     /* =========================================================
@@ -5897,23 +4464,15 @@
     ========================================================= */
 
     function quickUpload() {
-        switchTab(
-            "media"
-        );
+        switchTab("media");
 
-        setTimeout(
-            () => {
-                refs.mediaUpload?.click();
-            },
-            100
-        );
+        setTimeout(() => {
+            refs.mediaUpload?.click();
+        }, 100);
     }
 
     function quickCreateAlbum() {
-        switchTab(
-            "sections"
-        );
-
+        switchTab("sections");
         openAlbumModal();
     }
 
@@ -5938,7 +4497,7 @@
     ========================================================= */
 
     function toggleMobileMenu() {
-        refs.sidebar?.classList.toggle(
+        refs.mobileMenu?.classList.toggle(
             "open"
         );
     }
@@ -5966,16 +4525,13 @@
         );
 
         document
-            .querySelectorAll(
-                "[data-tab]"
-            )
+            .querySelectorAll("[data-tab]")
             .forEach(tab => {
                 tab.addEventListener(
                     "click",
                     () => {
                         switchTab(
-                            tab.dataset
-                                .tab
+                            tab.dataset.tab
                         );
                     }
                 );
@@ -6019,8 +4575,7 @@
 
         refs.createAlbumBtn?.addEventListener(
             "click",
-            () =>
-                openAlbumModal()
+            () => openAlbumModal()
         );
 
         refs.cancelAlbum?.addEventListener(
@@ -6086,7 +4641,8 @@
         );
 
         /*
-         * Drag/drop upload support.
+         * Drag/drop upload support using the existing
+         * media upload area.
          */
         const uploadZone =
             document.querySelector(
@@ -6146,11 +4702,10 @@
                             .querySelectorAll(
                                 "[data-media-filter]"
                             )
-                            .forEach(
-                                item =>
-                                    item.classList.remove(
-                                        "active"
-                                    )
+                            .forEach(item =>
+                                item.classList.remove(
+                                    "active"
+                                )
                             );
 
                         button.classList.add(
@@ -6165,6 +4720,38 @@
                 );
             });
 
+        refs.gallerySettingsForm?.addEventListener(
+            "submit",
+            saveGalleryInformation
+        );
+
+        document.querySelectorAll("[data-open-tab]").forEach(button => {
+            button.addEventListener("click", () => {
+                const tab = button.dataset.openTab;
+                switchTab(tab);
+                if (tab === "media") {
+                    setTimeout(() => refs.mediaUpload?.click(), 100);
+                }
+            });
+        });
+
+        refs.uploadZone?.addEventListener("dragover", event => {
+            event.preventDefault();
+            refs.uploadZone.classList.add("dragover");
+        });
+
+        refs.uploadZone?.addEventListener("dragleave", () => {
+            refs.uploadZone.classList.remove("dragover");
+        });
+
+        refs.uploadZone?.addEventListener("drop", event => {
+            event.preventDefault();
+            refs.uploadZone.classList.remove("dragover");
+            uploadFiles(event.dataTransfer?.files);
+        });
+
+        refs.closeAlbumModal?.addEventListener("click", closeAlbumModal);
+
         /*
          * Keyboard handling.
          */
@@ -6172,89 +4759,76 @@
             "keydown",
             event => {
                 if (
-                    event.key !==
-                    "Escape"
+                    event.key === "Escape"
                 ) {
-                    return;
-                }
+                    if (
+                        refs.albumModal?.classList.contains(
+                            "open"
+                        )
+                    ) {
+                        closeAlbumModal();
+                        return;
+                    }
 
-                if (
-                    refs.albumModal?.classList.contains(
-                        "open"
-                    )
-                ) {
-                    closeAlbumModal();
-
-                    return;
-                }
-
-                if (
-                    refs.galleryModal?.classList.contains(
-                        "open"
-                    )
-                ) {
-                    closeGalleryModal();
+                    if (
+                        refs.galleryModal?.classList.contains(
+                            "open"
+                        )
+                    ) {
+                        closeGalleryModal();
+                    }
                 }
             }
         );
 
         /*
-         * Cross-tab synchronization.
+         * Existing storage event.
          */
         window.addEventListener(
             "storage",
             event => {
                 if (
-                    event.key !==
+                    event.key ===
                     STORAGE_KEY
                 ) {
-                    return;
+                    loadGalleries();
+
+                    renderStats();
+                    renderGalleryGrid();
+
+                    const gallery =
+                        getSelectedGallery();
+
+                    if (gallery) {
+                        syncWeddingAlbumSelection(
+                            gallery
+                        );
+
+                        renderModalHeader(
+                            gallery
+                        );
+
+                        renderModalOverview(
+                            gallery
+                        );
+
+                        renderAlbums(
+                            gallery
+                        );
+
+                        renderSettings(
+                            gallery
+                        );
+
+                        renderWeddingAlbumStatus(
+                            gallery
+                        );
+
+                        renderMedia(
+                            gallery
+                        );
+                    }
                 }
-
-                loadGalleries();
-
-                renderStats();
-
-                renderGalleryGrid();
-
-                const gallery =
-                    getSelectedGallery();
-
-                if (!gallery) {
-                    return;
-                }
-
-                syncWeddingAlbumSelection(
-                    gallery
-                );
-
-                renderModalHeader(
-                    gallery
-                );
-
-                renderModalOverview(
-                    gallery
-                );
-
-                renderAlbums(
-                    gallery
-                );
-
-                renderSettings(
-                    gallery
-                );
-
-                renderWeddingAlbumManagement(
-                    gallery
-                );
-
-                renderWeddingAlbumStatus(
-                    gallery
-                );
-
-                renderMedia(
-                    gallery
-                );
             }
         );
 
@@ -6267,47 +4841,36 @@
                 loadGalleries();
 
                 renderStats();
-
                 renderGalleryGrid();
 
                 const gallery =
                     getSelectedGallery();
 
-                if (!gallery) {
-                    return;
+                if (gallery) {
+                    syncWeddingAlbumSelection(
+                        gallery
+                    );
+
+                    renderModalHeader(
+                        gallery
+                    );
+
+                    renderModalOverview(
+                        gallery
+                    );
+
+                    renderAlbums(
+                        gallery
+                    );
+
+                    renderSettings(
+                        gallery
+                    );
+
+                    renderWeddingAlbumStatus(
+                        gallery
+                    );
                 }
-
-                syncWeddingAlbumSelection(
-                    gallery
-                );
-
-                renderModalHeader(
-                    gallery
-                );
-
-                renderModalOverview(
-                    gallery
-                );
-
-                renderAlbums(
-                    gallery
-                );
-
-                renderSettings(
-                    gallery
-                );
-
-                renderWeddingAlbumManagement(
-                    gallery
-                );
-
-                renderWeddingAlbumStatus(
-                    gallery
-                );
-
-                renderMedia(
-                    gallery
-                );
             }
         );
     }
@@ -6316,214 +4879,198 @@
        PUBLIC API
     ========================================================= */
 
-    window.ProfessionalStudioClientGalleries =
-        {
-            getGalleries() {
-                return state.galleries;
-            },
+    window.ProfessionalStudioClientGalleries = {
+        getGalleries() {
+            return state.galleries;
+        },
 
-            getGallery(id) {
-                return getGalleryById(
-                    id
-                );
-            },
+        getGallery(id) {
+            return getGalleryById(id);
+        },
 
-            getSelectedGallery() {
-                return getSelectedGallery();
-            },
+        getSelectedGallery() {
+            return getSelectedGallery();
+        },
 
-            getWeddingAlbum(
-                galleryId
-            ) {
-                const gallery =
-                    getGalleryById(
-                        galleryId
-                    );
-
-                return getWeddingAlbum(
-                    gallery
-                );
-            },
-
-            getWeddingAlbumMedia(
-                galleryId
-            ) {
-                const gallery =
-                    getGalleryById(
-                        galleryId
-                    );
-
-                return getWeddingAlbumMedia(
-                    gallery
-                );
-            },
-
-            enableWeddingAlbum(
-                galleryId,
-                maxSelections = null
-            ) {
-                return enableWeddingAlbumSelection(
-                    galleryId,
-                    maxSelections
-                );
-            },
-
-            disableWeddingAlbum(
-                galleryId
-            ) {
-                return disableWeddingAlbumSelection(
+        getWeddingAlbum(galleryId) {
+            const gallery =
+                getGalleryById(
                     galleryId
                 );
-            },
 
-            setWeddingAlbumLimit(
+            return getWeddingAlbum(
+                gallery
+            );
+        },
+
+        getWeddingAlbumMedia(
+            galleryId
+        ) {
+            const gallery =
+                getGalleryById(
+                    galleryId
+                );
+
+            return getWeddingAlbumMedia(
+                gallery
+            );
+        },
+
+        enableWeddingAlbum(
+            galleryId,
+            maxSelections = null
+        ) {
+            return enableWeddingAlbumSelection(
                 galleryId,
                 maxSelections
-            ) {
-                return setWeddingAlbumLimit(
+            );
+        },
+
+        disableWeddingAlbum(
+            galleryId
+        ) {
+            return disableWeddingAlbumSelection(
+                galleryId
+            );
+        },
+
+        setWeddingAlbumLimit(
+            galleryId,
+            maxSelections
+        ) {
+            return setWeddingAlbumLimit(
+                galleryId,
+                maxSelections
+            );
+        },
+
+        moveToWeddingAlbum(
+            galleryId,
+            mediaId
+        ) {
+            const result =
+                moveMediaToWeddingAlbum(
                     galleryId,
-                    maxSelections
+                    mediaId
                 );
-            },
 
-            moveToWeddingAlbum(
-                galleryId,
-                mediaId
-            ) {
-                const result =
-                    moveMediaToWeddingAlbum(
-                        galleryId,
-                        mediaId
+            if (result) {
+                const gallery =
+                    getGalleryById(
+                        galleryId
                     );
 
-                if (result) {
-                    const gallery =
-                        getGalleryById(
-                            galleryId
-                        );
-
-                    if (
-                        gallery &&
-                        state.selectedGalleryId ===
-                            galleryId
-                    ) {
-                        renderMedia(
-                            gallery
-                        );
-
-                        renderAlbums(
-                            gallery
-                        );
-
-                        renderWeddingAlbumManagement(
-                            gallery
-                        );
-
-                        renderGalleryGrid();
-                    }
-                }
-
-                return result;
-            },
-
-            removeFromWeddingAlbum(
-                galleryId,
-                mediaId
-            ) {
-                const result =
-                    removeMediaFromWeddingAlbum(
-                        galleryId,
-                        mediaId
+                if (
+                    gallery &&
+                    state.selectedGalleryId ===
+                        galleryId
+                ) {
+                    renderMedia(
+                        gallery
                     );
 
-                if (result) {
-                    const gallery =
-                        getGalleryById(
-                            galleryId
-                        );
+                    renderAlbums(
+                        gallery
+                    );
 
-                    if (
-                        gallery &&
-                        state.selectedGalleryId ===
-                            galleryId
-                    ) {
-                        renderMedia(
-                            gallery
-                        );
-
-                        renderAlbums(
-                            gallery
-                        );
-
-                        renderWeddingAlbumManagement(
-                            gallery
-                        );
-
-                        renderGalleryGrid();
-                    }
+                    renderGalleryGrid();
                 }
+            }
 
-                return result;
-            },
+            return result;
+        },
 
-            approveWeddingAlbum(
-                galleryId
-            ) {
-                return approveWeddingAlbumSelection(
-                    galleryId
+        removeFromWeddingAlbum(
+            galleryId,
+            mediaId
+        ) {
+            const result =
+                removeMediaFromWeddingAlbum(
+                    galleryId,
+                    mediaId
                 );
-            },
 
-            reopenWeddingAlbum(
+            if (result) {
+                const gallery =
+                    getGalleryById(
+                        galleryId
+                    );
+
+                if (
+                    gallery &&
+                    state.selectedGalleryId ===
+                        galleryId
+                ) {
+                    renderMedia(
+                        gallery
+                    );
+
+                    renderAlbums(
+                        gallery
+                    );
+
+                    renderGalleryGrid();
+                }
+            }
+
+            return result;
+        },
+
+        approveWeddingAlbum(
+            galleryId
+        ) {
+            return approveWeddingAlbumSelection(
                 galleryId
-            ) {
-                return reopenWeddingAlbumSelection(
-                    galleryId
-                );
-            },
+            );
+        },
 
-            addClientComment(
+        reopenWeddingAlbum(
+            galleryId
+        ) {
+            return reopenWeddingAlbumSelection(
+                galleryId
+            );
+        },
+
+        addClientComment(
+            galleryId,
+            mediaId,
+            comment
+        ) {
+            return addClientComment(
                 galleryId,
                 mediaId,
                 comment
-            ) {
-                return addClientComment(
-                    galleryId,
-                    mediaId,
-                    comment
+            );
+        },
+
+        async getMediaBlob(
+            mediaId
+        ) {
+            const record =
+                await getMediaFile(
+                    mediaId
                 );
-            },
 
-            async downloadWeddingAlbum(
-                galleryId
-            ) {
-                return downloadWeddingAlbumPhotos(
-                    galleryId
+            return record?.blob || null;
+        },
+
+        refresh() {
+            loadGalleries();
+
+            const gallery =
+                getSelectedGallery();
+
+            if (gallery) {
+                renderWeddingAlbumManagement(
+                    gallery
                 );
-            },
-
-            async getMediaBlob(
-                mediaId
-            ) {
-                const record =
-                    await getMediaFile(
-                        mediaId
-                    );
-
-                return (
-                    record?.blob ||
-                    null
-                );
-            },
-
-            refresh() {
-                loadGalleries();
-
-                renderStats();
-
-                return renderGalleryGrid();
             }
-        };
+
+            renderStats();
+            return renderGalleryGrid();
+        }
+    };
 
     /* =========================================================
        INITIALIZATION
@@ -6547,75 +5094,49 @@
         loadGalleries();
 
         /*
-         * Process Gallery Shop purchase handoff.
+         * IMPORTANT:
+         * This processes the object handed over by
+         * Gallery Shop.
          */
         processPendingPurchase();
 
         /*
-         * Normalize old gallery structures.
+         * Normalize old gallery structures and make sure
+         * WEDDING ALBUM exists.
          */
         let changed = false;
 
         state.galleries =
-            state.galleries.map(
-                gallery => {
-                    const before =
-                        JSON.stringify(
-                            gallery
-                        );
+            state.galleries.map(gallery => {
+                const before =
+                    JSON.stringify(
+                        gallery
+                    );
 
-                    const normalized =
-                        normalizeGallery(
-                            gallery
-                        );
+                const normalized =
+                    normalizeGallery(
+                        gallery
+                    );
 
-                    const after =
-                        JSON.stringify(
-                            normalized
-                        );
+                const after =
+                    JSON.stringify(
+                        normalized
+                    );
 
-                    if (
-                        before !==
-                        after
-                    ) {
-                        changed =
-                            true;
-                    }
-
-                    return normalized;
+                if (before !== after) {
+                    changed = true;
                 }
-            );
+
+                return normalized;
+            });
 
         if (changed) {
             saveGalleries();
         }
 
-        /*
-         * Make sure the dynamic Wedding Album
-         * management styles are available.
-         */
-        ensureWeddingAlbumStyles();
-
         bindEvents();
 
         await renderPage();
-
-        /*
-         * If a gallery was already selected,
-         * refresh its management UI.
-         */
-        const selected =
-            getSelectedGallery();
-
-        if (selected) {
-            syncWeddingAlbumSelection(
-                selected
-            );
-
-            renderWeddingAlbumManagement(
-                selected
-            );
-        }
     }
 
     /*

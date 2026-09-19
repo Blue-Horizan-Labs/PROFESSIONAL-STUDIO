@@ -7,7 +7,6 @@
 (() => {
     "use strict";
 
-
     /* =========================================================
        CONFIGURATION
     ========================================================= */
@@ -57,7 +56,9 @@
         viewerObjectUrls:
             new Set(),
 
-        db: null
+        db: null,
+
+        dbPromise: null
 
     };
 
@@ -273,21 +274,21 @@
 
     function hideAllScreens() {
 
-        refs.passwordScreen
-            ?.classList
-            .add("hidden");
+        refs.passwordScreen?.classList.add(
+            "hidden"
+        );
 
-        refs.expiredScreen
-            ?.classList
-            .add("hidden");
+        refs.expiredScreen?.classList.add(
+            "hidden"
+        );
 
-        refs.notFoundScreen
-            ?.classList
-            .add("hidden");
+        refs.notFoundScreen?.classList.add(
+            "hidden"
+        );
 
-        refs.galleryApp
-            ?.classList
-            .add("hidden");
+        refs.galleryApp?.classList.add(
+            "hidden"
+        );
     }
 
 
@@ -299,9 +300,13 @@
             state.gallery?.name ||
             "Private Gallery";
 
-        refs.passwordScreen
-            .classList
-            .remove("hidden");
+        refs.passwordError.classList.add(
+            "hidden"
+        );
+
+        refs.passwordScreen.classList.remove(
+            "hidden"
+        );
 
         setTimeout(() => {
 
@@ -315,9 +320,9 @@
 
         hideAllScreens();
 
-        refs.notFoundScreen
-            .classList
-            .remove("hidden");
+        refs.notFoundScreen.classList.remove(
+            "hidden"
+        );
     }
 
 
@@ -325,9 +330,9 @@
 
         hideAllScreens();
 
-        refs.expiredScreen
-            .classList
-            .remove("hidden");
+        refs.expiredScreen.classList.remove(
+            "hidden"
+        );
     }
 
 
@@ -335,9 +340,9 @@
 
         hideAllScreens();
 
-        refs.galleryApp
-            .classList
-            .remove("hidden");
+        refs.galleryApp.classList.remove(
+            "hidden"
+        );
     }
 
 
@@ -381,10 +386,29 @@
         galleries
     ) {
 
-        localStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify(galleries)
-        );
+        try {
+
+            localStorage.setItem(
+                STORAGE_KEY,
+                JSON.stringify(galleries)
+            );
+
+            return true;
+
+        } catch (error) {
+
+            console.error(
+                "Unable to save galleries:",
+                error
+            );
+
+            showToast(
+                "Gallery changes could not be saved.",
+                "error"
+            );
+
+            return false;
+        }
     }
 
 
@@ -404,7 +428,7 @@
     function saveCurrentGallery() {
 
         if (!state.gallery) {
-            return;
+            return false;
         }
 
         const galleries =
@@ -418,13 +442,13 @@
             );
 
         if (index === -1) {
-            return;
+            return false;
         }
 
         galleries[index] =
             state.gallery;
 
-        saveGalleries(
+        return saveGalleries(
             galleries
         );
     }
@@ -470,10 +494,11 @@
                 gallery.expiresAt
             ).getTime();
 
-        return (
-            Number.isFinite(expiry) &&
-            Date.now() >= expiry
-        );
+        if (!Number.isFinite(expiry)) {
+            return false;
+        }
+
+        return Date.now() >= expiry;
     }
 
 
@@ -515,10 +540,17 @@
             return null;
         }
 
-        const difference =
+        const expiry =
             new Date(
                 gallery.expiresAt
-            ).getTime() -
+            ).getTime();
+
+        if (!Number.isFinite(expiry)) {
+            return null;
+        }
+
+        const difference =
+            expiry -
             Date.now();
 
         return Math.max(
@@ -537,79 +569,97 @@
 
     function openDatabase() {
 
-        return new Promise(
-            (
-                resolve,
-                reject
-            ) => {
+        if (state.db) {
+            return Promise.resolve(
+                state.db
+            );
+        }
 
-                if (
-                    !("indexedDB" in window)
-                ) {
+        if (state.dbPromise) {
+            return state.dbPromise;
+        }
 
-                    reject(
-                        new Error(
-                            "IndexedDB is unavailable."
-                        )
-                    );
+        state.dbPromise =
+            new Promise(
+                (
+                    resolve,
+                    reject
+                ) => {
 
-                    return;
-                }
-
-                const request =
-                    indexedDB.open(
-                        DB_NAME,
-                        DB_VERSION
-                    );
-
-                request.onupgradeneeded =
-                    event => {
-
-                        const db =
-                            event.target.result;
-
-                        if (
-                            !db.objectStoreNames
-                                .contains(
-                                    MEDIA_STORE
-                                )
-                        ) {
-
-                            db.createObjectStore(
-                                MEDIA_STORE,
-                                {
-                                    keyPath: "id"
-                                }
-                            );
-                        }
-                    };
-
-
-                request.onsuccess =
-                    event => {
-
-                        state.db =
-                            event.target.result;
-
-                        resolve(
-                            state.db
-                        );
-                    };
-
-
-                request.onerror =
-                    () => {
+                    if (
+                        !("indexedDB" in window)
+                    ) {
 
                         reject(
-                            request.error ||
                             new Error(
-                                "Could not open IndexedDB."
+                                "IndexedDB is unavailable."
                             )
                         );
-                    };
 
-            }
-        );
+                        return;
+                    }
+
+                    const request =
+                        indexedDB.open(
+                            DB_NAME,
+                            DB_VERSION
+                        );
+
+                    request.onupgradeneeded =
+                        event => {
+
+                            const db =
+                                event.target.result;
+
+                            if (
+                                !db.objectStoreNames.contains(
+                                    MEDIA_STORE
+                                )
+                            ) {
+
+                                db.createObjectStore(
+                                    MEDIA_STORE,
+                                    {
+                                        keyPath: "id"
+                                    }
+                                );
+                            }
+                        };
+
+
+                    request.onsuccess =
+                        event => {
+
+                            state.db =
+                                event.target.result;
+
+                            state.db.onversionchange =
+                                () => {
+                                    state.db.close();
+                                };
+
+                            resolve(
+                                state.db
+                            );
+                        };
+
+
+                    request.onerror =
+                        () => {
+
+                            state.dbPromise = null;
+
+                            reject(
+                                request.error ||
+                                new Error(
+                                    "Could not open IndexedDB."
+                                )
+                            );
+                        };
+                }
+            );
+
+        return state.dbPromise;
     }
 
 
@@ -628,11 +678,22 @@
                     return;
                 }
 
-                const transaction =
-                    state.db.transaction(
-                        MEDIA_STORE,
-                        "readonly"
-                    );
+                let transaction;
+
+                try {
+
+                    transaction =
+                        state.db.transaction(
+                            MEDIA_STORE,
+                            "readonly"
+                        );
+
+                } catch (error) {
+
+                    reject(error);
+                    return;
+                }
+
 
                 const store =
                     transaction.objectStore(
@@ -666,10 +727,12 @@
                     () => {
 
                         reject(
-                            request.error
+                            request.error ||
+                            new Error(
+                                "Unable to read media."
+                            )
                         );
                     };
-
             }
         );
     }
@@ -698,6 +761,7 @@
             String(
                 media.mimeType ||
                 media.fileType ||
+                media.type ||
                 ""
             ).toLowerCase();
 
@@ -722,10 +786,10 @@
     ) {
 
         return (
-            media.name ||
-            media.fileName ||
-            media.filename ||
-            `media-${media.id}`
+            media?.name ||
+            media?.fileName ||
+            media?.filename ||
+            `media-${media?.id || "file"}`
         );
     }
 
@@ -789,13 +853,44 @@
     }
 
 
+    function revokeObjectUrls() {
+
+        state.objectUrls.forEach(
+            url => {
+
+                try {
+                    URL.revokeObjectURL(
+                        url
+                    );
+                } catch (error) {
+                    console.warn(
+                        "Unable to revoke media URL:",
+                        error
+                    );
+                }
+            }
+        );
+
+        state.objectUrls.clear();
+    }
+
+
     function revokeViewerUrls() {
 
         state.viewerObjectUrls.forEach(
-            url =>
-                URL.revokeObjectURL(
-                    url
-                )
+            url => {
+
+                try {
+                    URL.revokeObjectURL(
+                        url
+                    );
+                } catch (error) {
+                    console.warn(
+                        "Unable to revoke viewer URL:",
+                        error
+                    );
+                }
+            }
         );
 
         state.viewerObjectUrls.clear();
@@ -821,7 +916,9 @@
         return getAlbums().find(
             album =>
                 album.system === true ||
-                album.name ===
+                String(
+                    album.name || ""
+                ).trim().toUpperCase() ===
                 WEDDING_ALBUM_NAME
         ) || null;
     }
@@ -838,8 +935,8 @@
         const album =
             getAlbums().find(
                 item =>
-                    item.id ===
-                    sectionId
+                    String(item.id) ===
+                    String(sectionId)
             );
 
         return (
@@ -989,9 +1086,11 @@
 
         return (
             getAlbumSelection()?.status ||
-            (selectionEnabled()
-                ? "open"
-                : "closed")
+            (
+                selectionEnabled()
+                    ? "open"
+                    : "closed"
+            )
         );
     }
 
@@ -1002,10 +1101,18 @@
             getSelectionStatus();
 
         const labels = {
-            open: "Selection open",
-            submitted: "Selection submitted",
-            approved: "Selection approved",
-            closed: "Selection closed"
+
+            open:
+                "Selection open",
+
+            submitted:
+                "Selection submitted",
+
+            approved:
+                "Selection approved",
+
+            closed:
+                "Selection closed"
         };
 
         return (
@@ -1032,7 +1139,8 @@
 
         const limit =
             Number(
-                getAlbumSelection()?.maxSelections
+                getAlbumSelection()
+                    ?.maxSelections
             );
 
         return (
@@ -1055,33 +1163,39 @@
         const weddingAlbumId =
             weddingAlbum?.id;
 
-        if (!weddingAlbumId) {
-            return;
-        }
-
         const media =
             getGalleryMedia();
 
 
-        media.forEach(
-            item => {
+        /*
+         * The photographer-side gallery uses
+         * the WEDDING ALBUM section as the
+         * metadata representation of a
+         * submitted selection.
+         */
 
-                if (
-                    !isVideoMedia(item) &&
-                    String(
-                        item.sectionId
-                    ) ===
-                    String(
-                        weddingAlbumId
-                    )
-                ) {
+        if (weddingAlbumId) {
 
-                    state.selectedMediaIds.add(
-                        item.id
-                    );
+            media.forEach(
+                item => {
+
+                    if (
+                        !isVideoMedia(item) &&
+                        String(
+                            item.sectionId
+                        ) ===
+                        String(
+                            weddingAlbumId
+                        )
+                    ) {
+
+                        state.selectedMediaIds.add(
+                            item.id
+                        );
+                    }
                 }
-            }
-        );
+            );
+        }
 
 
         state.generalComment =
@@ -1100,11 +1214,13 @@
         const status =
             getSelectionStatus();
 
+
         /*
-         * Keep the status visible even when
-         * the photographer has closed the
-         * selection feature.
+         * Keep the selection information
+         * visible after submission so the
+         * client can see its current state.
          */
+
         const showPanel =
             enabled ||
             status === "submitted" ||
@@ -1185,12 +1301,16 @@
 
 
         refs.submitSelectionBtn.textContent =
+
             status === "approved"
                 ? "Selection Approved"
+
                 : status === "closed"
                     ? "Selection Closed"
+
                     : status === "submitted"
                         ? "Selection Submitted"
+
                         : "Submit Selection";
     }
 
@@ -1210,8 +1330,8 @@
         const media =
             getGalleryMedia().find(
                 item =>
-                    item.id ===
-                    mediaId
+                    String(item.id) ===
+                    String(mediaId)
             );
 
 
@@ -1355,6 +1475,14 @@
             getGalleryMedia();
 
 
+        /*
+         * Store the current client selection
+         * using metadata only.
+         *
+         * The actual Blob/File in IndexedDB
+         * is never copied.
+         */
+
         media.forEach(
             item => {
 
@@ -1363,15 +1491,6 @@
                         item.id
                     )
                 ) {
-
-                    /*
-                     * IMPORTANT:
-                     *
-                     * The actual media file/blob
-                     * is NOT copied.
-                     *
-                     * Only metadata is changed.
-                     */
 
                     if (
                         String(
@@ -1386,7 +1505,6 @@
                             item.sectionId ||
                             null;
                     }
-
 
                     item.sectionId =
                         weddingAlbum.id;
@@ -1408,12 +1526,9 @@
             "submitted";
 
 
-        /*
-         * A fresh client submission always
-         * clears the previous approval state.
-         */
         state.gallery.albumSelection.photographerApproved =
             false;
+
 
         state.gallery.albumSelection.approvedAt =
             null;
@@ -1441,7 +1556,19 @@
             "client";
 
 
-        saveCurrentGallery();
+        const saved =
+            saveCurrentGallery();
+
+
+        if (!saved) {
+
+            showToast(
+                "Your selection could not be saved.",
+                "error"
+            );
+
+            return;
+        }
 
 
         updateSelectionUI();
@@ -1449,6 +1576,25 @@
         setupSections();
 
         await renderMedia();
+
+
+        /*
+         * Notify other same-origin tabs/pages
+         * where possible.
+         */
+
+        window.dispatchEvent(
+            new StorageEvent(
+                "storage",
+                {
+                    key: STORAGE_KEY,
+                    newValue:
+                        localStorage.getItem(
+                            STORAGE_KEY
+                        )
+                }
+            )
+        );
 
 
         showToast(
@@ -1481,6 +1627,7 @@
             state.activeSectionId ===
             "all"
         ) {
+
             return media;
         }
 
@@ -1501,7 +1648,6 @@
 
         revokeViewerUrls();
 
-
         const media =
             getVisibleMedia();
 
@@ -1515,16 +1661,22 @@
 
 
         const sectionName =
-            state.activeSectionId === "all"
+            state.activeSectionId ===
+            "all"
+
                 ? "All media"
+
                 : getSectionName(
                     state.activeSectionId
                 );
 
 
         refs.activeSectionEyebrow.textContent =
-            state.activeSectionId === "all"
+            state.activeSectionId ===
+            "all"
+
                 ? "GALLERY"
+
                 : "SECTION";
 
 
@@ -1545,6 +1697,18 @@
             media.length > 0
         );
 
+
+        if (!media.length) {
+            return;
+        }
+
+
+        /*
+         * Rendering sequentially prevents
+         * IndexedDB requests from becoming
+         * unnecessarily aggressive with large
+         * galleries.
+         */
 
         for (
             let index = 0;
@@ -1605,7 +1769,6 @@
                 </div>
             `;
 
-
             refs.mediaGrid.appendChild(
                 card
             );
@@ -1630,6 +1793,7 @@
                     "video"
                 );
 
+
             video.src =
                 url;
 
@@ -1653,6 +1817,7 @@
                 document.createElement(
                     "img"
                 );
+
 
             image.src =
                 url;
@@ -1705,9 +1870,8 @@
 
 
         /*
-         * WEDDING ALBUM SELECTION
-         *
-         * Videos are intentionally excluded.
+         * Wedding Album selection.
+         * Videos cannot be selected.
          */
 
         if (
@@ -1723,7 +1887,6 @@
 
             selectButton.type =
                 "button";
-
 
             selectButton.className =
                 "select-media-btn";
@@ -1821,9 +1984,6 @@
             index;
 
 
-        renderViewer();
-
-
         refs.viewer.classList.remove(
             "hidden"
         );
@@ -1831,6 +1991,9 @@
 
         document.body.style.overflow =
             "hidden";
+
+
+        renderViewer();
     }
 
 
@@ -1852,6 +2015,28 @@
 
         refs.viewerMediaWrap.innerHTML =
             "";
+
+
+        refs.viewerTitle.textContent =
+            getMediaName(
+                media
+            );
+
+
+        refs.viewerPosition.textContent =
+            `${state.viewerIndex + 1} / ${state.visibleMedia.length}`;
+
+
+        const downloadsEnabled =
+            state.gallery
+                ?.downloadsEnabled ===
+            true;
+
+
+        refs.viewerDownloadBtn.classList.toggle(
+            "hidden",
+            !downloadsEnabled
+        );
 
 
         const blob =
@@ -1896,6 +2081,7 @@
                     "video"
                 );
 
+
             video.src =
                 url;
 
@@ -1920,6 +2106,7 @@
                     "img"
                 );
 
+
             image.src =
                 url;
 
@@ -1933,28 +2120,6 @@
                 image
             );
         }
-
-
-        refs.viewerTitle.textContent =
-            getMediaName(
-                media
-            );
-
-
-        refs.viewerPosition.textContent =
-            `${state.viewerIndex + 1} / ${state.visibleMedia.length}`;
-
-
-        const downloadsEnabled =
-            state.gallery
-                .downloadsEnabled ===
-            true;
-
-
-        refs.viewerDownloadBtn.classList.toggle(
-            "hidden",
-            !downloadsEnabled
-        );
     }
 
 
@@ -2024,9 +2189,14 @@
         media
     ) {
 
+        if (!media) {
+            return;
+        }
+
+
         if (
             state.gallery
-                .downloadsEnabled !==
+                ?.downloadsEnabled !==
             true
         ) {
 
@@ -2085,7 +2255,6 @@
 
 
         anchor.click();
-
 
         anchor.remove();
 
@@ -2198,18 +2367,6 @@
                 new JSZip();
 
 
-            /*
-             * ROOT FOLDER
-             *
-             * Example:
-             *
-             * My Wedding/
-             * ├── Ceremony/
-             * ├── Reception/
-             * ├── WEDDING ALBUM/
-             * └── Unsorted/
-             */
-
             const rootFolder =
                 zip.folder(
                     sanitizeFileName(
@@ -2253,11 +2410,6 @@
                 );
 
 
-            /*
-             * Track duplicate filenames
-             * separately inside every folder.
-             */
-
             const usedNamesByFolder =
                 new Map();
 
@@ -2294,7 +2446,6 @@
 
 
                 if (!folder) {
-
                     folder =
                         unsortedFolder;
                 }
@@ -2329,14 +2480,6 @@
                     );
 
 
-                /*
-                 * This adds the existing blob
-                 * to the ZIP.
-                 *
-                 * It does NOT create another
-                 * permanent gallery copy.
-                 */
-
                 folder.file(
                     fileName,
                     blob
@@ -2355,10 +2498,11 @@
                     );
 
 
-                refs.downloadGalleryBtn.innerHTML = `
+                refs.downloadGalleryBtn.innerHTML =
+                    `
                     <span>↓</span>
                     Preparing ${percent}%
-                `;
+                    `;
             }
 
 
@@ -2374,7 +2518,10 @@
 
 
             refs.downloadGalleryBtn.innerHTML =
-                `<span>↓</span> Creating ZIP...`;
+                `
+                <span>↓</span>
+                Creating ZIP...
+                `;
 
 
             const zipBlob =
@@ -2392,12 +2539,13 @@
 
                     metadata => {
 
-                        refs.downloadGalleryBtn.innerHTML = `
+                        refs.downloadGalleryBtn.innerHTML =
+                            `
                             <span>↓</span>
                             Creating ZIP ${Math.round(
                                 metadata.percent
                             )}%
-                        `;
+                            `;
                     }
                 );
 
@@ -2431,7 +2579,6 @@
 
 
             anchor.click();
-
 
             anchor.remove();
 
@@ -2554,7 +2701,6 @@
 
             number++;
 
-
             candidate =
                 `${base} (${number})${extension}`;
         }
@@ -2605,11 +2751,13 @@
 
         refs.galleryExpiry.textContent =
             expiry
+
                 ? `Available until ${expiry}${
                     remaining !== null
                         ? ` · ${remaining} days left`
                         : ""
                 }`
+
                 : "";
 
 
@@ -2672,6 +2820,28 @@
         }
 
 
+        /*
+         * Password protection is enabled.
+         * An empty password cannot authenticate.
+         */
+
+        if (
+            !String(
+                state.gallery.password ||
+                ""
+            ).length
+        ) {
+
+            showNotFoundScreen();
+
+            console.warn(
+                "Gallery has password protection enabled but no password is configured."
+            );
+
+            return;
+        }
+
+
         showPasswordScreen();
     }
 
@@ -2711,9 +2881,9 @@
                 true;
 
 
-            refs.passwordError
-                .classList
-                .add("hidden");
+            refs.passwordError.classList.add(
+                "hidden"
+            );
 
 
             refs.passwordInput.value =
@@ -2722,14 +2892,13 @@
 
             openGallery();
 
-
             return;
         }
 
 
-        refs.passwordError
-            .classList
-            .remove("hidden");
+        refs.passwordError.classList.remove(
+            "hidden"
+        );
 
 
         refs.passwordInput.select();
@@ -2756,7 +2925,22 @@
             )
         ) {
 
+            closeViewer();
+
             showExpiredScreen();
+
+            return;
+        }
+
+
+        if (
+            state.gallery.visible ===
+            false
+        ) {
+
+            closeViewer();
+
+            showNotFoundScreen();
 
             return;
         }
@@ -2774,6 +2958,17 @@
 
 
         renderGalleryHeader();
+
+
+        if (
+            !Array.isArray(
+                state.gallery.media
+            )
+        ) {
+
+            state.gallery.media =
+                [];
+        }
 
 
         setupSections();
@@ -2876,31 +3071,31 @@
 
     function bindEvents() {
 
-        refs.passwordForm.addEventListener(
+        refs.passwordForm?.addEventListener(
             "submit",
             handlePasswordSubmit
         );
 
 
-        refs.downloadGalleryBtn.addEventListener(
+        refs.downloadGalleryBtn?.addEventListener(
             "click",
             downloadEntireGallery
         );
 
 
-        refs.clearSelectionBtn.addEventListener(
+        refs.clearSelectionBtn?.addEventListener(
             "click",
             clearSelection
         );
 
 
-        refs.submitSelectionBtn.addEventListener(
+        refs.submitSelectionBtn?.addEventListener(
             "click",
             submitSelection
         );
 
 
-        refs.generalComment.addEventListener(
+        refs.generalComment?.addEventListener(
             "input",
             event => {
 
@@ -2910,31 +3105,31 @@
         );
 
 
-        refs.viewerClose.addEventListener(
+        refs.viewerClose?.addEventListener(
             "click",
             closeViewer
         );
 
 
-        refs.viewerBackdrop.addEventListener(
+        refs.viewerBackdrop?.addEventListener(
             "click",
             closeViewer
         );
 
 
-        refs.viewerPrev.addEventListener(
+        refs.viewerPrev?.addEventListener(
             "click",
             viewerPrevious
         );
 
 
-        refs.viewerNext.addEventListener(
+        refs.viewerNext?.addEventListener(
             "click",
             viewerNext
         );
 
 
-        refs.viewerDownloadBtn.addEventListener(
+        refs.viewerDownloadBtn?.addEventListener(
             "click",
             async () => {
 
@@ -2973,6 +3168,8 @@
                 ) {
 
                     closeViewer();
+
+                    return;
                 }
 
 
@@ -2997,8 +3194,19 @@
 
 
         window.addEventListener(
+            "beforeunload",
+            () => {
+
+                revokeObjectUrls();
+
+                revokeViewerUrls();
+            }
+        );
+
+
+        window.addEventListener(
             "storage",
-            event => {
+            async event => {
 
                 if (
                     event.key !==
@@ -3019,6 +3227,8 @@
 
                 if (!updated) {
 
+                    closeViewer();
+
                     showNotFoundScreen();
 
                     return;
@@ -3035,7 +3245,22 @@
                     )
                 ) {
 
+                    closeViewer();
+
                     showExpiredScreen();
+
+                    return;
+                }
+
+
+                if (
+                    state.gallery.visible ===
+                    false
+                ) {
+
+                    closeViewer();
+
+                    showNotFoundScreen();
 
                     return;
                 }
@@ -3051,7 +3276,7 @@
 
                     restoreExistingSelection();
 
-                    renderMedia();
+                    await renderMedia();
                 }
             }
         );
@@ -3072,6 +3297,14 @@
             Array.from(
                 state.selectedMediaIds
             ),
+
+
+        getSelectionStatus: () =>
+            getSelectionStatus(),
+
+
+        getSelectionStatusLabel: () =>
+            getSelectionStatusLabel(),
 
 
         submitSelection,
@@ -3110,13 +3343,23 @@
 
 
             if (
+                state.gallery.visible ===
+                false
+            ) {
+
+                showNotFoundScreen();
+
+                return;
+            }
+
+
+            if (
                 state.authenticated
             ) {
 
                 await openGallery();
             }
         }
-
     };
 
 
@@ -3162,6 +3405,17 @@
         }
 
 
+        if (
+            state.gallery.visible ===
+            false
+        ) {
+
+            showNotFoundScreen();
+
+            return;
+        }
+
+
         try {
 
             await openDatabase();
@@ -3172,6 +3426,7 @@
                 "IndexedDB initialization failed:",
                 error
             );
+
 
             showToast(
                 "Gallery storage could not be opened in this browser.",
