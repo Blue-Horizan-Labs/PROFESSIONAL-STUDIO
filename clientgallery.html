@@ -5,22 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Client Galleries | Professional Studio</title>
-    <link
-    rel="icon"
-    type="image/png"
-    href="https://i.ibb.co/8g0LT3jZ/logo1-2.png" 
->
 
+    <link
+        rel="icon"
+        type="image/png"
+        href="https://i.ibb.co/8g0LT3jZ/logo1-2.png"
+    >
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap"
+        rel="stylesheet"
+    >
 
     <link rel="stylesheet" href="clientgallery.css">
 </head>
 
-<body>
+<body data-page="client-galleries">
 
     <!-- =========================================================
          NAVBAR
@@ -40,10 +43,11 @@
 
             </a>
 
-
             <nav class="nav-links">
 
-                <a href="#">Dashboard</a>
+                <a href="#">
+                    Dashboard
+                </a>
 
                 <a href="#" class="active">
                     My Galleries
@@ -71,7 +75,6 @@
 
             </nav>
 
-
             <button
                 type="button"
                 class="mobile-menu-btn"
@@ -86,28 +89,37 @@
 
         </div>
 
-
         <div
             class="mobile-menu"
             id="mobileMenu">
 
-            <a href="#">Dashboard</a>
+            <a href="#">
+                Dashboard
+            </a>
 
             <a href="#" class="active">
                 My Galleries
             </a>
 
-            <a href="galleryshop.html">
+            <a href="galleryShop.html">
                 Gallery Shop
             </a>
 
-            <a href="#">Clients</a>
+            <a href="#">
+                Clients
+            </a>
 
-            <a href="#">Analytics</a>
+            <a href="#">
+                Analytics
+            </a>
 
-            <a href="#">Billing</a>
+            <a href="#">
+                Billing
+            </a>
 
-            <a href="#">Settings</a>
+            <a href="#">
+                Settings
+            </a>
 
         </div>
 
@@ -146,9 +158,8 @@
 
                 </div>
 
-
                 <a
-                    href="galleryshop.html"
+                    href="galleryShop.html"
                     class="primary-btn">
 
                     <span>+</span>
@@ -271,7 +282,8 @@
                         <input
                             type="search"
                             id="gallerySearch"
-                            placeholder="Search galleries...">
+                            placeholder="Search galleries..."
+                            autocomplete="off">
 
                     </div>
 
@@ -323,7 +335,7 @@
                 </p>
 
                 <a
-                    href="galleryshop.html"
+                    href="galleryShop.html"
                     class="primary-btn">
 
                     Open Gallery Shop
@@ -352,14 +364,20 @@
 
         <div
             class="modal-overlay"
-            id="galleryModal">
+            id="galleryModal"
+            aria-hidden="true">
 
-            <div class="gallery-modal">
+            <div
+                class="gallery-modal"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="modalGalleryName">
 
                 <button
                     type="button"
                     class="modal-close"
-                    id="closeGalleryModal">
+                    id="closeGalleryModal"
+                    aria-label="Close gallery">
 
                     ×
 
@@ -371,6 +389,20 @@
                 ============================================== -->
 
                 <div class="modal-header">
+
+                    <!-- Internal Professional Studio demo marker.
+                         Hidden by default and enabled only by JS
+                         for the internal demo gallery. -->
+
+                    <div
+                        class="demo-gallery-badge"
+                        id="demoGalleryBadge"
+                        hidden>
+
+                        PROFESSIONAL STUDIO DEMO
+
+                    </div>
+
 
                     <div>
 
@@ -543,6 +575,10 @@
                     </div>
 
 
+                    <!-- =========================================
+                         GALLERY LINK
+                    ========================================== -->
+
                     <div class="overview-section">
 
                         <div class="overview-section-header">
@@ -567,25 +603,32 @@
                             <input
                                 type="text"
                                 id="modalGalleryLink"
-                                readonly>
+                                readonly
+                                aria-label="Client gallery link">
 
                             <button
                                 type="button"
                                 id="copyLinkBtn">
 
-                                Copy Link
+                                Share Link
 
                             </button>
 
                         </div>
 
+
                         <p class="helper-text">
-                            Give this link to your client together
-                            with their gallery password.
+                            Share this private gallery link with your
+                            client. If password protection is enabled,
+                            send the password separately.
                         </p>
 
                     </div>
 
+
+                    <!-- =========================================
+                         QUICK ACTIONS
+                    ========================================== -->
 
                     <div class="quick-actions">
 
@@ -647,15 +690,16 @@
                 </div>
 
 
-                <!-- =====================================================
+                <!-- =================================================
                      DELIVERY READINESS
-                ====================================================== -->
+                ================================================== -->
 
                 <div class="delivery-panel">
 
                     <div class="delivery-header">
 
                         <div>
+
                             <span class="section-label">
                                 CLIENT DELIVERY
                             </span>
@@ -665,85 +709,174 @@
                             </h3>
 
                             <p>
-                                Complete the essential setup before sharing the gallery.
+                                Complete the essential setup before
+                                sharing the gallery.
                             </p>
+
                         </div>
+
 
                         <span
                             class="delivery-status preparing"
                             id="deliveryStatus">
+
                             PREPARING
+
                         </span>
 
                     </div>
 
+
                     <div class="readiness-list">
 
-                        <div class="readiness-item incomplete" id="checkGalleryName">
-                            <span class="readiness-icon">•</span>
+                        <div
+                            class="readiness-item incomplete"
+                            id="checkGalleryName">
+
+                            <span class="readiness-icon">
+                                •
+                            </span>
+
                             <div>
-                                <strong>Gallery information</strong>
-                                <small>Gallery name and client details</small>
+
+                                <strong>
+                                    Gallery information
+                                </strong>
+
+                                <small>
+                                    Gallery name and client details
+                                </small>
+
                             </div>
+
                         </div>
 
-                        <div class="readiness-item incomplete" id="checkMedia">
-                            <span class="readiness-icon">•</span>
+
+                        <div
+                            class="readiness-item incomplete"
+                            id="checkMedia">
+
+                            <span class="readiness-icon">
+                                •
+                            </span>
+
                             <div>
-                                <strong>Media uploaded</strong>
-                                <small>Add photos or videos</small>
+
+                                <strong>
+                                    Media uploaded
+                                </strong>
+
+                                <small>
+                                    Add photos or videos
+                                </small>
+
                             </div>
+
                         </div>
 
-                        <div class="readiness-item incomplete" id="checkPassword">
-                            <span class="readiness-icon">•</span>
+
+                        <div
+                            class="readiness-item incomplete"
+                            id="checkPassword">
+
+                            <span class="readiness-icon">
+                                •
+                            </span>
+
                             <div>
-                                <strong>Client access</strong>
-                                <small>Configure password protection</small>
+
+                                <strong>
+                                    Client access
+                                </strong>
+
+                                <small>
+                                    Configure password protection
+                                </small>
+
                             </div>
+
                         </div>
 
-                        <div class="readiness-item incomplete" id="checkDownloads">
-                            <span class="readiness-icon">•</span>
+
+                        <div
+                            class="readiness-item incomplete"
+                            id="checkDownloads">
+
+                            <span class="readiness-icon">
+                                •
+                            </span>
+
                             <div>
-                                <strong>Download permissions</strong>
-                                <small>Decide whether clients can download</small>
+
+                                <strong>
+                                    Download permissions
+                                </strong>
+
+                                <small>
+                                    Decide whether clients can download
+                                </small>
+
                             </div>
+
                         </div>
 
-                        <div class="readiness-item incomplete" id="checkStorage">
-                            <span class="readiness-icon">•</span>
+
+                        <div
+                            class="readiness-item incomplete"
+                            id="checkStorage">
+
+                            <span class="readiness-icon">
+                                •
+                            </span>
+
                             <div>
-                                <strong>Storage available</strong>
-                                <small>Gallery must remain within its purchased limit</small>
+
+                                <strong>
+                                    Storage available
+                                </strong>
+
+                                <small>
+                                    Gallery must remain within its
+                                    purchased limit
+                                </small>
+
                             </div>
+
                         </div>
 
                     </div>
 
+
                     <div class="delivery-footer">
 
                         <div>
+
                             <strong id="deliveryMessage">
-                                Finish the setup before sending this gallery.
+                                Finish the setup before sharing
+                                this gallery.
                             </strong>
 
                             <small id="deliveryExpiry">
                                 Gallery expiry will be shown here.
                             </small>
+
                         </div>
+
 
                         <button
                             type="button"
                             class="send-client-btn"
                             id="sendToClientBtn"
                             disabled>
-                            Complete Setup
+
+                            Share with Client
+
                         </button>
 
                     </div>
 
                 </div>
+
 
                 <!-- =============================================
                      MEDIA TAB
@@ -773,8 +906,7 @@
                         </div>
 
 
-                        <label
-                            class="upload-btn">
+                        <label class="upload-btn">
 
                             <input
                                 type="file"
@@ -783,6 +915,7 @@
                                 accept="image/*,video/*">
 
                             <span>↑</span>
+
                             Upload Media
 
                         </label>
@@ -790,7 +923,9 @@
                     </div>
 
 
-                    <div class="upload-zone" id="uploadZone">
+                    <div
+                        class="upload-zone"
+                        id="uploadZone">
 
                         <div class="upload-zone-icon">
                             ↑
@@ -817,6 +952,7 @@
                             0 items
                         </span>
 
+
                         <select id="mediaFilter">
 
                             <option value="all">
@@ -839,7 +975,6 @@
                     <div
                         class="media-grid"
                         id="mediaGrid">
-
                     </div>
 
                 </div>
@@ -888,7 +1023,6 @@
                     <div
                         class="albums-grid"
                         id="albumsGrid">
-
                     </div>
 
                 </div>
@@ -922,6 +1056,8 @@
 
                     <div class="settings-list">
 
+                        <!-- PASSWORD -->
+
                         <div class="setting-row">
 
                             <div class="setting-info">
@@ -936,6 +1072,7 @@
                                 </span>
 
                             </div>
+
 
                             <label class="toggle">
 
@@ -955,16 +1092,18 @@
                             class="password-setting"
                             id="passwordSetting">
 
-                            <label>
+                            <label for="galleryPassword">
                                 Gallery password
                             </label>
+
 
                             <div class="password-input">
 
                                 <input
                                     type="text"
                                     id="galleryPassword"
-                                    placeholder="Enter password">
+                                    placeholder="Enter password"
+                                    autocomplete="off">
 
                                 <button
                                     type="button"
@@ -975,6 +1114,7 @@
                                 </button>
 
                             </div>
+
 
                             <button
                                 type="button"
@@ -987,6 +1127,8 @@
 
                         </div>
 
+
+                        <!-- DOWNLOADS -->
 
                         <div class="setting-row">
 
@@ -1003,6 +1145,7 @@
 
                             </div>
 
+
                             <label class="toggle">
 
                                 <input
@@ -1016,6 +1159,8 @@
 
                         </div>
 
+
+                        <!-- VISIBILITY -->
 
                         <div class="setting-row">
 
@@ -1031,6 +1176,7 @@
                                 </span>
 
                             </div>
+
 
                             <label class="toggle">
 
@@ -1122,8 +1268,7 @@
                             <textarea
                                 id="editGalleryDescription"
                                 rows="4"
-                                placeholder="Add a short description for this gallery...">
-                            </textarea>
+                                placeholder="Add a short description for this gallery..."></textarea>
 
                         </div>
 
@@ -1142,6 +1287,10 @@
 
                     </form>
 
+
+                    <!-- =========================================
+                         DANGER ZONE
+                    ========================================== -->
 
                     <div class="danger-zone">
 
@@ -1187,26 +1336,35 @@
 
         <div
             class="small-modal-overlay"
-            id="albumModal">
+            id="albumModal"
+            aria-hidden="true">
 
-            <div class="small-modal">
+            <div
+                class="small-modal"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="albumModalTitle">
 
                 <button
                     type="button"
                     class="modal-close"
-                    id="closeAlbumModal">
+                    id="closeAlbumModal"
+                    aria-label="Close section creation">
 
                     ×
 
                 </button>
 
+
                 <span class="section-label">
                     NEW SECTION
                 </span>
 
-                <h2>
+
+                <h2 id="albumModalTitle">
                     Create a gallery section
                 </h2>
+
 
                 <p>
                     Give this section a name such as
@@ -1242,6 +1400,7 @@
 
                         </button>
 
+
                         <button
                             type="submit"
                             class="dark-btn">
@@ -1265,7 +1424,9 @@
 
         <div
             class="toast"
-            id="toast">
+            id="toast"
+            role="status"
+            aria-live="polite">
 
             <span id="toastMessage">
                 Saved
@@ -1275,6 +1436,10 @@
 
     </main>
 
+
+    <!-- =========================================================
+         CLIENT GALLERY CONTROLLER
+    ========================================================== -->
 
     <script src="clientgallery.js"></script>
 

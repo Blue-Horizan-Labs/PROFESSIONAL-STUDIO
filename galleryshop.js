@@ -11,8 +11,8 @@ document.addEventListener("DOMContentLoaded", () => {
     ====================================================== */
 
     /*
-        Cloudflare R2 Standard:
-        $0.015 / GB / month
+        Cloudflare R2 Standard storage:
+        $0.015 / GB-month
 
         Working conversion:
         ₹100 = $1
@@ -22,7 +22,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         Final customer rate:
         $0.015 × ₹100 × 1.50
-
         = ₹2.25 / GB / month
     */
 
@@ -64,9 +63,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const durationOptions =
         document.querySelectorAll(".duration-option");
 
-    const pricingSelectButtons =
-        document.querySelectorAll("[data-duration-select]");
-
     const purchaseBtn =
         document.getElementById("purchaseBtn");
 
@@ -75,6 +71,52 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const mobileMenu =
         document.getElementById("mobileMenu");
+
+
+    /* =====================================================
+       CHECKOUT ELEMENTS
+    ====================================================== */
+
+    const checkoutOverlay =
+        document.getElementById("checkoutOverlay");
+
+    const checkoutClose =
+        document.getElementById("checkoutClose");
+
+    const checkoutCancel =
+        document.getElementById("checkoutCancel");
+
+    const checkoutAgreement =
+        document.getElementById("checkoutAgreement");
+
+    const checkoutConfirm =
+        document.getElementById("checkoutConfirm");
+
+    const checkoutStorage =
+        document.getElementById("checkoutStorage");
+
+    const checkoutDuration =
+        document.getElementById("checkoutDuration");
+
+    const checkoutTotal =
+        document.getElementById("checkoutTotal");
+
+
+    /* =====================================================
+       PAYMENT ELEMENTS
+    ====================================================== */
+
+    const paymentOverlay =
+        document.getElementById("paymentOverlay");
+
+    const paymentConfirm =
+        document.getElementById("paymentConfirm");
+
+    const paymentBack =
+        document.getElementById("paymentBack");
+
+    const paymentTotal =
+        document.getElementById("paymentTotal");
 
 
     /* =====================================================
@@ -96,6 +138,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const MIN_STORAGE = 10;
     const MAX_STORAGE = 1000;
     const STORAGE_STEP = 10;
+
+
+    /* =====================================================
+       DURATION LIMITS
+    ====================================================== */
+
+    const ALLOWED_DURATIONS = [3, 6, 12];
 
 
     /* =====================================================
@@ -158,24 +207,13 @@ document.addEventListener("DOMContentLoaded", () => {
             newStorage;
 
         if (storageSlider) {
-
             storageSlider.value =
                 newStorage;
-
         }
 
         if (storageValue) {
-
             storageValue.textContent =
-                newStorage;
-
-        }
-
-        if (summaryStorage) {
-
-            summaryStorage.textContent =
-                `${formatIndianNumber(newStorage)} GB`;
-
+                formatIndianNumber(newStorage);
         }
 
         updatePrice();
@@ -232,7 +270,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const duration =
             Number(months);
 
-        if (!Number.isFinite(duration)) {
+        if (
+            !Number.isFinite(duration) ||
+            !ALLOWED_DURATIONS.includes(duration)
+        ) {
             return;
         }
 
@@ -341,38 +382,159 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =====================================================
-       PRICING GUIDE BUTTONS
+       CHECKOUT SUMMARY
     ====================================================== */
 
-    pricingSelectButtons.forEach(button => {
+    function updateCheckoutSummary() {
 
-        button.addEventListener(
-            "click",
-            () => {
+        const total =
+            calculatePrice(
+                selectedStorage,
+                selectedDuration
+            );
 
-                const duration =
-                    button.dataset.durationSelect;
+        if (checkoutStorage) {
 
-                selectDuration(duration);
+            checkoutStorage.textContent =
+                `${formatIndianNumber(selectedStorage)} GB`;
 
-                const builder =
-                    document.querySelector(
-                        ".builder-card"
-                    );
+        }
 
-                if (builder) {
+        if (checkoutDuration) {
 
-                    builder.scrollIntoView({
-                        behavior: "smooth",
-                        block: "start"
-                    });
+            checkoutDuration.textContent =
+                `${selectedDuration} ${
+                    selectedDuration === 1
+                        ? "month"
+                        : "months"
+                }`;
 
-                }
+        }
 
-            }
+        if (checkoutTotal) {
+
+            checkoutTotal.textContent =
+                `₹${formatIndianNumber(total)}`;
+
+        }
+
+        if (paymentTotal) {
+
+            paymentTotal.textContent =
+                `₹${formatIndianNumber(total)}`;
+
+        }
+
+    }
+
+
+    /* =====================================================
+       OPEN CHECKOUT
+    ====================================================== */
+
+    function openCheckout() {
+
+        if (!checkoutOverlay) {
+            return;
+        }
+
+        updateCheckoutSummary();
+
+        if (checkoutAgreement) {
+            checkoutAgreement.checked = false;
+        }
+
+        if (checkoutConfirm) {
+            checkoutConfirm.disabled = true;
+        }
+
+        checkoutOverlay.classList.add("open");
+        checkoutOverlay.setAttribute(
+            "aria-hidden",
+            "false"
         );
 
-    });
+        document.body.classList.add(
+            "modal-open"
+        );
+
+    }
+
+
+    /* =====================================================
+       CLOSE CHECKOUT
+    ====================================================== */
+
+    function closeCheckout() {
+
+        if (!checkoutOverlay) {
+            return;
+        }
+
+        checkoutOverlay.classList.remove("open");
+
+        checkoutOverlay.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+        document.body.classList.remove(
+            "modal-open"
+        );
+
+    }
+
+
+    /* =====================================================
+       OPEN PAYMENT
+    ====================================================== */
+
+    function openPayment() {
+
+        if (!paymentOverlay) {
+            return;
+        }
+
+        updateCheckoutSummary();
+
+        closeCheckout();
+
+        paymentOverlay.classList.add("open");
+
+        paymentOverlay.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+        document.body.classList.add(
+            "modal-open"
+        );
+
+    }
+
+
+    /* =====================================================
+       CLOSE PAYMENT
+    ====================================================== */
+
+    function closePayment() {
+
+        if (!paymentOverlay) {
+            return;
+        }
+
+        paymentOverlay.classList.remove("open");
+
+        paymentOverlay.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+        document.body.classList.remove(
+            "modal-open"
+        );
+
+    }
 
 
     /* =====================================================
@@ -390,20 +552,16 @@ document.addEventListener("DOMContentLoaded", () => {
                     ↓
             Client Galleries
 
-            Client Galleries depends on this exact
-            localStorage key and these core fields.
-
-            Do not rename:
-            - professionalStudioPendingGallery
-            - storageGB
-            - durationMonths
-            - totalPriceINR
+            These names are intentionally preserved
+            because Client Galleries already depends
+            on them.
         */
 
         const purchaseId =
             `purchase_${Date.now()}_${Math.random()
                 .toString(36)
                 .slice(2, 8)}`;
+
 
         const purchaseData = {
 
@@ -435,7 +593,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         /* =================================================
            CLIENT GALLERY HANDOFF
-        ================================================== */
+        ================================================= */
 
         localStorage.setItem(
             "professionalStudioPendingGallery",
@@ -445,7 +603,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         /* =================================================
            PURCHASE HISTORY
-        ================================================== */
+        ================================================= */
 
         let purchases = [];
 
@@ -464,11 +622,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
         }
 
+
         if (!Array.isArray(purchases)) {
             purchases = [];
         }
 
-        purchases.push(purchaseData);
+
+        purchases.push(
+            purchaseData
+        );
+
 
         localStorage.setItem(
             "professionalStudioGalleryPurchases",
@@ -477,6 +640,65 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         return purchaseData;
+
+    }
+
+
+    /* =====================================================
+       FINISH FRONTEND PURCHASE
+    ====================================================== */
+
+    function completePurchase() {
+
+        const orderData = {
+
+            storageGB:
+                selectedStorage,
+
+            durationMonths:
+                selectedDuration,
+
+            totalPriceINR:
+                calculatePrice(
+                    selectedStorage,
+                    selectedDuration
+                )
+
+        };
+
+
+        const purchase =
+            createGalleryPurchase(
+                orderData
+            );
+
+
+        console.log(
+            "Gallery purchase created:",
+            purchase
+        );
+
+
+        closePayment();
+
+
+        /*
+            Small success state before navigation.
+        */
+
+        sessionStorage.setItem(
+            "professionalStudioGalleryPurchaseSuccess",
+            JSON.stringify({
+                purchaseId: purchase.purchaseId,
+                storageGB: purchase.storageGB,
+                durationMonths: purchase.durationMonths,
+                totalPriceINR: purchase.totalPriceINR
+            })
+        );
+
+
+        window.location.href =
+            "clientgallery.html";
 
     }
 
@@ -491,85 +713,194 @@ document.addEventListener("DOMContentLoaded", () => {
             "click",
             () => {
 
-                const orderData = {
-
-                    storageGB:
-                        selectedStorage,
-
-                    durationMonths:
-                        selectedDuration,
-
-                    totalPriceINR:
-                        calculatePrice(
-                            selectedStorage,
-                            selectedDuration
-                        )
-
-                };
-
-
-                /*
-                    FRONTEND PURCHASE FLOW
-
-                    Current frontend:
-
-                    1. Calculate selected package.
-                    2. Create purchase handoff.
-                    3. Save purchase record.
-                    4. Navigate to Client Galleries.
-
-                    Production later:
-
-                    1. Send orderData to backend.
-                    2. Backend recalculates price.
-                    3. Backend creates Razorpay order.
-                    4. Open Razorpay checkout.
-                    5. Verify payment server-side.
-                    6. Create gallery.
-                    7. Redirect to Client Galleries.
-                */
-
-                const purchase =
-                    createGalleryPurchase(
-                        orderData
-                    );
-
-
-                console.log(
-                    "Gallery purchase created:",
-                    purchase
-                );
-
-
-                /*
-                    Give the browser a moment to finish
-                    the localStorage write before navigating.
-                */
-
-                alert(
-                    `Gallery purchased\n\n` +
-                    `Storage: ${selectedStorage} GB\n` +
-                    `Duration: ${selectedDuration} months\n` +
-                    `Total: ₹${formatIndianNumber(
-                        orderData.totalPriceINR
-                    )}\n\n` +
-                    `Your gallery is ready to set up.`
-                );
-
-
-                /*
-                    IMPORTANT:
-                    Keep this destination connected
-                    to the Client Galleries page.
-                */
-
-                window.location.href =
-                    "clientgallery.html";
+                openCheckout();
 
             }
         );
 
     }
+
+
+    /* =====================================================
+       CHECKOUT AGREEMENT
+    ====================================================== */
+
+    if (checkoutAgreement) {
+
+        checkoutAgreement.addEventListener(
+            "change",
+            () => {
+
+                if (checkoutConfirm) {
+
+                    checkoutConfirm.disabled =
+                        !checkoutAgreement.checked;
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       CONTINUE TO PAYMENT
+    ====================================================== */
+
+    if (checkoutConfirm) {
+
+        checkoutConfirm.addEventListener(
+            "click",
+            () => {
+
+                if (
+                    checkoutAgreement &&
+                    !checkoutAgreement.checked
+                ) {
+                    return;
+                }
+
+                openPayment();
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       CLOSE CHECKOUT BUTTONS
+    ====================================================== */
+
+    if (checkoutClose) {
+
+        checkoutClose.addEventListener(
+            "click",
+            closeCheckout
+        );
+
+    }
+
+    if (checkoutCancel) {
+
+        checkoutCancel.addEventListener(
+            "click",
+            closeCheckout
+        );
+
+    }
+
+
+    /* =====================================================
+       PAYMENT CONFIRM
+    ====================================================== */
+
+    if (paymentConfirm) {
+
+        paymentConfirm.addEventListener(
+            "click",
+            () => {
+
+                completePurchase();
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       PAYMENT BACK
+    ====================================================== */
+
+    if (paymentBack) {
+
+        paymentBack.addEventListener(
+            "click",
+            () => {
+
+                closePayment();
+
+                openCheckout();
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       CLOSE ON BACKDROP
+    ====================================================== */
+
+    if (checkoutOverlay) {
+
+        checkoutOverlay.addEventListener(
+            "click",
+            event => {
+
+                if (
+                    event.target ===
+                    checkoutOverlay
+                ) {
+                    closeCheckout();
+                }
+
+            }
+        );
+
+    }
+
+
+    if (paymentOverlay) {
+
+        paymentOverlay.addEventListener(
+            "click",
+            event => {
+
+                if (
+                    event.target ===
+                    paymentOverlay
+                ) {
+                    closePayment();
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       ESCAPE KEY
+    ====================================================== */
+
+    document.addEventListener(
+        "keydown",
+        event => {
+
+            if (event.key !== "Escape") {
+                return;
+            }
+
+            if (
+                checkoutOverlay &&
+                checkoutOverlay.classList.contains("open")
+            ) {
+                closeCheckout();
+                return;
+            }
+
+            if (
+                paymentOverlay &&
+                paymentOverlay.classList.contains("open")
+            ) {
+                closePayment();
+            }
+
+        }
+    );
 
 
     /* =====================================================
@@ -583,7 +914,9 @@ document.addEventListener("DOMContentLoaded", () => {
             () => {
 
                 const isOpen =
-                    mobileMenu.classList.toggle("open");
+                    mobileMenu.classList.toggle(
+                        "open"
+                    );
 
                 mobileMenuBtn.setAttribute(
                     "aria-expanded",
@@ -594,12 +927,9 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
 
-        /* ================================================
-           CLOSE MOBILE MENU AFTER CLICK
-        ================================================= */
-
         const mobileLinks =
             mobileMenu.querySelectorAll("a");
+
 
         mobileLinks.forEach(link => {
 
