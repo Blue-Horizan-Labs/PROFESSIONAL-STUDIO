@@ -120,7 +120,9 @@ function loadServices() {
     try {
 
         const storedServices =
-            localStorage.getItem(SERVICE_STORAGE_KEY);
+            localStorage.getItem(
+                SERVICE_STORAGE_KEY
+            );
 
         if (!storedServices) {
 
@@ -131,7 +133,9 @@ function loadServices() {
         }
 
         const parsedServices =
-            JSON.parse(storedServices);
+            JSON.parse(
+                storedServices
+            );
 
         services =
             Array.isArray(parsedServices)
@@ -174,7 +178,9 @@ function loadBookings() {
         }
 
         const parsedBookings =
-            JSON.parse(storedBookings);
+            JSON.parse(
+                storedBookings
+            );
 
         bookings =
             Array.isArray(parsedBookings)
@@ -229,88 +235,119 @@ function syncBookingPaymentPlans() {
     let changed = false;
 
 
-    bookings = bookings.map(booking => {
+    bookings = bookings.map(
+        booking => {
 
-        const service =
-            findServiceForBooking(booking);
-
-        const packageData =
-            findPackageForBooking(
-                booking,
-                service
-            );
-
-
-        if (
-            packageData &&
-            packageData.paymentPlan
-        ) {
-
-            const normalizedPlan =
-                normalizePaymentPlan(
-                    packageData.paymentPlan
+            const service =
+                findServiceForBooking(
+                    booking
                 );
 
-            const existingPlan =
-                booking.paymentPlan
-                    ? JSON.stringify(
-                        normalizePaymentPlan(
-                            booking.paymentPlan
-                        )
-                    )
-                    : "";
 
-            const currentPlan =
-                JSON.stringify(
-                    normalizedPlan
+            const packageData =
+                findPackageForBooking(
+                    booking,
+                    service
                 );
 
 
             /*
-             * Only copy the service package plan
-             * when the booking does not already have
-             * its own payment plan.
+             * Keep the original booking payment plan
+             * once one has already been stored.
              *
-             * This prevents an already-created booking
-             * from unexpectedly changing later.
+             * This prevents a photographer from changing
+             * a service package later and accidentally
+             * changing an existing booking.
              */
 
-            if (!booking.paymentPlan) {
+            if (
+                !booking.paymentPlan &&
+                packageData &&
+                packageData.paymentPlan
+            ) {
 
                 booking.paymentPlan =
-                    normalizedPlan;
-
-                changed = true;
-
-            }
-
-
-            if (!booking.packagePrice) {
-
-                booking.packagePrice =
-                    extractPrice(
-                        packageData.price
+                    normalizePaymentPlan(
+                        packageData.paymentPlan
                     );
 
                 changed = true;
 
+            } else if (
+                !booking.paymentPlan
+            ) {
+
+                booking.paymentPlan =
+                    createDefaultPaymentPlan();
+
+                changed = true;
+
             }
 
+
+            /*
+             * Fill package price only when the booking
+             * itself does not already contain it.
+             */
+
+            if (
+                extractPrice(
+                    booking.packagePrice
+                ) <= 0 &&
+                packageData
+            ) {
+
+                const packagePrice =
+                    extractPrice(
+                        packageData.price
+                    );
+
+
+                if (packagePrice > 0) {
+
+                    booking.packagePrice =
+                        packagePrice;
+
+                    changed = true;
+
+                }
+
+            }
+
+
+            const beforeAmount =
+                extractPrice(
+                    booking.amountPaid
+                );
+
+
+            ensureBookingPaymentState(
+                booking
+            );
+
+
+            if (
+                beforeAmount !==
+                extractPrice(
+                    booking.amountPaid
+                )
+            ) {
+
+                changed = true;
+
+            }
+
+
+            return booking;
+
         }
-
-
-        ensureBookingPaymentState(
-            booking
-        );
-
-
-        return booking;
-
-    });
+    );
 
 
     if (changed) {
+
         saveBookings();
+
     }
 
 }
@@ -322,117 +359,151 @@ function syncBookingPaymentPlans() {
 
 function setupEvents() {
 
-    bookingSearch.addEventListener(
-        "input",
-        () => {
+    if (bookingSearch) {
 
-            searchTerm =
-                bookingSearch.value
-                    .trim()
-                    .toLowerCase();
+        bookingSearch.addEventListener(
+            "input",
+            () => {
 
-            renderBookings();
+                searchTerm =
+                    bookingSearch.value
+                        .trim()
+                        .toLowerCase();
 
-        }
-    );
+                renderBookings();
 
-
-    filterTabs.addEventListener(
-        "click",
-        event => {
-
-            const button =
-                event.target.closest(
-                    ".filter-btn"
-                );
-
-            if (!button) {
-                return;
             }
+        );
 
-            activeFilter =
-                button.dataset.filter || "all";
+    }
 
 
-            document
-                .querySelectorAll(
-                    ".filter-btn"
-                )
-                .forEach(btn =>
-                    btn.classList.remove(
-                        "active"
+    if (filterTabs) {
+
+        filterTabs.addEventListener(
+            "click",
+            event => {
+
+                const button =
+                    event.target.closest(
+                        ".filter-btn"
+                    );
+
+
+                if (!button) {
+                    return;
+                }
+
+
+                activeFilter =
+                    button.dataset.filter ||
+                    "all";
+
+
+                document
+                    .querySelectorAll(
+                        ".filter-btn"
                     )
+                    .forEach(
+                        btn =>
+                            btn.classList.remove(
+                                "active"
+                            )
+                    );
+
+
+                button.classList.add(
+                    "active"
                 );
 
 
-            button.classList.add("active");
-
-            renderBookings();
-
-        }
-    );
-
-
-    previousMonth.addEventListener(
-        "click",
-        () => {
-
-            calendarDate.setMonth(
-                calendarDate.getMonth() - 1
-            );
-
-            selectedCalendarDate = null;
-
-            renderCalendar();
-
-        }
-    );
-
-
-    nextMonth.addEventListener(
-        "click",
-        () => {
-
-            calendarDate.setMonth(
-                calendarDate.getMonth() + 1
-            );
-
-            selectedCalendarDate = null;
-
-            renderCalendar();
-
-        }
-    );
-
-
-    closeModal.addEventListener(
-        "click",
-        closeBookingModal
-    );
-
-
-    bookingModal.addEventListener(
-        "click",
-        event => {
-
-            if (
-                event.target ===
-                bookingModal
-            ) {
-
-                closeBookingModal();
+                renderBookings();
 
             }
+        );
 
-        }
-    );
+    }
+
+
+    if (previousMonth) {
+
+        previousMonth.addEventListener(
+            "click",
+            () => {
+
+                calendarDate.setMonth(
+                    calendarDate.getMonth() - 1
+                );
+
+                selectedCalendarDate = null;
+
+                renderCalendar();
+
+            }
+        );
+
+    }
+
+
+    if (nextMonth) {
+
+        nextMonth.addEventListener(
+            "click",
+            () => {
+
+                calendarDate.setMonth(
+                    calendarDate.getMonth() + 1
+                );
+
+                selectedCalendarDate = null;
+
+                renderCalendar();
+
+            }
+        );
+
+    }
+
+
+    if (closeModal) {
+
+        closeModal.addEventListener(
+            "click",
+            closeBookingModal
+        );
+
+    }
+
+
+    if (bookingModal) {
+
+        bookingModal.addEventListener(
+            "click",
+            event => {
+
+                if (
+                    event.target ===
+                    bookingModal
+                ) {
+
+                    closeBookingModal();
+
+                }
+
+            }
+        );
+
+    }
 
 
     document.addEventListener(
         "keydown",
         event => {
 
-            if (event.key === "Escape") {
+            if (
+                event.key ===
+                "Escape"
+            ) {
 
                 closeBookingModal();
 
@@ -448,11 +519,13 @@ function setupEvents() {
 
             if (
                 event.key !==
-                BOOKING_STORAGE_KEY &&
+                    BOOKING_STORAGE_KEY &&
                 event.key !==
-                SERVICE_STORAGE_KEY
+                    SERVICE_STORAGE_KEY
             ) {
+
                 return;
+
             }
 
 
@@ -648,7 +721,9 @@ function renderBookings() {
 
     bookingsContainer.innerHTML =
         filteredBookings
-            .map(createBookingCard)
+            .map(
+                createBookingCard
+            )
             .join("");
 
 }
@@ -658,7 +733,9 @@ function renderBookings() {
    BOOKING CARD
 ============================================================ */
 
-function createBookingCard(booking) {
+function createBookingCard(
+    booking
+) {
 
     const status =
         normalizeStatus(
@@ -739,7 +816,9 @@ function createBookingCard(booking) {
             class="action-btn"
             data-action="view"
             data-id="${escapeAttribute(
-                getBookingId(booking)
+                getBookingId(
+                    booking
+                )
             )}"
         >
             View Details
@@ -748,7 +827,9 @@ function createBookingCard(booking) {
     `;
 
 
-    if (status === "Pending") {
+    if (
+        status === "Pending"
+    ) {
 
         actionButtons += `
 
@@ -757,18 +838,23 @@ function createBookingCard(booking) {
                 class="action-btn primary"
                 data-action="accept"
                 data-id="${escapeAttribute(
-                    getBookingId(booking)
+                    getBookingId(
+                        booking
+                    )
                 )}"
             >
                 Accept
             </button>
+
 
             <button
                 type="button"
                 class="action-btn danger"
                 data-action="reject"
                 data-id="${escapeAttribute(
-                    getBookingId(booking)
+                    getBookingId(
+                        booking
+                    )
                 )}"
             >
                 Reject
@@ -779,7 +865,9 @@ function createBookingCard(booking) {
     }
 
 
-    if (status === "Accepted") {
+    if (
+        status === "Accepted"
+    ) {
 
         actionButtons += `
 
@@ -788,7 +876,9 @@ function createBookingCard(booking) {
                 class="action-btn danger"
                 data-action="cancel"
                 data-id="${escapeAttribute(
-                    getBookingId(booking)
+                    getBookingId(
+                        booking
+                    )
                 )}"
             >
                 Cancel
@@ -799,7 +889,9 @@ function createBookingCard(booking) {
     }
 
 
-    if (status === "Confirmed") {
+    if (
+        status === "Confirmed"
+    ) {
 
         actionButtons += `
 
@@ -808,18 +900,23 @@ function createBookingCard(booking) {
                 class="action-btn primary"
                 data-action="complete"
                 data-id="${escapeAttribute(
-                    getBookingId(booking)
+                    getBookingId(
+                        booking
+                    )
                 )}"
             >
                 Mark Complete
             </button>
+
 
             <button
                 type="button"
                 class="action-btn danger"
                 data-action="cancel"
                 data-id="${escapeAttribute(
-                    getBookingId(booking)
+                    getBookingId(
+                        booking
+                    )
                 )}"
             >
                 Cancel
@@ -844,6 +941,7 @@ function createBookingCard(booking) {
                         )}
                     </h3>
 
+
                     <p class="booking-package">
                         ${escapeHtml(
                             packageName
@@ -856,7 +954,9 @@ function createBookingCard(booking) {
                 <span
                     class="status-badge status-${status.toLowerCase()}"
                 >
-                    ${escapeHtml(status)}
+                    ${escapeHtml(
+                        status
+                    )}
                 </span>
 
             </div>
@@ -879,6 +979,7 @@ function createBookingCard(booking) {
                         )}
                     </strong>
 
+
                     <span>
                         ${escapeHtml(
                             booking.email ||
@@ -900,6 +1001,7 @@ function createBookingCard(booking) {
                         Next Session
                     </span>
 
+
                     <span class="meta-value">
                         ${escapeHtml(
                             dateText
@@ -915,6 +1017,7 @@ function createBookingCard(booking) {
                         Time
                     </span>
 
+
                     <span class="meta-value">
                         ${escapeHtml(
                             timeText
@@ -929,6 +1032,7 @@ function createBookingCard(booking) {
                     <span class="meta-label">
                         Location
                     </span>
+
 
                     <span class="meta-value">
                         ${escapeHtml(
@@ -977,7 +1081,9 @@ function createBookingCard(booking) {
 
 
                 <div class="booking-actions">
+
                     ${actionButtons}
+
                 </div>
 
             </div>
@@ -1014,16 +1120,13 @@ function createPaymentSummary(
         );
 
 
-    const paymentStatus =
-        payment.status;
-
-
     let statusClass =
         "payment-pending";
 
 
     if (
-        paymentStatus === "Partially Paid"
+        payment.status ===
+        "Partially Paid"
     ) {
 
         statusClass =
@@ -1033,7 +1136,8 @@ function createPaymentSummary(
 
 
     if (
-        paymentStatus === "Paid"
+        payment.status ===
+        "Paid"
     ) {
 
         statusClass =
@@ -1047,14 +1151,16 @@ function createPaymentSummary(
 
 
     if (
-        paymentStatus === "Paid"
+        payment.status ===
+        "Paid"
     ) {
 
         detailText =
-            "Required payment completed.";
+            "All scheduled payments completed.";
 
     } else if (
-        paymentStatus === "Partially Paid"
+        payment.status ===
+        "Partially Paid"
     ) {
 
         detailText =
@@ -1084,11 +1190,12 @@ function createPaymentSummary(
                     PAYMENT
                 </span>
 
+
                 <span
                     class="booking-payment-status ${statusClass}"
                 >
                     ${escapeHtml(
-                        paymentStatus
+                        payment.status
                     )}
                 </span>
 
@@ -1096,20 +1203,26 @@ function createPaymentSummary(
 
 
             <div class="booking-payment-amount">
+
                 ${formatCurrency(
                     payment.paid
                 )}
+
                 paid of
+
                 ${formatCurrency(
                     payment.total
                 )}
+
             </div>
 
 
             <div class="booking-payment-detail">
+
                 ${escapeHtml(
                     detailText
                 )}
+
             </div>
 
         </div>
@@ -1151,7 +1264,10 @@ document.addEventListener(
         }
 
 
-        if (action === "view") {
+        if (
+            action ===
+            "view"
+        ) {
 
             openBookingModal(
                 bookingId
@@ -1162,7 +1278,10 @@ document.addEventListener(
         }
 
 
-        if (action === "accept") {
+        if (
+            action ===
+            "accept"
+        ) {
 
             updateBookingStatus(
                 bookingId,
@@ -1174,7 +1293,10 @@ document.addEventListener(
         }
 
 
-        if (action === "reject") {
+        if (
+            action ===
+            "reject"
+        ) {
 
             updateBookingStatus(
                 bookingId,
@@ -1186,7 +1308,10 @@ document.addEventListener(
         }
 
 
-        if (action === "complete") {
+        if (
+            action ===
+            "complete"
+        ) {
 
             updateBookingStatus(
                 bookingId,
@@ -1198,7 +1323,10 @@ document.addEventListener(
         }
 
 
-        if (action === "cancel") {
+        if (
+            action ===
+            "cancel"
+        ) {
 
             updateBookingStatus(
                 bookingId,
@@ -1225,21 +1353,38 @@ function updateBookingStatus(
             booking =>
                 getBookingId(
                     booking
-                ) === bookingId
+                ) ===
+                String(
+                    bookingId
+                )
         );
 
 
-    if (bookingIndex === -1) {
+    if (
+        bookingIndex === -1
+    ) {
+
         return;
+
     }
 
 
     const booking =
-        bookings[bookingIndex];
+        bookings[
+            bookingIndex
+        ];
+
+
+    const oldStatus =
+        normalizeStatus(
+            booking.status
+        );
 
 
     booking.status =
-        newStatus;
+        normalizeStatus(
+            newStatus
+        );
 
 
     const now =
@@ -1247,47 +1392,78 @@ function updateBookingStatus(
 
 
     if (
-        newStatus === "Accepted"
+        booking.status ===
+        "Accepted"
     ) {
 
         booking.acceptedAt =
+            booking.acceptedAt ||
             now;
 
-
-        /*
-         * Payment becomes available
-         * on the client Booking Status
-         * page after acceptance.
-         */
 
         ensureBookingPaymentState(
             booking
         );
 
-        booking.paymentStatus =
-            getPaymentSummary(
-                booking
-            ).status;
-
     }
 
 
     if (
-        newStatus === "Completed"
+        booking.status ===
+        "Completed"
     ) {
 
         booking.completedAt =
+            booking.completedAt ||
             now;
 
     }
 
 
     if (
-        newStatus === "Cancelled"
+        booking.status ===
+        "Cancelled"
     ) {
 
         booking.cancelledAt =
+            booking.cancelledAt ||
             now;
+
+    }
+
+
+    /*
+     * Keep a lightweight status history.
+     * This is useful later when the frontend
+     * receives a real backend.
+     */
+
+    if (
+        !Array.isArray(
+            booking.statusHistory
+        )
+    ) {
+
+        booking.statusHistory =
+            [];
+
+    }
+
+
+    if (
+        oldStatus !==
+        booking.status
+    ) {
+
+        booking.statusHistory.push({
+
+            status:
+                booking.status,
+
+            changedAt:
+                now
+
+        });
 
     }
 
@@ -1297,6 +1473,26 @@ function updateBookingStatus(
     renderOverview();
     renderBookings();
     renderCalendar();
+
+
+    /*
+     * If the modal is open for this booking,
+     * refresh it so the action buttons and
+     * payment information stay in sync.
+     */
+
+    if (
+        bookingModal &&
+        bookingModal.classList.contains(
+            "open"
+        )
+    ) {
+
+        openBookingModal(
+            bookingId
+        );
+
+    }
 
 }
 
@@ -1314,7 +1510,10 @@ function openBookingModal(
             item =>
                 getBookingId(
                     item
-                ) === bookingId
+                ) ===
+                String(
+                    bookingId
+                )
         );
 
 
@@ -1384,45 +1583,65 @@ function openBookingModal(
             <div class="detail-grid">
 
                 <div class="detail-item">
-                    <span>Name</span>
+
+                    <span>
+                        Name
+                    </span>
+
                     <strong>
                         ${escapeHtml(
                             clientName
                         )}
                     </strong>
+
                 </div>
 
 
                 <div class="detail-item">
-                    <span>Email</span>
+
+                    <span>
+                        Email
+                    </span>
+
                     <strong>
                         ${escapeHtml(
                             booking.email ||
                             "-"
                         )}
                     </strong>
+
                 </div>
 
 
                 <div class="detail-item">
-                    <span>Phone</span>
+
+                    <span>
+                        Phone
+                    </span>
+
                     <strong>
                         ${escapeHtml(
                             booking.phone ||
                             "-"
                         )}
                     </strong>
+
                 </div>
 
 
                 <div class="detail-item">
-                    <span>Instagram</span>
+
+                    <span>
+                        Instagram
+                    </span>
+
                     <strong>
                         ${escapeHtml(
                             booking.instagram ||
                             "-"
                         )}
                     </strong>
+
                 </div>
 
             </div>
@@ -1440,42 +1659,62 @@ function openBookingModal(
             <div class="detail-grid">
 
                 <div class="detail-item">
-                    <span>Service</span>
+
+                    <span>
+                        Service
+                    </span>
+
                     <strong>
                         ${escapeHtml(
                             service
                         )}
                     </strong>
+
                 </div>
 
 
                 <div class="detail-item">
-                    <span>Package</span>
+
+                    <span>
+                        Package
+                    </span>
+
                     <strong>
                         ${escapeHtml(
                             packageName
                         )}
                     </strong>
+
                 </div>
 
 
                 <div class="detail-item">
-                    <span>Package Price</span>
+
+                    <span>
+                        Package Price
+                    </span>
+
                     <strong>
                         ${formatCurrency(
                             booking.packagePrice
                         )}
                     </strong>
+
                 </div>
 
 
                 <div class="detail-item">
-                    <span>Booking Status</span>
+
+                    <span>
+                        Booking Status
+                    </span>
+
                     <strong>
                         ${escapeHtml(
                             status
                         )}
                     </strong>
+
                 </div>
 
             </div>
@@ -1510,14 +1749,18 @@ function openBookingModal(
                                             )}
                                         </strong>
 
+
                                         <span>
+
                                             ${escapeHtml(
                                                 formatTimeRange(
                                                     date.startTime,
                                                     date.endTime
                                                 )
                                             )}
+
                                             ·
+
                                             ${escapeHtml(
                                                 formatHours(
                                                     calculateDateHours(
@@ -1526,6 +1769,7 @@ function openBookingModal(
                                                     )
                                                 )
                                             )}
+
                                         </span>
 
                                     </div>
@@ -1535,7 +1779,9 @@ function openBookingModal(
                             .join("")
                         : `
 
-                            <div class="detail-date-row">
+                            <div
+                                class="detail-date-row"
+                            >
 
                                 <strong>
                                     Date not provided
@@ -1589,43 +1835,63 @@ function openBookingModal(
             <div class="detail-grid">
 
                 <div class="detail-item">
-                    <span>Total Hours</span>
+
+                    <span>
+                        Total Hours
+                    </span>
+
                     <strong>
                         ${formatHours(
                             booking.totalHours
                         )}
                     </strong>
+
                 </div>
 
 
                 <div class="detail-item">
-                    <span>Location</span>
+
+                    <span>
+                        Location
+                    </span>
+
                     <strong>
                         ${escapeHtml(
                             booking.location ||
                             "-"
                         )}
                     </strong>
+
                 </div>
 
 
                 <div class="detail-item">
-                    <span>Payment Status</span>
+
+                    <span>
+                        Payment Status
+                    </span>
+
                     <strong>
                         ${escapeHtml(
                             payment.status
                         )}
                     </strong>
+
                 </div>
 
 
                 <div class="detail-item">
-                    <span>Remaining</span>
+
+                    <span>
+                        Remaining
+                    </span>
+
                     <strong>
                         ${formatCurrency(
                             payment.remaining
                         )}
                     </strong>
+
                 </div>
 
             </div>
@@ -1645,9 +1911,11 @@ function openBookingModal(
 
 
                         <div class="notes-box">
+
                             ${escapeHtml(
                                 booking.notes
                             )}
+
                         </div>
 
                     </div>
@@ -1664,7 +1932,8 @@ function openBookingModal(
 
 
     if (
-        status === "Pending"
+        status ===
+        "Pending"
     ) {
 
         modalActions.innerHTML = `
@@ -1698,7 +1967,8 @@ function openBookingModal(
 
 
     if (
-        status === "Accepted"
+        status ===
+        "Accepted"
     ) {
 
         modalActions.innerHTML = `
@@ -1720,7 +1990,8 @@ function openBookingModal(
 
 
     if (
-        status === "Confirmed"
+        status ===
+        "Confirmed"
     ) {
 
         modalActions.innerHTML = `
@@ -1757,10 +2028,12 @@ function openBookingModal(
         "open"
     );
 
+
     bookingModal.setAttribute(
         "aria-hidden",
         "false"
     );
+
 
     document.body.style.overflow =
         "hidden";
@@ -1809,14 +2082,19 @@ function createPaymentProgress(
                     )}
                 </strong>
 
+
                 <span>
+
                     ${formatCurrency(
                         payment.paid
                     )}
+
                     /
+
                     ${formatCurrency(
                         payment.total
                     )}
+
                 </span>
 
             </div>
@@ -1840,6 +2118,7 @@ function createPaymentProgress(
                         payment.paid
                     )}
                 </span>
+
 
                 <span>
                     Remaining:
@@ -1896,6 +2175,7 @@ function createPaymentPlanMarkup(
                         Full Payment
                     </strong>
 
+
                     <span>
                         ${formatCurrency(
                             price
@@ -1925,6 +2205,7 @@ function createPaymentPlanMarkup(
                     )}
                 </strong>
 
+
                 <span>
                     ${formatCurrency(
                         price
@@ -1936,7 +2217,10 @@ function createPaymentPlanMarkup(
 
             ${stages
                 .map(
-                    (stage, index) => {
+                    (
+                        stage,
+                        index
+                    ) => {
 
                         const paid =
                             isStagePaid(
@@ -1963,6 +2247,7 @@ function createPaymentPlanMarkup(
                                         )}
                                     </span>
 
+
                                     <span
                                         class="payment-stage-due"
                                     >
@@ -1981,14 +2266,17 @@ function createPaymentPlanMarkup(
                                             : "payment-stage-pending"
                                     }"
                                 >
+
                                     ${
                                         paid
                                             ? "✓ "
                                             : ""
                                     }
+
                                     ${formatCurrency(
                                         stage.amount
                                     )}
+
                                 </span>
 
                             </div>
@@ -2012,14 +2300,21 @@ function createPaymentPlanMarkup(
 
 function closeBookingModal() {
 
+    if (!bookingModal) {
+        return;
+    }
+
+
     bookingModal.classList.remove(
         "open"
     );
+
 
     bookingModal.setAttribute(
         "aria-hidden",
         "true"
     );
+
 
     document.body.style.overflow =
         "";
@@ -2383,6 +2678,7 @@ function renderCalendarDetails() {
                     Select a date
                 </strong>
 
+
                 <p>
                     Booked sessions for that date
                     will appear here.
@@ -2427,6 +2723,7 @@ function renderCalendarDetails() {
                     )}
                 </strong>
 
+
                 <span
                     class="date-booking-count"
                 >
@@ -2464,15 +2761,19 @@ function renderCalendarDetails() {
                 )}
             </strong>
 
+
             <span
                 class="date-booking-count"
             >
+
                 ${dateBookings.length}
+
                 ${
                     dateBookings.length === 1
                         ? "booking"
                         : "bookings"
                 }
+
             </span>
 
         </div>
@@ -2505,20 +2806,25 @@ function renderCalendarDetails() {
                         >
 
                             <strong>
+
                                 ${escapeHtml(
                                     booking.client ||
                                     booking.name ||
                                     "Client"
                                 )}
+
                             </strong>
 
 
                             <span>
+
                                 ${escapeHtml(
                                     booking.service ||
                                     "Photography"
                                 )}
+
                                 ·
+
                                 ${escapeHtml(
                                     matchingDate
                                         ? formatTimeRange(
@@ -2527,12 +2833,15 @@ function renderCalendarDetails() {
                                         )
                                         : "Time not provided"
                                 )}
+
                                 ·
+
                                 ${escapeHtml(
                                     normalizeStatus(
                                         booking.status
                                     )
                                 )}
+
                             </span>
 
 
@@ -2598,6 +2907,23 @@ function getBookingsForDate(
     return bookings.filter(
         booking => {
 
+            /*
+             * Cancelled bookings should not block
+             * availability or appear as active
+             * scheduled sessions on the calendar.
+             */
+
+            if (
+                normalizeStatus(
+                    booking.status
+                ) === "Cancelled"
+            ) {
+
+                return false;
+
+            }
+
+
             const dates =
                 getBookingDates(
                     booking
@@ -2605,13 +2931,10 @@ function getBookingsForDate(
 
 
             return dates.some(
-                date => {
-
-                    return normalizeDateValue(
+                date =>
+                    normalizeDateValue(
                         date.date
-                    ) === dateKey;
-
-                }
+                    ) === dateKey
             );
 
         }
@@ -2699,9 +3022,19 @@ function findServiceForBooking(
     }
 
 
-    if (
-        booking.serviceId
-    ) {
+    /*
+     * booking.js currently stores serviceType.
+     *
+     * Older/newer booking records may use serviceId,
+     * so support both.
+     */
+
+    const serviceId =
+        booking.serviceId ||
+        booking.serviceType;
+
+
+    if (serviceId) {
 
         const byId =
             services.find(
@@ -2710,7 +3043,7 @@ function findServiceForBooking(
                         service.id
                     ) ===
                     String(
-                        booking.serviceId
+                        serviceId
                     )
             );
 
@@ -2775,9 +3108,18 @@ function findPackageForBooking(
     }
 
 
-    if (
-        booking.packageId
-    ) {
+    /*
+     * booking.js currently stores packageKey.
+     *
+     * Also support packageId for compatibility.
+     */
+
+    const packageId =
+        booking.packageId ||
+        booking.packageKey;
+
+
+    if (packageId) {
 
         const byId =
             service.packages.find(
@@ -2786,7 +3128,7 @@ function findPackageForBooking(
                         pkg.id
                     ) ===
                     String(
-                        booking.packageId
+                        packageId
                     )
             );
 
@@ -2842,8 +3184,11 @@ function createDefaultPaymentPlan() {
 
         advance: {
 
-            type: "percentage",
-            value: 0
+            type:
+                "percentage",
+
+            value:
+                0
 
         },
 
@@ -2864,7 +3209,8 @@ function normalizePaymentPlan(
 
     if (
         !plan ||
-        typeof plan !== "object"
+        typeof plan !==
+            "object"
     ) {
 
         return defaultPlan;
@@ -3023,6 +3369,16 @@ function getPaymentStages(
                 : normalizedPlan.advance.value;
 
 
+        const safeAdvance =
+            Math.min(
+                packagePrice,
+                Math.max(
+                    0,
+                    advanceAmount
+                )
+            );
+
+
         return [
 
             {
@@ -3031,13 +3387,7 @@ function getPaymentStages(
                     "Booking Advance",
 
                 amount:
-                    Math.min(
-                        packagePrice,
-                        Math.max(
-                            0,
-                            advanceAmount
-                        )
-                    ),
+                    safeAdvance,
 
                 due:
                     "Required after booking acceptance"
@@ -3053,13 +3403,7 @@ function getPaymentStages(
                     Math.max(
                         0,
                         packagePrice -
-                        Math.min(
-                            packagePrice,
-                            Math.max(
-                                0,
-                                advanceAmount
-                            )
-                        )
+                        safeAdvance
                     ),
 
                 due:
@@ -3097,6 +3441,13 @@ function getPaymentStages(
                         item.due
 
                 })
+            )
+            .filter(
+                stage =>
+                    Number.isFinite(
+                        stage.amount
+                    ) &&
+                    stage.amount >= 0
             );
 
     }
@@ -3131,37 +3482,45 @@ function ensureBookingPaymentState(
         plan;
 
 
-    if (
-        !Array.isArray(
-            booking.paymentRecords
-        )
-    ) {
+    /*
+     * Keep the manager compatible with both:
+     *
+     * 1. bookingMng payment state
+     * 2. bookingStatus paymentDetails state
+     *
+     * The client-facing status page is the source
+     * of truth once an actual payment has occurred.
+     */
 
-        booking.paymentRecords =
-            [];
+    const paymentDetails =
+        booking.paymentDetails &&
+        typeof booking.paymentDetails ===
+            "object"
+            ? booking.paymentDetails
+            : null;
 
-    }
+
+    const paymentDetailsPaid =
+        getPaymentDetailsPaidAmount(
+            paymentDetails
+        );
+
+
+    const legacyPaid =
+        getLegacyPaidAmount(
+            booking
+        );
 
 
     /*
-     * Legacy compatibility.
-     *
-     * Existing booking objects may already
-     * contain payment / remaining fields.
+     * Prefer paymentDetails when it contains
+     * an actual numeric payment value.
      */
 
-    if (
-        booking.amountPaid ===
-        undefined
-    ) {
-
-        booking.amountPaid =
-            extractPrice(
-                booking.paid
-            ) ||
-            0;
-
-    }
+    const resolvedPaid =
+        paymentDetailsPaid !== null
+            ? paymentDetailsPaid
+            : legacyPaid;
 
 
     booking.amountPaid =
@@ -3169,9 +3528,7 @@ function ensureBookingPaymentState(
             0,
             Math.min(
                 price,
-                extractPrice(
-                    booking.amountPaid
-                )
+                resolvedPaid
             )
         );
 
@@ -3182,6 +3539,20 @@ function ensureBookingPaymentState(
             price -
             booking.amountPaid
         );
+
+
+    /*
+     * Keep legacy fields synchronized so older
+     * dashboard code and newer booking-status
+     * code can coexist.
+     */
+
+    booking.paid =
+        booking.amountPaid;
+
+
+    booking.remaining =
+        booking.remainingAmount;
 
 
     const summary =
@@ -3195,6 +3566,275 @@ function ensureBookingPaymentState(
 
 
     return booking;
+
+}
+
+
+/* ============================================================
+   PAYMENT DETAILS PAID AMOUNT
+============================================================ */
+
+function getPaymentDetailsPaidAmount(
+    paymentDetails
+) {
+
+    if (
+        !paymentDetails ||
+        typeof paymentDetails !==
+            "object"
+    ) {
+
+        return null;
+
+    }
+
+
+    const candidates = [
+
+        paymentDetails.paidAmount,
+        paymentDetails.amountPaid,
+        paymentDetails.totalPaid,
+        paymentDetails.paid
+
+    ];
+
+
+    for (
+        const value of candidates
+    ) {
+
+        if (
+            value !== undefined &&
+            value !== null &&
+            value !== ""
+        ) {
+
+            const amount =
+                extractPrice(
+                    value
+                );
+
+
+            if (
+                Number.isFinite(
+                    amount
+                )
+            ) {
+
+                return Math.max(
+                    0,
+                    amount
+                );
+
+            }
+
+        }
+
+    }
+
+
+    /*
+     * If the payment details object does not
+     * contain a total field but contains transactions,
+     * calculate the paid amount from successful
+     * transaction records.
+     */
+
+    if (
+        Array.isArray(
+            paymentDetails.transactions
+        )
+    ) {
+
+        let total = 0;
+
+
+        paymentDetails.transactions
+            .forEach(
+                transaction => {
+
+                    if (
+                        !transaction ||
+                        typeof transaction !==
+                            "object"
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    const status =
+                        String(
+                            transaction.status ||
+                            transaction.paymentStatus ||
+                            "paid"
+                        )
+                            .trim()
+                            .toLowerCase();
+
+
+                    if (
+                        [
+                            "failed",
+                            "cancelled",
+                            "canceled",
+                            "pending"
+                        ].includes(
+                            status
+                        )
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    total +=
+                        extractPrice(
+                            transaction.amount
+                        );
+
+                }
+            );
+
+
+        return total;
+
+    }
+
+
+    /*
+     * Some implementations may store the
+     * schedule with paid amounts.
+     */
+
+    if (
+        Array.isArray(
+            paymentDetails.schedule
+        )
+    ) {
+
+        let total = 0;
+
+
+        paymentDetails.schedule
+            .forEach(
+                stage => {
+
+                    if (
+                        !stage ||
+                        typeof stage !==
+                            "object"
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    total +=
+                        extractPrice(
+                            stage.paidAmount ||
+                            stage.paid ||
+                            stage.amountPaid
+                        );
+
+                }
+            );
+
+
+        if (
+            total > 0
+        ) {
+
+            return total;
+
+        }
+
+    }
+
+
+    return null;
+
+}
+
+
+/* ============================================================
+   LEGACY PAID AMOUNT
+============================================================ */
+
+function getLegacyPaidAmount(
+    booking
+) {
+
+    const candidates = [
+
+        booking.amountPaid,
+        booking.paid,
+        booking.payment
+
+    ];
+
+
+    for (
+        const value of candidates
+    ) {
+
+        if (
+            typeof value ===
+            "number"
+        ) {
+
+            return Math.max(
+                0,
+                value
+            );
+
+        }
+
+
+        if (
+            typeof value ===
+            "string"
+        ) {
+
+            /*
+             * Ignore labels such as:
+             * "Pending", "Paid", etc.
+             */
+
+            if (
+                !/\d/.test(
+                    value
+                )
+            ) {
+
+                continue;
+
+            }
+
+
+            const parsed =
+                extractPrice(
+                    value
+                );
+
+
+            if (
+                parsed > 0
+            ) {
+
+                return parsed;
+
+            }
+
+        }
+
+    }
+
+
+    return 0;
 
 }
 
@@ -3333,7 +3973,9 @@ function isStagePaid(
 
 
     const stageAmount =
-        stages[stageIndex].amount;
+        extractPrice(
+            stages[stageIndex].amount
+        );
 
 
     const paidBeforeStage =
@@ -3348,7 +3990,9 @@ function isStagePaid(
                     stage
                 ) =>
                     total +
-                    stage.amount,
+                    extractPrice(
+                        stage.amount
+                    ),
                 0
             );
 

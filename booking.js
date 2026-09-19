@@ -1,1203 +1,1677 @@
-/* ============================================================
-PROFESSIONAL STUDIO
-BOOKING PAGE JAVASCRIPT
-============================================================ */
-
-document.addEventListener("DOMContentLoaded", function () {
-
-
 /* =========================================================
-   STORAGE
-========================================================= */
+   PROFESSIONAL STUDIO
+   BOOKING SYSTEM
+   booking.js
+   Frontend-only booking creation
+   ========================================================= */
 
-const SERVICE_STORAGE_KEY = "professionalStudio.services";
-const BOOKING_STORAGE_KEY = "bookings";
+document.addEventListener("DOMContentLoaded", () => {
+    "use strict";
 
+    /* =========================================================
+       STORAGE
+       ========================================================= */
 
-/* =========================================================
-   DOM
-========================================================= */
+    const SERVICE_STORAGE_KEY = "professionalStudio.services";
+    const BOOKING_STORAGE_KEY = "bookings";
 
-const form = document.getElementById("bookingForm");
+    /* =========================================================
+       DOM
+       ========================================================= */
 
-const selectedPackageCard =
-    document.getElementById("selectedPackageCard");
+    const bookingForm = document.getElementById("bookingForm");
 
-const backToService =
-    document.getElementById("backToService");
+    const selectedPackageCard =
+        document.getElementById("selectedPackageCard");
 
-const multiDateInput =
-    document.getElementById("multiDate");
+    const summaryService =
+        document.getElementById("summaryService");
 
-const dateTimeContainer =
-    document.getElementById("dateTimeContainer");
+    const summaryPackage =
+        document.getElementById("summaryPackage");
 
-const totalHoursElement =
-    document.getElementById("totalHours");
+    const summaryPrice =
+        document.getElementById("summaryPrice");
 
-const locationInput =
-    document.getElementById("location");
+    const multiDate =
+        document.getElementById("multiDate");
 
-const submitBtn =
-    document.getElementById("submitBtn");
+    const dateTimeContainer =
+        document.getElementById("dateTimeContainer");
 
-const successPopup =
-    document.getElementById("successPopup");
+    const totalHoursInput =
+        document.getElementById("totalHours");
 
-const summaryService =
-    document.getElementById("summaryService");
+    const submitBtn =
+        document.getElementById("submitBtn");
 
-const summaryPackage =
-    document.getElementById("summaryPackage");
+    const successPopup =
+        document.getElementById("successPopup");
 
-const summaryPrice =
-    document.getElementById("summaryPrice");
+    const backToService =
+        document.getElementById("backToService");
 
-const fullNameInput =
-    document.getElementById("fullName");
+    /* =========================================================
+       FORM FIELDS
+       ========================================================= */
 
-const emailInput =
-    document.getElementById("email");
+    const fullName =
+        document.getElementById("fullName");
 
-const phoneInput =
-    document.getElementById("phone");
+    const email =
+        document.getElementById("email");
 
-const messageInput =
-    document.getElementById("message");
+    const phone =
+        document.getElementById("phone");
 
-const honeypotInput =
-    document.getElementById("website");
+    const locationInput =
+        document.getElementById("location");
 
+    const message =
+        document.getElementById("message");
 
-if (!form) {
-    console.error("Booking form not found.");
-    return;
-}
+    const honeypot =
+        document.getElementById("website");
 
+    /* =========================================================
+       URL PARAMETERS
+       ========================================================= */
 
-/* =========================================================
-   URL PARAMETERS
-========================================================= */
+    const params = new URLSearchParams(window.location.search);
 
-const urlParams =
-    new URLSearchParams(window.location.search);
+    const serviceId =
+        params.get("service");
 
-const serviceId =
-    urlParams.get("service");
+    const packageId =
+        params.get("package");
 
-const packageId =
-    urlParams.get("package");
+    /* =========================================================
+       SELECTED DATA
+       ========================================================= */
 
+    let selectedService = null;
+    let selectedPackage = null;
 
-/* =========================================================
-   HELPERS
-========================================================= */
+    /* =========================================================
+       AUTOSAVE
+       ========================================================= */
 
-function escapeHTML(value) {
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
+    const AUTOSAVE_FIELDS = [
+        fullName,
+        email,
+        phone,
+        locationInput,
+        message
+    ].filter(Boolean);
 
+    /* =========================================================
+       HELPERS
+       ========================================================= */
 
-function formatPrice(price) {
-
-    const numericPrice =
-        Number(
-            String(price ?? "")
-                .replace(/[₹,\s]/g, "")
-        );
-
-    if (Number.isNaN(numericPrice)) {
-        return price || "₹0";
+    function escapeHTML(value) {
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
     }
 
-    return new Intl.NumberFormat("en-IN", {
-        style: "currency",
-        currency: "INR",
-        maximumFractionDigits: 0
-    }).format(numericPrice);
-}
+    function formatPrice(value) {
+        if (value === null || value === undefined || value === "") {
+            return "₹0";
+        }
 
+        if (typeof value === "number") {
+            return `₹${value.toLocaleString("en-IN")}`;
+        }
 
-function getServices() {
+        const numericValue = Number(
+            String(value).replace(/[^\d.-]/g, "")
+        );
 
-    try {
+        if (Number.isNaN(numericValue)) {
+            return String(value);
+        }
 
-        const stored =
-            localStorage.getItem(
-                SERVICE_STORAGE_KEY
+        return `₹${numericValue.toLocaleString("en-IN")}`;
+    }
+
+    function parsePrice(value) {
+        if (value === null || value === undefined) {
+            return 0;
+        }
+
+        const numericValue = Number(
+            String(value).replace(/[^\d.-]/g, "")
+        );
+
+        return Number.isFinite(numericValue)
+            ? numericValue
+            : 0;
+    }
+
+    function getServices() {
+        try {
+            const stored =
+                localStorage.getItem(SERVICE_STORAGE_KEY);
+
+            if (!stored) {
+                return [];
+            }
+
+            const parsed = JSON.parse(stored);
+
+            return Array.isArray(parsed)
+                ? parsed
+                : [];
+        } catch (error) {
+            console.error(
+                "Unable to load services:",
+                error
             );
 
-        const services =
-            stored
-                ? JSON.parse(stored)
+            return [];
+        }
+    }
+
+    function getServiceId(service) {
+        if (!service) {
+            return "";
+        }
+
+        return String(
+            service.id ??
+            service.serviceId ??
+            service.slug ??
+            ""
+        );
+    }
+
+    function getPackageId(pkg) {
+        if (!pkg) {
+            return "";
+        }
+
+        return String(
+            pkg.id ??
+            pkg.packageId ??
+            pkg.key ??
+            pkg.slug ??
+            ""
+        );
+    }
+
+    function getPackageName(pkg) {
+        if (!pkg) {
+            return "Photography Package";
+        }
+
+        return (
+            pkg.name ??
+            pkg.packageName ??
+            pkg.title ??
+            "Photography Package"
+        );
+    }
+
+    function getPackageDescription(pkg) {
+        if (!pkg) {
+            return "";
+        }
+
+        return (
+            pkg.description ??
+            pkg.shortDescription ??
+            ""
+        );
+    }
+
+    function getPackagePrice(pkg) {
+        if (!pkg) {
+            return 0;
+        }
+
+        return parsePrice(
+            pkg.price ??
+            pkg.packagePrice ??
+            pkg.amount ??
+            0
+        );
+    }
+
+    function getPaymentPlan(pkg) {
+        if (!pkg) {
+            return null;
+        }
+
+        return (
+            pkg.paymentPlan ??
+            pkg.packagePaymentPlan ??
+            pkg.payment ??
+            null
+        );
+    }
+
+    function getPackageCoverage(pkg) {
+        if (!pkg) {
+            return "";
+        }
+
+        return (
+            pkg.coverage ??
+            pkg.duration ??
+            pkg.hours ??
+            ""
+        );
+    }
+
+    function getPackagePhotos(pkg) {
+        if (!pkg) {
+            return "";
+        }
+
+        return (
+            pkg.photos ??
+            pkg.photoCount ??
+            ""
+        );
+    }
+
+    function getPackageDelivery(pkg) {
+        if (!pkg) {
+            return "";
+        }
+
+        return (
+            pkg.delivery ??
+            pkg.deliveryTime ??
+            ""
+        );
+    }
+
+    /* =========================================================
+       PAYMENT PLAN NORMALIZATION
+       ========================================================= */
+
+    function normalizePaymentPlan(plan, packagePrice) {
+        const total = Math.max(
+            0,
+            Number(packagePrice) || 0
+        );
+
+        if (!plan || typeof plan !== "object") {
+            return {
+                type: "full",
+                totalAmount: total,
+                stages: [
+                    {
+                        id: "full",
+                        name: "Full Payment",
+                        amount: total,
+                        percentage: 100
+                    }
+                ]
+            };
+        }
+
+        const rawType =
+            String(
+                plan.type ??
+                plan.planType ??
+                "full"
+            ).toLowerCase();
+
+        if (rawType === "advance") {
+            let advanceAmount = 0;
+
+            if (
+                plan.amount !== undefined ||
+                plan.advanceAmount !== undefined ||
+                plan.fixedAmount !== undefined
+            ) {
+                advanceAmount = Number(
+                    plan.amount ??
+                    plan.advanceAmount ??
+                    plan.fixedAmount ??
+                    0
+                );
+            } else if (
+                plan.percentage !== undefined ||
+                plan.advancePercentage !== undefined
+            ) {
+                const percentage = Number(
+                    plan.percentage ??
+                    plan.advancePercentage ??
+                    0
+                );
+
+                advanceAmount =
+                    total * (percentage / 100);
+            }
+
+            advanceAmount = Math.min(
+                total,
+                Math.max(0, advanceAmount)
+            );
+
+            return {
+                type: "advance",
+                totalAmount: total,
+                advanceAmount,
+                remainingAmount:
+                    Math.max(
+                        0,
+                        total - advanceAmount
+                    ),
+                stages: [
+                    {
+                        id: "advance",
+                        name: "Booking Advance",
+                        amount: advanceAmount,
+                        percentage:
+                            total > 0
+                                ? (advanceAmount / total) * 100
+                                : 0
+                    },
+                    {
+                        id: "remaining",
+                        name: "Remaining Balance",
+                        amount:
+                            Math.max(
+                                0,
+                                total - advanceAmount
+                            ),
+                        percentage:
+                            total > 0
+                                ? ((total - advanceAmount) / total) * 100
+                                : 0
+                    }
+                ]
+            };
+        }
+
+        if (
+            rawType === "installments" ||
+            rawType === "installment"
+        ) {
+            const rawStages =
+                Array.isArray(plan.stages)
+                    ? plan.stages
+                    : [];
+
+            const stages = rawStages
+                .map((stage, index) => {
+                    let amount = 0;
+
+                    if (
+                        stage.amount !== undefined ||
+                        stage.fixedAmount !== undefined
+                    ) {
+                        amount = Number(
+                            stage.amount ??
+                            stage.fixedAmount ??
+                            0
+                        );
+                    } else if (
+                        stage.percentage !== undefined
+                    ) {
+                        amount =
+                            total *
+                            (Number(stage.percentage) / 100);
+                    }
+
+                    amount = Math.max(
+                        0,
+                        Number.isFinite(amount)
+                            ? amount
+                            : 0
+                    );
+
+                    return {
+                        id:
+                            stage.id ??
+                            `stage-${index + 1}`,
+                        name:
+                            stage.name ??
+                            stage.title ??
+                            `Payment ${index + 1}`,
+                        amount,
+                        percentage:
+                            total > 0
+                                ? (amount / total) * 100
+                                : 0,
+                        due:
+                            stage.due ??
+                            stage.dueDate ??
+                            stage.label ??
+                            ""
+                    };
+                })
+                .filter(stage => stage.amount > 0);
+
+            if (stages.length) {
+                const stageTotal =
+                    stages.reduce(
+                        (sum, stage) =>
+                            sum + stage.amount,
+                        0
+                    );
+
+                /*
+                 * If the configured installment amounts do not
+                 * exactly equal the package price, preserve the
+                 * package price as the authoritative total.
+                 *
+                 * This avoids creating a booking whose payment
+                 * schedule silently exceeds or falls below the
+                 * actual package price.
+                 */
+                if (
+                    Math.abs(stageTotal - total) > 0.01 &&
+                    total > 0
+                ) {
+                    const lastStage =
+                        stages[stages.length - 1];
+
+                    lastStage.amount = Math.max(
+                        0,
+                        lastStage.amount +
+                            (total - stageTotal)
+                    );
+
+                    lastStage.percentage =
+                        total > 0
+                            ? (lastStage.amount / total) * 100
+                            : 0;
+                }
+
+                return {
+                    type: "installments",
+                    totalAmount: total,
+                    stages
+                };
+            }
+        }
+
+        return {
+            type: "full",
+            totalAmount: total,
+            stages: [
+                {
+                    id: "full",
+                    name: "Full Payment",
+                    amount: total,
+                    percentage: 100
+                }
+            ]
+        };
+    }
+
+    /* =========================================================
+       PAYMENT STATE
+       ========================================================= */
+
+    function initializePaymentState(
+        booking,
+        paymentPlan
+    ) {
+        const total =
+            parsePrice(booking.packagePrice);
+
+        const normalizedPlan =
+            normalizePaymentPlan(
+                paymentPlan,
+                total
+            );
+
+        booking.paymentPlan =
+            normalizedPlan;
+
+        if (!Array.isArray(booking.paymentRecords)) {
+            booking.paymentRecords = [];
+        }
+
+        if (
+            booking.amountPaid === undefined ||
+            booking.amountPaid === null
+        ) {
+            if (
+                booking.paid !== undefined &&
+                booking.paid !== null
+            ) {
+                booking.amountPaid =
+                    parsePrice(booking.paid);
+            } else {
+                booking.amountPaid = 0;
+            }
+        }
+
+        booking.amountPaid = Math.min(
+            total,
+            Math.max(
+                0,
+                Number(booking.amountPaid) || 0
+            )
+        );
+
+        booking.remainingAmount = Math.max(
+            0,
+            total - booking.amountPaid
+        );
+
+        if (booking.amountPaid <= 0) {
+            booking.paymentStatus = "Pending";
+        } else if (
+            booking.remainingAmount <= 0.01
+        ) {
+            booking.paymentStatus = "Paid";
+        } else {
+            booking.paymentStatus = "Partially Paid";
+        }
+
+        /*
+         * Keep legacy fields because older frontend screens
+         * may still read them.
+         */
+        booking.payment =
+            booking.paymentStatus;
+
+        booking.advance =
+            booking.amountPaid > 0
+                ? formatPrice(booking.amountPaid)
+                : "₹0";
+
+        booking.remaining =
+            formatPrice(booking.remainingAmount);
+
+        return booking;
+    }
+
+    /* =========================================================
+       LOAD SELECTED SERVICE + PACKAGE
+       ========================================================= */
+
+    function loadSelectedPackage() {
+        const services = getServices();
+
+        if (!serviceId || !packageId) {
+            showSelectionError(
+                "The selected service or package is missing."
+            );
+            return false;
+        }
+
+        selectedService =
+            services.find(service => {
+                const currentId =
+                    getServiceId(service);
+
+                return (
+                    currentId === String(serviceId) &&
+                    service.active !== false
+                );
+            });
+
+        if (!selectedService) {
+            showSelectionError(
+                "The selected photography service could not be found or is no longer available."
+            );
+            return false;
+        }
+
+        const packages =
+            Array.isArray(selectedService.packages)
+                ? selectedService.packages
                 : [];
 
-        return Array.isArray(services)
-            ? services
-            : [];
-
-    } catch (error) {
-
-        console.error(
-            "Unable to load services:",
-            error
-        );
-
-        return [];
-    }
-}
-
-
-/* =========================================================
-   LOAD SELECTED SERVICE
-========================================================= */
-
-const services = getServices();
-
-const service =
-    services.find(function (item) {
-
-        return String(item.id) ===
-            String(serviceId);
-
-    });
-
-
-let selectedPackage = null;
-
-
-if (service && Array.isArray(service.packages)) {
-
-    selectedPackage =
-        service.packages.find(function (item) {
-
-            return String(item.id) ===
-                String(packageId);
-
-        });
-}
-
-
-/* =========================================================
-   INVALID BOOKING
-========================================================= */
-
-function showBookingError(title, message) {
-
-    if (!selectedPackageCard) {
-        return;
-    }
-
-    selectedPackageCard.innerHTML = `
-        <div class="package-error">
-
-            <h2>
-                ${escapeHTML(title)}
-            </h2>
-
-            <p>
-                ${escapeHTML(message)}
-            </p>
-
-            <a href="client.html#services">
-                Back to Services
-            </a>
-
-        </div>
-    `;
-
-    form.style.display = "none";
-}
-
-
-if (!service) {
-
-    showBookingError(
-        "Service Not Found",
-        "The selected photography service could not be found."
-    );
-
-    return;
-}
-
-
-if (!service.active) {
-
-    showBookingError(
-        "Service Unavailable",
-        "This service is currently unavailable for booking."
-    );
-
-    return;
-}
-
-
-if (!selectedPackage) {
-
-    showBookingError(
-        "Package Not Found",
-        "The selected package could not be found."
-    );
-
-    return;
-}
-
-
-/* =========================================================
-   BACK TO SERVICE
-========================================================= */
-
-if (backToService) {
-
-    backToService.href =
-        "service.html?id=" +
-        encodeURIComponent(service.id);
-}
-
-
-/* =========================================================
-   SELECTED PACKAGE CARD
-========================================================= */
-
-const packageName =
-    selectedPackage.name || "Selected Package";
-
-const packagePrice =
-    formatPrice(selectedPackage.price);
-
-const packageDescription =
-    selectedPackage.description || "";
-
-const coverage =
-    selectedPackage.coverage || "";
-
-const photos =
-    selectedPackage.photos || "";
-
-const delivery =
-    selectedPackage.delivery || "";
-
-
-let packageMeta = "";
-
-
-if (coverage) {
-
-    packageMeta += `
-        <span class="package-meta-item">
-            ${escapeHTML(coverage)}
-        </span>
-    `;
-}
-
-
-if (photos) {
-
-    packageMeta += `
-        <span class="package-meta-item">
-            ${escapeHTML(photos)} Photos
-        </span>
-    `;
-}
-
-
-if (delivery) {
-
-    packageMeta += `
-        <span class="package-meta-item">
-            ${escapeHTML(delivery)}
-        </span>
-    `;
-}
-
-
-selectedPackageCard.innerHTML = `
-
-    <div class="package-topline">
-
-        <div>
-
-            <p class="package-service">
-                ${escapeHTML(service.name)}
-            </p>
-
-            <h2 class="package-name">
-                ${escapeHTML(packageName)}
-            </h2>
-
-        </div>
-
-        <div class="package-price">
-            ${escapeHTML(packagePrice)}
-        </div>
-
-    </div>
-
-
-    ${
-        packageDescription
-            ? `
-                <p class="package-description">
-                    ${escapeHTML(packageDescription)}
-                </p>
-              `
-            : ""
-    }
-
-
-    ${
-        packageMeta
-            ? `
-                <div class="package-meta">
-                    ${packageMeta}
-                </div>
-              `
-            : ""
-    }
-
-`;
-
-
-/* =========================================================
-   SUMMARY
-========================================================= */
-
-if (summaryService) {
-
-    summaryService.textContent =
-        service.name || "—";
-}
-
-
-if (summaryPackage) {
-
-    summaryPackage.textContent =
-        packageName;
-}
-
-
-if (summaryPrice) {
-
-    summaryPrice.textContent =
-        packagePrice;
-}
-
-
-/* =========================================================
-   MULTI DATE PICKER
-========================================================= */
-
-let datePicker = null;
-
-
-if (
-    multiDateInput &&
-    typeof flatpickr === "function"
-) {
-
-    datePicker =
-        flatpickr(
-            multiDateInput,
-            {
-                mode: "multiple",
-                dateFormat: "d-m-Y",
-                allowInput: false,
-                minDate: "today",
-
-                onChange:
-                    function (selectedDates) {
-
-                        renderDateRows(
-                            selectedDates
-                        );
-
-                        updateTotalHours();
-                    }
-            }
-        );
-
-} else if (multiDateInput) {
-
-    console.error(
-        "Flatpickr is not loaded."
-    );
-
-    multiDateInput.removeAttribute(
-        "readonly"
-    );
-}
-
-
-/* =========================================================
-   FORMAT DATE
-========================================================= */
-
-function formatDate(date) {
-
-    const day =
-        String(
-            date.getDate()
-        ).padStart(2, "0");
-
-    const month =
-        String(
-            date.getMonth() + 1
-        ).padStart(2, "0");
-
-    const year =
-        date.getFullYear();
-
-    return `${day}-${month}-${year}`;
-}
-
-
-/* =========================================================
-   RENDER DATE ROWS
-========================================================= */
-
-function renderDateRows(selectedDates) {
-
-    if (!dateTimeContainer) {
-        return;
-    }
-
-    dateTimeContainer.innerHTML = "";
-
-
-    selectedDates.forEach(
-        function (date, index) {
-
-            const row =
-                document.createElement("div");
-
-            row.className =
-                "date-time-row";
-
-            row.dataset.date =
-                formatDate(date);
-
-
-            row.innerHTML = `
-
-                <div class="date-heading">
-
-                    <h3>
-                        ${escapeHTML(
-                            formatDate(date)
-                        )}
-                    </h3>
-
-                    <span class="date-label">
-                        Date ${index + 1}
-                    </span>
-
-                </div>
-
-
-                <div class="time-grid">
-
-                    <div class="time-field">
-
-                        <label>
-                            Start Time
-                        </label>
-
-                        <input
-                            type="time"
-                            class="start-time"
-                            aria-label="Start time for ${escapeHTML(formatDate(date))}"
-                            required>
-
-                    </div>
-
-
-                    <div class="time-field">
-
-                        <label>
-                            End Time
-                        </label>
-
-                        <input
-                            type="time"
-                            class="end-time"
-                            aria-label="End time for ${escapeHTML(formatDate(date))}"
-                            required>
-
-                    </div>
-
-                </div>
-
-
-                <div class="date-hours">
-
-                    <span>
-                        Hours for this date
-                    </span>
-
-                    <strong class="hours">
-                        0
-                    </strong>
-
-                </div>
-
-            `;
-
-
-            dateTimeContainer.appendChild(row);
-
-
-            const startInput =
-                row.querySelector(
-                    ".start-time"
+        selectedPackage =
+            packages.find(pkg => {
+                return (
+                    getPackageId(pkg) ===
+                    String(packageId)
                 );
+            });
 
-            const endInput =
-                row.querySelector(
-                    ".end-time"
-                );
-
-
-            function calculateHours() {
-
-                const hoursElement =
-                    row.querySelector(
-                        ".hours"
-                    );
-
-
-                if (
-                    !startInput.value ||
-                    !endInput.value
-                ) {
-
-                    hoursElement.textContent =
-                        "0";
-
-                    updateTotalHours();
-
-                    return;
-                }
-
-
-                const startParts =
-                    startInput.value.split(":");
-
-                const endParts =
-                    endInput.value.split(":");
-
-
-                const startMinutes =
-                    parseInt(
-                        startParts[0],
-                        10
-                    ) * 60 +
-                    parseInt(
-                        startParts[1],
-                        10
-                    );
-
-
-                const endMinutes =
-                    parseInt(
-                        endParts[0],
-                        10
-                    ) * 60 +
-                    parseInt(
-                        endParts[1],
-                        10
-                    );
-
-
-                let difference =
-                    endMinutes -
-                    startMinutes;
-
-
-                if (difference < 0) {
-
-                    difference +=
-                        24 * 60;
-                }
-
-
-                if (difference === 0) {
-
-                    hoursElement.textContent =
-                        "Invalid";
-
-                    updateTotalHours();
-
-                    return;
-                }
-
-
-                const calculatedHours =
-                    difference / 60;
-
-
-                hoursElement.textContent =
-                    calculatedHours.toFixed(1);
-
-
-                updateTotalHours();
-            }
-
-
-            startInput.addEventListener(
-                "change",
-                calculateHours
+        if (!selectedPackage) {
+            showSelectionError(
+                "The selected package could not be found."
             );
-
-
-            endInput.addEventListener(
-                "change",
-                calculateHours
-            );
-
+            return false;
         }
-    );
 
+        renderSelectedPackage();
 
-    updateTotalHours();
-}
-
-
-/* =========================================================
-   TOTAL HOURS
-========================================================= */
-
-function updateTotalHours() {
-
-    if (!totalHoursElement) {
-        return;
+        return true;
     }
 
+    /* =========================================================
+       PACKAGE CARD
+       ========================================================= */
 
-    let total = 0;
-
-
-    document
-        .querySelectorAll(
-            ".date-time-row .hours"
-        )
-        .forEach(
-            function (hourElement) {
-
-                const value =
-                    parseFloat(
-                        hourElement.textContent
-                    );
-
-
-                if (!Number.isNaN(value)) {
-
-                    total += value;
-                }
-            }
-        );
-
-
-    totalHoursElement.textContent =
-        total.toFixed(1);
-}
-
-
-/* =========================================================
-   AUTOSAVE
-========================================================= */
-
-const autosaveFields = [
-    fullNameInput,
-    emailInput,
-    phoneInput,
-    locationInput,
-    messageInput
-];
-
-
-autosaveFields.forEach(
-    function (field) {
-
-        if (!field || !field.id) {
+    function renderSelectedPackage() {
+        if (!selectedPackageCard) {
             return;
         }
 
+        const serviceName =
+            selectedService.name ??
+            selectedService.title ??
+            "Photography Service";
 
-        try {
+        const packageName =
+            getPackageName(selectedPackage);
 
-            const savedValue =
-                localStorage.getItem(
-                    "booking." + field.id
+        const packagePrice =
+            getPackagePrice(selectedPackage);
+
+        const description =
+            getPackageDescription(selectedPackage);
+
+        const coverage =
+            getPackageCoverage(selectedPackage);
+
+        const photos =
+            getPackagePhotos(selectedPackage);
+
+        const delivery =
+            getPackageDelivery(selectedPackage);
+
+        selectedPackageCard.innerHTML = `
+            <div class="selected-package-inner">
+
+                <div class="selected-package-label">
+                    SELECTED PACKAGE
+                </div>
+
+                <div class="selected-package-service">
+                    ${escapeHTML(serviceName)}
+                </div>
+
+                <h2 class="selected-package-name">
+                    ${escapeHTML(packageName)}
+                </h2>
+
+                ${
+                    description
+                        ? `
+                            <p class="selected-package-description">
+                                ${escapeHTML(description)}
+                            </p>
+                        `
+                        : ""
+                }
+
+                <div class="selected-package-price">
+                    ${formatPrice(packagePrice)}
+                </div>
+
+                ${
+                    coverage ||
+                    photos ||
+                    delivery
+                        ? `
+                            <div class="selected-package-meta">
+
+                                ${
+                                    coverage
+                                        ? `
+                                            <div class="package-meta-item">
+                                                <span>Coverage</span>
+                                                <strong>
+                                                    ${escapeHTML(coverage)}
+                                                </strong>
+                                            </div>
+                                        `
+                                        : ""
+                                }
+
+                                ${
+                                    photos
+                                        ? `
+                                            <div class="package-meta-item">
+                                                <span>Photos</span>
+                                                <strong>
+                                                    ${escapeHTML(photos)}
+                                                </strong>
+                                            </div>
+                                        `
+                                        : ""
+                                }
+
+                                ${
+                                    delivery
+                                        ? `
+                                            <div class="package-meta-item">
+                                                <span>Delivery</span>
+                                                <strong>
+                                                    ${escapeHTML(delivery)}
+                                                </strong>
+                                            </div>
+                                        `
+                                        : ""
+                                }
+
+                            </div>
+                        `
+                        : ""
+                }
+
+            </div>
+        `;
+
+        if (summaryService) {
+            summaryService.textContent =
+                serviceName;
+        }
+
+        if (summaryPackage) {
+            summaryPackage.textContent =
+                packageName;
+        }
+
+        if (summaryPrice) {
+            summaryPrice.textContent =
+                formatPrice(packagePrice);
+        }
+    }
+
+    /* =========================================================
+       ERROR STATE
+       ========================================================= */
+
+    function showSelectionError(messageText) {
+        if (selectedPackageCard) {
+            selectedPackageCard.innerHTML = `
+                <div class="selected-package-inner">
+                    <div class="selected-package-label">
+                        BOOKING ERROR
+                    </div>
+
+                    <h2 class="selected-package-name">
+                        Unable to load package
+                    </h2>
+
+                    <p class="selected-package-description">
+                        ${escapeHTML(messageText)}
+                    </p>
+                </div>
+            `;
+        }
+
+        if (bookingForm) {
+            bookingForm.style.display = "none";
+        }
+
+        if (submitBtn) {
+            submitBtn.disabled = true;
+        }
+    }
+
+    /* =========================================================
+       BACK TO SERVICE
+       ========================================================= */
+
+    if (backToService) {
+        backToService.addEventListener(
+            "click",
+            event => {
+                event.preventDefault();
+
+                if (!selectedService) {
+                    window.location.href =
+                        "client.html";
+
+                    return;
+                }
+
+                const id =
+                    encodeURIComponent(
+                        getServiceId(selectedService)
+                    );
+
+                window.location.href =
+                    `service.html?id=${id}`;
+            }
+        );
+    }
+
+    /* =========================================================
+       FLATPICKR
+       ========================================================= */
+
+    let datePicker = null;
+
+    function initializeDatePicker() {
+        if (
+            !multiDate ||
+            typeof flatpickr === "undefined"
+        ) {
+            console.error(
+                "Flatpickr is not available."
+            );
+
+            return;
+        }
+
+        datePicker = flatpickr(
+            multiDate,
+            {
+                mode: "multiple",
+                dateFormat: "d-m-Y",
+                minDate: "today",
+                allowInput: false,
+
+                onChange(selectedDates) {
+                    renderDateTimeRows(
+                        selectedDates
+                    );
+
+                    updateTotalHours();
+                }
+            }
+        );
+    }
+
+    /* =========================================================
+       DATE FORMAT
+       ========================================================= */
+
+    function formatDateForStorage(date) {
+        if (!(date instanceof Date)) {
+            return "";
+        }
+
+        const day =
+            String(date.getDate()).padStart(
+                2,
+                "0"
+            );
+
+        const month =
+            String(date.getMonth() + 1).padStart(
+                2,
+                "0"
+            );
+
+        const year =
+            date.getFullYear();
+
+        return `${day}-${month}-${year}`;
+    }
+
+    function formatDateLong(dateString) {
+        if (!dateString) {
+            return "";
+        }
+
+        const parts =
+            String(dateString).split("-");
+
+        if (parts.length === 3) {
+            const day =
+                Number(parts[0]);
+
+            const month =
+                Number(parts[1]) - 1;
+
+            const year =
+                Number(parts[2]);
+
+            const parsed =
+                new Date(
+                    year,
+                    month,
+                    day
                 );
 
-
-            if (savedValue !== null) {
-
-                field.value =
-                    savedValue;
+            if (!Number.isNaN(parsed.getTime())) {
+                return parsed.toLocaleDateString(
+                    "en-IN",
+                    {
+                        weekday: "long",
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric"
+                    }
+                );
             }
+        }
 
-        } catch (error) {
+        const parsed =
+            new Date(dateString);
 
-            console.error(
-                "Unable to load saved field:",
-                field.id
+        if (!Number.isNaN(parsed.getTime())) {
+            return parsed.toLocaleDateString(
+                "en-IN",
+                {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric"
+                }
             );
         }
 
-
-        function saveField() {
-
-            try {
-
-                localStorage.setItem(
-                    "booking." + field.id,
-                    field.value
-                );
-
-            } catch (error) {
-
-                console.error(
-                    "Unable to save field:",
-                    field.id
-                );
-            }
-        }
-
-
-        field.addEventListener(
-            "input",
-            saveField
-        );
-
-
-        field.addEventListener(
-            "change",
-            saveField
-        );
-
-    }
-);
-
-
-/* =========================================================
-   CLEAR AUTOSAVE
-========================================================= */
-
-function clearFormStorage() {
-
-    autosaveFields.forEach(
-        function (field) {
-
-            if (!field || !field.id) {
-                return;
-            }
-
-
-            try {
-
-                localStorage.removeItem(
-                    "booking." + field.id
-                );
-
-            } catch (error) {
-
-                console.error(
-                    "Unable to clear saved field:",
-                    field.id
-                );
-            }
-
-        }
-    );
-}
-
-
-/* =========================================================
-   GET DATE DATA
-========================================================= */
-
-function getDateData() {
-
-    const rows =
-        document.querySelectorAll(
-            ".date-time-row"
-        );
-
-
-    const dates = [];
-
-
-    rows.forEach(
-        function (row) {
-
-            const startInput =
-                row.querySelector(
-                    ".start-time"
-                );
-
-            const endInput =
-                row.querySelector(
-                    ".end-time"
-                );
-
-
-            dates.push({
-
-                date:
-                    row.dataset.date || "",
-
-                startTime:
-                    startInput
-                        ? startInput.value
-                        : "",
-
-                endTime:
-                    endInput
-                        ? endInput.value
-                        : "",
-
-                hours:
-                    row.querySelector(".hours")
-                        ? row.querySelector(".hours").textContent
-                        : "0"
-
-            });
-
-        }
-    );
-
-
-    return dates;
-}
-
-
-/* =========================================================
-   VALIDATE DATES
-========================================================= */
-
-function validateDates() {
-
-    const dateRows =
-        document.querySelectorAll(
-            ".date-time-row"
-        );
-
-
-    if (dateRows.length === 0) {
-
-        alert(
-            "Please select at least one event date."
-        );
-
-        return false;
+        return dateString;
     }
 
+    /* =========================================================
+       DATE / TIME ROWS
+       ========================================================= */
 
-    for (
-        let index = 0;
-        index < dateRows.length;
-        index++
+    function renderDateTimeRows(selectedDates) {
+        if (!dateTimeContainer) {
+            return;
+        }
+
+        dateTimeContainer.innerHTML = "";
+
+        if (!selectedDates.length) {
+            return;
+        }
+
+        selectedDates.forEach(
+            (date, index) => {
+                const dateValue =
+                    formatDateForStorage(date);
+
+                const row =
+                    document.createElement("div");
+
+                row.className =
+                    "date-time-row";
+
+                row.dataset.date =
+                    dateValue;
+
+                row.innerHTML = `
+                    <div class="date-time-date">
+                        <span class="date-label">
+                            ${escapeHTML(
+                                formatDateLong(
+                                    dateValue
+                                )
+                            )}
+                        </span>
+                    </div>
+
+                    <div class="date-time-fields">
+
+                        <div class="time-field">
+                            <label for="startTime_${index}">
+                                Start Time
+                            </label>
+
+                            <input
+                                type="time"
+                                id="startTime_${index}"
+                                class="start-time"
+                                aria-label="Start time for ${escapeHTML(dateValue)}"
+                            >
+                        </div>
+
+                        <div class="time-separator">
+                            to
+                        </div>
+
+                        <div class="time-field">
+                            <label for="endTime_${index}">
+                                End Time
+                            </label>
+
+                            <input
+                                type="time"
+                                id="endTime_${index}"
+                                class="end-time"
+                                aria-label="End time for ${escapeHTML(dateValue)}"
+                            >
+                        </div>
+
+                        <div class="hours-display">
+                            <span class="hours-label">
+                                Hours
+                            </span>
+
+                            <strong class="hours">
+                                0
+                            </strong>
+                        </div>
+
+                    </div>
+                `;
+
+                dateTimeContainer.appendChild(
+                    row
+                );
+
+                const startInput =
+                    row.querySelector(
+                        ".start-time"
+                    );
+
+                const endInput =
+                    row.querySelector(
+                        ".end-time"
+                    );
+
+                if (startInput) {
+                    startInput.addEventListener(
+                        "change",
+                        () => {
+                            updateRowHours(row);
+                            updateTotalHours();
+                        }
+                    );
+                }
+
+                if (endInput) {
+                    endInput.addEventListener(
+                        "change",
+                        () => {
+                            updateRowHours(row);
+                            updateTotalHours();
+                        }
+                    );
+                }
+            }
+        );
+    }
+
+    /* =========================================================
+       TIME CALCULATION
+       ========================================================= */
+
+    function timeToMinutes(value) {
+        if (!value) {
+            return null;
+        }
+
+        const parts =
+            String(value).split(":");
+
+        if (parts.length !== 2) {
+            return null;
+        }
+
+        const hours =
+            Number(parts[0]);
+
+        const minutes =
+            Number(parts[1]);
+
+        if (
+            !Number.isInteger(hours) ||
+            !Number.isInteger(minutes) ||
+            hours < 0 ||
+            hours > 23 ||
+            minutes < 0 ||
+            minutes > 59
+        ) {
+            return null;
+        }
+
+        return (
+            hours * 60 +
+            minutes
+        );
+    }
+
+    function calculateHours(
+        startValue,
+        endValue
     ) {
+        const start =
+            timeToMinutes(startValue);
 
-        const row =
-            dateRows[index];
+        const end =
+            timeToMinutes(endValue);
 
+        if (
+            start === null ||
+            end === null
+        ) {
+            return 0;
+        }
+
+        /*
+         * A photography session cannot silently become
+         * a next-day session simply because the user picked
+         * an end time earlier than the start time.
+         *
+         * Overnight sessions should be represented explicitly
+         * by a future dedicated option rather than guessed.
+         */
+        if (end <= start) {
+            return 0;
+        }
+
+        return (
+            (end - start) / 60
+        );
+    }
+
+    function updateRowHours(row) {
+        if (!row) {
+            return 0;
+        }
 
         const startInput =
             row.querySelector(
                 ".start-time"
             );
 
-
         const endInput =
             row.querySelector(
                 ".end-time"
             );
 
-
-        if (
-            !startInput ||
-            !endInput ||
-            !startInput.value ||
-            !endInput.value
-        ) {
-
-            alert(
-                "Please select a start and end time for every date."
+        const hoursElement =
+            row.querySelector(
+                ".hours"
             );
 
-            return false;
-        }
-
-
-        if (
-            startInput.value ===
-            endInput.value
-        ) {
-
-            alert(
-                "Start time and end time cannot be the same."
+        const hours =
+            calculateHours(
+                startInput?.value,
+                endInput?.value
             );
 
-            return false;
+        if (hoursElement) {
+            hoursElement.textContent =
+                hours
+                    ? Number(hours.toFixed(2))
+                    : "0";
         }
 
+        return hours;
     }
 
+    function updateTotalHours() {
+        if (!dateTimeContainer) {
+            return 0;
+        }
 
-    return true;
-}
+        const rows =
+            dateTimeContainer.querySelectorAll(
+                ".date-time-row"
+            );
 
+        let total = 0;
 
-/* =========================================================
-   FORM SUBMIT
-========================================================= */
+        rows.forEach(row => {
+            total += updateRowHours(row);
+        });
 
-form.addEventListener(
-    "submit",
-    function (event) {
+        total = Number(
+            total.toFixed(2)
+        );
 
-        event.preventDefault();
+        if (totalHoursInput) {
+            totalHoursInput.value =
+                total;
+        }
 
+        return total;
+    }
 
-        /* -----------------------------------------------
-           HONEYPOT
-        ------------------------------------------------ */
+    /* =========================================================
+       GET DATE DATA
+       ========================================================= */
 
-        if (
-            honeypotInput &&
-            honeypotInput.value.trim() !== ""
-        ) {
+    function getDateData() {
+        if (!dateTimeContainer) {
+            return [];
+        }
 
+        const rows =
+            dateTimeContainer.querySelectorAll(
+                ".date-time-row"
+            );
+
+        return Array.from(rows)
+            .map(row => {
+                const startInput =
+                    row.querySelector(
+                        ".start-time"
+                    );
+
+                const endInput =
+                    row.querySelector(
+                        ".end-time"
+                    );
+
+                const date =
+                    row.dataset.date || "";
+
+                const start =
+                    startInput?.value || "";
+
+                const end =
+                    endInput?.value || "";
+
+                const hours =
+                    calculateHours(
+                        start,
+                        end
+                    );
+
+                return {
+                    date,
+                    start,
+                    end,
+                    time:
+                        start && end
+                            ? `${start} - ${end}`
+                            : "",
+                    hours
+                };
+            });
+    }
+
+    /* =========================================================
+       VALIDATION
+       ========================================================= */
+
+    function showFieldError(
+        element,
+        messageText
+    ) {
+        if (!element) {
             return;
         }
 
+        element.setCustomValidity(
+            messageText
+        );
 
-        /* -----------------------------------------------
-           NAME
-        ------------------------------------------------ */
+        element.reportValidity();
 
+        element.focus();
+
+        setTimeout(() => {
+            element.setCustomValidity("");
+        }, 50);
+    }
+
+    function validateDates() {
+        const dateData =
+            getDateData();
+
+        if (!dateData.length) {
+            if (multiDate) {
+                showFieldError(
+                    multiDate,
+                    "Please select at least one session date."
+                );
+            }
+
+            return false;
+        }
+
+        for (
+            let index = 0;
+            index < dateData.length;
+            index++
+        ) {
+            const item =
+                dateData[index];
+
+            const row =
+                dateTimeContainer.querySelectorAll(
+                    ".date-time-row"
+                )[index];
+
+            const startInput =
+                row?.querySelector(
+                    ".start-time"
+                );
+
+            const endInput =
+                row?.querySelector(
+                    ".end-time"
+                );
+
+            if (!item.start) {
+                showFieldError(
+                    startInput,
+                    "Please select a start time."
+                );
+
+                return false;
+            }
+
+            if (!item.end) {
+                showFieldError(
+                    endInput,
+                    "Please select an end time."
+                );
+
+                return false;
+            }
+
+            const start =
+                timeToMinutes(
+                    item.start
+                );
+
+            const end =
+                timeToMinutes(
+                    item.end
+                );
+
+            if (
+                start === null ||
+                end === null
+            ) {
+                showFieldError(
+                    startInput,
+                    "Please enter a valid time."
+                );
+
+                return false;
+            }
+
+            if (end <= start) {
+                showFieldError(
+                    endInput,
+                    "End time must be later than start time."
+                );
+
+                return false;
+            }
+
+            if (item.hours <= 0) {
+                showFieldError(
+                    endInput,
+                    "Please select a valid session duration."
+                );
+
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    function validateClientDetails() {
         const name =
-            fullNameInput
-                ? fullNameInput.value.trim()
-                : "";
-
+            fullName?.value.trim() || "";
 
         if (!name) {
-
-            alert(
+            showFieldError(
+                fullName,
                 "Please enter your full name."
             );
 
-
-            if (fullNameInput) {
-                fullNameInput.focus();
-            }
-
-
-            return;
+            return false;
         }
 
+        const emailValue =
+            email?.value.trim() || "";
 
-        /* -----------------------------------------------
-           EMAIL
-        ------------------------------------------------ */
-
-        const email =
-            emailInput
-                ? emailInput.value.trim()
-                : "";
-
-
-        const emailRegex =
+        const emailPattern =
             /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-
         if (
-            !email ||
-            !emailRegex.test(email)
+            !emailValue ||
+            !emailPattern.test(emailValue)
         ) {
-
-            alert(
+            showFieldError(
+                email,
                 "Please enter a valid email address."
             );
 
-
-            if (emailInput) {
-                emailInput.focus();
-            }
-
-
-            return;
+            return false;
         }
 
+        const phoneValue =
+            phone?.value.trim() || "";
 
-        /* -----------------------------------------------
-           PHONE
-        ------------------------------------------------ */
-
-        const phone =
-            phoneInput
-                ? phoneInput.value.trim()
-                : "";
-
-
-        const cleanPhone =
-            phone.replace(
+        const phoneDigits =
+            phoneValue.replace(
                 /\D/g,
                 ""
             );
 
-
         if (
-            cleanPhone.length < 10 ||
-            cleanPhone.length > 15
+            phoneDigits.length < 10 ||
+            phoneDigits.length > 15
         ) {
-
-            alert(
+            showFieldError(
+                phone,
                 "Please enter a valid phone number."
             );
 
-
-            if (phoneInput) {
-                phoneInput.focus();
-            }
-
-
-            return;
+            return false;
         }
 
+        const locationValue =
+            locationInput?.value.trim() || "";
 
-        /* -----------------------------------------------
-           LOCATION
-        ------------------------------------------------ */
-
-        const location =
-            locationInput
-                ? locationInput.value.trim()
-                : "";
-
-
-        if (!location) {
-
-            alert(
+        if (!locationValue) {
+            showFieldError(
+                locationInput,
                 "Please enter the session location."
             );
 
+            return false;
+        }
 
-            if (locationInput) {
-                locationInput.focus();
+        return true;
+    }
+
+    /* =========================================================
+       AUTOSAVE
+       ========================================================= */
+
+    function autosaveField(field) {
+        if (!field) {
+            return;
+        }
+
+        try {
+            localStorage.setItem(
+                `booking.${field.id}`,
+                field.value
+            );
+        } catch (error) {
+            console.warn(
+                "Unable to autosave booking field:",
+                error
+            );
+        }
+    }
+
+    function restoreAutosavedFields() {
+        AUTOSAVE_FIELDS.forEach(field => {
+            try {
+                const saved =
+                    localStorage.getItem(
+                        `booking.${field.id}`
+                    );
+
+                if (
+                    saved !== null &&
+                    !field.value
+                ) {
+                    field.value = saved;
+                }
+            } catch (error) {
+                console.warn(
+                    "Unable to restore booking field:",
+                    error
+                );
             }
+        });
+    }
 
+    function clearAutosavedFields() {
+        AUTOSAVE_FIELDS.forEach(field => {
+            try {
+                localStorage.removeItem(
+                    `booking.${field.id}`
+                );
+            } catch (error) {
+                console.warn(
+                    "Unable to clear booking autosave:",
+                    error
+                );
+            }
+        });
+    }
 
-            return;
-        }
+    AUTOSAVE_FIELDS.forEach(field => {
+        field.addEventListener(
+            "input",
+            () => autosaveField(field)
+        );
 
+        field.addEventListener(
+            "change",
+            () => autosaveField(field)
+        );
+    });
 
-        /* -----------------------------------------------
-           DATES
-        ------------------------------------------------ */
+    restoreAutosavedFields();
 
-        if (!validateDates()) {
-            return;
-        }
+    /* =========================================================
+       BUILD BOOKING
+       ========================================================= */
 
-
+    function createBooking() {
         const dates =
             getDateData();
 
+        const firstDate =
+            dates[0] || {};
 
-        /* -----------------------------------------------
-           TOTAL HOURS
-        ------------------------------------------------ */
+        const packagePrice =
+            getPackagePrice(
+                selectedPackage
+            );
+
+        const paymentPlan =
+            normalizePaymentPlan(
+                getPaymentPlan(
+                    selectedPackage
+                ),
+                packagePrice
+            );
+
+        const bookingId =
+            `BK-${Date.now()}`;
+
+        const serviceName =
+            selectedService.name ??
+            selectedService.title ??
+            "Photography Service";
+
+        const packageName =
+            getPackageName(
+                selectedPackage
+            );
 
         const totalHours =
-            totalHoursElement
-                ? totalHoursElement.textContent
-                : "0";
-
-
-        /* -----------------------------------------------
-           NOTES
-        ------------------------------------------------ */
-
-        const notes =
-            messageInput
-                ? messageInput.value.trim()
-                : "";
-
-
-        /* -----------------------------------------------
-           BOOKING OBJECT
-        ------------------------------------------------ */
+            Number(
+                dates
+                    .reduce(
+                        (sum, item) =>
+                            sum +
+                            Number(item.hours || 0),
+                        0
+                    )
+                    .toFixed(2)
+            );
 
         const booking = {
+            /* ---------------------------------------------
+               Identity
+               --------------------------------------------- */
 
-            id:
-                "BK-" +
-                Date.now(),
+            id: bookingId,
+
+            bookingId,
+
+            /* ---------------------------------------------
+               Client
+               --------------------------------------------- */
 
             client:
-                name,
+                fullName?.value.trim() || "",
 
             clientType:
                 "Photography Client",
 
-            phone:
-                phone,
-
             email:
-                email,
+                email?.value.trim() || "",
+
+            phone:
+                phone?.value.trim() || "",
 
             instagram:
                 "-",
 
-            service:
-                service.name || "",
+            /* ---------------------------------------------
+               Service
+               --------------------------------------------- */
 
+            service:
+                serviceName,
+
+            serviceId:
+                getServiceId(
+                    selectedService
+                ),
+
+            /*
+             * Keep the existing field names too.
+             * This makes the booking compatible with
+             * earlier versions of Booking Management.
+             */
             serviceType:
-                service.id || "",
+                getServiceId(
+                    selectedService
+                ),
+
+            /* ---------------------------------------------
+               Package
+               --------------------------------------------- */
 
             package:
                 packageName,
 
-            packageKey:
-                selectedPackage.id || "",
+            packageId:
+                getPackageId(
+                    selectedPackage
+                ),
 
-            packagePrice:
+            packageKey:
+                getPackageId(
+                    selectedPackage
+                ),
+
+            packagePrice,
+
+            /* ---------------------------------------------
+               Payment
+               --------------------------------------------- */
+
+            paymentPlan,
+
+            paymentRecords: [],
+
+            amountPaid: 0,
+
+            remainingAmount:
                 packagePrice,
 
-            date:
-                dates.length
-                    ? dates[0].date
-                    : "",
-
-            time:
-                dates.length
-                    ? dates[0].startTime
-                    : "",
-
-            dates:
-                dates,
-
-            totalHours:
-                totalHours,
-
-            location:
-                location,
-
-            guests:
-                "",
-
-            status:
+            paymentStatus:
                 "Pending",
 
+            /*
+             * Legacy-compatible fields.
+             */
             payment:
                 "Pending",
 
@@ -1205,7 +1679,40 @@ form.addEventListener(
                 "₹0",
 
             remaining:
-                packagePrice,
+                formatPrice(
+                    packagePrice
+                ),
+
+            /* ---------------------------------------------
+               Session
+               --------------------------------------------- */
+
+            date:
+                firstDate.date || "",
+
+            time:
+                firstDate.time || "",
+
+            dates,
+
+            totalHours,
+
+            location:
+                locationInput?.value.trim() || "",
+
+            guests:
+                "",
+
+            /* ---------------------------------------------
+               Booking status
+               --------------------------------------------- */
+
+            status:
+                "Pending",
+
+            /* ---------------------------------------------
+               Extra information
+               --------------------------------------------- */
 
             image:
                 "images/profile.jpg",
@@ -1214,127 +1721,200 @@ form.addEventListener(
                 "",
 
             notes:
-                notes,
+                message?.value.trim() || "",
+
+            /* ---------------------------------------------
+               Timestamps
+               --------------------------------------------- */
 
             createdAt:
                 new Date().toISOString()
         };
 
+        /*
+         * Run through the same payment-state initializer
+         * used by the photographer management system.
+         */
+        initializePaymentState(
+            booking,
+            paymentPlan
+        );
 
-        /* -----------------------------------------------
-           SAVE
-        ------------------------------------------------ */
+        return booking;
+    }
 
+    /* =========================================================
+       SAVE BOOKING
+       ========================================================= */
+
+    function saveBooking(booking) {
         let bookings = [];
 
-
         try {
-
-            const storedBookings =
+            const stored =
                 localStorage.getItem(
                     BOOKING_STORAGE_KEY
                 );
 
+            if (stored) {
+                const parsed =
+                    JSON.parse(stored);
 
-            if (storedBookings) {
-
-                bookings =
-                    JSON.parse(
-                        storedBookings
-                    );
+                if (Array.isArray(parsed)) {
+                    bookings = parsed;
+                }
             }
-
-
-            if (!Array.isArray(bookings)) {
-                bookings = [];
-            }
-
         } catch (error) {
-
             console.error(
-                "Unable to read bookings:",
+                "Unable to read existing bookings:",
                 error
             );
-
-            bookings = [];
         }
-
 
         bookings.unshift(
             booking
         );
 
-
         try {
-
             localStorage.setItem(
                 BOOKING_STORAGE_KEY,
                 JSON.stringify(bookings)
             );
 
+            return true;
         } catch (error) {
-
             console.error(
                 "Unable to save booking:",
                 error
             );
 
-
-            alert(
-                "Unable to save your booking request. Please try again."
-            );
-
-
-            return;
+            return false;
         }
+    }
 
+    /* =========================================================
+       SUCCESS STATE
+       ========================================================= */
 
-        /* ============================================================
-           SUCCESS
-        ============================================================ */
-
-        clearFormStorage();
-
-
+    function showSuccess(bookingId) {
         if (submitBtn) {
-
             submitBtn.disabled = true;
-
-            submitBtn.innerText =
+            submitBtn.textContent =
                 "Booking Submitted ✓";
         }
 
-
         if (successPopup) {
+            successPopup.classList.add(
+                "active"
+            );
 
-            successPopup.style.display =
-                "block";
-        }
+            /*
+             * Support either a normal success popup
+             * or a popup containing a booking ID element.
+             */
+            const popupBookingId =
+                successPopup.querySelector(
+                    "[data-booking-id]"
+                );
 
-
-        /*
-            Give the client a moment to see that
-            the request was successfully submitted,
-            then move them to the booking tracker.
-        */
-
-        setTimeout(function () {
-
-            if (successPopup) {
-
-                successPopup.style.display =
-                    "none";
+            if (popupBookingId) {
+                popupBookingId.textContent =
+                    bookingId;
             }
-
-
-            window.location.href =
-                "bookingStatus.html?id=" +
-                encodeURIComponent(booking.id);
-
-        }, 1200);
-
+        }
     }
-);
 
+    /* =========================================================
+       SUBMIT
+       ========================================================= */
 
+    if (bookingForm) {
+        bookingForm.addEventListener(
+            "submit",
+            event => {
+                event.preventDefault();
+
+                /*
+                 * Honeypot.
+                 * Real users should never interact with this.
+                 */
+                if (
+                    honeypot &&
+                    honeypot.value.trim()
+                ) {
+                    return;
+                }
+
+                if (
+                    !selectedService ||
+                    !selectedPackage
+                ) {
+                    showSelectionError(
+                        "The selected service or package is unavailable."
+                    );
+
+                    return;
+                }
+
+                if (
+                    !validateClientDetails()
+                ) {
+                    return;
+                }
+
+                if (
+                    !validateDates()
+                ) {
+                    return;
+                }
+
+                updateTotalHours();
+
+                const booking =
+                    createBooking();
+
+                const saved =
+                    saveBooking(
+                        booking
+                    );
+
+                if (!saved) {
+                    alert(
+                        "Your booking could not be saved. Please try again."
+                    );
+
+                    return;
+                }
+
+                clearAutosavedFields();
+
+                showSuccess(
+                    booking.id
+                );
+
+                /*
+                 * Give the user a moment to see the
+                 * successful submission state before
+                 * opening the booking status page.
+                 */
+                setTimeout(() => {
+                    window.location.href =
+                        `bookingStatus.html?id=${encodeURIComponent(
+                            booking.id
+                        )}`;
+                }, 1200);
+            }
+        );
+    }
+
+    /* =========================================================
+       INITIALIZATION
+       ========================================================= */
+
+    const packageLoaded =
+        loadSelectedPackage();
+
+    if (packageLoaded) {
+        initializeDatePicker();
+    }
 });
