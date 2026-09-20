@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Professional Studio | Billing & Subscription</title>
+
+    <meta
+        name="description"
+        content="Manage your Professional Studio subscription, billing history, gallery purchases and invoices."
+    >
+
+    <link
+        rel="stylesheet"
+        href="subscription.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header class="dashboard-header">
+
+        <div class="header-inner">
+
+            <a
+                href="user.html"
+                class="brand"
+            >
+                Professional Studio
+            </a>
+
+
+            <div class="header-right">
+
+                <a
+                    href="user.html"
+                    class="back-link"
+                >
+                    ← Dashboard
+                </a>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="subscription-page">
+
+
+        <!-- =================================================
+             PAGE INTRO
+        ================================================== -->
+
+        <section class="page-intro">
+
+            <div>
+
+                <p class="eyebrow">
+                    BILLING & SUBSCRIPTION
+                </p>
+
+                <h1>
+                    Manage Your Plan
+                </h1>
+
+                <p class="intro-text">
+                    Manage your Professional Studio subscription,
+                    payments, gallery purchases and billing history
+                    from one place.
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             BILLING OVERVIEW
+        ================================================== -->
+
+        <section class="billing-overview">
+
+            <article class="overview-card">
+
+                <span class="overview-label">
+                    CURRENT PLAN
+                </span>
+
+                <strong
+                    id="overviewPlan"
+                    class="overview-value"
+                >
+                    Starter
+                </strong>
+
+                <span
+                    id="overviewPlanPrice"
+                    class="overview-meta"
+                >
+                    ₹499 / month
+                </span>
+
+            </article>
+
+
+            <article class="overview-card">
+
+                <span class="overview-label">
+                    SUBSCRIPTION STATUS
+                </span>
+
+                <strong
+                    id="overviewStatus"
+                    class="overview-value status-active"
+                >
+                    Active
+                </strong>
+
+                <span
+                    id="overviewStatusText"
+                    class="overview-meta"
+                >
+                    Your subscription is active
+                </span>
+
+            </article>
+
+
+            <article class="overview-card">
+
+                <span class="overview-label">
+                    NEXT BILLING
+                </span>
+
+                <strong
+                    id="overviewRenewal"
+                    class="overview-value"
+                >
+                    —
+                </strong>
+
+                <span class="overview-meta">
+                    Monthly renewal
+                </span>
+
+            </article>
+
+
+            <article class="overview-card">
+
+                <span class="overview-label">
+                    TOTAL PAID
+                </span>
+
+                <strong
+                    id="overviewTotalPaid"
+                    class="overview-value"
+                >
+                    ₹0
+                </strong>
+
+                <span class="overview-meta">
+                    Subscription + gallery purchases
+                </span>
+
+            </article>
+
+        </section>
+
+
+
+        <!-- =================================================
+             CURRENT SUBSCRIPTION
+        ================================================== -->
+
+        <section class="dashboard-section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <p class="section-eyebrow">
+                        YOUR SUBSCRIPTION
+                    </p>
+
+                    <h2>
+                        Current Plan
+                    </h2>
+
+                    <p>
+                        Your Professional Studio account is currently
+                        using this plan.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="current-plan-card">
+
+
+                <div class="current-plan-main">
+
+                    <div class="plan-heading-row">
+
+                        <div>
+
+                            <span class="current-plan-label">
+                                CURRENT PLAN
+                            </span>
+
+                            <h3 id="currentPlanName">
+                                Starter
+                            </h3>
+
+                        </div>
+
+
+                        <span
+                            id="currentPlanStatus"
+                            class="plan-status active"
+                        >
+                            Active
+                        </span>
+
+                    </div>
+
+
+                    <p
+                        id="currentPlanDescription"
+                        class="current-plan-description"
+                    >
+                        Perfect for photographers getting started.
+                    </p>
+
+
+                    <div class="current-plan-details">
+
+
+                        <div class="detail-item">
+
+                            <span>
+                                Monthly price
+                            </span>
+
+                            <strong id="currentPlanPrice">
+                                ₹499
+                            </strong>
+
+                        </div>
+
+
+                        <div class="detail-item">
+
+                            <span>
+                                Recent Work Storage
+                            </span>
+
+                            <strong id="currentPlanStorage">
+                                500 MB
+                            </strong>
+
+                        </div>
+
+
+                        <div class="detail-item">
+
+                            <span>
+                                Renewal
+                            </span>
+
+                            <strong id="currentPlanRenewal">
+                                —
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="current-plan-actions">
+
+                    <button
+                        type="button"
+                        class="btn-primary"
+                        id="changePlanBtn"
+                    >
+                        Change Plan
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn-secondary"
+                        id="cancelSubscriptionBtn"
+                    >
+                        Cancel Subscription
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             PLAN COMPARISON
+        ================================================== -->
+
+        <section
+            class="dashboard-section"
+            id="plans"
+        >
+
+            <div class="section-heading">
+
+                <div>
+
+                    <p class="section-eyebrow">
+                        SUBSCRIPTION PLANS
+                    </p>
+
+                    <h2>
+                        Choose Your Plan
+                    </h2>
+
+                    <p>
+                        Upgrade or change your subscription as your
+                        photography business grows.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="plans-grid"
+                id="plansGrid"
+            >
+
+                <!-- Plans rendered by JavaScript -->
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             PAYMENT HISTORY
+        ================================================== -->
+
+        <section class="dashboard-section">
+
+            <div class="section-heading section-heading-row">
+
+                <div>
+
+                    <p class="section-eyebrow">
+                        BILLING HISTORY
+                    </p>
+
+                    <h2>
+                        Payment History
+                    </h2>
+
+                    <p>
+                        Subscription payments made through
+                        Professional Studio.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="billing-table-wrapper">
+
+                <table class="billing-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Date
+                            </th>
+
+                            <th>
+                                Description
+                            </th>
+
+                            <th>
+                                Plan
+                            </th>
+
+                            <th>
+                                Amount
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Invoice
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody
+                        id="billingHistoryTable"
+                    >
+
+                    </tbody>
+
+                </table>
+
+
+                <div
+                    id="billingHistoryEmpty"
+                    class="table-empty"
+                    hidden
+                >
+
+                    <strong>
+                        No subscription payments yet
+                    </strong>
+
+                    <span>
+                        Your Professional Studio subscription
+                        payments will appear here.
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             GALLERY PURCHASES
+        ================================================== -->
+
+        <section class="dashboard-section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <p class="section-eyebrow">
+                        CLIENT GALLERIES
+                    </p>
+
+                    <h2>
+                        Gallery Purchases
+                    </h2>
+
+                    <p>
+                        Client galleries purchased through
+                        Professional Studio.
+                    </p>
+
+                </div>
+
+                <a
+                    href="galleryshop.html"
+                    class="btn-secondary"
+                >
+                    Buy New Gallery
+                </a>
+
+            </div>
+
+
+            <div class="gallery-billing-grid">
+
+                <div class="gallery-summary-card">
+
+                    <span class="summary-label">
+                        TOTAL GALLERY SPEND
+                    </span>
+
+                    <strong
+                        id="galleryTotalSpend"
+                    >
+                        ₹0
+                    </strong>
+
+                    <span>
+                        Across all gallery purchases
+                    </span>
+
+                </div>
+
+
+                <div class="gallery-summary-card">
+
+                    <span class="summary-label">
+                        GALLERIES PURCHASED
+                    </span>
+
+                    <strong
+                        id="galleryPurchaseCount"
+                    >
+                        0
+                    </strong>
+
+                    <span>
+                        Purchased gallery plans
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="gallery-purchases-list">
+
+                <div
+                    id="galleryPurchasesList"
+                    class="purchase-list"
+                >
+                </div>
+
+
+                <div
+                    id="galleryPurchasesEmpty"
+                    class="table-empty"
+                    hidden
+                >
+
+                    <strong>
+                        No gallery purchases yet
+                    </strong>
+
+                    <span>
+                        Purchased client galleries will appear
+                        here automatically.
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             BILLING INFORMATION
+        ================================================== -->
+
+        <section class="dashboard-section">
+
+            <div class="section-heading">
+
+                <p class="section-eyebrow">
+                    BILLING INFORMATION
+                </p>
+
+                <h2>
+                    Account Billing
+                </h2>
+
+                <p>
+                    Keep your billing details ready for future
+                    Professional Studio payments.
+                </p>
+
+            </div>
+
+
+            <div class="billing-information-card">
+
+                <div class="billing-info-row">
+
+                    <div>
+
+                        <span>
+                            Account
+                        </span>
+
+                        <strong id="billingAccountName">
+                            Photographer
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="billing-info-row">
+
+                    <div>
+
+                        <span>
+                            Billing cycle
+                        </span>
+
+                        <strong>
+                            Monthly
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="billing-info-row">
+
+                    <div>
+
+                        <span>
+                            Currency
+                        </span>
+
+                        <strong>
+                            INR (₹)
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="billing-info-row">
+
+                    <div>
+
+                        <span>
+                            Payment provider
+                        </span>
+
+                        <strong>
+                            Professional Studio Payments
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             BILLING NOTE
+        ================================================== -->
+
+        <section class="billing-note">
+
+            <div class="billing-note-icon">
+                i
+            </div>
+
+            <div>
+
+                <strong>
+                    Billing is currently in frontend mode
+                </strong>
+
+                <p>
+                    Subscription changes, invoices and payments
+                    are simulated locally for the current
+                    Professional Studio frontend. Real payment
+                    processing will be connected later.
+                </p>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- =====================================================
+         PLAN MODAL
+    ====================================================== -->
+
+    <div
+        class="modal-backdrop"
+        id="planModal"
+        hidden
+    >
+
+        <div
+            class="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="planModalTitle"
+        >
+
+            <button
+                type="button"
+                class="modal-close"
+                id="closePlanModal"
+                aria-label="Close"
+            >
+                ×
+            </button>
+
+
+            <p class="modal-eyebrow">
+                CHANGE SUBSCRIPTION
+            </p>
+
+            <h2 id="planModalTitle">
+                Change Your Plan
+            </h2>
+
+            <p
+                id="planModalText"
+                class="modal-description"
+            >
+                Select a new Professional Studio plan.
+            </p>
+
+
+            <div
+                id="modalPlanOptions"
+                class="modal-plan-options"
+            >
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="btn-secondary"
+                    id="modalCancelBtn"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="button"
+                    class="btn-primary"
+                    id="confirmPlanBtn"
+                >
+                    Confirm Change
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         TOAST
+    ====================================================== -->
+
+    <div
+        class="billing-toast"
+        id="billingToast"
+        role="status"
+        aria-live="polite"
+    >
+    </div>
+
+
+
+    <script src="subscription.js"></script>
+
+</body>
+
+</html>

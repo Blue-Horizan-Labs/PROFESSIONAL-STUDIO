@@ -48,14 +48,14 @@ var STORAGE_PLANS = {
         id: "professional",
         name: "Professional",
         price: 1499,
-        storageMB: 5120
+        storageMB: 2048
     },
 
     studio: {
         id: "studio",
         name: "Studio",
         price: 2999,
-        storageMB: 20480
+        storageMB: 10240
     }
 
 };
