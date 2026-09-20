@@ -1860,21 +1860,250 @@ input:focus-visible {
 
 }
 
+/* =========================================================
+   PROFESSIONAL STUDIO
+   GLOBAL UX POLISH
+   TARGETED OVERRIDES ONLY
+========================================================= */
 
-    .footer {
-        padding: 48px 5.5% 22px;
+
+/* ---------------------------------------------------------
+   NAVIGATION
+   Keep the existing layout, just improve interaction states.
+--------------------------------------------------------- */
+
+.nav-links a {
+    transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.nav-links a:hover {
+    color: #111;
+}
+
+.nav-links a:focus-visible {
+    outline: 2px solid #111;
+    outline-offset: 4px;
+    border-radius: 2px;
+}
+
+
+/* ---------------------------------------------------------
+   BUTTONS
+   Preserve existing button appearance.
+   Only make states more consistent.
+--------------------------------------------------------- */
+
+.btn-primary,
+.btn-secondary,
+.copy-profile-btn {
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        opacity 0.2s ease;
+}
+
+.btn-primary:active,
+.btn-secondary:active,
+.copy-profile-btn:active {
+    transform: translateY(0);
+}
+
+.btn-primary:disabled,
+.btn-secondary:disabled,
+.copy-profile-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible,
+.copy-profile-btn:focus-visible {
+    outline: 2px solid #111;
+    outline-offset: 3px;
+}
+
+
+/* ---------------------------------------------------------
+   FORM CONTROLS
+--------------------------------------------------------- */
+
+input,
+select,
+textarea {
+    outline: none;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #111;
+}
+
+input:disabled,
+select:disabled,
+textarea:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+
+/* ---------------------------------------------------------
+   SECTION LINKS
+--------------------------------------------------------- */
+
+.section-heading a {
+    transition:
+        color 0.2s ease,
+        opacity 0.2s ease;
+}
+
+.section-heading a:hover {
+    color: #111;
+    opacity: 0.7;
+}
+
+
+/* ---------------------------------------------------------
+   CARDS
+   Very subtle interaction improvement only.
+--------------------------------------------------------- */
+
+.service-card,
+.gallery-stat-card,
+.gallery-preview-wrapper,
+.gallery-card,
+.equipment-card,
+.review-card,
+.analytics-card,
+.subscription-card,
+.settings-card,
+.stat-card {
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+/* ---------------------------------------------------------
+   SETTINGS ICONS
+   Keep the existing icon layout, but prevent emoji styling
+   from looking inconsistent across operating systems.
+--------------------------------------------------------- */
+
+.settings-card .settings-icon {
+    flex-shrink: 0;
+}
+
+
+/* ---------------------------------------------------------
+   EQUIPMENT REMOVE BUTTON
+   Keep the spacing already requested.
+--------------------------------------------------------- */
+
+.equipment-remove-btn {
+    margin-left: 14px;
+}
+
+
+/* ---------------------------------------------------------
+   BOOKING SEARCH
+--------------------------------------------------------- */
+
+#searchBooking {
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+#searchBooking:focus {
+    border-color: #111;
+    box-shadow: 0 0 0 3px rgba(17, 17, 17, 0.06);
+}
+
+
+/* ---------------------------------------------------------
+   PORTFOLIO STORAGE PROGRESS
+   Preserve existing appearance, improve transition.
+--------------------------------------------------------- */
+
+#portfolioStorageProgress {
+    transition: width 0.3s ease;
+}
+
+
+/* ---------------------------------------------------------
+   TOAST
+   Keep existing toast design, just make the transition smoother.
+--------------------------------------------------------- */
+
+#dashboardToast {
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease,
+        visibility 0.2s ease;
+}
+
+
+/* ---------------------------------------------------------
+   MOBILE NAVIGATION
+   Small adjustment only. Do not redesign the navbar.
+--------------------------------------------------------- */
+
+@media (max-width: 800px) {
+
+    .nav-links {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
     }
 
-
-    .footer-bottom {
-        margin-top: 35px;
-        padding-top: 18px;
-        flex-direction: column;
-        text-align: center;
-        gap: 12px;
+    .nav-links::-webkit-scrollbar {
+        display: none;
     }
 
-    
-    .footer-bottom p{
-        font-size: 0.98rem;
+    .nav-links a {
+        white-space: nowrap;
     }
+}
+
+
+/* ---------------------------------------------------------
+   SMALL MOBILE
+--------------------------------------------------------- */
+
+@media (max-width: 480px) {
+
+    .hero-actions {
+        gap: 10px;
+    }
+
+    .gallery-actions {
+        gap: 10px;
+    }
+
+    .section-heading {
+        gap: 14px;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   ACCESSIBILITY
+--------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}

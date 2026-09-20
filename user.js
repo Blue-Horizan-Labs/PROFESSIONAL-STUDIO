@@ -15,6 +15,12 @@ var PORTFOLIO_STORAGE_KEY =
 var SUBSCRIPTION_PLAN_KEY =
     "professionalStudio.subscriptionPlan";
 
+var SUBSCRIPTION_STATUS_KEY =
+    "subscriptionStatus";
+
+var SUBSCRIPTION_RENEWAL_KEY =
+    "professionalStudio.subscriptionRenewal";
+
 var EQUIPMENT_STORAGE_KEY =
     "professionalStudio.equipment";
 
@@ -33,13 +39,14 @@ var PROFILE_STORAGE_KEY =
 
 /* =========================================================
    SUBSCRIPTION PLANS
+   Canonical subscription system
 ========================================================= */
 
 var STORAGE_PLANS = {
 
-    basic: {
-        id: "basic",
-        name: "Basic",
+    starter: {
+        id: "starter",
+        name: "Starter",
         price: 499,
         storageMB: 500
     },
@@ -51,14 +58,73 @@ var STORAGE_PLANS = {
         storageMB: 2048
     },
 
-    studio: {
-        id: "studio",
-        name: "Studio",
+    enterprise: {
+        id: "enterprise",
+        name: "Enterprise",
         price: 2999,
         storageMB: 10240
     }
 
 };
+
+
+/* =========================================================
+   LEGACY SUBSCRIPTION COMPATIBILITY
+========================================================= */
+
+var LEGACY_SUBSCRIPTION_PLAN_MAP = {
+
+    basic: "starter",
+
+    professional: "professional",
+
+    studio: "enterprise"
+
+};
+
+
+function normalizeSubscriptionPlanId(
+    planId
+) {
+
+    if (
+        typeof planId !== "string"
+    ) {
+
+        return null;
+
+    }
+
+
+    var normalized =
+        planId.trim().toLowerCase();
+
+
+    if (
+        STORAGE_PLANS[normalized]
+    ) {
+
+        return normalized;
+
+    }
+
+
+    if (
+        LEGACY_SUBSCRIPTION_PLAN_MAP[
+            normalized
+        ]
+    ) {
+
+        return LEGACY_SUBSCRIPTION_PLAN_MAP[
+            normalized
+        ];
+
+    }
+
+
+    return null;
+
+}
 
 
 /* =========================================================
@@ -506,17 +572,30 @@ function getCurrentSubscriptionPlan() {
         );
 
 
+    var normalizedPlanId =
+        normalizeSubscriptionPlanId(
+            savedPlan
+        );
+
+
     if (
-        savedPlan &&
-        STORAGE_PLANS[savedPlan]
+        normalizedPlanId &&
+        STORAGE_PLANS[normalizedPlanId]
     ) {
 
-        return STORAGE_PLANS[savedPlan];
+        return STORAGE_PLANS[
+            normalizedPlanId
+        ];
 
     }
 
 
-    return STORAGE_PLANS.basic;
+    /*
+       Starter is the canonical default plan.
+       This also replaces the old Basic fallback.
+    */
+
+    return STORAGE_PLANS.starter;
 
 }
 
@@ -1283,8 +1362,17 @@ function setPortfolioSubscriptionPlan(
     planId
 ) {
 
+    var normalizedPlanId =
+        normalizeSubscriptionPlanId(
+            planId
+        );
+
+
     if (
-        !STORAGE_PLANS[planId]
+        !normalizedPlanId ||
+        !STORAGE_PLANS[
+            normalizedPlanId
+        ]
     ) {
 
         return false;
@@ -1294,7 +1382,7 @@ function setPortfolioSubscriptionPlan(
 
     localStorage.setItem(
         SUBSCRIPTION_PLAN_KEY,
-        planId
+        normalizedPlanId
     );
 
 
@@ -1303,12 +1391,12 @@ function setPortfolioSubscriptionPlan(
 
 
     storage.storagePlan =
-        planId;
+        normalizedPlanId;
 
 
     storage.storageLimitMB =
         STORAGE_PLANS[
-            planId
+            normalizedPlanId
         ].storageMB;
 
 
@@ -4240,7 +4328,7 @@ function getSubscriptionRenewal() {
 
     var saved =
         localStorage.getItem(
-            "professionalStudio.subscriptionRenewal"
+            SUBSCRIPTION_RENEWAL_KEY
         );
 
 
@@ -4269,14 +4357,25 @@ function getSubscriptionRenewal() {
 
         }
 
+
+        /*
+           Preserve an already formatted date if
+           another frontend module stored one.
+        */
+
+        if (
+            typeof saved === "string" &&
+            saved.trim()
+        ) {
+
+            return saved.trim();
+
+        }
+
     }
 
 
-    /*
-       Temporary prototype date.
-    */
-
-    return "12 Jan 2027";
+    return "Not available";
 
 }
 
@@ -4452,6 +4551,10 @@ window.addEventListener(
             PORTFOLIO_STORAGE_KEY,
 
             SUBSCRIPTION_PLAN_KEY,
+
+            SUBSCRIPTION_STATUS_KEY,
+
+            SUBSCRIPTION_RENEWAL_KEY,
 
             EQUIPMENT_STORAGE_KEY,
 
