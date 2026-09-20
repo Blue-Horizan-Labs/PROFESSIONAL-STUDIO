@@ -1859,3 +1859,22 @@ input:focus-visible {
     }
 
 }
+
+
+    .footer {
+        padding: 48px 5.5% 22px;
+    }
+
+
+    .footer-bottom {
+        margin-top: 35px;
+        padding-top: 18px;
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+    }
+
+    
+    .footer-bottom p{
+        font-size: 0.98rem;
+    }

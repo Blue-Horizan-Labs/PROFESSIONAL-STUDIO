@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Create Account</title>
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Professional Studio | Create Account</title>
 
 <link
     rel="icon"
@@ -14,490 +16,314 @@
 >
 
 <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
+
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+        font-family:"Segoe UI",sans-serif;
     }
 
     html,
-    body {
-        width: 100%;
-        min-height: 100%;
+    body{
+        width:100%;
+        min-height:100%;
     }
 
-    body {
-        font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        min-height: 100vh;
-
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        background: #ffffff;
-        color: #111111;
-
-        overflow-x: hidden;
-        overflow-y: auto;
-
-        position: relative;
+    body{
+        background:#0b0b0b;
+        color:#fff;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        min-height:100vh;
+        padding:20px;
+        overflow-x:hidden;
+        overflow-y:auto;
     }
-
-
-    /* ================= BACKGROUND GLOW ================= */
-
-    body::before {
-        content: "";
-
-        position: absolute;
-
-        width: 550px;
-        height: 550px;
-
-        background: #7c3aed;
-
-        filter: blur(180px);
-        opacity: .07;
-
-        top: -180px;
-        left: -150px;
-
-        pointer-events: none;
-        z-index: 0;
-    }
-
-    body::after {
-        content: "";
-
-        position: absolute;
-
-        width: 450px;
-        height: 450px;
-
-        background: #a78bfa;
-
-        filter: blur(170px);
-        opacity: .06;
-
-        bottom: -150px;
-        right: -120px;
-
-        pointer-events: none;
-        z-index: 0;
-    }
-
 
     /* ================= SIGNUP CONTAINER ================= */
 
-    .signup-container {
-        position: relative;
-
-        width: 100%;
-        max-width: 430px;
-
-        margin: 20px;
-        padding: 45px;
-
-        border-radius: 22px;
-
-        background: #ffffff;
-
-        border: 1px solid #e5e5e5;
-
-        box-shadow:
-            0 20px 50px rgba(0, 0, 0, .08);
-
-        z-index: 10;
+    .signup-container{
+        width:100%;
+        max-width:450px;
     }
 
-    .signup-container::before {
-        content: "";
+    /* ================= CARD ================= */
 
-        position: absolute;
-
-        inset: 0;
-
-        border-radius: 22px;
-
-        border: 1px solid rgba(124, 58, 237, .12);
-
-        pointer-events: none;
-
-        z-index: 0;
+    .signup-card{
+        background:#141414;
+        border:1px solid #252525;
+        border-radius:14px;
+        padding:35px;
     }
-
-    .signup-container > * {
-        position: relative;
-        z-index: 2;
-    }
-
 
     /* ================= HEADING ================= */
 
-    h1 {
-        color: #111111;
-
-        text-align: center;
-
-        margin-bottom: 10px;
-
-        font-size: 2rem;
-        font-weight: 700;
+    h1{
+        font-size:28px;
+        font-weight:600;
+        margin-bottom:8px;
     }
 
-    h1 + p {
-        text-align: center;
-
-        color: #666666;
-
-        margin-bottom: 35px;
-
-        font-size: .95rem;
+    .subtitle{
+        color:#9d9d9d;
+        font-size:14px;
+        margin-bottom:30px;
+        line-height:1.5;
     }
-
 
     /* ================= FORM ================= */
 
-    .form-group {
-        margin-bottom: 20px;
+    .form-group{
+        margin-bottom:22px;
     }
 
-    label {
-        display: block;
-
-        color: #333333;
-
-        margin-bottom: 8px;
-
-        font-size: .92rem;
-        font-weight: 600;
+    label{
+        display:block;
+        margin-bottom:8px;
+        font-size:14px;
+        color:#d5d5d5;
     }
 
-    input {
-        width: 100%;
+    /* ================= INPUTS ================= */
 
-        padding: 15px 18px;
-
-        border-radius: 12px;
-
-        border: 1px solid #dddddd;
-
-        background: #f7f7f7;
-
-        color: #111111;
-
-        font-size: 15px;
-
-        transition: .35s;
+    input[type="email"],
+    input[type="password"],
+    input[type="text"]{
+        width:100%;
+        background:#1d1d1d;
+        border:1px solid #303030;
+        color:#fff;
+        padding:14px;
+        border-radius:10px;
+        outline:none;
+        font-size:15px;
+        transition:border-color .25s, box-shadow .25s;
     }
 
-    input::placeholder {
-        color: #999999;
+    input::placeholder{
+        color:#777;
     }
 
-    input:focus {
-        outline: none;
-
-        border-color: #7c3aed;
-
-        box-shadow:
-            0 0 0 4px rgba(124, 58, 237, .10);
-
-        background: #ffffff;
+    input:focus{
+        border-color:#3b82f6;
+        box-shadow:0 0 0 3px rgba(59,130,246,.08);
     }
-
 
     /* ================= PASSWORD WRAPPER ================= */
 
-    .password-wrapper {
-        position: relative;
-
-        width: 100%;
+    .password-wrapper{
+        position:relative;
     }
 
-    .password-wrapper input {
-        padding-right: 52px;
+    .password-wrapper input{
+        padding-right:55px;
     }
 
-    .password-toggle {
-        position: absolute;
-
-        top: 50%;
-        right: 15px;
-
-        transform: translateY(-50%);
-
-        width: 28px;
-        height: 28px;
-
-        padding: 0;
-        margin: 0;
-
-        border: none;
-        border-radius: 50%;
-
-        background: transparent;
-
-        color: #777777;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        cursor: pointer;
-
-        box-shadow: none;
-
-        transition:
-            color .25s ease,
-            background .25s ease;
+    .password-toggle{
+        position:absolute;
+        right:12px;
+        top:50%;
+        transform:translateY(-50%);
+        width:32px;
+        height:32px;
+        padding:0;
+        margin:0;
+        border:none;
+        border-radius:50%;
+        background:transparent;
+        color:#888;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        cursor:pointer;
+        box-shadow:none;
+        transition:color .25s, background .25s;
     }
 
-    .password-toggle:hover {
-        transform: translateY(-50%);
-
-        color: #111111;
-
-        background: rgba(0, 0, 0, .05);
-
-        box-shadow: none;
+    .password-toggle:hover{
+        transform:translateY(-50%);
+        color:#fff;
+        background:#252525;
+        box-shadow:none;
     }
 
-    .password-toggle:focus {
-        outline: none;
-
-        box-shadow:
-            0 0 0 3px rgba(124, 58, 237, .12);
+    .password-toggle:active{
+        transform:translateY(-50%);
     }
 
-    .password-toggle svg {
-        width: 19px;
-        height: 19px;
-
-        stroke: currentColor;
-
-        stroke-width: 2;
-
-        fill: none;
-
-        stroke-linecap: round;
-        stroke-linejoin: round;
-
-        pointer-events: none;
+    .password-toggle:focus{
+        outline:none;
+        box-shadow:0 0 0 3px rgba(59,130,246,.08);
     }
 
+    .password-toggle svg{
+        width:18px;
+        height:18px;
+        stroke:currentColor;
+        stroke-width:2;
+        fill:none;
+        stroke-linecap:round;
+        stroke-linejoin:round;
+        pointer-events:none;
+    }
 
     /* ================= REFERRAL ================= */
 
-    .referral-group {
-        margin-bottom: 20px;
+    .referral-group{
+        margin-bottom:22px;
     }
 
-    .referral-label {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 10px;
+    .referral-label{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:10px;
     }
 
-    .optional-text {
-        color: #999999;
-
-        font-size: .78rem;
-
-        font-weight: 500;
+    .optional-text{
+        color:#777;
+        font-size:12px;
+        font-weight:400;
     }
 
-    .referral-hint {
-        margin-top: 7px;
-
-        color: #888888;
-
-        font-size: .78rem;
-
-        line-height: 1.4;
+    .referral-hint{
+        margin-top:7px;
+        color:#777;
+        font-size:12px;
+        line-height:1.4;
     }
 
+    /* ================= SIGNUP BUTTON ================= */
 
-    /* ================= BUTTON ================= */
-
-    .signup-button {
-        width: 100%;
-
-        padding: 16px;
-
-        margin-top: 10px;
-
-        border: none;
-
-        border-radius: 50px;
-
-        background: #111111;
-
-        color: #ffffff;
-
-        font-size: 16px;
-
-        font-weight: 600;
-
-        cursor: pointer;
-
-        transition: .35s;
-
-        box-shadow:
-            0 12px 30px rgba(0, 0, 0, .12);
+    .signup-button{
+        width:100%;
+        padding:14px;
+        margin-top:2px;
+        border:none;
+        border-radius:10px;
+        background:#2563eb;
+        color:white;
+        font-size:15px;
+        font-weight:600;
+        cursor:pointer;
+        transition:.3s;
     }
 
-    .signup-button:hover {
-        transform: translateY(-3px);
-
-        box-shadow:
-            0 18px 40px rgba(0, 0, 0, .16);
+    .signup-button:hover{
+        background:#1d4ed8;
     }
 
-    .signup-button:disabled {
-        opacity: .7;
-
-        cursor: not-allowed;
+    .signup-button:active{
+        transform:translateY(1px);
     }
 
+    .signup-button:disabled{
+        opacity:.55;
+        cursor:not-allowed;
+        transform:none;
+    }
 
     /* ================= LOGIN LINK ================= */
 
-    .login-link {
-        position: relative;
-
-        margin-top: 28px;
-
-        text-align: center;
-
-        color: #666666;
-
-        z-index: 20;
+    .login-link{
+        text-align:center;
+        margin-top:25px;
+        color:#9d9d9d;
+        font-size:14px;
     }
 
-    .login-link a {
-        position: relative;
-
-        display: inline-block;
-
-        color: #7c3aed;
-
-        text-decoration: none;
-
-        font-weight: 600;
-
-        padding: 4px 2px;
-
-        cursor: pointer;
-
-        pointer-events: auto;
-
-        z-index: 30;
-
-        transition: .3s;
+    .login-link a{
+        color:#8b8b8b;
+        font-weight:600;
+        text-decoration:none;
+        transition:.3s;
     }
 
-    .login-link a:hover {
-        color: #6d28d9;
+    .login-link a:hover{
+        color:#fff;
     }
-
 
     /* ================= MOBILE ================= */
 
-    @media (max-width: 500px) {
+    @media(max-width:500px){
 
-        body {
-            align-items: flex-start;
-
-            padding: 20px 0;
-
-            overflow-x: hidden;
-            overflow-y: auto;
+        body{
+            padding:20px;
+            align-items:flex-start;
+            padding-top:30px;
+            padding-bottom:30px;
         }
 
-        .signup-container {
-            width: calc(100% - 30px);
-
-            margin: 0 15px;
-
-            padding: 35px 28px;
-
-            border-radius: 20px;
+        .signup-card{
+            padding:25px;
         }
 
-        h1 {
-            font-size: 1.8rem;
+        h1{
+            font-size:24px;
         }
 
-        h1 + p {
-            font-size: .9rem;
-
-            margin-bottom: 28px;
+        .subtitle{
+            font-size:14px;
+            margin-bottom:25px;
         }
 
-        input {
-            padding: 14px 16px;
-
-            font-size: 14px;
+        .form-group{
+            margin-bottom:20px;
         }
 
-        .password-wrapper input {
-            padding-right: 48px;
+        input[type="email"],
+        input[type="password"],
+        input[type="text"]{
+            padding:14px;
+            font-size:14px;
         }
 
-        .password-toggle {
-            right: 12px;
+        .password-wrapper input{
+            padding-right:52px;
         }
 
-        .signup-button {
-            padding: 15px;
-
-            font-size: 15px;
+        .password-toggle{
+            right:10px;
         }
 
-        .login-link {
-            margin-top: 24px;
-
-            padding-bottom: 5px;
+        .signup-button{
+            padding:14px;
+            font-size:15px;
         }
 
-        .login-link a {
-            padding: 6px 4px;
-
-            min-height: 32px;
+        .login-link{
+            font-size:13px;
         }
+
     }
 
+    @media(max-width:360px){
 
-    /* ================= VERY SMALL PHONES ================= */
-
-    @media (max-width: 360px) {
-
-        .signup-container {
-            width: calc(100% - 20px);
-
-            margin: 0 10px;
-
-            padding: 30px 20px;
+        body{
+            padding-left:15px;
+            padding-right:15px;
         }
 
-        h1 {
-            font-size: 1.65rem;
+        .signup-card{
+            padding:22px;
         }
 
-        h1 + p {
-            margin-bottom: 24px;
+        h1{
+            font-size:23px;
         }
 
-        .form-group {
-            margin-bottom: 16px;
+        .form-group{
+            margin-bottom:18px;
         }
 
-        .referral-group {
-            margin-bottom: 16px;
+        .referral-group{
+            margin-bottom:20px;
         }
+
     }
+
 </style>
 
 
@@ -508,171 +334,199 @@
 
 <div class="signup-container">
 
-    <h1>Create Account</h1>
+    <div class="signup-card">
 
-    <p>Create your Professional Studio account.</p>
+        <h1>Create Account</h1>
 
-
-    <form id="signupForm">
-
-        <!-- ================= EMAIL ================= -->
-
-        <div class="form-group">
-
-            <label for="email">
-                Email
-            </label>
-
-            <input
-                type="email"
-                id="email"
-                placeholder="Enter your email"
-                autocomplete="email"
-                required
-            >
-
-        </div>
+        <p class="subtitle">
+            Create your Professional Studio account.
+        </p>
 
 
-        <!-- ================= PASSWORD ================= -->
+        <form id="signupForm">
 
-        <div class="form-group">
+            <!-- ================= EMAIL ================= -->
 
-            <label for="password">
-                Password
-            </label>
+            <div class="form-group">
 
-            <div class="password-wrapper">
+                <label for="email">
+                    Email
+                </label>
 
                 <input
-                    type="password"
-                    id="password"
-                    placeholder="Create a password"
-                    autocomplete="new-password"
+                    type="email"
+                    id="email"
+                    placeholder="Enter your email"
+                    autocomplete="email"
                     required
                 >
 
-                <button
-                    type="button"
-                    class="password-toggle"
-                    data-target="password"
-                    aria-label="Show password"
-                    title="Show password"
-                >
+            </div>
 
-                    <svg
-                        class="eye-icon"
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
+
+            <!-- ================= PASSWORD ================= -->
+
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <div class="password-wrapper">
+
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Create a password"
+                        autocomplete="new-password"
+                        required
                     >
-                        <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"></path>
-                        <circle cx="12" cy="12" r="3"></circle>
-                    </svg>
 
-                </button>
+                    <button
+                        type="button"
+                        class="password-toggle"
+                        data-target="password"
+                        aria-label="Show password"
+                        title="Show password"
+                    >
+
+                        <svg
+                            class="eye-icon"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+
+                            <path
+                                d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"
+                            ></path>
+
+                            <circle
+                                cx="12"
+                                cy="12"
+                                r="3"
+                            ></circle>
+
+                        </svg>
+
+                    </button>
+
+                </div>
 
             </div>
 
-        </div>
+
+            <!-- ================= CONFIRM PASSWORD ================= -->
+
+            <div class="form-group">
+
+                <label for="confirmPassword">
+                    Confirm Password
+                </label>
+
+                <div class="password-wrapper">
+
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        placeholder="Confirm your password"
+                        autocomplete="new-password"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="password-toggle"
+                        data-target="confirmPassword"
+                        aria-label="Show password"
+                        title="Show password"
+                    >
+
+                        <svg
+                            class="eye-icon"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+
+                            <path
+                                d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"
+                            ></path>
+
+                            <circle
+                                cx="12"
+                                cy="12"
+                                r="3"
+                            ></circle>
+
+                        </svg>
+
+                    </button>
+
+                </div>
+
+            </div>
 
 
-        <!-- ================= CONFIRM PASSWORD ================= -->
+            <!-- ================= REFERRAL CODE ================= -->
 
-        <div class="form-group">
+            <div class="form-group referral-group">
 
-            <label for="confirmPassword">
-                Confirm Password
-            </label>
+                <label
+                    for="referralCode"
+                    class="referral-label"
+                >
 
-            <div class="password-wrapper">
+                    <span>
+                        Referral Code
+                    </span>
+
+                    <span class="optional-text">
+                        Optional
+                    </span>
+
+                </label>
 
                 <input
-                    type="password"
-                    id="confirmPassword"
-                    placeholder="Confirm your password"
-                    autocomplete="new-password"
-                    required
+                    type="text"
+                    id="referralCode"
+                    placeholder="Enter referral code"
+                    autocomplete="off"
+                    maxlength="50"
+                    spellcheck="false"
                 >
 
-                <button
-                    type="button"
-                    class="password-toggle"
-                    data-target="confirmPassword"
-                    aria-label="Show password"
-                    title="Show password"
-                >
-
-                    <svg
-                        class="eye-icon"
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                    >
-                        <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"></path>
-                        <circle cx="12" cy="12" r="3"></circle>
-                    </svg>
-
-                </button>
+                <div class="referral-hint">
+                    Have a referral code? Enter it here.
+                </div>
 
             </div>
 
-        </div>
 
+            <!-- ================= SIGNUP BUTTON ================= -->
 
-        <!-- ================= REFERRAL CODE ================= -->
-
-        <div class="form-group referral-group">
-
-            <label
-                for="referralCode"
-                class="referral-label"
+            <button
+                type="submit"
+                id="signupBtn"
+                class="signup-button"
             >
-                <span>Referral Code</span>
+                Create Account
+            </button>
 
-                <span class="optional-text">
-                    Optional
-                </span>
-            </label>
 
-            <input
-                type="text"
-                id="referralCode"
-                placeholder="Enter referral code"
-                autocomplete="off"
-                maxlength="50"
-                spellcheck="false"
-            >
+            <!-- ================= LOGIN LINK ================= -->
 
-            <div class="referral-hint">
-                Have a referral code? Enter it here.
+            <div class="login-link">
+
+                Already have an account?
+
+                <a href="/auth/login-new.html">
+                    Sign In
+                </a>
+
             </div>
 
-        </div>
+        </form>
 
-
-        <!-- ================= SIGNUP BUTTON ================= -->
-
-        <button
-            type="submit"
-            id="signupBtn"
-            class="signup-button"
-        >
-            Create Account
-        </button>
-
-
-        <!-- ================= LOGIN LINK ================= -->
-
-        <div class="login-link">
-
-            Already have an account?
-
-            <a href="/auth/login-new.html">
-                Sign In
-            </a>
-
-        </div>
-
-    </form>
+    </div>
 
 </div>
 
@@ -694,83 +548,104 @@
         document.querySelectorAll(".password-toggle");
 
 
-    passwordToggles.forEach(function (toggle) {
+    passwordToggles.forEach(function(toggle){
 
-        toggle.addEventListener("click", function () {
+        toggle.addEventListener(
+            "click",
+            function(){
 
-            const targetId =
-                toggle.getAttribute("data-target");
+                const targetId =
+                    toggle.getAttribute("data-target");
 
-            const passwordInput =
-                document.getElementById(targetId);
+                const passwordInput =
+                    document.getElementById(targetId);
 
 
-            if (!passwordInput) {
-                return;
+                if(!passwordInput){
+                    return;
+                }
+
+
+                const isPassword =
+                    passwordInput.type === "password";
+
+
+                if(isPassword){
+
+                    passwordInput.type = "text";
+
+                    toggle.setAttribute(
+                        "aria-label",
+                        "Hide password"
+                    );
+
+                    toggle.setAttribute(
+                        "title",
+                        "Hide password"
+                    );
+
+
+                    toggle.innerHTML = `
+
+                        <svg
+                            class="eye-icon"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+
+                            <path d="M3 3l18 18"></path>
+
+                            <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"></path>
+
+                            <path d="M9.9 5.1A10.9 10.9 0 0 1 12 5c6.5 0 10 7 10 7a17.2 17.2 0 0 1-3.1 3.9"></path>
+
+                            <path d="M6.1 6.1C3.6 8 2 12 2 12s3.5 7 10 7c1.7 0 3.2-.4 4.5-1"></path>
+
+                        </svg>
+
+                    `;
+
+                }else{
+
+                    passwordInput.type = "password";
+
+                    toggle.setAttribute(
+                        "aria-label",
+                        "Show password"
+                    );
+
+                    toggle.setAttribute(
+                        "title",
+                        "Show password"
+                    );
+
+
+                    toggle.innerHTML = `
+
+                        <svg
+                            class="eye-icon"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+
+                            <path
+                                d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"
+                            ></path>
+
+                            <circle
+                                cx="12"
+                                cy="12"
+                                r="3"
+                            ></circle>
+
+                        </svg>
+
+                    `;
+
+                }
+
             }
-
-
-            const isPassword =
-                passwordInput.type === "password";
-
-
-            if (isPassword) {
-
-                passwordInput.type = "text";
-
-                toggle.setAttribute(
-                    "aria-label",
-                    "Hide password"
-                );
-
-                toggle.setAttribute(
-                    "title",
-                    "Hide password"
-                );
-
-
-                toggle.innerHTML = `
-                    <svg
-                        class="eye-icon"
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                    >
-                        <path d="M3 3l18 18"></path>
-                        <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"></path>
-                        <path d="M9.9 5.1A10.9 10.9 0 0 1 12 5c6.5 0 10 7 10 7a17.2 17.2 0 0 1-3.1 3.9"></path>
-                        <path d="M6.1 6.1C3.6 8 2 12 2 12s3.5 7 10 7c1.7 0 3.2-.4 4.5-1"></path>
-                    </svg>
-                `;
-
-            } else {
-
-                passwordInput.type = "password";
-
-                toggle.setAttribute(
-                    "aria-label",
-                    "Show password"
-                );
-
-                toggle.setAttribute(
-                    "title",
-                    "Show password"
-                );
-
-
-                toggle.innerHTML = `
-                    <svg
-                        class="eye-icon"
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                    >
-                        <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"></path>
-                        <circle cx="12" cy="12" r="3"></circle>
-                    </svg>
-                `;
-
-            }
-
-        });
+        );
 
     });
 
@@ -779,99 +654,100 @@
        GET A USEFUL ERROR MESSAGE FROM ANY API RESPONSE
     ========================================================= */
 
-    function getErrorMessage(data) {
+    function getErrorMessage(data){
 
-        if (!data) {
+        if(!data){
             return "Unable to create account.";
         }
 
 
         /* Direct string response */
 
-        if (typeof data === "string") {
+        if(typeof data === "string"){
             return data;
         }
 
 
         /* Normal API response */
 
-        if (
+        if(
             typeof data.message === "string" &&
             data.message.trim()
-        ) {
+        ){
             return data.message;
         }
 
 
         /* Nested message */
 
-        if (
+        if(
             data.message &&
             typeof data.message === "object" &&
             typeof data.message.message === "string"
-        ) {
+        ){
             return data.message.message;
         }
 
 
         /* Common error format */
 
-        if (
+        if(
             typeof data.error === "string" &&
             data.error.trim()
-        ) {
+        ){
             return data.error;
         }
 
 
         /* Nested error */
 
-        if (
+        if(
             data.error &&
             typeof data.error === "object" &&
             typeof data.error.message === "string"
-        ) {
+        ){
             return data.error.message;
         }
 
 
         /* Supabase-style nested error */
 
-        if (
+        if(
             data.error &&
             typeof data.error === "object" &&
             typeof data.error.error_description === "string"
-        ) {
+        ){
             return data.error.error_description;
         }
 
 
         /* Details field */
 
-        if (
+        if(
             typeof data.details === "string" &&
             data.details.trim()
-        ) {
+        ){
             return data.details;
         }
 
 
         /* Description field */
 
-        if (
+        if(
             typeof data.error_description === "string" &&
             data.error_description.trim()
-        ) {
+        ){
             return data.error_description;
         }
 
 
         /* Last resort */
 
-        try {
+        try{
+
             return JSON.stringify(data);
 
-        } catch (e) {
+        }catch(e){
 
             return "Unable to create account.";
 
@@ -884,7 +760,7 @@
        RESET BUTTON
     ========================================================= */
 
-    function resetSignupButton() {
+    function resetSignupButton(){
 
         signupBtn.disabled = false;
 
@@ -900,7 +776,7 @@
 
     form.addEventListener(
         "submit",
-        async function (e) {
+        async function(e){
 
             e.preventDefault();
 
@@ -933,29 +809,31 @@
 
             /* ================= VALIDATION ================= */
 
-            if (
+            if(
                 !email ||
                 !password ||
                 !confirmPassword
-            ) {
+            ){
 
                 alert(
                     "Please fill in all required fields."
                 );
 
                 return;
+
             }
 
 
-            if (
+            if(
                 password !== confirmPassword
-            ) {
+            ){
 
                 alert(
                     "Passwords do not match."
                 );
 
                 return;
+
             }
 
 
@@ -967,25 +845,24 @@
                 "Creating Account...";
 
 
-            try {
+            try{
 
                 const response =
                     await fetch(
                         "/api/signup",
                         {
+                            method:"POST",
 
-                            method: "POST",
-
-                            headers: {
+                            headers:{
                                 "Content-Type":
                                     "application/json"
                             },
 
-                            body: JSON.stringify({
+                            body:JSON.stringify({
 
-                                email: email,
+                                email:email,
 
-                                password: password,
+                                password:password,
 
                                 referralCode:
                                     referralCode
@@ -1008,16 +885,16 @@
                 let data;
 
 
-                if (
+                if(
                     contentType.includes(
                         "application/json"
                     )
-                ) {
+                ){
 
                     data =
                         await response.json();
 
-                } else {
+                }else{
 
                     const text =
                         await response.text();
@@ -1044,7 +921,7 @@
                    SUCCESS
                 ================================================= */
 
-                if (response.ok) {
+                if(response.ok){
 
                     const message =
                         typeof data === "object" &&
@@ -1053,12 +930,12 @@
                             : data;
 
 
-                    if (
+                    if(
                         message === "200" ||
                         data?.success === true ||
                         data?.status === "success" ||
                         data?.status === 200
-                    ) {
+                    ){
 
                         window.location.href =
                             "/setup.html";
@@ -1072,15 +949,16 @@
                        OTHER SUCCESS RESPONSE
                     ================= */
 
-                    if (
+                    if(
                         typeof data === "string" &&
                         (
                             data
                                 .toLowerCase()
                                 .includes("success") ||
+
                             data === "200"
                         )
-                    ) {
+                    ){
 
                         window.location.href =
                             "/setup.html";
@@ -1102,11 +980,10 @@
 
                 alert(errorMessage);
 
-
                 resetSignupButton();
 
 
-            } catch (error) {
+            }catch(error){
 
                 console.error(
                     "Signup request failed:",
@@ -1131,4 +1008,5 @@
 
 
 </body>
+
 </html>
