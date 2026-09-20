@@ -1,16 +1,13 @@
 <!DOCTYPE html>
-
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <title>Recent Work | Professional Studio</title>
 
-<title>Recent Work | Professional Studio</title>
-
-<link rel="stylesheet" href="recentwork.css">
-
-
+    <link rel="stylesheet" href="recentwork.css">
 </head>
 
 <body>
@@ -18,397 +15,256 @@
 <div class="app-shell">
 
 
-<!-- =====================================================
-     SIDEBAR
-====================================================== -->
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
 
-<aside class="sidebar" id="sidebar">
+    <aside class="sidebar" id="sidebar">
 
-    <div class="brand">
+        <div class="brand">
 
-        <div class="brand-mark">
-            PS
-        </div>
-
-        <div>
-            <strong>Professional Studio</strong>
-            <span>Photographer Dashboard</span>
-        </div>
-
-    </div>
-
-
-    <nav class="nav">
-
-        <a href="user.html" class="nav-link">
-            <span>⌂</span>
-            <span>Dashboard</span>
-        </a>
-
-        <a href="recentwork.html" class="nav-link active">
-            <span>▦</span>
-            <span>Recent Work</span>
-        </a>
-
-        <a href="clientgallery.html" class="nav-link">
-            <span>▤</span>
-            <span>Client Galleries</span>
-        </a>
-
-    </nav>
-
-
-    <div class="sidebar-bottom">
-
-        <a href="user.html" class="back-link">
-            ← Back to Dashboard
-        </a>
-
-    </div>
-
-</aside>
-
-
-<!-- =====================================================
-     MAIN CONTENT
-====================================================== -->
-
-<main class="main-content">
-
-    <!-- TOPBAR -->
-
-    <header class="topbar">
-
-        <button
-            class="mobile-menu"
-            id="mobileMenu"
-            type="button"
-            aria-label="Open menu">
-
-            ☰
-
-        </button>
-
-
-        <div>
-
-            <p class="eyebrow">
-                Recent Work
-            </p>
-
-            <h1>
-                Manage your gallery
-            </h1>
-
-        </div>
-
-
-        <a
-            href="user.html"
-            class="dashboard-button">
-
-            Dashboard
-
-        </a>
-
-    </header>
-
-
-    <!-- =================================================
-         PAGE INTRO
-    ================================================== -->
-
-    <section class="page-intro">
-
-        <div>
-
-            <h2>
-                Organize your recent photography
-            </h2>
-
-            <p>
-                Create albums, upload your work, choose album covers,
-                and control what appears in your public gallery.
-            </p>
-
-        </div>
-
-    </section>
-
-
-    <!-- =================================================
-         STORAGE CARD
-    ================================================== -->
-
-    <section class="storage-card">
-
-        <div class="storage-header">
-
-            <div>
-
-                <span class="section-label">
-                    Gallery Storage
-                </span>
-
-                <h2 id="planName">
-                    Basic Plan
-                </h2>
-
+            <div class="brand-mark">
+                PS
             </div>
 
-
-            <span
-                class="storage-badge available"
-                id="storageBadge">
-
-                Available
-
-            </span>
-
-        </div>
-
-
-        <div class="storage-numbers">
-
             <div>
-
-                <strong id="usedStorage">
-                    0 MB
-                </strong>
-
-                <span>
-                    Used
-                </span>
-
-            </div>
-
-
-            <div>
-
-                <strong id="availableStorage">
-                    500 MB
-                </strong>
-
-                <span>
-                    Available
-                </span>
-
-            </div>
-
-
-            <div>
-
-                <strong id="totalStorage">
-                    500 MB
-                </strong>
-
-                <span>
-                    Total
-                </span>
-
+                <strong>Professional Studio</strong>
+                <span>Photographer Dashboard</span>
             </div>
 
         </div>
 
 
-        <div class="progress-track">
+        <nav class="nav" aria-label="Main navigation">
 
-            <div
-                class="progress-fill"
-                id="storageProgress">
-            </div>
+            <a href="user.html" class="nav-link">
+                <span aria-hidden="true">⌂</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="recentwork.html" class="nav-link active" aria-current="page">
+                <span aria-hidden="true">▦</span>
+                <span>Recent Work</span>
+            </a>
+
+            <a href="clientgallery.html" class="nav-link">
+                <span aria-hidden="true">▤</span>
+                <span>Client Galleries</span>
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <a href="user.html" class="back-link">
+                ← Back to Dashboard
+            </a>
 
         </div>
 
-
-        <p
-            class="storage-message"
-            id="storageMessage">
-
-            Your gallery storage is ready for uploads.
-
-        </p>
-
-    </section>
+    </aside>
 
 
-    <!-- =================================================
-         ALBUM MANAGER
-    ================================================== -->
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
 
-    <section class="album-section">
+    <main class="main-content">
 
-        <div class="section-heading album-heading">
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <button
+                class="mobile-menu"
+                id="mobileMenu"
+                type="button"
+                aria-label="Open menu"
+                aria-controls="sidebar"
+                aria-expanded="false">
+
+                ☰
+
+            </button>
+
 
             <div>
 
-                <span class="section-label">
-                    Gallery Albums
-                </span>
+                <p class="eyebrow">
+                    Recent Work
+                </p>
+
+                <h1>
+                    Manage your gallery
+                </h1>
+
+            </div>
+
+
+            <a
+                href="user.html"
+                class="dashboard-button">
+
+                Dashboard
+
+            </a>
+
+        </header>
+
+
+        <!-- =================================================
+             PAGE INTRO
+        ================================================== -->
+
+        <section class="page-intro">
+
+            <div>
 
                 <h2>
-                    Your albums
+                    Organize your recent photography
                 </h2>
 
                 <p>
-                    Create separate albums for different types of
-                    photography and manage the images inside them.
+                    Create albums, upload your work, choose album covers,
+                    and control what appears in your public gallery.
                 </p>
 
             </div>
 
-
-            <button
-                class="primary-button"
-                id="createAlbumButton"
-                type="button">
-
-                + Create Album
-
-            </button>
-
-        </div>
+        </section>
 
 
-        <!-- ALBUMS -->
+        <!-- =================================================
+             STORAGE CARD
+        ================================================== -->
 
-        <div
-            class="album-grid"
-            id="albumGrid">
-        </div>
+        <section class="storage-card" aria-labelledby="storageTitle">
 
+            <div class="storage-header">
 
-        <!-- EMPTY ALBUM STATE -->
+                <div>
 
-        <div
-            class="empty-state"
-            id="albumEmptyState">
+                    <span class="section-label">
+                        Recent Work Storage
+                    </span>
 
-            <div class="empty-icon">
-                ▧
-            </div>
+                    <h2 id="planName">
+                        Starter Plan
+                    </h2>
 
-            <h3>
-                No albums yet
-            </h3>
-
-            <p>
-                Create your first album to start adding recent work.
-            </p>
-
-            <button
-                class="secondary-button"
-                id="emptyCreateAlbum"
-                type="button">
-
-                Create your first album
-
-            </button>
-
-        </div>
-
-    </section>
+                </div>
 
 
-    <!-- =================================================
-         ALBUM VIEW
-    ================================================== -->
+                <span
+                    class="storage-badge available"
+                    id="storageBadge">
 
-    <section
-        class="album-view-section"
-        id="albumViewSection">
+                    Available
 
-        <div class="album-view-header">
-
-            <div>
-
-                <button
-                    class="back-albums-button"
-                    id="backToAlbums"
-                    type="button">
-
-                    ← Back to Albums
-
-                </button>
-
-
-                <span class="section-label">
-                    Selected Album
                 </span>
-
-                <h2 id="activeAlbumName">
-                    Album
-                </h2>
-
-                <p id="activeAlbumMeta">
-                    0 photos
-                </p>
 
             </div>
 
 
-            <div class="album-view-actions">
+            <div class="storage-numbers">
 
-                <button
-                    class="secondary-button"
-                    id="renameAlbumButton"
-                    type="button">
+                <div>
 
-                    Rename
+                    <strong id="usedStorage">
+                        0 MB
+                    </strong>
 
-                </button>
+                    <span>
+                        Used
+                    </span>
+
+                </div>
 
 
-                <button
-                    class="danger-outline-button"
-                    id="deleteAlbumButton"
-                    type="button">
+                <div>
 
-                    Delete Album
+                    <strong id="availableStorage">
+                        500 MB
+                    </strong>
 
-                </button>
+                    <span>
+                        Available
+                    </span>
+
+                </div>
+
+
+                <div>
+
+                    <strong id="totalStorage">
+                        500 MB
+                    </strong>
+
+                    <span>
+                        Total
+                    </span>
+
+                </div>
 
             </div>
 
-        </div>
 
-
-        <!-- ALBUM UPLOAD -->
-
-        <div class="album-upload-area">
-
-            <label class="album-upload-box">
-
-                <input
-                    type="file"
-                    id="imageInput"
-                    accept="image/*"
-                    multiple>
-
-                <span class="upload-icon">
-                    ＋
-                </span>
-
-                <strong>
-                    Add photos to this album
-                </strong>
-
-                <span>
-                    JPG, JPEG, PNG, WEBP and other
-                    browser-supported image formats
-                </span>
-
-            </label>
-
-
-            <div class="upload-info">
+            <div
+                class="progress-track"
+                role="progressbar"
+                aria-label="Recent Work storage usage"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="0">
 
                 <div
-                    class="selected-files"
-                    id="selectedFiles">
+                    class="progress-fill"
+                    id="storageProgress">
+                </div>
+
+            </div>
+
+
+            <p
+                class="storage-message"
+                id="storageMessage">
+
+                Your Recent Work storage is ready for uploads.
+
+            </p>
+
+
+            <p class="storage-note">
+                Storage is shared across all Recent Work albums.
+                Album covers use an existing uploaded photo and do not
+                create a second copy of the file.
+            </p>
+
+        </section>
+
+
+        <!-- =================================================
+             ALBUM MANAGER
+        ================================================== -->
+
+        <section class="album-section">
+
+            <div class="section-heading album-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        Gallery Albums
+                    </span>
+
+                    <h2>
+                        Your albums
+                    </h2>
 
                     <p>
-                        No files selected.
+                        Create separate albums for different types of
+                        photography and manage the images inside them.
                     </p>
 
                 </div>
@@ -416,87 +272,255 @@
 
                 <button
                     class="primary-button"
-                    id="uploadButton"
-                    type="button"
-                    disabled>
+                    id="createAlbumButton"
+                    type="button">
 
-                    Upload to Album
+                    + Create Album
 
                 </button>
 
-
-                <p
-                    class="upload-status"
-                    id="uploadStatus">
-                </p>
-
             </div>
 
-        </div>
 
-
-        <!-- PHOTO LIBRARY -->
-
-        <div class="photo-library">
-
-            <div class="library-heading">
-
-                <div>
-
-                    <span class="section-label">
-                        Album Photos
-                    </span>
-
-                    <h3>
-                        Photos
-                    </h3>
-
-                </div>
-
-
-                <span
-                    class="item-count"
-                    id="photoCount">
-
-                    0 photos
-
-                </span>
-
-            </div>
-
+            <!-- ALBUMS -->
 
             <div
-                class="photo-grid"
-                id="photoGrid">
+                class="album-grid"
+                id="albumGrid"
+                aria-live="polite">
             </div>
 
 
-            <div
-                class="album-photo-empty"
-                id="albumPhotoEmpty">
+            <!-- EMPTY ALBUM STATE -->
 
-                <div class="empty-icon">
+            <div
+                class="empty-state"
+                id="albumEmptyState">
+
+                <div class="empty-icon" aria-hidden="true">
                     ▧
                 </div>
 
                 <h3>
-                    This album is empty
+                    No albums yet
                 </h3>
 
                 <p>
-                    Add photos using the uploader above.
+                    Create your first album to start adding recent work.
                 </p>
+
+                <button
+                    class="secondary-button"
+                    id="emptyCreateAlbum"
+                    type="button">
+
+                    Create your first album
+
+                </button>
 
             </div>
 
-        </div>
+        </section>
 
-    </section>
 
-</main>
-l̥
+        <!-- =================================================
+             ALBUM VIEW
+        ================================================== -->
+
+        <section
+            class="album-view-section"
+            id="albumViewSection">
+
+            <div class="album-view-header">
+
+                <div>
+
+                    <button
+                        class="back-albums-button"
+                        id="backToAlbums"
+                        type="button">
+
+                        ← Back to Albums
+
+                    </button>
+
+
+                    <span class="section-label">
+                        Selected Album
+                    </span>
+
+                    <h2 id="activeAlbumName">
+                        Album
+                    </h2>
+
+                    <p id="activeAlbumMeta">
+                        0 photos
+                    </p>
+
+                </div>
+
+
+                <div class="album-view-actions">
+
+                    <button
+                        class="secondary-button"
+                        id="renameAlbumButton"
+                        type="button">
+
+                        Rename
+
+                    </button>
+
+
+                    <button
+                        class="danger-outline-button"
+                        id="deleteAlbumButton"
+                        type="button">
+
+                        Delete Album
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- ALBUM UPLOAD -->
+
+            <div class="album-upload-area">
+
+                <label
+                    class="album-upload-box"
+                    for="imageInput">
+
+                    <input
+                        type="file"
+                        id="imageInput"
+                        accept="image/*"
+                        multiple>
+
+                    <span
+                        class="upload-icon"
+                        aria-hidden="true">
+
+                        ＋
+
+                    </span>
+
+                    <strong>
+                        Add photos to this album
+                    </strong>
+
+                    <span>
+                        JPG, JPEG, PNG, WEBP and other
+                        browser-supported image formats
+                    </span>
+
+                </label>
+
+
+                <div class="upload-info">
+
+                    <div
+                        class="selected-files"
+                        id="selectedFiles"
+                        aria-live="polite">
+
+                        <p>
+                            No files selected.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        class="primary-button"
+                        id="uploadButton"
+                        type="button"
+                        disabled>
+
+                        Upload to Album
+
+                    </button>
+
+
+                    <p
+                        class="upload-status"
+                        id="uploadStatus"
+                        aria-live="polite">
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 ALBUM PHOTO LIBRARY
+            ================================================== -->
+
+            <div class="photo-library">
+
+                <div class="library-heading">
+
+                    <div>
+
+                        <span class="section-label">
+                            Album Photos
+                        </span>
+
+                        <h3>
+                            Photos
+                        </h3>
+
+                    </div>
+
+
+                    <span
+                        class="item-count"
+                        id="photoCount">
+
+                        0 photos
+
+                    </span>
+
+                </div>
+
+
+                <div
+                    class="photo-grid"
+                    id="photoGrid"
+                    aria-live="polite">
+                </div>
+
+
+                <div
+                    class="album-photo-empty"
+                    id="albumPhotoEmpty">
+
+                    <div class="empty-icon" aria-hidden="true">
+                        ▧
+                    </div>
+
+                    <h3>
+                        This album is empty
+                    </h3>
+
+                    <p>
+                        Add photos using the uploader above.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
 
 </div>
+
 
 <!-- =========================================================
      ALBUM MODAL
@@ -507,84 +531,85 @@ l̥
     id="albumModal"
     aria-hidden="true">
 
-
-<div
-    class="standard-modal"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="albumModalTitle">
-
-    <button
-        class="modal-close"
-        id="closeAlbumModal"
-        type="button"
-        aria-label="Close">
-
-        ×
-
-    </button>
-
-
-    <span class="section-label">
-        Album
-    </span>
-
-    <h2 id="albumModalTitle">
-        Create Album
-    </h2>
-
-    <p>
-        Give your album a name that will appear in your
-        public Recent Work gallery.
-    </p>
-
-
-    <label class="modal-input-label">
-        Album name
-
-        <input
-            type="text"
-            id="albumNameInput"
-            maxlength="80"
-            placeholder="e.g. Wedding Photography"
-            autocomplete="off">
-
-    </label>
-
-
-    <p
-        class="modal-form-error"
-        id="albumFormError">
-    </p>
-
-
-    <div class="modal-actions">
+    <div
+        class="standard-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="albumModalTitle">
 
         <button
-            class="secondary-button"
-            id="cancelAlbumModal"
-            type="button">
+            class="modal-close"
+            id="closeAlbumModal"
+            type="button"
+            aria-label="Close">
 
-            Cancel
+            ×
 
         </button>
 
 
-        <button
-            class="primary-button"
-            id="saveAlbumButton"
-            type="button">
+        <span class="section-label">
+            Album
+        </span>
 
+        <h2 id="albumModalTitle">
             Create Album
+        </h2>
 
-        </button>
+        <p>
+            Give your album a name that will appear in your
+            public Recent Work gallery.
+        </p>
+
+
+        <label class="modal-input-label" for="albumNameInput">
+
+            Album name
+
+            <input
+                type="text"
+                id="albumNameInput"
+                maxlength="80"
+                placeholder="e.g. Wedding Photography"
+                autocomplete="off">
+
+        </label>
+
+
+        <p
+            class="modal-form-error"
+            id="albumFormError"
+            role="alert">
+        </p>
+
+
+        <div class="modal-actions">
+
+            <button
+                class="secondary-button"
+                id="cancelAlbumModal"
+                type="button">
+
+                Cancel
+
+            </button>
+
+
+            <button
+                class="primary-button"
+                id="saveAlbumButton"
+                type="button">
+
+                Create Album
+
+            </button>
+
+        </div>
 
     </div>
 
 </div>
 
-
-</div>
 
 <!-- =========================================================
      DELETE MODAL
@@ -595,65 +620,69 @@ l̥
     id="deleteModal"
     aria-hidden="true">
 
-<div
-    class="delete-modal"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="deleteTitle">
-
-    <button
-        class="modal-close"
-        id="closeDeleteModal"
-        type="button"
-        aria-label="Close">
-
-        ×
-
-    </button>
-
-
-    <div class="modal-icon">
-        !
-    </div>
-
-
-    <h2 id="deleteTitle">
-        Delete?
-    </h2>
-
-
-    <p id="deleteDescription">
-        This action cannot be undone.
-    </p>
-
-
-    <div class="modal-actions">
+    <div
+        class="delete-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="deleteTitle">
 
         <button
-            class="secondary-button"
-            id="cancelDelete"
-            type="button">
+            class="modal-close"
+            id="closeDeleteModal"
+            type="button"
+            aria-label="Close">
 
-            Cancel
+            ×
 
         </button>
 
 
-        <button
-            class="danger-button"
-            id="confirmDelete"
-            type="button">
+        <div
+            class="modal-icon"
+            aria-hidden="true">
 
-            Delete
+            !
 
-        </button>
+        </div>
+
+
+        <h2 id="deleteTitle">
+            Delete?
+        </h2>
+
+
+        <p id="deleteDescription">
+            This action cannot be undone.
+        </p>
+
+
+        <div class="modal-actions">
+
+            <button
+                class="secondary-button"
+                id="cancelDelete"
+                type="button">
+
+                Cancel
+
+            </button>
+
+
+            <button
+                class="danger-button"
+                id="confirmDelete"
+                type="button">
+
+                Delete
+
+            </button>
+
+        </div>
 
     </div>
 
 </div>
 
-
-</div>
 
 <script src="recentwork.js"></script>
 
