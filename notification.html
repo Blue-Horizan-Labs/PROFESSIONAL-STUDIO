@@ -6,10 +6,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Professional Studio | Notification Settings</title>
+
 <link
     rel="icon"
     type="image/png"
-    href="https://i.ibb.co/8g0LT3jZ/logo1-2.png" 
+    href="https://i.ibb.co/8g0LT3jZ/logo1-2.png"
 >
 
 <style>
@@ -81,16 +82,20 @@ h1{
     line-height:1.5;
 }
 
-/* Toggle Switch */
+/* Toggle */
 
 .switch{
     position:relative;
     width:50px;
     height:26px;
+    flex-shrink:0;
 }
 
 .switch input{
-    display:none;
+    position:absolute;
+    opacity:0;
+    width:0;
+    height:0;
 }
 
 .slider{
@@ -114,12 +119,17 @@ h1{
     transition:.3s;
 }
 
-input:checked + .slider{
+.switch input:checked + .slider{
     background:#2563eb;
 }
 
-input:checked + .slider::before{
+.switch input:checked + .slider::before{
     transform:translateX(24px);
+}
+
+.switch input:focus-visible + .slider{
+    outline:2px solid #3b82f6;
+    outline-offset:3px;
 }
 
 .buttons{
@@ -184,19 +194,19 @@ button{
 
 @media(max-width:600px){
 
-.card{
-    padding:25px;
-}
+    .card{
+        padding:25px;
+    }
 
-.setting{
-    flex-direction:column;
-    align-items:flex-start;
-    gap:15px;
-}
+    .setting{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:15px;
+    }
 
-.buttons{
-    flex-direction:column;
-}
+    .buttons{
+        flex-direction:column;
+    }
 
 }
 
@@ -224,8 +234,14 @@ Choose which notifications you'd like to receive from Professional Studio.
 </div>
 
 <label class="switch">
-<input type="checkbox" id="email" checked>
+
+<input
+    type="checkbox"
+    id="email"
+>
+
 <span class="slider"></span>
+
 </label>
 
 </div>
@@ -238,8 +254,14 @@ Choose which notifications you'd like to receive from Professional Studio.
 </div>
 
 <label class="switch">
-<input type="checkbox" id="booking" checked>
+
+<input
+    type="checkbox"
+    id="booking"
+>
+
 <span class="slider"></span>
+
 </label>
 
 </div>
@@ -252,8 +274,14 @@ Choose which notifications you'd like to receive from Professional Studio.
 </div>
 
 <label class="switch">
-<input type="checkbox" id="payment" checked>
+
+<input
+    type="checkbox"
+    id="payment"
+>
+
 <span class="slider"></span>
+
 </label>
 
 </div>
@@ -266,8 +294,14 @@ Choose which notifications you'd like to receive from Professional Studio.
 </div>
 
 <label class="switch">
-<input type="checkbox" id="marketing">
+
+<input
+    type="checkbox"
+    id="marketing"
+>
+
 <span class="slider"></span>
+
 </label>
 
 </div>
@@ -280,75 +314,184 @@ Choose which notifications you'd like to receive from Professional Studio.
 </div>
 
 <label class="switch">
-<input type="checkbox" id="sms">
+
+<input
+    type="checkbox"
+    id="sms"
+>
+
 <span class="slider"></span>
+
 </label>
 
 </div>
 
 <div class="buttons">
 
-<button class="reset-btn" id="resetBtn">
+<button
+    type="button"
+    class="reset-btn"
+    id="resetBtn"
+>
 Reset
 </button>
 
-<button class="save-btn" id="saveBtn">
+<button
+    type="button"
+    class="save-btn"
+    id="saveBtn"
+>
 Save Changes
 </button>
 
 </div>
 
-<div class="message" id="message">
+<div
+    class="message"
+    id="message">
 Notification settings updated successfully.
 </div>
 
 <div class="back">
-<a href="user.html">← Back to Dashboard</a>
-</div>
 
-   
-    </div>
-
-</div>
+<a href="user.html">
+← Back to Dashboard
+</a>
 
 </div>
 
+</div>
 
-
+</div>
 
 <script>
 
-const defaults={
-email:true,
-booking:true,
-payment:true,
-marketing:false,
-sms:false
+const NOTIFICATION_KEY =
+    "professionalStudio.notificationSettings";
+
+const defaults = {
+    email:true,
+    booking:true,
+    payment:true,
+    marketing:false,
+    sms:false
 };
 
-document.getElementById("saveBtn").addEventListener("click",function(){
+const fields = [
+    "email",
+    "booking",
+    "payment",
+    "marketing",
+    "sms"
+];
 
-const message=document.getElementById("message");
+const message = document.getElementById("message");
 
-message.style.display="block";
+function loadSettings(){
 
-setTimeout(function(){
+    let saved = null;
 
-message.style.display="none";
+    try{
 
-},3000);
+        saved = JSON.parse(
+            localStorage.getItem(NOTIFICATION_KEY)
+        );
 
-});
+    }catch(error){
 
-document.getElementById("resetBtn").addEventListener("click",function(){
+        saved = null;
 
-document.getElementById("email").checked=defaults.email;
-document.getElementById("booking").checked=defaults.booking;
-document.getElementById("payment").checked=defaults.payment;
-document.getElementById("marketing").checked=defaults.marketing;
-document.getElementById("sms").checked=defaults.sms;
+    }
 
-});
+    const settings = {
+        ...defaults,
+        ...(saved || {})
+    };
+
+    fields.forEach(function(field){
+
+        document.getElementById(field).checked =
+            Boolean(settings[field]);
+
+    });
+
+}
+
+function getCurrentSettings(){
+
+    const settings = {};
+
+    fields.forEach(function(field){
+
+        settings[field] =
+            document.getElementById(field).checked;
+
+    });
+
+    return settings;
+
+}
+
+function saveSettings(){
+
+    const settings = getCurrentSettings();
+
+    localStorage.setItem(
+        NOTIFICATION_KEY,
+        JSON.stringify(settings)
+    );
+
+    showMessage(
+        "Notification settings updated successfully."
+    );
+
+}
+
+function resetSettings(){
+
+    fields.forEach(function(field){
+
+        document.getElementById(field).checked =
+            defaults[field];
+
+    });
+
+    localStorage.setItem(
+        NOTIFICATION_KEY,
+        JSON.stringify(defaults)
+    );
+
+    showMessage(
+        "Notification settings restored to default."
+    );
+
+}
+
+function showMessage(text){
+
+    message.textContent = text;
+    message.style.display = "block";
+
+    clearTimeout(window.notificationMessageTimer);
+
+    window.notificationMessageTimer =
+        setTimeout(function(){
+
+            message.style.display = "none";
+
+        },3000);
+
+}
+
+document
+    .getElementById("saveBtn")
+    .addEventListener("click",saveSettings);
+
+document
+    .getElementById("resetBtn")
+    .addEventListener("click",resetSettings);
+
+loadSettings();
 
 </script>
 

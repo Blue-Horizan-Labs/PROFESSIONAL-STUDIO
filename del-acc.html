@@ -6,12 +6,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Professional Studio | Delete Account</title>
+
 <link
     rel="icon"
     type="image/png"
-    href="https://i.ibb.co/8g0LT3jZ/logo1-2.png" 
+    href="https://i.ibb.co/8g0LT3jZ/logo1-2.png"
 >
-
 
 <style>
 
@@ -108,6 +108,11 @@ input[type="text"]{
 
 input[type="text"]:focus{
     border-color:#dc2626;
+    box-shadow:0 0 0 3px rgba(220,38,38,.08);
+}
+
+input.input-error{
+    border-color:#dc2626;
 }
 
 .status{
@@ -118,6 +123,7 @@ input[type="text"]:focus{
     background:#13361d;
     color:#7ee787;
     font-size:14px;
+    line-height:1.5;
 }
 
 .checkbox{
@@ -130,12 +136,14 @@ input[type="text"]:focus{
 .checkbox input{
     margin-top:4px;
     accent-color:#dc2626;
+    cursor:pointer;
 }
 
 .checkbox label{
     margin:0;
     color:#bdbdbd;
     line-height:1.6;
+    cursor:pointer;
 }
 
 .buttons{
@@ -168,7 +176,7 @@ button{
     color:white;
 }
 
-.delete-btn:hover{
+.delete-btn:hover:not(:disabled){
     background:#b91c1c;
 }
 
@@ -193,13 +201,13 @@ button{
 
 @media(max-width:600px){
 
-.card{
-    padding:25px;
-}
+    .card{
+        padding:25px;
+    }
 
-.buttons{
-    flex-direction:column;
-}
+    .buttons{
+        flex-direction:column;
+    }
 
 }
 
@@ -216,7 +224,8 @@ button{
 <h1>Delete Account</h1>
 
 <p class="subtitle">
-Deleting your Professional Studio account is permanent. Once deleted, your account, bookings, portfolio, and all associated data cannot be recovered.
+Deleting your Professional Studio account is permanent. Once deleted,
+your account, bookings, portfolio, and associated data cannot be recovered.
 </p>
 
 <div class="warning">
@@ -227,7 +236,7 @@ Deleting your Professional Studio account is permanent. Once deleted, your accou
 
 <li>Your account will be permanently deleted.</li>
 
-<li>All bookings, projects and profile information will be removed.</li>
+<li>Your bookings, projects and profile information will be removed.</li>
 
 <li>You will lose access to your dashboard immediately.</li>
 
@@ -241,18 +250,21 @@ Deleting your Professional Studio account is permanent. Once deleted, your accou
 
 <div class="input-group">
 
-<label>
+<label for="deleteInput">
 Type <strong>DELETE</strong> to continue
 </label>
 
 <input
-type="text"
-id="deleteInput"
-placeholder="Type DELETE">
+    type="text"
+    id="deleteInput"
+    placeholder="Type DELETE"
+    autocomplete="off"
+    spellcheck="false"
+>
 
 <div
-class="status"
-id="status">
+    class="status"
+    id="status">
 ✓ Verification complete. You can now press <strong>Delete Account</strong> to continue.
 </div>
 
@@ -261,11 +273,13 @@ id="status">
 <div class="checkbox">
 
 <input
-type="checkbox"
-id="agree">
+    type="checkbox"
+    id="agree"
+>
 
 <label for="agree">
-I understand that this action is permanent and all of my account data will be deleted forever.
+I understand that this action is permanent and all of my account data
+will be deleted forever.
 </label>
 
 </div>
@@ -273,22 +287,20 @@ I understand that this action is permanent and all of my account data will be de
 <div class="buttons">
 
 <button
-type="button"
-class="cancel-btn"
-onclick="window.location.href='settings.html'">
-
+    type="button"
+    class="cancel-btn"
+    id="cancelBtn"
+>
 Cancel
-
 </button>
 
 <button
-type="submit"
-class="delete-btn"
-id="deleteBtn"
-disabled>
-
+    type="submit"
+    class="delete-btn"
+    id="deleteBtn"
+    disabled
+>
 Delete Account
-
 </button>
 
 </div>
@@ -298,9 +310,7 @@ Delete Account
 <div class="back">
 
 <a href="user.html">
-
 ← Back to Dashboard
-
 </a>
 
 </div>
@@ -311,48 +321,114 @@ Delete Account
 
 <script>
 
-const input=document.getElementById("deleteInput");
-const checkbox=document.getElementById("agree");
-const button=document.getElementById("deleteBtn");
-const status=document.getElementById("status");
+const input = document.getElementById("deleteInput");
+const checkbox = document.getElementById("agree");
+const button = document.getElementById("deleteBtn");
+const status = document.getElementById("status");
+const deleteForm = document.getElementById("deleteForm");
+const cancelBtn = document.getElementById("cancelBtn");
 
 function validate(){
 
-if(input.value.trim()==="DELETE"){
+    const verified = input.value.trim() === "DELETE";
+    const agreed = checkbox.checked;
 
-status.style.display="block";
+    status.style.display = verified ? "block" : "none";
 
-}
-else{
-
-status.style.display="none";
+    button.disabled = !(verified && agreed);
 
 }
 
-button.disabled=!(input.value.trim()==="DELETE" && checkbox.checked);
+input.addEventListener("input",function(){
 
-}
+    input.classList.remove("input-error");
+    validate();
 
-input.addEventListener("input",validate);
+});
 
 checkbox.addEventListener("change",validate);
 
-document.getElementById("deleteForm").addEventListener("submit",function(e){
+cancelBtn.addEventListener("click",function(){
 
-e.preventDefault();
-
-const confirmDelete=confirm(
-"Delete your Professional Studio account permanently?\n\nThis action cannot be undone."
-);
-
-if(confirmDelete){
-
-
-window.location.href="goodby.html";
-
-}
+    window.location.href = "user.html";
 
 });
+
+deleteForm.addEventListener("submit",function(e){
+
+    e.preventDefault();
+
+    if(button.disabled){
+        return;
+    }
+
+    const confirmDelete = window.confirm(
+        "Delete your Professional Studio account permanently?\n\n" +
+        "This action cannot be undone."
+    );
+
+    if(!confirmDelete){
+        return;
+    }
+
+    /*
+        Frontend-only account deletion simulation.
+
+        Remove Professional Studio application data stored
+        in localStorage. In the production version this must
+        be handled by the backend/database.
+    */
+
+    const keysToRemove = [];
+
+    for(let i = 0; i < localStorage.length; i++){
+
+        const key = localStorage.key(i);
+
+        if(
+            key &&
+            (
+                key.startsWith("professionalStudio") ||
+                key.startsWith("professionalstudio")
+            )
+        ){
+            keysToRemove.push(key);
+        }
+
+    }
+
+    keysToRemove.forEach(function(key){
+
+        localStorage.removeItem(key);
+
+    });
+
+    /*
+        Remove the client gallery IndexedDB database if it exists.
+    */
+
+    if("indexedDB" in window){
+
+        try{
+
+            window.indexedDB.deleteDatabase("professionalStudioDB");
+
+        }catch(error){
+
+            console.warn(
+                "Could not remove local gallery database:",
+                error
+            );
+
+        }
+
+    }
+
+    window.location.href = "goodby.html";
+
+});
+
+validate();
 
 </script>
 

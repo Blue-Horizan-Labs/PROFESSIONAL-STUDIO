@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Professional Studio | Change Password</title>
+
 <link
     rel="icon"
     type="image/png"
-    href="https://i.ibb.co/8g0LT3jZ/logo1-2.png" 
+    href="https://i.ibb.co/8g0LT3jZ/logo1-2.png"
 >
-
 
 <style>
 
@@ -76,15 +77,20 @@ input{
     background:#1d1d1d;
     border:1px solid #303030;
     color:#fff;
-    padding:14px 45px 14px 14px;
+    padding:14px 55px 14px 14px;
     border-radius:10px;
     outline:none;
     font-size:15px;
-    transition:.3s;
+    transition:border-color .25s, box-shadow .25s;
 }
 
 input:focus{
     border-color:#3b82f6;
+    box-shadow:0 0 0 3px rgba(59,130,246,.08);
+}
+
+input.input-error{
+    border-color:#dc2626;
 }
 
 .toggle{
@@ -96,6 +102,10 @@ input:focus{
     color:#888;
     font-size:13px;
     user-select:none;
+}
+
+.toggle:hover{
+    color:#fff;
 }
 
 .strength{
@@ -136,6 +146,11 @@ button:hover{
     background:#1d4ed8;
 }
 
+button:disabled{
+    opacity:.55;
+    cursor:not-allowed;
+}
+
 .message{
     display:none;
     margin-top:20px;
@@ -143,6 +158,7 @@ button:hover{
     padding:12px;
     border-radius:8px;
     font-size:14px;
+    line-height:1.5;
 }
 
 .success{
@@ -172,13 +188,13 @@ button:hover{
 
 @media(max-width:500px){
 
-.card{
-    padding:25px;
-}
+    .card{
+        padding:25px;
+    }
 
-h1{
-    font-size:24px;
-}
+    h1{
+        font-size:24px;
+    }
 
 }
 
@@ -202,18 +218,23 @@ Choose a strong password that you haven't used before.
 
 <div class="input-group">
 
-<label>Current Password</label>
+<label for="currentPassword">
+Current Password
+</label>
 
 <div class="password-box">
 
 <input
-type="password"
-id="currentPassword"
-required>
+    type="password"
+    id="currentPassword"
+    autocomplete="current-password"
+    required
+>
 
 <span
-class="toggle"
-onclick="togglePassword('currentPassword',this)">
+    class="toggle"
+    onclick="togglePassword('currentPassword',this)"
+>
 Show
 </span>
 
@@ -223,18 +244,23 @@ Show
 
 <div class="input-group">
 
-<label>New Password</label>
+<label for="newPassword">
+New Password
+</label>
 
 <div class="password-box">
 
 <input
-type="password"
-id="newPassword"
-required>
+    type="password"
+    id="newPassword"
+    autocomplete="new-password"
+    required
+>
 
 <span
-class="toggle"
-onclick="togglePassword('newPassword',this)">
+    class="toggle"
+    onclick="togglePassword('newPassword',this)"
+>
 Show
 </span>
 
@@ -243,15 +269,15 @@ Show
 <div class="strength">
 
 <div
-class="strength-bar"
-id="strengthBar">
+    class="strength-bar"
+    id="strengthBar">
 </div>
 
 </div>
 
 <div
-class="strength-text"
-id="strengthText">
+    class="strength-text"
+    id="strengthText">
 Password Strength
 </div>
 
@@ -259,18 +285,23 @@ Password Strength
 
 <div class="input-group">
 
-<label>Confirm New Password</label>
+<label for="confirmPassword">
+Confirm New Password
+</label>
 
 <div class="password-box">
 
 <input
-type="password"
-id="confirmPassword"
-required>
+    type="password"
+    id="confirmPassword"
+    autocomplete="new-password"
+    required
+>
 
 <span
-class="toggle"
-onclick="togglePassword('confirmPassword',this)">
+    class="toggle"
+    onclick="togglePassword('confirmPassword',this)"
+>
 Show
 </span>
 
@@ -278,21 +309,26 @@ Show
 
 </div>
 
-<button type="submit">
+<button
+    type="submit"
+    id="updateButton"
+>
 Update Password
 </button>
 
 <div
-id="message"
-class="message">
+    id="message"
+    class="message">
 </div>
 
 </form>
 
 <div class="back">
+
 <a href="user.html">
 ← Back to Dashboard
 </a>
+
 </div>
 
 </div>
@@ -301,113 +337,240 @@ class="message">
 
 <script>
 
+const PASSWORD_KEY = "professionalStudio.demoPassword";
+
+const passwordForm = document.getElementById("passwordForm");
+const currentPassword = document.getElementById("currentPassword");
+const newPassword = document.getElementById("newPassword");
+const confirmPassword = document.getElementById("confirmPassword");
+
+const strengthBar = document.getElementById("strengthBar");
+const strengthText = document.getElementById("strengthText");
+const message = document.getElementById("message");
+const updateButton = document.getElementById("updateButton");
+
+function getStoredPassword(){
+
+    return localStorage.getItem(PASSWORD_KEY);
+
+}
+
 function togglePassword(id,element){
 
-const input=document.getElementById(id);
+    const input = document.getElementById(id);
 
-if(input.type==="password"){
-input.type="text";
-element.innerHTML="Hide";
-}
-else{
-input.type="password";
-element.innerHTML="Show";
-}
+    if(input.type === "password"){
 
-}
+        input.type = "text";
+        element.textContent = "Hide";
 
-const password=document.getElementById("newPassword");
-const bar=document.getElementById("strengthBar");
-const text=document.getElementById("strengthText");
+    }else{
 
-password.addEventListener("input",()=>{
+        input.type = "password";
+        element.textContent = "Show";
 
-let value=password.value;
-let score=0;
-
-if(value.length>=8) score++;
-if(/[A-Z]/.test(value)) score++;
-if(/[0-9]/.test(value)) score++;
-if(/[!@#$%^&*]/.test(value)) score++;
-
-switch(score){
-
-case 0:
-case 1:
-bar.style.width="25%";
-bar.style.background="#ef4444";
-text.innerHTML="Weak";
-break;
-
-case 2:
-bar.style.width="50%";
-bar.style.background="#f59e0b";
-text.innerHTML="Fair";
-break;
-
-case 3:
-bar.style.width="75%";
-bar.style.background="#3b82f6";
-text.innerHTML="Good";
-break;
-
-case 4:
-bar.style.width="100%";
-bar.style.background="#22c55e";
-text.innerHTML="Strong";
-break;
+    }
 
 }
+
+function calculateStrength(value){
+
+    let score = 0;
+
+    if(value.length >= 8){
+        score++;
+    }
+
+    if(/[A-Z]/.test(value)){
+        score++;
+    }
+
+    if(/[0-9]/.test(value)){
+        score++;
+    }
+
+    if(/[!@#$%^&*(),.?":{}|<>_\-+=]/.test(value)){
+        score++;
+    }
+
+    return score;
+
+}
+
+function updateStrength(){
+
+    const value = newPassword.value;
+    const score = calculateStrength(value);
+
+    strengthBar.style.width = "0%";
+    strengthBar.style.background = "transparent";
+
+    if(!value){
+
+        strengthText.textContent = "Password Strength";
+        strengthText.style.color = "#999";
+        return;
+
+    }
+
+    if(score <= 1){
+
+        strengthBar.style.width = "25%";
+        strengthBar.style.background = "#ef4444";
+        strengthText.textContent = "Weak";
+        strengthText.style.color = "#ef4444";
+
+    }else if(score === 2){
+
+        strengthBar.style.width = "50%";
+        strengthBar.style.background = "#f59e0b";
+        strengthText.textContent = "Fair";
+        strengthText.style.color = "#f59e0b";
+
+    }else if(score === 3){
+
+        strengthBar.style.width = "75%";
+        strengthBar.style.background = "#3b82f6";
+        strengthText.textContent = "Good";
+        strengthText.style.color = "#3b82f6";
+
+    }else{
+
+        strengthBar.style.width = "100%";
+        strengthBar.style.background = "#22c55e";
+        strengthText.textContent = "Strong";
+        strengthText.style.color = "#22c55e";
+
+    }
+
+}
+
+function showMessage(type,text){
+
+    message.className = "message " + type;
+    message.textContent = text;
+    message.style.display = "block";
+
+}
+
+function clearMessage(){
+
+    message.className = "message";
+    message.textContent = "";
+    message.style.display = "none";
+
+}
+
+newPassword.addEventListener("input",function(){
+
+    updateStrength();
+    newPassword.classList.remove("input-error");
+    clearMessage();
 
 });
 
-document.getElementById("passwordForm").addEventListener("submit",function(e){
+confirmPassword.addEventListener("input",function(){
 
-e.preventDefault();
+    confirmPassword.classList.remove("input-error");
+    clearMessage();
 
-const current=document.getElementById("currentPassword").value;
-const newPass=document.getElementById("newPassword").value;
-const confirm=document.getElementById("confirmPassword").value;
+});
 
-const message=document.getElementById("message");
+currentPassword.addEventListener("input",function(){
 
-message.className="message";
-message.style.display="block";
+    currentPassword.classList.remove("input-error");
+    clearMessage();
 
-if(newPass!==confirm){
+});
 
-message.classList.add("error");
-message.innerHTML="Passwords do not match.";
+passwordForm.addEventListener("submit",function(e){
 
-return;
+    e.preventDefault();
 
-}
+    clearMessage();
 
-if(newPass.length<8){
+    const current = currentPassword.value;
+    const newPass = newPassword.value;
+    const confirm = confirmPassword.value;
 
-message.classList.add("error");
-message.innerHTML="Password must contain at least 8 characters.";
+    if(!current){
 
-return;
+        currentPassword.classList.add("input-error");
+        showMessage("error","Please enter your current password.");
+        currentPassword.focus();
+        return;
 
-}
+    }
 
-if(current===newPass){
+    if(newPass.length < 8){
 
-message.classList.add("error");
-message.innerHTML="New password must be different from the current password.";
+        newPassword.classList.add("input-error");
+        showMessage(
+            "error",
+            "New password must contain at least 8 characters."
+        );
+        newPassword.focus();
+        return;
 
-return;
+    }
 
-}
+    if(calculateStrength(newPass) < 3){
 
-message.classList.add("success");
-message.innerHTML="Password updated successfully.";
+        newPassword.classList.add("input-error");
+        showMessage(
+            "error",
+            "Please choose a stronger password using uppercase letters, numbers and special characters."
+        );
+        newPassword.focus();
+        return;
 
-this.reset();
+    }
 
-bar.style.width="0%";
-text.innerHTML="Password Strength";
+    if(newPass !== confirm){
+
+        confirmPassword.classList.add("input-error");
+        showMessage("error","Passwords do not match.");
+        confirmPassword.focus();
+        return;
+
+    }
+
+    if(current === newPass){
+
+        newPassword.classList.add("input-error");
+        showMessage(
+            "error",
+            "New password must be different from the current password."
+        );
+        return;
+
+    }
+
+    const storedPassword = getStoredPassword();
+
+    if(storedPassword && current !== storedPassword){
+
+        currentPassword.classList.add("input-error");
+        showMessage("error","Current password is incorrect.");
+        currentPassword.focus();
+        return;
+
+    }
+
+
+    localStorage.setItem(PASSWORD_KEY,newPass);
+
+    showMessage(
+        "success",
+        "Password updated successfully."
+    );
+
+    passwordForm.reset();
+
+    strengthBar.style.width = "0%";
+    strengthBar.style.background = "transparent";
+    strengthText.textContent = "Password Strength";
+    strengthText.style.color = "#999";
 
 });
 
