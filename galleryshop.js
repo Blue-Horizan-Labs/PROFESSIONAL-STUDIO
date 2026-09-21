@@ -80,17 +80,27 @@ document.addEventListener("DOMContentLoaded", () => {
     const checkoutOverlay =
         document.getElementById("checkoutOverlay");
 
+    /*
+        Support both the current IDs and the alternate
+        IDs that existed in earlier versions of the page.
+    */
+
     const checkoutClose =
-        document.getElementById("checkoutClose");
+        document.getElementById("checkoutClose") ||
+        document.getElementById("closeCheckout");
 
     const checkoutCancel =
-        document.getElementById("checkoutCancel");
+        document.getElementById("checkoutCancel") ||
+        document.getElementById("cancelCheckout");
 
     const checkoutAgreement =
-        document.getElementById("checkoutAgreement");
+        document.getElementById("checkoutAgreement") ||
+        document.getElementById("checkoutAgree") ||
+        document.getElementById("agreeCheckout");
 
     const checkoutConfirm =
-        document.getElementById("checkoutConfirm");
+        document.getElementById("checkoutConfirm") ||
+        document.getElementById("confirmPurchase");
 
     const checkoutStorage =
         document.getElementById("checkoutStorage");
@@ -207,13 +217,17 @@ document.addEventListener("DOMContentLoaded", () => {
             newStorage;
 
         if (storageSlider) {
+
             storageSlider.value =
                 newStorage;
+
         }
 
         if (storageValue) {
+
             storageValue.textContent =
                 formatIndianNumber(newStorage);
+
         }
 
         updatePrice();
@@ -441,14 +455,25 @@ document.addEventListener("DOMContentLoaded", () => {
         updateCheckoutSummary();
 
         if (checkoutAgreement) {
-            checkoutAgreement.checked = false;
+
+            checkoutAgreement.checked =
+                false;
+
         }
 
         if (checkoutConfirm) {
-            checkoutConfirm.disabled = true;
+
+            checkoutConfirm.disabled =
+                checkoutAgreement
+                    ? !checkoutAgreement.checked
+                    : false;
+
         }
 
-        checkoutOverlay.classList.add("open");
+        checkoutOverlay.classList.add(
+            "open"
+        );
+
         checkoutOverlay.setAttribute(
             "aria-hidden",
             "false"
@@ -471,7 +496,9 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        checkoutOverlay.classList.remove("open");
+        checkoutOverlay.classList.remove(
+            "open"
+        );
 
         checkoutOverlay.setAttribute(
             "aria-hidden",
@@ -499,7 +526,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         closeCheckout();
 
-        paymentOverlay.classList.add("open");
+        paymentOverlay.classList.add(
+            "open"
+        );
 
         paymentOverlay.setAttribute(
             "aria-hidden",
@@ -523,7 +552,9 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        paymentOverlay.classList.remove("open");
+        paymentOverlay.classList.remove(
+            "open"
+        );
 
         paymentOverlay.setAttribute(
             "aria-hidden",
@@ -624,7 +655,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         if (!Array.isArray(purchases)) {
+
             purchases = [];
+
         }
 
 
@@ -689,10 +722,17 @@ document.addEventListener("DOMContentLoaded", () => {
         sessionStorage.setItem(
             "professionalStudioGalleryPurchaseSuccess",
             JSON.stringify({
-                purchaseId: purchase.purchaseId,
-                storageGB: purchase.storageGB,
-                durationMonths: purchase.durationMonths,
-                totalPriceINR: purchase.totalPriceINR
+                purchaseId:
+                    purchase.purchaseId,
+
+                storageGB:
+                    purchase.storageGB,
+
+                durationMonths:
+                    purchase.durationMonths,
+
+                totalPriceINR:
+                    purchase.totalPriceINR
             })
         );
 
@@ -758,7 +798,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     checkoutAgreement &&
                     !checkoutAgreement.checked
                 ) {
+
                     return;
+
                 }
 
                 openPayment();
@@ -781,6 +823,7 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
     }
+
 
     if (checkoutCancel) {
 
@@ -831,7 +874,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =====================================================
-       CLOSE ON BACKDROP
+       CLOSE CHECKOUT ON BACKDROP
     ====================================================== */
 
     if (checkoutOverlay) {
@@ -844,7 +887,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     event.target ===
                     checkoutOverlay
                 ) {
+
                     closeCheckout();
+
                 }
 
             }
@@ -852,6 +897,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
+
+    /* =====================================================
+       CLOSE PAYMENT ON BACKDROP
+    ====================================================== */
 
     if (paymentOverlay) {
 
@@ -863,7 +912,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     event.target ===
                     paymentOverlay
                 ) {
+
                     closePayment();
+
                 }
 
             }
@@ -885,18 +936,22 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             if (
-                checkoutOverlay &&
-                checkoutOverlay.classList.contains("open")
-            ) {
-                closeCheckout();
-                return;
-            }
-
-            if (
                 paymentOverlay &&
                 paymentOverlay.classList.contains("open")
             ) {
+
                 closePayment();
+                return;
+
+            }
+
+            if (
+                checkoutOverlay &&
+                checkoutOverlay.classList.contains("open")
+            ) {
+
+                closeCheckout();
+
             }
 
         }
