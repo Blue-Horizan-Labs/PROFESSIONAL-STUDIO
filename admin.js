@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ======================================================== */
 
     const menuButton = document.querySelector(".menu-toggle");
-    const nav = document.querySelector(".navbar nav");
+    const nav = document.querySelector(".sidebar-nav");
 
     if (menuButton && nav) {
 
@@ -229,7 +229,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll("section[id]");
 
     const navLinks =
-        document.querySelectorAll(".navbar nav a");
+        document.querySelectorAll(".sidebar-nav a");
 
     if (sections.length && navLinks.length) {
 
