@@ -1014,50 +1014,46 @@ function renderPortfolioStorage() {
     }
 
 
-    if (warningElement) {
+if (warningElement) {
 
-        var warningStrong =
-            warningElement.querySelector(
-                "strong"
-            );
+    var warningStrong =
+        warningElement.querySelector(
+            "strong"
+        );
 
-        var warningText =
-            warningElement.querySelector(
-                "span"
-            );
+    var warningText =
+        warningElement.querySelector(
+            "span"
+        );
 
+    if (
+        percentage >= 100
+    ) {
 
-        if (
-            percentage >= 100
-        ) {
+        warningElement.hidden = false;
 
-            warningElement.hidden =
-                false;
+        if (warningStrong) {
 
-
-            if (warningStrong) {
-
-                warningStrong.textContent =
-                    "Storage is full";
-
-            }
-
-
-            if (warningText) {
-
-                warningText.textContent =
-                    "Delete existing recent work to make space before uploading new photos.";
-
-            }
-
-        } else {
-
-            warningElement.hidden =
-                true;
+            warningStrong.textContent =
+                "Storage is full";
 
         }
 
+        if (warningText) {
+
+            warningText.textContent =
+                "Delete existing recent work to make space before uploading new photos.";
+
+        }
+
+    } else {
+
+        warningElement.hidden =
+            true;
+
     }
+
+}
 
 
     document
