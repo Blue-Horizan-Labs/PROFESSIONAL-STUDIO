@@ -1,344 +1,1385 @@
-// ======================================
-// Photographer Portfolio - Client.js
-// ======================================
+/* =========================================================
+   PROFESSIONAL STUDIO
+   PUBLIC PHOTOGRAPHER PROFILE
+   FRONTEND JAVASCRIPT
+========================================================= */
 
-document.addEventListener("DOMContentLoaded", () => {
 
-    // ==========================
-    // Experience Meter Animation
-    // ==========================
+/* =========================================================
+   STORAGE KEYS
+========================================================= */
 
-    const meterObserver = new IntersectionObserver((entries) => {
-
-        entries.forEach(entry => {
-
-            if (entry.isIntersecting) {
-
-                const meter = entry.target;
-                const value = meter.dataset.value;
-
-                meter.style.width = value + "%";
-
-                meterObserver.unobserve(meter);
-
-            }
-
-        });
-
-    }, {
-        threshold: 0.5
-    });
-
-
-    document.querySelectorAll(".meter-fill").forEach(meter => {
-
-        meter.style.width = "0%";
-        meterObserver.observe(meter);
-
-    });
-
-
-    // ==========================
-    // Smooth Scrolling
-    // ==========================
-
-    document.querySelectorAll('nav a[href^="#"]').forEach(link => {
-
-        link.addEventListener("click", function (e) {
-
-            e.preventDefault();
-
-            const target =
-                document.querySelector(
-                    this.getAttribute("href")
-                );
-
-            if (target) {
-
-                target.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start"
-                });
-
-            }
-
-        });
-
-    });
-
-
-    // ==========================
-    // Fade-In Animation
-    // ==========================
-
-    const fadeElements = document.querySelectorAll(
-        ".portfolio-block, .work-card, .exp-box, .contact-info"
-    );
-
-
-    fadeElements.forEach(element => {
-
-        element.style.opacity = "0";
-        element.style.transform = "translateY(40px)";
-        element.style.transition = "all 0.8s ease";
-
-    });
-
-
-    const fadeObserver =
-        new IntersectionObserver((entries) => {
-
-            entries.forEach(entry => {
-
-                if (entry.isIntersecting) {
-
-                    entry.target.style.opacity = "1";
-                    entry.target.style.transform = "translateY(0)";
-
-                    fadeObserver.unobserve(entry.target);
-
-                }
-
-            });
-
-        }, {
-            threshold: 0.2
-        });
-
-
-    fadeElements.forEach(element => {
-
-        fadeObserver.observe(element);
-
-    });
-
-
-    // ==========================
-    // Navbar Shadow
-    // ==========================
-
-    const navbar =
-        document.querySelector(".navbar");
-
-
-    if (navbar) {
-
-        window.addEventListener("scroll", () => {
-
-            if (window.scrollY > 30) {
-
-                navbar.style.boxShadow =
-                    "0 4px 15px rgba(0,0,0,0.08)";
-
-            } else {
-
-                navbar.style.boxShadow =
-                    "none";
-
-            }
-
-        });
-
-    }
-
-
-    // ==========================
-    // Active Navigation Link
-    // ==========================
-
-    const sections =
-        document.querySelectorAll("section[id]");
-
-
-    const navLinks =
-        document.querySelectorAll(
-            ".navbar nav a"
-        );
-
-
-    window.addEventListener("scroll", () => {
-
-        let current = "";
-
-
-        sections.forEach(section => {
-
-            const sectionTop =
-                section.offsetTop - 120;
-
-
-            if (window.scrollY >= sectionTop) {
-
-                current =
-                    section.getAttribute("id");
-
-            }
-
-        });
-
-
-        navLinks.forEach(link => {
-
-            link.classList.remove("active");
-
-
-            if (
-                link.getAttribute("href") ===
-                "#" + current
-            ) {
-
-                link.classList.add("active");
-
-            }
-
-        });
-
-    });
-
-
-    // ==========================
-    // Button Click Effect
-    // ==========================
-
-    document
-        .querySelectorAll(".book-btn")
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                function () {
-
-                    this.style.transform =
-                        "scale(0.96)";
-
-
-                    setTimeout(() => {
-
-                        this.style.transform = "";
-
-                    }, 150);
-
-                }
-            );
-
-        });
-
-
-    // ==========================
-    // LOAD CLIENT SERVICES
-    // ==========================
-
-    loadClientServices();
-
-
-    // ==========================
-    // LOAD CLIENT EQUIPMENT
-    // ==========================
-
-    loadClientEquipment();
-
-});
-
-
-// ======================================
-// SHARED SERVICE DATA
-// ======================================
-
-const SERVICE_STORAGE_KEY =
+var SERVICES_STORAGE_KEY =
     "professionalStudio.services";
 
+var EQUIPMENT_STORAGE_KEY =
+    "professionalStudio.equipment";
 
-// ======================================
-// GET SERVICES
-// ======================================
+var PROFILE_STORAGE_KEY =
+    "professionalStudio.profile";
 
-function getClientServices() {
+
+/* =========================================================
+   SAFE JSON READER
+========================================================= */
+
+function readClientLocalStorage(
+    key,
+    fallback
+) {
+
+    var saved =
+        localStorage.getItem(key);
+
+
+    if (!saved) {
+        return fallback;
+    }
+
 
     try {
 
-        const storedServices =
-            localStorage.getItem(
-                SERVICE_STORAGE_KEY
+        return JSON.parse(saved);
+
+    } catch (error) {
+
+        return fallback;
+
+    }
+
+}
+
+
+/* =========================================================
+   PROFILE
+========================================================= */
+
+function getClientProfile() {
+
+    var profile =
+        readClientLocalStorage(
+            PROFILE_STORAGE_KEY,
+            null
+        );
+
+
+    if (
+        profile &&
+        typeof profile === "object" &&
+        !Array.isArray(profile)
+    ) {
+
+        return profile;
+
+    }
+
+
+    /*
+       Keep compatibility with older frontend
+       profile values without creating a new
+       profile storage system.
+    */
+
+    var name =
+        localStorage.getItem(
+            "photographerName"
+        );
+
+
+    if (
+        name &&
+        name.trim()
+    ) {
+
+        return {
+            name: name.trim()
+        };
+
+    }
+
+
+    return {};
+
+}
+
+
+/* =========================================================
+   PROFILE VALUE HELPER
+========================================================= */
+
+function getProfileValue(
+    profile,
+    keys,
+    fallback
+) {
+
+    if (
+        !profile ||
+        typeof profile !== "object"
+    ) {
+
+        return fallback || "";
+
+    }
+
+
+    for (
+        var i = 0;
+        i < keys.length;
+        i++
+    ) {
+
+        var value =
+            profile[keys[i]];
+
+
+        if (
+            typeof value === "string" &&
+            value.trim()
+        ) {
+
+            return value.trim();
+
+        }
+
+
+        if (
+            typeof value === "number"
+        ) {
+
+            return String(
+                value
+            );
+
+        }
+
+    }
+
+
+    return fallback || "";
+
+}
+
+
+/* =========================================================
+   PROFILE NAME
+========================================================= */
+
+function getClientPhotographerName() {
+
+    var profile =
+        getClientProfile();
+
+
+    return getProfileValue(
+        profile,
+        [
+            "name",
+            "fullName",
+            "photographerName",
+            "displayName"
+        ],
+        "Photographer"
+    );
+
+}
+
+
+/* =========================================================
+   PROFILE STUDIO NAME
+========================================================= */
+
+function getClientStudioName() {
+
+    var profile =
+        getClientProfile();
+
+
+    return getProfileValue(
+        profile,
+        [
+            "studioName",
+            "businessName",
+            "companyName",
+            "brandName"
+        ],
+        ""
+    );
+
+}
+
+
+/* =========================================================
+   PROFILE ABOUT
+========================================================= */
+
+function getClientAbout() {
+
+    var profile =
+        getClientProfile();
+
+
+    return getProfileValue(
+        profile,
+        [
+            "about",
+            "aboutMe",
+            "bio",
+            "description",
+            "profileDescription"
+        ],
+        ""
+    );
+
+}
+
+
+/* =========================================================
+   PROFILE LOCATION
+========================================================= */
+
+function getClientLocation() {
+
+    var profile =
+        getClientProfile();
+
+
+    return getProfileValue(
+        profile,
+        [
+            "location",
+            "city",
+            "address",
+            "locationName"
+        ],
+        ""
+    );
+
+}
+
+
+/* =========================================================
+   PROFILE PHONE
+========================================================= */
+
+function getClientPhone() {
+
+    var profile =
+        getClientProfile();
+
+
+    return getProfileValue(
+        profile,
+        [
+            "phone",
+            "phoneNumber",
+            "mobile",
+            "contactNumber"
+        ],
+        ""
+    );
+
+}
+
+
+/* =========================================================
+   PROFILE EMAIL
+========================================================= */
+
+function getClientEmail() {
+
+    var profile =
+        getClientProfile();
+
+
+    return getProfileValue(
+        profile,
+        [
+            "email",
+            "emailAddress",
+            "contactEmail"
+        ],
+        ""
+    );
+
+}
+
+
+/* =========================================================
+   PROFILE SOCIAL LINKS
+========================================================= */
+
+function getClientSocialLinks() {
+
+    var profile =
+        getClientProfile();
+
+
+    var social =
+        profile.social ||
+        profile.socialLinks ||
+        profile.socialMedia ||
+        {};
+
+
+    if (
+        !social ||
+        typeof social !== "object"
+    ) {
+
+        social = {};
+
+    }
+
+
+    return {
+
+        instagram:
+            getProfileValue(
+                social,
+                [
+                    "instagram",
+                    "instagramUrl"
+                ],
+                ""
+            ),
+
+        facebook:
+            getProfileValue(
+                social,
+                [
+                    "facebook",
+                    "facebookUrl"
+                ],
+                ""
+            ),
+
+        youtube:
+            getProfileValue(
+                social,
+                [
+                    "youtube",
+                    "youtubeUrl"
+                ],
+                ""
+            )
+
+    };
+
+}
+
+
+/* =========================================================
+   SAFE URL
+========================================================= */
+
+function getSafeProfileUrl(
+    value
+) {
+
+    if (
+        typeof value !== "string"
+    ) {
+
+        return "";
+
+    }
+
+
+    var url =
+        value.trim();
+
+
+    if (!url) {
+        return "";
+    }
+
+
+    /*
+       Only allow normal web URLs for the
+       public social links.
+    */
+
+    if (
+        url.indexOf("https://") === 0 ||
+        url.indexOf("http://") === 0
+    ) {
+
+        return url;
+
+    }
+
+
+    return "";
+
+}
+
+
+/* =========================================================
+   PROFILE ELEMENT HELPER
+========================================================= */
+
+function setProfileText(
+    selector,
+    value
+) {
+
+    if (!value) {
+        return;
+    }
+
+
+    var element =
+        document.querySelector(
+            selector
+        );
+
+
+    if (!element) {
+        return;
+    }
+
+
+    element.textContent =
+        value;
+
+}
+
+
+/* =========================================================
+   PROFILE DATA ATTRIBUTES
+   These are intentionally optional.
+
+   If the corresponding attributes are added
+   to the HTML later, the same JS will work
+   without changing the profile data structure.
+========================================================= */
+
+function renderProfileDataAttributes() {
+
+    var profile =
+        getClientProfile();
+
+
+    document
+        .querySelectorAll(
+            "[data-profile-field]"
+        )
+        .forEach(
+            function(element) {
+
+                var field =
+                    element.dataset.profileField;
+
+
+                if (!field) {
+                    return;
+                }
+
+
+                var value =
+                    getProfileValue(
+                        profile,
+                        [
+                            field
+                        ],
+                        ""
+                    );
+
+
+                if (!value) {
+                    return;
+                }
+
+
+                element.textContent =
+                    value;
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   PHOTOGRAPHER NAME
+========================================================= */
+
+function renderClientPhotographerName() {
+
+    var name =
+        getClientPhotographerName();
+
+
+    /*
+       Explicit profile selectors are preferred.
+       The existing page can continue working even
+       if these attributes are not present yet.
+    */
+
+    document
+        .querySelectorAll(
+            "[data-profile-name], #profileName, #photographerName"
+        )
+        .forEach(
+            function(element) {
+
+                element.textContent =
+                    name;
+
+            }
+        );
+
+
+    /*
+       Existing hero heading fallback.
+
+       This only updates the hero if it is clearly
+       acting as the photographer heading. It does
+       not replace the existing hero copy.
+    */
+
+    var heroName =
+        document.querySelector(
+            ".hero-content [data-profile-name]"
+        );
+
+
+    if (heroName) {
+
+        heroName.textContent =
+            name;
+
+    }
+
+}
+
+
+/* =========================================================
+   STUDIO NAME
+========================================================= */
+
+function renderClientStudioName() {
+
+    var studioName =
+        getClientStudioName();
+
+
+    if (!studioName) {
+        return;
+    }
+
+
+    document
+        .querySelectorAll(
+            "[data-profile-studio], #studioName, #photographerStudio"
+        )
+        .forEach(
+            function(element) {
+
+                element.textContent =
+                    studioName;
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   ABOUT
+========================================================= */
+
+function renderClientAbout() {
+
+    var about =
+        getClientAbout();
+
+
+    if (!about) {
+        return;
+    }
+
+
+    document
+        .querySelectorAll(
+            "[data-profile-about], #profileAbout, #aboutText"
+        )
+        .forEach(
+            function(element) {
+
+                element.textContent =
+                    about;
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   CONTACT INFORMATION
+========================================================= */
+
+function renderClientContact() {
+
+    var phone =
+        getClientPhone();
+
+
+    var email =
+        getClientEmail();
+
+
+    var location =
+        getClientLocation();
+
+
+    document
+        .querySelectorAll(
+            "[data-profile-phone], #profilePhone"
+        )
+        .forEach(
+            function(element) {
+
+                if (phone) {
+
+                    element.textContent =
+                        phone;
+
+                }
+
+            }
+        );
+
+
+    document
+        .querySelectorAll(
+            "[data-profile-email], #profileEmail"
+        )
+        .forEach(
+            function(element) {
+
+                if (email) {
+
+                    element.textContent =
+                        email;
+
+                }
+
+            }
+        );
+
+
+    document
+        .querySelectorAll(
+            "[data-profile-location], #profileLocation"
+        )
+        .forEach(
+            function(element) {
+
+                if (location) {
+
+                    element.textContent =
+                        location;
+
+                }
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   SOCIAL LINKS
+========================================================= */
+
+function renderClientSocialLinks() {
+
+    var social =
+        getClientSocialLinks();
+
+
+    var links = {
+
+        instagram:
+            getSafeProfileUrl(
+                social.instagram
+            ),
+
+        facebook:
+            getSafeProfileUrl(
+                social.facebook
+            ),
+
+        youtube:
+            getSafeProfileUrl(
+                social.youtube
+            )
+
+    };
+
+
+    document
+        .querySelectorAll(
+            "[data-social='instagram']"
+        )
+        .forEach(
+            function(element) {
+
+                if (links.instagram) {
+
+                    element.href =
+                        links.instagram;
+
+                    element.target =
+                        "_blank";
+
+                    element.rel =
+                        "noopener noreferrer";
+
+                    element.hidden =
+                        false;
+
+                } else {
+
+                    element.hidden =
+                        true;
+
+                }
+
+            }
+        );
+
+
+    document
+        .querySelectorAll(
+            "[data-social='facebook']"
+        )
+        .forEach(
+            function(element) {
+
+                if (links.facebook) {
+
+                    element.href =
+                        links.facebook;
+
+                    element.target =
+                        "_blank";
+
+                    element.rel =
+                        "noopener noreferrer";
+
+                    element.hidden =
+                        false;
+
+                } else {
+
+                    element.hidden =
+                        true;
+
+                }
+
+            }
+        );
+
+
+    document
+        .querySelectorAll(
+            "[data-social='youtube']"
+        )
+        .forEach(
+            function(element) {
+
+                if (links.youtube) {
+
+                    element.href =
+                        links.youtube;
+
+                    element.target =
+                        "_blank";
+
+                    element.rel =
+                        "noopener noreferrer";
+
+                    element.hidden =
+                        false;
+
+                } else {
+
+                    element.hidden =
+                        true;
+
+                }
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   PUBLIC PROFILE RENDER
+========================================================= */
+
+function renderPublicProfile() {
+
+    renderClientPhotographerName();
+
+    renderClientStudioName();
+
+    renderClientAbout();
+
+    renderClientContact();
+
+    renderClientSocialLinks();
+
+    renderProfileDataAttributes();
+
+}
+
+
+/* =========================================================
+   SMOOTH SCROLLING
+========================================================= */
+
+function initializeSmoothScrolling() {
+
+    document
+        .querySelectorAll(
+            'a[href^="#"]'
+        )
+        .forEach(
+            function(link) {
+
+                link.addEventListener(
+                    "click",
+                    function(event) {
+
+                        var targetId =
+                            link.getAttribute(
+                                "href"
+                            );
+
+
+                        if (
+                            !targetId ||
+                            targetId === "#"
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        var target =
+                            document.querySelector(
+                                targetId
+                            );
+
+
+                        if (!target) {
+                            return;
+                        }
+
+
+                        event.preventDefault();
+
+
+                        target.scrollIntoView(
+                            {
+                                behavior: "smooth",
+                                block: "start"
+                            }
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   INTERSECTION OBSERVER
+========================================================= */
+
+function initializeRevealAnimations() {
+
+    var elements =
+        document.querySelectorAll(
+            ".portfolio-block, .work-card, .exp-box, .contact-info"
+        );
+
+
+    if (
+        !elements.length
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        !("IntersectionObserver" in window)
+    ) {
+
+        elements.forEach(
+            function(element) {
+
+                element.classList.add(
+                    "visible"
+                );
+
+            }
+        );
+
+        return;
+
+    }
+
+
+    var observer =
+        new IntersectionObserver(
+            function(entries) {
+
+                entries.forEach(
+                    function(entry) {
+
+                        if (
+                            entry.isIntersecting
+                        ) {
+
+                            entry.target.classList.add(
+                                "visible"
+                            );
+
+                            observer.unobserve(
+                                entry.target
+                            );
+
+                        }
+
+                    }
+                );
+
+            },
+            {
+                threshold: 0.12
+            }
+        );
+
+
+    elements.forEach(
+        function(element) {
+
+            observer.observe(
+                element
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   EXPERIENCE METERS
+========================================================= */
+
+function initializeExperienceMeters() {
+
+    var meters =
+        document.querySelectorAll(
+            ".meter-fill"
+        );
+
+
+    if (!meters.length) {
+        return;
+    }
+
+
+    function animateMeter(
+        element
+    ) {
+
+        var value =
+            Number(
+                element.dataset.value
+            ) || 0;
+
+
+        value =
+            Math.min(
+                100,
+                Math.max(
+                    0,
+                    value
+                )
             );
 
 
-        if (!storedServices) {
-
-            return [];
-
-        }
-
-
-        const services =
-            JSON.parse(storedServices);
-
-
-        if (!Array.isArray(services)) {
-
-            return [];
-
-        }
-
-
-        return services;
+        element.style.width =
+            value + "%";
 
     }
-    catch (error) {
 
-        console.error(
-            "Could not load services:",
-            error
+
+    if (
+        !("IntersectionObserver" in window)
+    ) {
+
+        meters.forEach(
+            animateMeter
         );
+
+        return;
+
+    }
+
+
+    var observer =
+        new IntersectionObserver(
+            function(entries) {
+
+                entries.forEach(
+                    function(entry) {
+
+                        if (
+                            entry.isIntersecting
+                        ) {
+
+                            animateMeter(
+                                entry.target
+                            );
+
+                            observer.unobserve(
+                                entry.target
+                            );
+
+                        }
+
+                    }
+                );
+
+            },
+            {
+                threshold: 0.3
+            }
+        );
+
+
+    meters.forEach(
+        function(meter) {
+
+            observer.observe(
+                meter
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   NAVBAR
+========================================================= */
+
+function initializeNavbar() {
+
+    var navbar =
+        document.querySelector(
+            ".navbar"
+        );
+
+
+    if (!navbar) {
+        return;
+    }
+
+
+    function updateNavbar() {
+
+        if (
+            window.scrollY > 20
+        ) {
+
+            navbar.classList.add(
+                "scrolled"
+            );
+
+        } else {
+
+            navbar.classList.remove(
+                "scrolled"
+            );
+
+        }
+
+    }
+
+
+    updateNavbar();
+
+
+    window.addEventListener(
+        "scroll",
+        updateNavbar,
+        {
+            passive: true
+        }
+    );
+
+}
+
+
+/* =========================================================
+   ACTIVE NAVIGATION
+========================================================= */
+
+function initializeActiveNavigation() {
+
+    var links =
+        document.querySelectorAll(
+            ".navbar a[href^='#']"
+        );
+
+
+    if (!links.length) {
+        return;
+    }
+
+
+    var sections = [];
+
+
+    links.forEach(
+        function(link) {
+
+            var href =
+                link.getAttribute(
+                    "href"
+                );
+
+
+            if (
+                !href ||
+                href === "#"
+            ) {
+
+                return;
+
+            }
+
+
+            var section =
+                document.querySelector(
+                    href
+                );
+
+
+            if (section) {
+
+                sections.push(
+                    {
+                        link: link,
+                        section: section
+                    }
+                );
+
+            }
+
+        }
+    );
+
+
+    if (!sections.length) {
+        return;
+    }
+
+
+    function updateActiveLink() {
+
+        var current =
+            null;
+
+
+        sections.forEach(
+            function(item) {
+
+                var top =
+                    item.section.getBoundingClientRect()
+                        .top;
+
+
+                if (
+                    top <= 140
+                ) {
+
+                    current =
+                        item;
+
+                }
+
+            }
+        );
+
+
+        links.forEach(
+            function(link) {
+
+                link.classList.remove(
+                    "active"
+                );
+
+            }
+        );
+
+
+        if (current) {
+
+            current.link.classList.add(
+                "active"
+            );
+
+        }
+
+    }
+
+
+    updateActiveLink();
+
+
+    window.addEventListener(
+        "scroll",
+        updateActiveLink,
+        {
+            passive: true
+        }
+    );
+
+}
+
+
+/* =========================================================
+   BOOK BUTTON EFFECT
+========================================================= */
+
+function initializeBookButtons() {
+
+    document
+        .querySelectorAll(
+            ".book-btn"
+        )
+        .forEach(
+            function(button) {
+
+                button.addEventListener(
+                    "click",
+                    function() {
+
+                        button.classList.add(
+                            "clicked"
+                        );
+
+
+                        setTimeout(
+                            function() {
+
+                                button.classList.remove(
+                                    "clicked"
+                                );
+
+                            },
+                            160
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   SERVICES
+========================================================= */
+
+function getClientServices() {
+
+    var services =
+        readClientLocalStorage(
+            SERVICES_STORAGE_KEY,
+            []
+        );
+
+
+    if (
+        !Array.isArray(
+            services
+        )
+    ) {
 
         return [];
 
     }
 
-}
 
-
-// ======================================
-// FORMAT PRICE
-// ======================================
-
-function formatServicePrice(price) {
-
-    if (
-        price === undefined ||
-        price === null ||
-        price === ""
-    ) {
-
-        return null;
-
-    }
-
-
-    if (
-        typeof price === "number"
-    ) {
-
-        return "₹" +
-            price.toLocaleString("en-IN");
-
-    }
-
-
-    return String(price);
+    return services;
 
 }
 
 
-// ======================================
-// GET STARTING PRICE
-// ======================================
+/* =========================================================
+   FORMAT SERVICE PRICE
+========================================================= */
 
-function getStartingPrice(service) {
+function formatServicePrice(
+    value
+) {
+
+    var price =
+        Number(value);
+
+
+    if (
+        !Number.isFinite(price)
+    ) {
+
+        return "";
+
+    }
+
+
+    return "₹" +
+        price.toLocaleString(
+            "en-IN"
+        );
+
+}
+
+
+/* =========================================================
+   GET STARTING PRICE
+========================================================= */
+
+function getStartingPrice(
+    service
+) {
 
     if (
         !service ||
-        !Array.isArray(service.packages) ||
-        service.packages.length === 0
+        !Array.isArray(
+            service.packages
+        )
     ) {
 
         return null;
@@ -346,31 +1387,25 @@ function getStartingPrice(service) {
     }
 
 
-    const prices =
+    var prices =
         service.packages
-            .map(pkg => {
+            .map(
+                function(pkg) {
 
-                if (
-                    typeof pkg.price === "number"
-                ) {
-
-                    return pkg.price;
+                    return Number(
+                        pkg.price
+                    );
 
                 }
+            )
+            .filter(
+                function(price) {
 
+                    return Number.isFinite(
+                        price
+                    );
 
-                const numericPrice =
-                    String(pkg.price)
-                        .replace(/[^\d.]/g, "");
-
-
-                return parseFloat(
-                    numericPrice
-                );
-
-            })
-            .filter(price =>
-                !isNaN(price)
+                }
             );
 
 
@@ -381,126 +1416,337 @@ function getStartingPrice(service) {
     }
 
 
-    return Math.min(...prices);
+    return Math.min.apply(
+        null,
+        prices
+    );
 
 }
 
 
-// ======================================
-// CREATE SERVICE CARD
-// ======================================
+/* =========================================================
+   ESCAPE SERVICE HTML
+========================================================= */
 
-function createServiceCard(service) {
+function escapeServiceHTML(
+    value
+) {
 
-    const card =
-        document.createElement("div");
+    return String(
+        value || ""
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
+
+
+/* =========================================================
+   CREATE SERVICE CARD
+========================================================= */
+
+function createServiceCard(
+    service
+) {
+
+    var card =
+        document.createElement(
+            "article"
+        );
 
 
     card.className =
         "price-card service-preview-card";
 
 
-    const startingPrice =
-        getStartingPrice(service);
+    var name =
+        service.name ||
+        service.serviceName ||
+        service.title ||
+        "Photography Service";
 
 
-    const priceText =
-        startingPrice !== null
-            ? formatServicePrice(
-                startingPrice
-            )
-            : "Contact for pricing";
-
-
-    const description =
+    var description =
         service.description ||
-        "Professional photography service tailored to your needs.";
+        service.shortDescription ||
+        "";
 
 
-    const packageCount =
-        Array.isArray(service.packages)
+    var startingPrice =
+        getStartingPrice(
+            service
+        );
+
+
+    var packageCount =
+        Array.isArray(
+            service.packages
+        )
             ? service.packages.length
             : 0;
 
 
-    card.innerHTML = `
+    var details =
+        document.createElement(
+            "div"
+        );
 
-        <h3>
-            ${escapeServiceHTML(
-                service.name ||
-                "Photography Service"
-            )}
-        </h3>
 
-        <div class="price">
+    details.className =
+        "service-preview-content";
 
-            From ${priceText}
 
-        </div>
+    var heading =
+        document.createElement(
+            "h3"
+        );
 
-        <p class="service-preview-description">
 
-            ${escapeServiceHTML(
-                description
-            )}
+    heading.textContent =
+        name;
 
-        </p>
 
-        <ul>
+    details.appendChild(
+        heading
+    );
 
-            <li>
-                ✔ ${packageCount} Package${packageCount === 1 ? "" : "s"} Available
-            </li>
 
-            ${
-                service.coverageDuration
-                    ? `
-                        <li>
-                            ✔ ${escapeServiceHTML(
-                                service.coverageDuration
-                            )} Coverage
-                        </li>
-                    `
-                    : ""
-            }
+    if (startingPrice !== null) {
 
-            ${
-                service.deliveryTime
-                    ? `
-                        <li>
-                            ✔ Delivery in ${escapeServiceHTML(
-                                service.deliveryTime
-                            )}
-                        </li>
-                    `
-                    : ""
-            }
+        var price =
+            document.createElement(
+                "div"
+            );
 
-        </ul>
 
-        <div class="service-preview-actions">
+        price.className =
+            "service-preview-price";
 
-            <a
-                href="service.html?id=${encodeURIComponent(
-                    service.id
-                )}"
-                class="book-btn"
-            >
-                View Service
-            </a>
 
-            <a
-                href="service.html?id=${encodeURIComponent(
-                    service.id
-                )}&action=book"
-                class="book-btn"
-            >
-                Book Service
-            </a>
+        price.textContent =
+            "From " +
+            formatServicePrice(
+                startingPrice
+            );
 
-        </div>
 
-    `;
+        details.appendChild(
+            price
+        );
+
+    }
+
+
+    if (description) {
+
+        var descriptionElement =
+            document.createElement(
+                "p"
+            );
+
+
+        descriptionElement.className =
+            "service-preview-description";
+
+
+        descriptionElement.textContent =
+            description;
+
+
+        details.appendChild(
+            descriptionElement
+        );
+
+    }
+
+
+    var meta =
+        document.createElement(
+            "div"
+        );
+
+
+    meta.className =
+        "service-preview-meta";
+
+
+    if (packageCount) {
+
+        var packages =
+            document.createElement(
+                "span"
+            );
+
+
+        packages.textContent =
+            packageCount +
+            (
+                packageCount === 1
+                    ? " Package"
+                    : " Packages"
+            );
+
+
+        meta.appendChild(
+            packages
+        );
+
+    }
+
+
+    if (
+        service.coverageDuration
+    ) {
+
+        var coverage =
+            document.createElement(
+                "span"
+            );
+
+
+        coverage.textContent =
+            service.coverageDuration;
+
+
+        meta.appendChild(
+            coverage
+        );
+
+    }
+
+
+    if (
+        service.deliveryTime
+    ) {
+
+        var delivery =
+            document.createElement(
+                "span"
+            );
+
+
+        delivery.textContent =
+            service.deliveryTime;
+
+
+        meta.appendChild(
+            delivery
+        );
+
+    }
+
+
+    if (
+        meta.children.length
+    ) {
+
+        details.appendChild(
+            meta
+        );
+
+    }
+
+
+    var actions =
+        document.createElement(
+            "div"
+        );
+
+
+    actions.className =
+        "service-preview-actions";
+
+
+    var serviceId =
+        service.id ||
+        service.serviceId ||
+        service.slug ||
+        "";
+
+
+    if (serviceId) {
+
+        var viewLink =
+            document.createElement(
+                "a"
+            );
+
+
+        viewLink.className =
+            "book-btn";
+
+
+        viewLink.href =
+            "service.html?id=" +
+            encodeURIComponent(
+                serviceId
+            );
+
+
+        viewLink.textContent =
+            "View Service";
+
+
+        actions.appendChild(
+            viewLink
+        );
+
+
+        var bookLink =
+            document.createElement(
+                "a"
+            );
+
+
+        bookLink.className =
+            "book-btn";
+
+
+        bookLink.href =
+            "service.html?id=" +
+            encodeURIComponent(
+                serviceId
+            ) +
+            "&action=book";
+
+
+        bookLink.textContent =
+            "Book Service";
+
+
+        actions.appendChild(
+            bookLink
+        );
+
+    }
+
+
+    card.appendChild(
+        details
+    );
+
+
+    card.appendChild(
+        actions
+    );
 
 
     return card;
@@ -508,601 +1754,440 @@ function createServiceCard(service) {
 }
 
 
-// ======================================
-// LOAD SERVICES ON CLIENT PAGE
-// ======================================
+/* =========================================================
+   SERVICE EMPTY STATE
+========================================================= */
+
+function createServiceEmptyState() {
+
+    var empty =
+        document.createElement(
+            "div"
+        );
+
+
+    empty.className =
+        "service-empty-state";
+
+
+    var heading =
+        document.createElement(
+            "h3"
+        );
+
+
+    heading.textContent =
+        "Services Coming Soon";
+
+
+    var text =
+        document.createElement(
+            "p"
+        );
+
+
+    text.textContent =
+        "Photography services will appear here once they are available.";
+
+
+    empty.appendChild(
+        heading
+    );
+
+
+    empty.appendChild(
+        text
+    );
+
+
+    return empty;
+
+}
+
+
+/* =========================================================
+   LOAD SERVICES
+========================================================= */
 
 function loadClientServices() {
 
-    const container =
+    var container =
         document.getElementById(
             "servicesContainer"
         );
 
 
     if (!container) {
-
         return;
-
     }
 
 
-    container.innerHTML = "";
+    var services =
+        getClientServices()
+            .filter(
+                function(service) {
 
-
-    const services =
-        getClientServices();
-
-
-    const activeServices =
-        services.filter(service =>
-            service &&
-            service.active === true
-        );
-
-
-    if (!activeServices.length) {
-
-        container.innerHTML = `
-
-            <div class="service-empty-state">
-
-                <h3>
-                    Services Coming Soon
-                </h3>
-
-                <p>
-                    Photography services are currently being updated.
-                </p>
-
-            </div>
-
-        `;
-
-        return;
-
-    }
-
-
-    activeServices.forEach(service => {
-
-        const card =
-            createServiceCard(service);
-
-
-        container.appendChild(card);
-
-    });
-
-
-    // Add the button effect to newly
-    // generated service buttons.
-
-    container
-        .querySelectorAll(".book-btn")
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                function () {
-
-                    this.style.transform =
-                        "scale(0.96)";
-
-
-                    setTimeout(() => {
-
-                        this.style.transform = "";
-
-                    }, 150);
+                    return (
+                        service &&
+                        service.active !== false
+                    );
 
                 }
             );
 
-        });
+
+    container.innerHTML =
+        "";
+
+
+    if (!services.length) {
+
+        container.appendChild(
+            createServiceEmptyState()
+        );
+
+        return;
+
+    }
+
+
+    services.forEach(
+        function(service) {
+
+            container.appendChild(
+                createServiceCard(
+                    service
+                )
+            );
+
+        }
+    );
 
 }
 
 
-// ======================================
-// ESCAPE SERVICE TEXT
-// ======================================
+/* =========================================================
+   EQUIPMENT
+========================================================= */
 
-function escapeServiceHTML(value) {
+function getClientEquipment() {
 
-    const div =
-        document.createElement("div");
+    var equipment =
+        readClientLocalStorage(
+            EQUIPMENT_STORAGE_KEY,
+            []
+        );
 
 
-    div.textContent =
-        value;
+    if (
+        !Array.isArray(
+            equipment
+        )
+    ) {
+
+        return [];
+
+    }
 
 
-    return div.innerHTML;
+    return equipment;
 
 }
 
 
-// ======================================
-// UPDATE SERVICES IF CHANGED
-// ======================================
+/* =========================================================
+   EQUIPMENT ICON
+========================================================= */
+
+function getEquipmentIcon(
+    category
+) {
+
+    var value =
+        String(
+            category || ""
+        )
+        .toLowerCase();
+
+
+    if (
+        value.indexOf(
+            "camera"
+        ) !== -1
+    ) {
+
+        return "fa-camera";
+
+    }
+
+
+    if (
+        value.indexOf(
+            "lens"
+        ) !== -1
+    ) {
+
+        return "fa-circle-dot";
+
+    }
+
+
+    if (
+        value.indexOf(
+            "light"
+        ) !== -1
+    ) {
+
+        return "fa-lightbulb";
+
+    }
+
+
+    if (
+        value.indexOf(
+            "drone"
+        ) !== -1
+    ) {
+
+        return "fa-video";
+
+    }
+
+
+    if (
+        value.indexOf(
+            "audio"
+        ) !== -1 ||
+        value.indexOf(
+            "sound"
+        ) !== -1 ||
+        value.indexOf(
+            "microphone"
+        ) !== -1
+    ) {
+
+        return "fa-microphone";
+
+    }
+
+
+    return "fa-camera-retro";
+
+}
+
+
+/* =========================================================
+   LOAD EQUIPMENT
+========================================================= */
+
+function loadClientEquipment() {
+
+    var container =
+        document.getElementById(
+            "equipmentGrid"
+        );
+
+
+    if (!container) {
+        return;
+    }
+
+
+    var equipment =
+        getClientEquipment()
+            .filter(
+                function(category) {
+
+                    return (
+                        category &&
+                        category.name &&
+                        Array.isArray(
+                            category.items
+                        ) &&
+                        category.items.length
+                    );
+
+                }
+            );
+
+
+    container.innerHTML =
+        "";
+
+
+    if (!equipment.length) {
+
+        var empty =
+            document.createElement(
+                "div"
+            );
+
+
+        empty.className =
+            "equipment-empty-state";
+
+
+        empty.textContent =
+            "Equipment information will appear here once it has been added.";
+
+
+        container.appendChild(
+            empty
+        );
+
+
+        return;
+
+    }
+
+
+    equipment.forEach(
+        function(category) {
+
+            var card =
+                document.createElement(
+                    "article"
+                );
+
+
+          card.className =
+    "equipment-category-card";
+var heading =
+    document.createElement(
+        "div"
+    );
+
+heading.className =
+    "equipment-category-heading";
+
+
+            var icon =
+                document.createElement(
+                    "i"
+                );
+
+
+            icon.className =
+                "fa-solid " +
+                getEquipmentIcon(
+                    category.name
+                );
+
+
+            icon.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+
+
+            heading.appendChild(
+                icon
+            );
+
+
+            var title =
+                document.createElement(
+                    "h3"
+                );
+
+
+            title.textContent =
+                category.name;
+
+
+            heading.appendChild(
+                title
+            );
+
+
+            var list =
+                document.createElement(
+                    "ul"
+                );
+
+                list.className =
+    "equipment-items";
+
+
+            category.items
+                .filter(
+                    function(item) {
+
+                        return (
+                            typeof item === "string" &&
+                            item.trim()
+                        );
+
+                    }
+                )
+                .forEach(
+                    function(item) {
+
+                        var li =
+                            document.createElement(
+                                "li"
+                            );
+
+
+                        li.textContent =
+                            item;
+
+
+                        list.appendChild(
+                            li
+                        );
+
+                    }
+                );
+
+
+            card.appendChild(
+                heading
+            );
+
+
+            card.appendChild(
+                list
+            );
+
+
+            container.appendChild(
+                card
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   STORAGE EVENT
+========================================================= */
 
 window.addEventListener(
     "storage",
-    function (event) {
+    function(event) {
 
         if (
             event.key ===
-            SERVICE_STORAGE_KEY
+            PROFILE_STORAGE_KEY
+        ) {
+
+            renderPublicProfile();
+
+        }
+
+
+        if (
+            event.key ===
+            SERVICES_STORAGE_KEY
         ) {
 
             loadClientServices();
 
         }
 
-    }
-);
-
-
-// ======================================
-// SHARED EQUIPMENT DATA
-// ======================================
-
-const EQUIPMENT_STORAGE_KEY =
-    "professionalStudio.equipment";
-
-
-// ======================================
-// GET EQUIPMENT
-// ======================================
-
-function getClientEquipment() {
-
-    try {
-
-        const storedEquipment =
-            localStorage.getItem(
-                EQUIPMENT_STORAGE_KEY
-            );
-
-
-        if (!storedEquipment) {
-
-            return [];
-
-        }
-
-
-        const equipment =
-            JSON.parse(
-                storedEquipment
-            );
-
-
-        if (!Array.isArray(equipment)) {
-
-            return [];
-
-        }
-
-
-        return equipment;
-
-    }
-    catch (error) {
-
-        console.error(
-            "Could not load equipment:",
-            error
-        );
-
-        return [];
-
-    }
-
-}
-
-
-// ======================================
-// EQUIPMENT CATEGORY ICON
-// ======================================
-
-function getEquipmentIcon(categoryName) {
-
-    const name =
-        String(
-            categoryName || ""
-        ).toLowerCase();
-
-
-    if (name.includes("camera")) {
-
-        return "fa-solid fa-camera";
-
-    }
-
-
-    if (name.includes("lens")) {
-
-        return "fa-solid fa-circle-dot";
-
-    }
-
-
-    if (name.includes("light")) {
-
-        return "fa-solid fa-lightbulb";
-
-    }
-
-
-    if (name.includes("drone")) {
-
-        return "fa-solid fa-video";
-
-    }
-
-
-    if (
-        name.includes("audio") ||
-        name.includes("sound") ||
-        name.includes("microphone")
-    ) {
-
-        return "fa-solid fa-microphone";
-
-    }
-
-
-    return "fa-solid fa-camera-retro";
-
-}
-
-
-// ======================================
-// CREATE EQUIPMENT CATEGORY
-// ======================================
-
-function createEquipmentCategory(category) {
-
-    const categoryCard =
-        document.createElement("div");
-
-
-    categoryCard.className =
-        "equipment-category-card";
-
-
-    // ==========================
-    // Category Heading
-    // ==========================
-
-    const heading =
-        document.createElement("div");
-
-
-    heading.className =
-        "equipment-category-heading";
-
-
-    const icon =
-        document.createElement("i");
-
-
-    icon.className =
-        getEquipmentIcon(
-            category.name
-        );
-
-
-    const title =
-        document.createElement("h3");
-
-
-    title.textContent =
-        category.name;
-
-
-    heading.appendChild(icon);
-
-    heading.appendChild(title);
-
-
-    // ==========================
-    // Equipment Bullet List
-    // ==========================
-
-    const list =
-        document.createElement("ul");
-
-
-    list.className =
-        "equipment-items";
-
-
-    category.items.forEach(item => {
-
-        const equipmentItem =
-            document.createElement("li");
-
-
-        equipmentItem.className =
-            "equipment-item";
-
-
-        const itemName =
-            document.createElement("span");
-
-
-        itemName.textContent =
-            item;
-
-
-        equipmentItem.appendChild(
-            itemName
-        );
-
-
-        list.appendChild(
-            equipmentItem
-        );
-
-    });
-
-
-    categoryCard.appendChild(
-        heading
-    );
-
-
-    categoryCard.appendChild(
-        list
-    );
-
-
-    return categoryCard;
-
-}
-
-
-// ======================================
-// LOAD EQUIPMENT
-// ======================================
-
-function loadClientEquipment() {
-
-    const container =
-        document.getElementById(
-            "equipmentGrid"
-        );
-
-
-    if (!container) {
-
-        return;
-
-    }
-
-
-    container.innerHTML = "";
-
-
-    const equipment =
-        getClientEquipment();
-
-
-    let validCategories = 0;
-
-
-    equipment.forEach(category => {
-
-        if (
-            !category ||
-            !category.name ||
-            !Array.isArray(
-                category.items
-            )
-        ) {
-
-            return;
-
-        }
-
-
-        const validItems =
-            category.items.filter(item => {
-
-                return (
-                    item !== undefined &&
-                    item !== null &&
-                    String(item).trim() !== ""
-                );
-
-            });
-
-
-        // Do not display empty categories.
-
-        if (!validItems.length) {
-
-            return;
-
-        }
-
-
-        const categoryData = {
-
-            name:
-                String(
-                    category.name
-                ),
-
-            items:
-                validItems.map(item => {
-
-                    return String(
-                        item
-                    );
-
-                })
-
-        };
-
-
-        const categoryCard =
-            createEquipmentCategory(
-                categoryData
-            );
-
-
-        container.appendChild(
-            categoryCard
-        );
-
-
-        validCategories++;
-
-    });
-
-
-    // ==========================
-    // Empty Equipment State
-    // ==========================
-
-    if (
-        validCategories === 0
-    ) {
-
-        const emptyState =
-            document.createElement(
-                "div"
-            );
-
-
-        emptyState.className =
-            "equipment-empty-state";
-
-
-        emptyState.innerHTML = `
-
-            <h3>
-                Professional Equipment
-            </h3>
-
-            <p>
-                Equipment details will be available soon.
-            </p>
-
-        `;
-
-
-        container.appendChild(
-            emptyState
-        );
-
-
-        return;
-
-    }
-
-
-    animateEquipmentCategories();
-
-}
-
-
-// ======================================
-// EQUIPMENT ANIMATION
-// ======================================
-
-function animateEquipmentCategories() {
-
-    const container =
-        document.getElementById(
-            "equipmentGrid"
-        );
-
-
-    if (!container) {
-
-        return;
-
-    }
-
-
-    const cards =
-        container.querySelectorAll(
-            ".equipment-category-card"
-        );
-
-
-    if (!cards.length) {
-
-        return;
-
-    }
-
-
-    const observer =
-        new IntersectionObserver(
-            function(entries) {
-
-                entries.forEach(entry => {
-
-                    if (
-                        entry.isIntersecting
-                    ) {
-
-                        entry.target.style.opacity =
-                            "1";
-
-                        entry.target.style.transform =
-                            "translateY(0)";
-
-
-                        observer.unobserve(
-                            entry.target
-                        );
-
-                    }
-
-                });
-
-            },
-            {
-                threshold: 0.2
-            }
-        );
-
-
-    cards.forEach(card => {
-
-        card.style.opacity =
-            "0";
-
-        card.style.transform =
-            "translateY(40px)";
-
-        card.style.transition =
-            "0.6s";
-
-
-        observer.observe(
-            card
-        );
-
-    });
-
-}
-
-
-// ======================================
-// LIVE EQUIPMENT UPDATES
-// ======================================
-
-window.addEventListener(
-    "storage",
-    function(event) {
 
         if (
             event.key ===
@@ -1112,6 +2197,36 @@ window.addEventListener(
             loadClientEquipment();
 
         }
+
+    }
+);
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        renderPublicProfile();
+
+        initializeExperienceMeters();
+
+        initializeSmoothScrolling();
+
+        initializeRevealAnimations();
+
+        initializeNavbar();
+
+        initializeActiveNavigation();
+
+        initializeBookButtons();
+
+        loadClientServices();
+
+        loadClientEquipment();
 
     }
 );
