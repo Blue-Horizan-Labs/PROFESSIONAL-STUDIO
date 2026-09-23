@@ -1,5 +1,8 @@
+
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
@@ -15,188 +18,824 @@
 
 <style>
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:"Segoe UI",sans-serif;
-}
+    /* =========================================================
+       GLOBAL
+    ========================================================= */
 
-body{
-    background:#0b0b0b;
-    color:#fff;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    min-height:100vh;
-    padding:20px;
-}
-
-.container{
-    width:100%;
-    max-width:450px;
-}
-
-.card{
-    background:#141414;
-    border:1px solid #252525;
-    border-radius:14px;
-    padding:35px;
-}
-
-h1{
-    font-size:28px;
-    font-weight:600;
-    margin-bottom:8px;
-}
-
-.subtitle{
-    color:#9d9d9d;
-    font-size:14px;
-    margin-bottom:30px;
-    line-height:1.5;
-}
-
-.input-group{
-    margin-bottom:22px;
-}
-
-label{
-    display:block;
-    margin-bottom:8px;
-    font-size:14px;
-    color:#d5d5d5;
-}
-
-.password-box{
-    position:relative;
-}
-
-input{
-    width:100%;
-    background:#1d1d1d;
-    border:1px solid #303030;
-    color:#fff;
-    padding:14px 55px 14px 14px;
-    border-radius:10px;
-    outline:none;
-    font-size:15px;
-    transition:border-color .25s, box-shadow .25s;
-}
-
-input:focus{
-    border-color:#3b82f6;
-    box-shadow:0 0 0 3px rgba(59,130,246,.08);
-}
-
-input.input-error{
-    border-color:#dc2626;
-}
-
-.toggle{
-    position:absolute;
-    right:15px;
-    top:50%;
-    transform:translateY(-50%);
-    cursor:pointer;
-    color:#888;
-    font-size:13px;
-    user-select:none;
-}
-
-.toggle:hover{
-    color:#fff;
-}
-
-.strength{
-    width:100%;
-    height:6px;
-    background:#222;
-    border-radius:50px;
-    margin-top:12px;
-    overflow:hidden;
-}
-
-.strength-bar{
-    width:0%;
-    height:100%;
-    transition:.3s;
-}
-
-.strength-text{
-    margin-top:8px;
-    font-size:13px;
-    color:#999;
-}
-
-button{
-    width:100%;
-    padding:14px;
-    border:none;
-    border-radius:10px;
-    background:#2563eb;
-    color:white;
-    font-size:15px;
-    font-weight:600;
-    cursor:pointer;
-    transition:.3s;
-}
-
-button:hover{
-    background:#1d4ed8;
-}
-
-button:disabled{
-    opacity:.55;
-    cursor:not-allowed;
-}
-
-.message{
-    display:none;
-    margin-top:20px;
-    text-align:center;
-    padding:12px;
-    border-radius:8px;
-    font-size:14px;
-    line-height:1.5;
-}
-
-.success{
-    background:#13361d;
-    color:#7ee787;
-}
-
-.error{
-    background:#3a1616;
-    color:#ff8a8a;
-}
-
-.back{
-    text-align:center;
-    margin-top:25px;
-}
-
-.back a{
-    color:#8b8b8b;
-    text-decoration:none;
-    transition:.3s;
-}
-
-.back a:hover{
-    color:#fff;
-}
-
-@media(max-width:500px){
-
-    .card{
-        padding:25px;
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+        font-family:"Segoe UI",sans-serif;
     }
 
-    h1{
-        font-size:24px;
+    html,
+    body{
+        width:100%;
+        min-height:100%;
     }
 
-}
+    body{
+        background:#0b0b0b;
+        color:#fff;
+
+        min-height:100vh;
+
+        padding:28px 42px;
+
+        overflow-x:hidden;
+        overflow-y:auto;
+    }
+
+    a{
+        text-decoration:none;
+        color:inherit;
+    }
+
+    button,
+    input{
+        font:inherit;
+    }
+
+
+    /* =========================================================
+       AUTH PAGE
+    ========================================================= */
+
+    .auth-page{
+        width:100%;
+        min-height:calc(100vh - 56px);
+
+        max-width:1240px;
+
+        margin:0 auto;
+
+        display:flex;
+        flex-direction:column;
+    }
+
+
+    /* =========================================================
+       HEADER
+    ========================================================= */
+
+    .auth-header{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+
+        min-height:42px;
+    }
+
+    .brand{
+        display:flex;
+        align-items:center;
+
+        gap:10px;
+
+        color:#fff;
+
+        text-decoration:none;
+
+        font-size:15px;
+        font-weight:600;
+
+        letter-spacing:-.2px;
+    }
+
+    .brand-mark{
+        width:24px;
+        height:24px;
+
+        display:grid;
+        place-items:center;
+
+        font-size:16px;
+
+        color:#fff;
+    }
+
+    .header-login{
+        color:#b5b5b5;
+
+        text-decoration:none;
+
+        font-size:14px;
+
+        transition:color .2s ease;
+    }
+
+    .header-login:hover{
+        color:#fff;
+    }
+
+
+    /* =========================================================
+       MAIN
+    ========================================================= */
+
+    .auth-main{
+        flex:1;
+
+        display:grid;
+
+        grid-template-columns:minmax(0,1fr) 410px;
+
+        align-items:center;
+
+        gap:90px;
+
+        padding:55px 7% 45px;
+    }
+
+
+    /* =========================================================
+       INTRO
+    ========================================================= */
+
+    .intro{
+        max-width:570px;
+    }
+
+    .intro h1{
+        font-size:clamp(38px,4.3vw,58px);
+
+        line-height:1.03;
+
+        letter-spacing:-2.6px;
+
+        font-weight:600;
+
+        margin-bottom:20px;
+    }
+
+    .intro h1 span{
+        display:block;
+
+        color:#a3a3a3;
+    }
+
+    .intro-copy{
+        max-width:510px;
+
+        color:#929292;
+
+        font-size:16px;
+
+        line-height:1.65;
+    }
+
+    .intro-copy strong{
+        color:#d6d6d6;
+
+        font-weight:500;
+    }
+
+    .product-points{
+        display:flex;
+        flex-wrap:wrap;
+
+        gap:10px 28px;
+
+        margin-top:36px;
+
+        color:#777;
+
+        font-size:12px;
+
+        letter-spacing:.9px;
+
+        text-transform:uppercase;
+    }
+
+    .product-points span{
+        position:relative;
+    }
+
+    .product-points span:not(:last-child)::after{
+        content:"";
+
+        position:absolute;
+
+        width:3px;
+        height:3px;
+
+        border-radius:50%;
+
+        background:#4b4b4b;
+
+        right:-16px;
+        top:50%;
+
+        transform:translateY(-50%);
+    }
+
+
+    /* =========================================================
+       CHANGE PASSWORD CARD
+    ========================================================= */
+
+    .password-card{
+        width:100%;
+
+        background:#141414;
+
+        border:1px solid #292929;
+
+        border-radius:12px;
+
+        padding:34px;
+
+        box-shadow:0 18px 55px rgba(0,0,0,.22);
+    }
+
+
+    /* =========================================================
+       CARD ICON
+    ========================================================= */
+
+    .card-icon{
+        width:42px;
+        height:42px;
+
+        display:grid;
+        place-items:center;
+
+        margin-bottom:20px;
+
+        color:#bdbdbd;
+
+        background:#1b1b1b;
+
+        border:1px solid #303030;
+
+        border-radius:9px;
+    }
+
+    .card-icon svg{
+        width:19px;
+        height:19px;
+
+        stroke:currentColor;
+
+        stroke-width:1.8;
+
+        fill:none;
+
+        stroke-linecap:round;
+        stroke-linejoin:round;
+    }
+
+
+    /* =========================================================
+       CARD HEADING
+    ========================================================= */
+
+    .card-heading{
+        margin-bottom:27px;
+    }
+
+    .card-heading h2{
+        font-size:21px;
+
+        font-weight:600;
+
+        letter-spacing:-.4px;
+
+        margin-bottom:7px;
+    }
+
+    .card-heading p{
+        color:#777;
+
+        font-size:13px;
+
+        line-height:1.5;
+    }
+
+
+    /* =========================================================
+       FORM
+    ========================================================= */
+
+    .input-group{
+        margin-bottom:19px;
+    }
+
+    label{
+        display:block;
+
+        margin-bottom:8px;
+
+        font-size:13px;
+
+        color:#d5d5d5;
+    }
+
+    .password-box{
+        position:relative;
+    }
+
+    .password-input{
+        width:100%;
+
+        background:#1b1b1b;
+
+        border:1px solid #303030;
+
+        color:#fff;
+
+        padding:13px 50px 13px 14px;
+
+        border-radius:8px;
+
+        outline:none;
+
+        font-size:14px;
+
+        transition:
+            border-color .2s,
+            box-shadow .2s,
+            background .2s;
+    }
+
+    .password-input::placeholder{
+        color:#686868;
+    }
+
+    .password-input:focus{
+        border-color:#555;
+
+        background:#1d1d1d;
+
+        box-shadow:
+            0 0 0 3px
+            rgba(255,255,255,.035);
+    }
+
+    .password-input.input-error{
+        border-color:#8f3a3a;
+    }
+
+
+    /* =========================================================
+       PASSWORD TOGGLE
+    ========================================================= */
+
+    .password-toggle{
+        position:absolute;
+
+        right:10px;
+        top:50%;
+
+        transform:translateY(-50%);
+
+        width:32px;
+        height:32px;
+
+        padding:0;
+
+        border:none;
+
+        border-radius:50%;
+
+        background:transparent;
+
+        color:#777;
+
+        display:flex;
+
+        align-items:center;
+        justify-content:center;
+
+        cursor:pointer;
+
+        box-shadow:none;
+
+        transition:
+            color .2s,
+            background .2s;
+    }
+
+    .password-toggle:hover{
+        transform:translateY(-50%);
+
+        color:#fff;
+
+        background:#252525;
+
+        box-shadow:none;
+    }
+
+    .password-toggle:focus{
+        outline:none;
+
+        box-shadow:
+            0 0 0 3px
+            rgba(255,255,255,.06);
+    }
+
+    .password-toggle svg{
+        width:18px;
+        height:18px;
+
+        stroke:currentColor;
+
+        stroke-width:2;
+
+        fill:none;
+
+        stroke-linecap:round;
+        stroke-linejoin:round;
+
+        pointer-events:none;
+    }
+
+
+    /* =========================================================
+       PASSWORD STRENGTH
+    ========================================================= */
+
+    .strength{
+        width:100%;
+
+        height:5px;
+
+        background:#222;
+
+        border-radius:50px;
+
+        margin-top:11px;
+
+        overflow:hidden;
+    }
+
+    .strength-bar{
+        width:0%;
+
+        height:100%;
+
+        transition:
+            width .3s ease,
+            background .3s ease;
+    }
+
+    .strength-text{
+        margin-top:7px;
+
+        font-size:11px;
+
+        color:#777;
+    }
+
+
+    /* =========================================================
+       BUTTON
+    ========================================================= */
+
+    .update-button{
+        width:100%;
+
+        padding:13px 14px;
+
+        margin-top:2px;
+
+        border:1px solid #fff;
+
+        border-radius:8px;
+
+        background:#fff;
+
+        color:#111;
+
+        font-size:14px;
+
+        font-weight:600;
+
+        cursor:pointer;
+
+        transition:
+            background .2s,
+            color .2s,
+            transform .2s,
+            opacity .2s;
+    }
+
+    .update-button:hover{
+        background:#e8e8e8;
+    }
+
+    .update-button:active{
+        transform:translateY(1px);
+    }
+
+    .update-button:disabled{
+        opacity:.55;
+
+        cursor:not-allowed;
+
+        transform:none;
+    }
+
+
+    /* =========================================================
+       MESSAGE
+    ========================================================= */
+
+    .message{
+        display:none;
+
+        margin-top:17px;
+
+        padding:11px 13px;
+
+        border-radius:8px;
+
+        font-size:12px;
+
+        line-height:1.5;
+    }
+
+    .message.success{
+        display:block;
+
+        background:#191919;
+
+        border:1px solid #303030;
+
+        color:#bdbdbd;
+    }
+
+    .message.error{
+        display:block;
+
+        background:#211717;
+
+        border:1px solid #3b2929;
+
+        color:#ff9999;
+    }
+
+
+    /* =========================================================
+       BACK LINK
+    ========================================================= */
+
+    .login-link{
+        text-align:center;
+
+        margin-top:21px;
+
+        color:#777;
+
+        font-size:13px;
+    }
+
+    .login-link a{
+        color:#d7d7d7;
+
+        font-weight:500;
+
+        text-decoration:none;
+
+        transition:color .2s;
+    }
+
+    .login-link a:hover{
+        color:#fff;
+    }
+
+
+    /* =========================================================
+       FOOTER
+    ========================================================= */
+
+    .auth-footer{
+        display:flex;
+
+        justify-content:center;
+        align-items:center;
+
+        gap:28px;
+
+        min-height:38px;
+
+        color:#5e5e5e;
+
+        font-size:11px;
+
+        letter-spacing:.8px;
+
+        text-transform:uppercase;
+    }
+
+    .auth-footer span{
+        position:relative;
+    }
+
+    .auth-footer span:not(:last-child)::after{
+        content:"";
+
+        position:absolute;
+
+        width:3px;
+        height:3px;
+
+        border-radius:50%;
+
+        background:#3f3f3f;
+
+        right:-16px;
+        top:50%;
+
+        transform:translateY(-50%);
+    }
+
+    .auth-footer a{
+        transition:color .2s ease;
+    }
+
+    .auth-footer a:hover{
+        color:#aaa;
+    }
+
+  .footer-bottom {
+        margin-top: 35px;
+        padding-top: 18px;
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+    }
+
+    .footer-bottom p,
+    .footer-links a {
+        font-size: 0.68rem;
+    }
+
+    /* =========================================================
+       TABLET
+    ========================================================= */
+
+    @media(max-width:900px){
+
+        body{
+            padding:24px;
+        }
+
+        .auth-page{
+            min-height:calc(100vh - 48px);
+        }
+
+        .auth-main{
+            grid-template-columns:1fr;
+
+            gap:42px;
+
+            padding:60px 0 45px;
+
+            max-width:620px;
+
+            width:100%;
+
+            margin:0 auto;
+        }
+
+        .intro{
+            max-width:620px;
+        }
+
+        .intro h1{
+            font-size:clamp(38px,8vw,52px);
+        }
+
+        .password-card{
+            max-width:450px;
+        }
+
+        .auth-footer{
+            padding-bottom:8px;
+        }
+    }
+
+
+  
+    /* =========================================================
+       MOBILE
+    ========================================================= */
+
+    @media(max-width:500px){
+
+        body{
+            padding:20px;
+        }
+
+        .auth-page{
+            min-height:calc(100vh - 40px);
+        }
+
+        .auth-header{
+            min-height:35px;
+        }
+
+        .brand{
+            font-size:14px;
+        }
+
+        .header-login{
+            font-size:13px;
+        }
+
+        .auth-main{
+            gap:34px;
+
+            padding:48px 0 35px;
+        }
+
+        .intro h1{
+            font-size:38px;
+
+            letter-spacing:-1.8px;
+
+            margin-bottom:16px;
+        }
+
+        .intro-copy{
+            font-size:14px;
+
+            line-height:1.6;
+        }
+
+        .product-points{
+            margin-top:25px;
+
+            gap:9px 22px;
+
+            font-size:10px;
+        }
+
+        .product-points span:not(:last-child)::after{
+            right:-13px;
+        }
+
+        .password-card{
+            padding:25px;
+
+            border-radius:10px;
+        }
+
+        .card-icon{
+            width:40px;
+            height:40px;
+
+            margin-bottom:18px;
+        }
+
+        .card-heading{
+            margin-bottom:24px;
+        }
+
+        .card-heading h2{
+            font-size:20px;
+        }
+
+        .input-group{
+            margin-bottom:18px;
+        }
+
+        .auth-footer{
+            gap:20px;
+
+            font-size:9px;
+
+            flex-wrap:wrap;
+
+            line-height:1.5;
+        }
+
+        .auth-footer span:not(:last-child)::after{
+            right:-12px;
+        }
+    }
+
+
+    /* =========================================================
+       VERY SMALL SCREENS
+    ========================================================= */
+
+    @media(max-width:360px){
+
+        .intro h1{
+            font-size:34px;
+        }
+
+        .password-card{
+            padding:21px;
+        }
+
+        .auth-footer{
+            display:none;
+        }
+    }
 
 </style>
 
@@ -204,377 +843,966 @@ button:disabled{
 
 <body>
 
-<div class="container">
+<div class="auth-page">
 
-<div class="card">
 
-<h1>Change Password</h1>
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
 
-<p class="subtitle">
-Choose a strong password that you haven't used before.
-</p>
+    <header class="auth-header">
 
-<form id="passwordForm">
+        <a
+            href="/"
+            class="brand"
+            aria-label="Professional Studio home"
+        >
 
-<div class="input-group">
+            <span class="brand-mark">
+                ◇
+            </span>
 
-<label for="currentPassword">
-Current Password
-</label>
+            <span>
+                Professional Studio
+            </span>
 
-<div class="password-box">
+        </a>
 
-<input
-    type="password"
-    id="currentPassword"
-    autocomplete="current-password"
-    required
->
 
-<span
-    class="toggle"
-    onclick="togglePassword('currentPassword',this)"
->
-Show
-</span>
+        <a
+            href="/auth/login-new.html"
+            class="header-login"
+        >
+            Log in
+        </a>
+
+    </header>
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="auth-main">
+
+
+        <!-- =================================================
+             INTRO
+        ================================================== -->
+
+        <section
+            class="intro"
+            aria-labelledby="passwordIntroTitle"
+        >
+
+            <h1 id="passwordIntroTitle">
+
+                Keep your studio secure.
+
+                <span>
+                    One strong password.
+                </span>
+
+            </h1>
+
+
+            <p class="intro-copy">
+
+                Update your password regularly to keep your
+                <strong>Professional Studio</strong>
+                account and workspace protected.
+
+            </p>
+
+
+          
+        </section>
+
+
+        <!-- =================================================
+             PASSWORD CARD
+        ================================================== -->
+
+        <section
+            class="password-card"
+            aria-labelledby="passwordCardTitle"
+        >
+
+            <div
+                class="card-icon"
+                aria-hidden="true"
+            >
+
+                <svg viewBox="0 0 24 24">
+
+                    <rect
+                        x="3"
+                        y="10"
+                        width="18"
+                        height="11"
+                        rx="2"
+                    ></rect>
+
+                    <path
+                        d="M7 10V7a5 5 0 0 1 10 0v3"
+                    ></path>
+
+                    <circle
+                        cx="12"
+                        cy="15"
+                        r="1"
+                    ></circle>
+
+                    <path
+                        d="M12 16v2"
+                    ></path>
+
+                </svg>
+
+            </div>
+
+
+            <div class="card-heading">
+
+                <h2 id="passwordCardTitle">
+                    Change your password
+                </h2>
+
+                <p>
+                    Choose a strong password that you
+                    haven't used before.
+                </p>
+
+            </div>
+
+
+            <form id="passwordForm">
+
+
+                <!-- =========================================
+                     CURRENT PASSWORD
+                ========================================== -->
+
+                <div class="input-group">
+
+                    <label for="currentPassword">
+                        Current Password
+                    </label>
+
+                    <div class="password-box">
+
+                        <input
+                            type="password"
+                            id="currentPassword"
+                            class="password-input"
+                            autocomplete="current-password"
+                            placeholder="Enter current password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            data-target="currentPassword"
+                            aria-label="Show password"
+                            title="Show password"
+                        >
+
+                            <svg
+                                class="eye-icon"
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                            >
+
+                                <path
+                                    d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"
+                                ></path>
+
+                                <circle
+                                    cx="12"
+                                    cy="12"
+                                    r="3"
+                                ></circle>
+
+                            </svg>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =========================================
+                     NEW PASSWORD
+                ========================================== -->
+
+                <div class="input-group">
+
+                    <label for="newPassword">
+                        New Password
+                    </label>
+
+                    <div class="password-box">
+
+                        <input
+                            type="password"
+                            id="newPassword"
+                            class="password-input"
+                            autocomplete="new-password"
+                            placeholder="Create a new password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            data-target="newPassword"
+                            aria-label="Show password"
+                            title="Show password"
+                        >
+
+                            <svg
+                                class="eye-icon"
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                            >
+
+                                <path
+                                    d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"
+                                ></path>
+
+                                <circle
+                                    cx="12"
+                                    cy="12"
+                                    r="3"
+                                ></circle>
+
+                            </svg>
+
+                        </button>
+
+                    </div>
+
+
+                    <div class="strength">
+
+                        <div
+                            class="strength-bar"
+                            id="strengthBar"
+                        ></div>
+
+                    </div>
+
+
+                    <div
+                        class="strength-text"
+                        id="strengthText"
+                    >
+                        Password Strength
+                    </div>
+
+                </div>
+
+
+                <!-- =========================================
+                     CONFIRM PASSWORD
+                ========================================== -->
+
+                <div class="input-group">
+
+                    <label for="confirmPassword">
+                        Confirm New Password
+                    </label>
+
+                    <div class="password-box">
+
+                        <input
+                            type="password"
+                            id="confirmPassword"
+                            class="password-input"
+                            autocomplete="new-password"
+                            placeholder="Confirm your new password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            data-target="confirmPassword"
+                            aria-label="Show password"
+                            title="Show password"
+                        >
+
+                            <svg
+                                class="eye-icon"
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                            >
+
+                                <path
+                                    d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"
+                                ></path>
+
+                                <circle
+                                    cx="12"
+                                    cy="12"
+                                    r="3"
+                                ></circle>
+
+                            </svg>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =========================================
+                     UPDATE BUTTON
+                ========================================== -->
+
+                <button
+                    type="submit"
+                    id="updateButton"
+                    class="update-button"
+                >
+                    Update Password
+                </button>
+
+
+                <!-- =========================================
+                     MESSAGE
+                ========================================== -->
+
+                <div
+                    id="message"
+                    class="message"
+                    role="status"
+                    aria-live="polite"
+                ></div>
+
+
+                <!-- =========================================
+                     BACK TO DASHBOARD
+                ========================================== -->
+
+                <div class="login-link">
+
+                    <a href="/user.html">
+                        ← Back to Dashboard
+                    </a>
+
+                </div>
+
+            </form>
+
+        </section>
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer
+        class="auth-footer"
+        aria-label="Professional Studio features"
+    >
+
+             <div class="footer-bottom">
+
+            <p>
+
+                © 2026 Professional Studio. All Rights Reserved.
+
+            </p>
+
+
+        <p>
+            Powered by <a href="https://bluehorizanlabs.vercel.app/" target="_blank"> Bluehorizanlabs</a> 
+        </p>
+
+    </footer>
 
 </div>
 
-</div>
-
-<div class="input-group">
-
-<label for="newPassword">
-New Password
-</label>
-
-<div class="password-box">
-
-<input
-    type="password"
-    id="newPassword"
-    autocomplete="new-password"
-    required
->
-
-<span
-    class="toggle"
-    onclick="togglePassword('newPassword',this)"
->
-Show
-</span>
-
-</div>
-
-<div class="strength">
-
-<div
-    class="strength-bar"
-    id="strengthBar">
-</div>
-
-</div>
-
-<div
-    class="strength-text"
-    id="strengthText">
-Password Strength
-</div>
-
-</div>
-
-<div class="input-group">
-
-<label for="confirmPassword">
-Confirm New Password
-</label>
-
-<div class="password-box">
-
-<input
-    type="password"
-    id="confirmPassword"
-    autocomplete="new-password"
-    required
->
-
-<span
-    class="toggle"
-    onclick="togglePassword('confirmPassword',this)"
->
-Show
-</span>
-
-</div>
-
-</div>
-
-<button
-    type="submit"
-    id="updateButton"
->
-Update Password
-</button>
-
-<div
-    id="message"
-    class="message">
-</div>
-
-</form>
-
-<div class="back">
-
-<a href="user.html">
-← Back to Dashboard
-</a>
-
-</div>
-
-</div>
-
-</div>
 
 <script>
 
-const PASSWORD_KEY = "professionalStudio.demoPassword";
+    /* =========================================================
+       PASSWORD STORAGE
+    ========================================================= */
 
-const passwordForm = document.getElementById("passwordForm");
-const currentPassword = document.getElementById("currentPassword");
-const newPassword = document.getElementById("newPassword");
-const confirmPassword = document.getElementById("confirmPassword");
+    const PASSWORD_KEY =
+        "professionalStudio.demoPassword";
 
-const strengthBar = document.getElementById("strengthBar");
-const strengthText = document.getElementById("strengthText");
-const message = document.getElementById("message");
-const updateButton = document.getElementById("updateButton");
 
-function getStoredPassword(){
+    /* =========================================================
+       ELEMENTS
+    ========================================================= */
 
-    return localStorage.getItem(PASSWORD_KEY);
+    const passwordForm =
+        document.getElementById("passwordForm");
 
-}
+    const currentPassword =
+        document.getElementById("currentPassword");
 
-function togglePassword(id,element){
+    const newPassword =
+        document.getElementById("newPassword");
 
-    const input = document.getElementById(id);
+    const confirmPassword =
+        document.getElementById("confirmPassword");
 
-    if(input.type === "password"){
+    const strengthBar =
+        document.getElementById("strengthBar");
 
-        input.type = "text";
-        element.textContent = "Hide";
+    const strengthText =
+        document.getElementById("strengthText");
 
-    }else{
+    const message =
+        document.getElementById("message");
 
-        input.type = "password";
-        element.textContent = "Show";
+    const updateButton =
+        document.getElementById("updateButton");
 
-    }
 
-}
+    /* =========================================================
+       GET STORED PASSWORD
+    ========================================================= */
 
-function calculateStrength(value){
+    function getStoredPassword(){
 
-    let score = 0;
-
-    if(value.length >= 8){
-        score++;
-    }
-
-    if(/[A-Z]/.test(value)){
-        score++;
-    }
-
-    if(/[0-9]/.test(value)){
-        score++;
-    }
-
-    if(/[!@#$%^&*(),.?":{}|<>_\-+=]/.test(value)){
-        score++;
-    }
-
-    return score;
-
-}
-
-function updateStrength(){
-
-    const value = newPassword.value;
-    const score = calculateStrength(value);
-
-    strengthBar.style.width = "0%";
-    strengthBar.style.background = "transparent";
-
-    if(!value){
-
-        strengthText.textContent = "Password Strength";
-        strengthText.style.color = "#999";
-        return;
-
-    }
-
-    if(score <= 1){
-
-        strengthBar.style.width = "25%";
-        strengthBar.style.background = "#ef4444";
-        strengthText.textContent = "Weak";
-        strengthText.style.color = "#ef4444";
-
-    }else if(score === 2){
-
-        strengthBar.style.width = "50%";
-        strengthBar.style.background = "#f59e0b";
-        strengthText.textContent = "Fair";
-        strengthText.style.color = "#f59e0b";
-
-    }else if(score === 3){
-
-        strengthBar.style.width = "75%";
-        strengthBar.style.background = "#3b82f6";
-        strengthText.textContent = "Good";
-        strengthText.style.color = "#3b82f6";
-
-    }else{
-
-        strengthBar.style.width = "100%";
-        strengthBar.style.background = "#22c55e";
-        strengthText.textContent = "Strong";
-        strengthText.style.color = "#22c55e";
-
-    }
-
-}
-
-function showMessage(type,text){
-
-    message.className = "message " + type;
-    message.textContent = text;
-    message.style.display = "block";
-
-}
-
-function clearMessage(){
-
-    message.className = "message";
-    message.textContent = "";
-    message.style.display = "none";
-
-}
-
-newPassword.addEventListener("input",function(){
-
-    updateStrength();
-    newPassword.classList.remove("input-error");
-    clearMessage();
-
-});
-
-confirmPassword.addEventListener("input",function(){
-
-    confirmPassword.classList.remove("input-error");
-    clearMessage();
-
-});
-
-currentPassword.addEventListener("input",function(){
-
-    currentPassword.classList.remove("input-error");
-    clearMessage();
-
-});
-
-passwordForm.addEventListener("submit",function(e){
-
-    e.preventDefault();
-
-    clearMessage();
-
-    const current = currentPassword.value;
-    const newPass = newPassword.value;
-    const confirm = confirmPassword.value;
-
-    if(!current){
-
-        currentPassword.classList.add("input-error");
-        showMessage("error","Please enter your current password.");
-        currentPassword.focus();
-        return;
-
-    }
-
-    if(newPass.length < 8){
-
-        newPassword.classList.add("input-error");
-        showMessage(
-            "error",
-            "New password must contain at least 8 characters."
+        return localStorage.getItem(
+            PASSWORD_KEY
         );
-        newPassword.focus();
-        return;
 
     }
 
-    if(calculateStrength(newPass) < 3){
 
-        newPassword.classList.add("input-error");
-        showMessage(
-            "error",
-            "Please choose a stronger password using uppercase letters, numbers and special characters."
+    /* =========================================================
+       PASSWORD VISIBILITY TOGGLE
+    ========================================================= */
+
+    const passwordToggles =
+        document.querySelectorAll(
+            ".password-toggle"
         );
-        newPassword.focus();
-        return;
 
-    }
 
-    if(newPass !== confirm){
+    passwordToggles.forEach(function(toggle){
 
-        confirmPassword.classList.add("input-error");
-        showMessage("error","Passwords do not match.");
-        confirmPassword.focus();
-        return;
+        toggle.addEventListener(
+            "click",
+            function(){
 
-    }
+                const targetId =
+                    toggle.getAttribute(
+                        "data-target"
+                    );
 
-    if(current === newPass){
+                const input =
+                    document.getElementById(
+                        targetId
+                    );
 
-        newPassword.classList.add("input-error");
-        showMessage(
-            "error",
-            "New password must be different from the current password."
+
+                if(!input){
+                    return;
+                }
+
+
+                const isPassword =
+                    input.type === "password";
+
+
+                if(isPassword){
+
+                    input.type = "text";
+
+                    toggle.setAttribute(
+                        "aria-label",
+                        "Hide password"
+                    );
+
+                    toggle.setAttribute(
+                        "title",
+                        "Hide password"
+                    );
+
+
+                    toggle.innerHTML = `
+
+                        <svg
+                            class="eye-icon"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+
+                            <path
+                                d="M3 3l18 18"
+                            ></path>
+
+                            <path
+                                d="M10.6 10.6a2 2 0 0 0 2.8 2.8"
+                            ></path>
+
+                            <path
+                                d="M9.9 5.1A10.9 10.9 0 0 1 12 5c6.5 0 10 7 10 7a17.2 17.2 0 0 1-3.1 3.9"
+                            ></path>
+
+                            <path
+                                d="M6.1 6.1C3.6 8 2 12 2 12s3.5 7 10 7c1.7 0 3.2-.4 4.5-1"
+                            ></path>
+
+                        </svg>
+
+                    `;
+
+                }else{
+
+                    input.type = "password";
+
+                    toggle.setAttribute(
+                        "aria-label",
+                        "Show password"
+                    );
+
+                    toggle.setAttribute(
+                        "title",
+                        "Show password"
+                    );
+
+
+                    toggle.innerHTML = `
+
+                        <svg
+                            class="eye-icon"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+
+                            <path
+                                d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"
+                            ></path>
+
+                            <circle
+                                cx="12"
+                                cy="12"
+                                r="3"
+                            ></circle>
+
+                        </svg>
+
+                    `;
+
+                }
+
+            }
         );
-        return;
+
+    });
+
+
+    /* =========================================================
+       PASSWORD STRENGTH
+    ========================================================= */
+
+    function calculateStrength(value){
+
+        let score = 0;
+
+
+        if(value.length >= 8){
+            score++;
+        }
+
+        if(/[A-Z]/.test(value)){
+            score++;
+        }
+
+        if(/[0-9]/.test(value)){
+            score++;
+        }
+
+        if(/[!@#$%^&*(),.?":{}|<>_\-+=]/.test(value)){
+            score++;
+        }
+
+
+        return score;
 
     }
 
-    const storedPassword = getStoredPassword();
 
-    if(storedPassword && current !== storedPassword){
+    function updateStrength(){
 
-        currentPassword.classList.add("input-error");
-        showMessage("error","Current password is incorrect.");
-        currentPassword.focus();
-        return;
+        const value =
+            newPassword.value;
+
+        const score =
+            calculateStrength(value);
+
+
+        strengthBar.style.width =
+            "0%";
+
+        strengthBar.style.background =
+            "transparent";
+
+
+        if(!value){
+
+            strengthText.textContent =
+                "Password Strength";
+
+            strengthText.style.color =
+                "#777";
+
+            return;
+
+        }
+
+
+        if(score <= 1){
+
+            strengthBar.style.width =
+                "25%";
+
+            strengthBar.style.background =
+                "#ef4444";
+
+            strengthText.textContent =
+                "Weak";
+
+            strengthText.style.color =
+                "#ef4444";
+
+        }else if(score === 2){
+
+            strengthBar.style.width =
+                "50%";
+
+            strengthBar.style.background =
+                "#f59e0b";
+
+            strengthText.textContent =
+                "Fair";
+
+            strengthText.style.color =
+                "#f59e0b";
+
+        }else if(score === 3){
+
+            strengthBar.style.width =
+                "75%";
+
+            strengthBar.style.background =
+                "#3b82f6";
+
+            strengthText.textContent =
+                "Good";
+
+            strengthText.style.color =
+                "#3b82f6";
+
+        }else{
+
+            strengthBar.style.width =
+                "100%";
+
+            strengthBar.style.background =
+                "#22c55e";
+
+            strengthText.textContent =
+                "Strong";
+
+            strengthText.style.color =
+                "#22c55e";
+
+        }
 
     }
 
 
-    localStorage.setItem(PASSWORD_KEY,newPass);
+    /* =========================================================
+       MESSAGE
+    ========================================================= */
 
-    showMessage(
-        "success",
-        "Password updated successfully."
+    function showMessage(type,text){
+
+        message.className =
+            "message " + type;
+
+        message.textContent =
+            text;
+
+    }
+
+
+    function clearMessage(){
+
+        message.className =
+            "message";
+
+        message.textContent =
+            "";
+
+    }
+
+
+    /* =========================================================
+       INPUT EVENTS
+    ========================================================= */
+
+    newPassword.addEventListener(
+        "input",
+        function(){
+
+            updateStrength();
+
+            newPassword.classList.remove(
+                "input-error"
+            );
+
+            clearMessage();
+
+        }
     );
 
-    passwordForm.reset();
 
-    strengthBar.style.width = "0%";
-    strengthBar.style.background = "transparent";
-    strengthText.textContent = "Password Strength";
-    strengthText.style.color = "#999";
+    confirmPassword.addEventListener(
+        "input",
+        function(){
 
-});
+            confirmPassword.classList.remove(
+                "input-error"
+            );
+
+            clearMessage();
+
+        }
+    );
+
+
+    currentPassword.addEventListener(
+        "input",
+        function(){
+
+            currentPassword.classList.remove(
+                "input-error"
+            );
+
+            clearMessage();
+
+        }
+    );
+
+
+    /* =========================================================
+       FORM SUBMIT
+    ========================================================= */
+
+    passwordForm.addEventListener(
+        "submit",
+        function(e){
+
+            e.preventDefault();
+
+            clearMessage();
+
+
+            const current =
+                currentPassword.value;
+
+            const newPass =
+                newPassword.value;
+
+            const confirm =
+                confirmPassword.value;
+
+
+            /* =================================================
+               CURRENT PASSWORD
+            ================================================= */
+
+            if(!current){
+
+                currentPassword.classList.add(
+                    "input-error"
+                );
+
+                showMessage(
+                    "error",
+                    "Please enter your current password."
+                );
+
+                currentPassword.focus();
+
+                return;
+
+            }
+
+
+            /* =================================================
+               PASSWORD LENGTH
+            ================================================= */
+
+            if(newPass.length < 8){
+
+                newPassword.classList.add(
+                    "input-error"
+                );
+
+                showMessage(
+                    "error",
+                    "New password must contain at least 8 characters."
+                );
+
+                newPassword.focus();
+
+                return;
+
+            }
+
+
+            /* =================================================
+               PASSWORD STRENGTH
+            ================================================= */
+
+            if(calculateStrength(newPass) < 3){
+
+                newPassword.classList.add(
+                    "input-error"
+                );
+
+                showMessage(
+                    "error",
+                    "Please choose a stronger password using uppercase letters, numbers and special characters."
+                );
+
+                newPassword.focus();
+
+                return;
+
+            }
+
+
+            /* =================================================
+               CONFIRM PASSWORD
+            ================================================= */
+
+            if(newPass !== confirm){
+
+                confirmPassword.classList.add(
+                    "input-error"
+                );
+
+                showMessage(
+                    "error",
+                    "Passwords do not match."
+                );
+
+                confirmPassword.focus();
+
+                return;
+
+            }
+
+
+            /* =================================================
+               DIFFERENT PASSWORD
+            ================================================= */
+
+            if(current === newPass){
+
+                newPassword.classList.add(
+                    "input-error"
+                );
+
+                showMessage(
+                    "error",
+                    "New password must be different from the current password."
+                );
+
+                newPassword.focus();
+
+                return;
+
+            }
+
+
+            /* =================================================
+               STORED PASSWORD CHECK
+            ================================================= */
+
+            const storedPassword =
+                getStoredPassword();
+
+
+            if(
+                storedPassword &&
+                current !== storedPassword
+            ){
+
+                currentPassword.classList.add(
+                    "input-error"
+                );
+
+                showMessage(
+                    "error",
+                    "Current password is incorrect."
+                );
+
+                currentPassword.focus();
+
+                return;
+
+            }
+
+
+            /* =================================================
+               SAVE PASSWORD
+            ================================================= */
+
+            localStorage.setItem(
+                PASSWORD_KEY,
+                newPass
+            );
+
+
+            /* =================================================
+               SUCCESS
+            ================================================= */
+
+            showMessage(
+                "success",
+                "Password updated successfully."
+            );
+
+
+            passwordForm.reset();
+
+
+            strengthBar.style.width =
+                "0%";
+
+            strengthBar.style.background =
+                "transparent";
+
+            strengthText.textContent =
+                "Password Strength";
+
+            strengthText.style.color =
+                "#777";
+
+        }
+    );
 
 </script>
 
 </body>
+
 </html>
