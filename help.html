@@ -252,65 +252,75 @@
            COMMON QUESTIONS
         ========================= */
 
-        .questions-title {
-            margin-bottom: 20px;
+.questions-title {
+    margin-bottom: 20px;
+    font-family: "Playfair Display", serif;
+    font-size: 30px;
+}
 
-            font-family: "Playfair Display", serif;
-            font-size: 30px;
-        }
+.questions {
+    border-top: 1px solid #e5e5e5;
+}
 
-        .questions {
-            border-top: 1px solid #e5e5e5;
-        }
+.question {
+    border-bottom: 1px solid #e5e5e5;
+}
 
-        .question {
-            border-bottom: 1px solid #e5e5e5;
-        }
+.question button {
+    width: 100%;
+    padding: 18px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    border: none;
+    background: transparent;
+    color: #171717;
+    text-align: left;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
 
-        .question button {
-            width: 100%;
+.question button:focus-visible {
+    outline: 2px solid #171717;
+    outline-offset: 4px;
+    border-radius: 4px;
+}
 
-            padding: 18px 0;
+.question button span:first-child {
+    flex: 1;
+}
 
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+.question button span:last-child {
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1;
+    transition: transform 0.2s ease;
+}
 
-            border: none;
-            background: transparent;
+.question.active button span:last-child {
+    transform: rotate(45deg);
+}
 
-            color: #171717;
+.answer {
+    display: none;
+    padding: 0 40px 18px 0;
+    color: #666666;
+    font-size: 13px;
+    line-height: 1.7;
+}
 
-            text-align: left;
-
-            font-family: inherit;
-            font-size: 14px;
-            font-weight: 600;
-
-            cursor: pointer;
-        }
-
-        .question button span {
-            transition: transform 0.2s ease;
-        }
-
-        .question.active button span {
-            transform: rotate(45deg);
-        }
-
-        .answer {
-            display: none;
-
-            padding: 0 35px 18px 0;
-
-            color: #666666;
-            font-size: 13px;
-        }
-
-        .question.active .answer {
-            display: block;
-        }
-
+.question.active .answer {
+    display: block;
+}
 
         /* =========================
            CONTACT SUPPORT
@@ -342,22 +352,16 @@
             font-size: 14px;
         }
 
-        .support-btn {
-            display: inline-block;
-
-            padding: 11px 20px;
-
-            border-radius: 8px;
-
-            background: #171717;
-            color: #ffffff;
-
-            font-size: 13px;
-            font-weight: 600;
-
-            transition: background 0.2s ease;
-        }
-
+.support-btn {
+    display: inline-block;
+    padding: 11px 20px;
+    border-radius: 8px;
+    background: #171717;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    transition: background 0.2s ease;
+}
         .support-btn:hover {
             background: #333333;
         }
