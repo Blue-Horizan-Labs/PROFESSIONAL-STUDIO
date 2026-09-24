@@ -36,6 +36,9 @@ var BOOKING_STORAGE_KEY =
 var PROFILE_STORAGE_KEY =
     "professionalStudio.profile";
 
+var REVIEW_STORAGE_KEY =
+    "professionalStudio.reviews";
+
 
 /* =========================================================
    SUBSCRIPTION PLANS
@@ -1014,46 +1017,50 @@ function renderPortfolioStorage() {
     }
 
 
-if (warningElement) {
+    if (warningElement) {
 
-    var warningStrong =
-        warningElement.querySelector(
-            "strong"
-        );
+        var warningStrong =
+            warningElement.querySelector(
+                "strong"
+            );
 
-    var warningText =
-        warningElement.querySelector(
-            "span"
-        );
+        var warningText =
+            warningElement.querySelector(
+                "span"
+            );
 
-    if (
-        percentage >= 100
-    ) {
 
-        warningElement.hidden = false;
+        if (
+            percentage >= 100
+        ) {
 
-        if (warningStrong) {
+            warningElement.hidden =
+                false;
 
-            warningStrong.textContent =
-                "Storage is full";
+
+            if (warningStrong) {
+
+                warningStrong.textContent =
+                    "Storage is full";
+
+            }
+
+
+            if (warningText) {
+
+                warningText.textContent =
+                    "Delete existing recent work to make space before uploading new photos.";
+
+            }
+
+        } else {
+
+            warningElement.hidden =
+                true;
 
         }
-
-        if (warningText) {
-
-            warningText.textContent =
-                "Delete existing recent work to make space before uploading new photos.";
-
-        }
-
-    } else {
-
-        warningElement.hidden =
-            true;
 
     }
-
-}
 
 
     document
@@ -4042,67 +4049,651 @@ function updateDashboardStats() {
    REVIEWS
 ========================================================= */
 
+/*
+   Reviews are now read only from the real review
+   data source used by the frontend.
+
+   Expected storage key:
+
+       professionalStudio.reviews
+
+   Expected value:
+
+       [
+           {
+               name: "Client Name",
+               review: "Review text",
+               service: "Wedding Photography",
+               rating: 5
+           }
+       ]
+
+   No demo/fallback reviews are created here.
+*/
+
 function getStoredReviews() {
 
     var reviews =
         readLocalStorage(
-            "professionalStudio.reviews",
-            null
+            REVIEW_STORAGE_KEY,
+            []
         );
 
 
+    /*
+       Support a wrapped review object in case
+       another frontend module stores:
+
+       {
+           reviews: [...]
+       }
+    */
+
     if (
-        Array.isArray(
+        reviews &&
+        typeof reviews === "object" &&
+        !Array.isArray(reviews)
+    ) {
+
+        if (
+            Array.isArray(
+                reviews.reviews
+            )
+        ) {
+
+            reviews =
+                reviews.reviews;
+
+        } else {
+
+            reviews = [];
+
+        }
+
+    }
+
+
+    if (
+        !Array.isArray(
             reviews
         )
     ) {
 
-        return reviews;
+        return [];
 
     }
 
 
     /*
-       Temporary frontend fallback.
-
-       This will later be replaced by
-       backend review data.
+       Only return valid review objects.
+       This prevents malformed storage data
+       from creating broken dashboard cards.
     */
 
-    return [
+    return reviews.filter(
+        function(review) {
 
-        {
-            name: "Rahul Patil",
-            review:
-                "Very professional experience. The final photographs were excellent.",
-            service:
-                "Wedding Photography",
-            rating: 5
-        },
+            return (
+                review &&
+                typeof review === "object"
+            );
 
-        {
-            name: "Neha Sharma",
-            review:
-                "The entire booking and photography experience was smooth and well managed.",
-            service:
-                "Pre-Wedding Photography",
-            rating: 5
-        },
-
-        {
-            name: "Aryan Mehta",
-            review:
-                "Beautiful photographs and great communication throughout the project.",
-            service:
-                "Event Photography",
-            rating: 5
         }
-
-    ];
+    );
 
 }
 
 
+/* =========================================================
+   REVIEW HELPERS
+========================================================= */
+
+function getReviewText(
+    review
+) {
+
+    if (!review) {
+        return "";
+    }
+
+
+    var values = [
+        review.review,
+        review.text,
+        review.comment,
+        review.message
+    ];
+
+
+    for (
+        var i = 0;
+        i < values.length;
+        i++
+    ) {
+
+        if (
+            typeof values[i] === "string" &&
+            values[i].trim()
+        ) {
+
+            return values[i].trim();
+
+        }
+
+    }
+
+
+    return "";
+
+}
+
+
+function getReviewAuthor(
+    review
+) {
+
+    if (!review) {
+        return "Client";
+    }
+
+
+    var values = [
+        review.name,
+        review.clientName,
+        review.customerName,
+        review.author,
+        review.client
+    ];
+
+
+    for (
+        var i = 0;
+        i < values.length;
+        i++
+    ) {
+
+        if (
+            typeof values[i] === "string" &&
+            values[i].trim()
+        ) {
+
+            return values[i].trim();
+
+        }
+
+    }
+
+
+    return "Client";
+
+}
+
+
+function getReviewService(
+    review
+) {
+
+    if (!review) {
+        return "";
+    }
+
+
+    var values = [
+        review.service,
+        review.serviceName,
+        review.packageName,
+        review.package
+    ];
+
+
+    for (
+        var i = 0;
+        i < values.length;
+        i++
+    ) {
+
+        if (
+            typeof values[i] === "string" &&
+            values[i].trim()
+        ) {
+
+            return values[i].trim();
+
+        }
+
+    }
+
+
+    return "";
+
+}
+
+
+function getReviewRating(
+    review
+) {
+
+    if (!review) {
+        return 0;
+    }
+
+
+    var rating =
+        Number(
+            review.rating
+        );
+
+
+    if (
+        !Number.isFinite(
+            rating
+        )
+    ) {
+
+        return 0;
+
+    }
+
+
+    return Math.min(
+        5,
+        Math.max(
+            1,
+            Math.round(
+                rating
+            )
+        )
+    );
+
+}
+
+/* =========================================================
+   DELETE REVIEW
+========================================================= */
+
+function deleteDashboardReview(
+    review
+) {
+
+    if (!review) {
+        return;
+    }
+
+
+    var reviews =
+        getStoredReviews();
+
+
+    /*
+       Prefer the unique review ID when available.
+    */
+
+    var reviewId =
+        review.id;
+
+
+    var reviewIndex =
+        -1;
+
+
+    if (reviewId) {
+
+        reviewIndex =
+            reviews.findIndex(
+                function(existingReview) {
+
+                    return String(
+                        existingReview.id
+                    ) ===
+                    String(
+                        reviewId
+                    );
+
+                }
+            );
+
+    }
+
+
+    /*
+       Fallback for older reviews that may not
+       have an ID.
+    */
+
+    if (
+        reviewIndex === -1
+    ) {
+
+        reviewIndex =
+            reviews.indexOf(
+                review
+            );
+
+    }
+
+
+    if (
+        reviewIndex === -1
+    ) {
+
+        showDashboardToast(
+            "Review could not be found"
+        );
+
+        return;
+
+    }
+
+
+    var confirmed =
+        window.confirm(
+            "Delete this client review? This action cannot be undone."
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    reviews.splice(
+        reviewIndex,
+        1
+    );
+
+
+    if (
+        !writeLocalStorage(
+            REVIEW_STORAGE_KEY,
+            reviews
+        )
+    ) {
+
+        showDashboardToast(
+            "Unable to delete review"
+        );
+
+        return;
+
+    }
+
+
+    renderDashboardReviews();
+
+
+    showDashboardToast(
+        "Review deleted"
+    );
+
+
+    /*
+       Notify other frontend modules in the
+       same browser tab.
+    */
+
+    window.dispatchEvent(
+        new CustomEvent(
+            "professionalStudioReviewsUpdated"
+        )
+    );
+
+}
+/* =========================================================
+   REVIEW EMPTY STATE
+========================================================= */
+
+function renderReviewsEmptyState(
+    grid
+) {
+
+    var empty =
+        document.createElement(
+            "div"
+        );
+
+
+    empty.className =
+        "reviews-empty";
+
+
+    var title =
+        document.createElement(
+            "h3"
+        );
+
+
+    title.textContent =
+        "No client reviews yet";
+
+
+    var text =
+        document.createElement(
+            "p"
+        );
+
+
+    text.textContent =
+        "Reviews from your clients will appear here once they submit feedback.";
+
+
+    empty.appendChild(
+        title
+    );
+
+
+    empty.appendChild(
+        text
+    );
+
+
+    grid.appendChild(
+        empty
+    );
+
+}
+
+
+/* =========================================================
+   CREATE REVIEW CARD
+========================================================= */
+
+function createDashboardReviewCard(
+    review
+) {
+
+    var card =
+        document.createElement(
+            "article"
+        );
+
+
+    card.className =
+        "review-card";
+
+
+    var rating =
+        getReviewRating(
+            review
+        );
+
+
+    if (rating > 0) {
+
+        var stars =
+            document.createElement(
+                "div"
+            );
+
+
+        stars.className =
+            "review-stars";
+
+
+        stars.setAttribute(
+            "aria-label",
+            rating +
+            " out of 5 stars"
+        );
+
+
+        stars.textContent =
+            "★".repeat(
+                rating
+            );
+
+
+        card.appendChild(
+            stars
+        );
+
+    }
+
+
+    var reviewText =
+        getReviewText(
+            review
+        );
+
+
+    if (reviewText) {
+
+        var text =
+            document.createElement(
+                "p"
+            );
+
+
+        text.className =
+            "review-text";
+
+
+        text.textContent =
+            reviewText;
+
+
+        card.appendChild(
+            text
+        );
+
+    }
+
+
+    var author =
+        document.createElement(
+            "div"
+        );
+
+
+    author.className =
+        "review-author";
+
+
+    author.textContent =
+        getReviewAuthor(
+            review
+        );
+
+
+    card.appendChild(
+        author
+    );
+
+
+    var service =
+        getReviewService(
+            review
+        );
+
+
+    if (service) {
+
+        var serviceElement =
+            document.createElement(
+                "div"
+            );
+
+
+        serviceElement.className =
+            "review-service";
+
+
+        serviceElement.textContent =
+            service;
+
+
+        card.appendChild(
+            serviceElement
+        );
+
+    }
+
+
+    /*
+       Review actions
+    */
+
+    var actions =
+        document.createElement(
+            "div"
+        );
+
+
+    actions.className =
+        "review-actions";
+
+
+    var deleteButton =
+        document.createElement(
+            "button"
+        );
+
+
+    deleteButton.type =
+        "button";
+
+
+    deleteButton.className =
+        "review-delete-btn";
+
+
+    deleteButton.textContent =
+        "Delete Review";
+
+
+    deleteButton.setAttribute(
+        "aria-label",
+        "Delete review from " +
+        getReviewAuthor(
+            review
+        )
+    );
+
+
+    deleteButton.addEventListener(
+        "click",
+        function() {
+
+            deleteDashboardReview(
+                review
+            );
+
+        }
+    );
+
+
+    actions.appendChild(
+        deleteButton
+    );
+
+
+    card.appendChild(
+        actions
+    );
+
+
+    return card;
+
+}
 /* =========================================================
    RENDER REVIEWS
 ========================================================= */
@@ -4128,124 +4719,133 @@ function renderDashboardReviews() {
         "";
 
 
-    reviews
-        .slice(0, 6)
-        .forEach(
-            function(review) {
+    /*
+       Do not display fake or placeholder reviews.
+       Show a proper empty state instead.
+    */
 
-                var card =
-                    document.createElement(
-                        "article"
-                    );
+    if (!reviews.length) {
 
+        renderReviewsEmptyState(
+            grid
+        );
 
-                card.className =
-                    "review-card";
+        return;
 
-
-                var stars =
-                    document.createElement(
-                        "div"
-                    );
+    }
 
 
-                stars.className =
-                    "review-stars";
+    /*
+       Only show the latest six reviews on
+       the dashboard.
+
+       If the review system stores createdAt,
+       submittedAt or date, use that to determine
+       the newest reviews.
+    */
+
+    var sortedReviews =
+        reviews.slice()
+            .sort(
+                function(a, b) {
+
+                    var aDate =
+                        new Date(
+                            a.createdAt ||
+                            a.submittedAt ||
+                            a.date ||
+                            0
+                        ).getTime();
 
 
-                var rating =
-                    Number(
-                        review.rating
-                    ) || 5;
+                    var bDate =
+                        new Date(
+                            b.createdAt ||
+                            b.submittedAt ||
+                            b.date ||
+                            0
+                        ).getTime();
 
 
-                stars.textContent =
-                    "★".repeat(
-                        Math.min(
-                            5,
-                            Math.max(
-                                1,
-                                rating
-                            )
-                        )
-                    );
+                    /*
+                       If no dates exist, preserve
+                       the existing storage order.
+                    */
+
+                    if (
+                        !aDate &&
+                        !bDate
+                    ) {
+
+                        return 0;
+
+                    }
 
 
-                var text =
-                    document.createElement(
-                        "p"
-                    );
+                    return bDate - aDate;
+
+                }
+            )
+            .slice(
+                0,
+                6
+            );
 
 
-                text.className =
-                    "review-text";
+    sortedReviews.forEach(
+        function(review) {
 
+            /*
+               Ignore completely empty review records.
+            */
 
-                text.textContent =
-                    review.review ||
-                    review.text ||
-                    review.comment ||
-                    "";
-
-
-                var author =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                author.className =
-                    "review-author";
-
-
-                author.textContent =
-                    review.name ||
-                    review.clientName ||
-                    "Client";
-
-
-                var service =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                service.className =
-                    "review-service";
-
-
-                service.textContent =
-                    review.service ||
-                    review.serviceName ||
-                    "";
-
-
-                card.appendChild(
-                    stars
+            var hasText =
+                Boolean(
+                    getReviewText(
+                        review
+                    )
                 );
 
-
-                card.appendChild(
-                    text
-                );
-
-
-                card.appendChild(
-                    author
-                );
+            var hasRating =
+                getReviewRating(
+                    review
+                ) > 0;
 
 
-                card.appendChild(
-                    service
-                );
+            if (
+                !hasText &&
+                !hasRating
+            ) {
 
-
-                grid.appendChild(
-                    card
-                );
+                return;
 
             }
+
+
+            grid.appendChild(
+                createDashboardReviewCard(
+                    review
+                )
+            );
+
+        }
+    );
+
+
+    /*
+       If storage contained only malformed
+       review records, still show the empty state.
+    */
+
+    if (
+        !grid.children.length
+    ) {
+
+        renderReviewsEmptyState(
+            grid
         );
+
+    }
 
 }
 
@@ -4560,7 +5160,9 @@ window.addEventListener(
 
             BOOKING_STORAGE_KEY,
 
-            PROFILE_STORAGE_KEY
+            PROFILE_STORAGE_KEY,
+
+            REVIEW_STORAGE_KEY
 
         ];
 

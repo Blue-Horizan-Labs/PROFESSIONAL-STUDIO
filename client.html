@@ -311,6 +311,381 @@
 </section>
 
 
+<!-- ================= REVIEWS ================= -->
+
+<section
+    id="reviews"
+    class="section reviews-section"
+>
+
+    <div class="reviews-container">
+
+        <h2 class="center">
+            Client Reviews
+        </h2>
+
+        <!-- ================= REVIEW SUMMARY ================= -->
+
+        <div class="reviews-summary">
+
+            <div class="reviews-rating">
+
+                <span
+                    id="reviewsAverageRating"
+                    class="reviews-average-rating"
+                >
+                    0.0
+                </span>
+
+                <div
+                    id="reviewsAverageStars"
+                    class="review-stars"
+                    aria-label="Average rating"
+                >
+                    <i class="fa-regular fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                </div>
+
+                <span
+                    id="reviewsCount"
+                    class="reviews-count"
+                >
+                    No reviews yet
+                </span>
+
+            </div>
+
+
+            <div class="reviews-action">
+
+                <button
+                    type="button"
+                    id="openReviewModalBtn"
+                    class="book-btn"
+                >
+                    Leave a Review
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= REVIEW LIST ================= -->
+
+        <div
+            id="reviewsList"
+            class="reviews-list"
+        >
+            <!-- Reviews loaded dynamically -->
+        </div>
+
+
+        <!-- ================= REVIEW EMPTY STATE ================= -->
+
+        <div
+            id="reviewsEmptyState"
+            class="reviews-empty-state"
+            hidden
+        >
+
+            <div class="reviews-empty-icon">
+                <i class="fa-regular fa-comment"></i>
+            </div>
+
+            <h3>
+                No Client Reviews Yet
+            </h3>
+
+            <p>
+                Be the first client to share your experience.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= REVIEW MODAL ================= -->
+
+<div
+    id="reviewModal"
+    class="review-modal"
+    hidden
+    aria-hidden="true"
+>
+
+    <div
+        class="review-modal-backdrop"
+        data-close-review-modal
+    ></div>
+
+
+    <div
+        class="review-modal-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="reviewModalTitle"
+    >
+
+        <div class="review-modal-header">
+
+            <div>
+
+                <h2 id="reviewModalTitle">
+                    Leave a Review
+                </h2>
+
+                <p>
+                    Share your experience with this photographer.
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="review-modal-close"
+                id="closeReviewModalBtn"
+                aria-label="Close review form"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+
+        <!-- ================= REVIEW FORM ================= -->
+
+        <form
+            id="reviewForm"
+            class="review-form"
+            novalidate
+        >
+
+            <div class="review-form-group">
+
+                <label for="reviewClientName">
+                    Your Name
+                </label>
+
+                <input
+                    type="text"
+                    id="reviewClientName"
+                    name="clientName"
+                    placeholder="Enter your name"
+                    maxlength="80"
+                    autocomplete="name"
+                    required
+                >
+
+                <small
+                    id="reviewClientNameError"
+                    class="review-field-error"
+                ></small>
+
+            </div>
+
+
+            <div class="review-form-group">
+
+                <label for="reviewClientEmail">
+                    Email Address
+                </label>
+
+                <input
+                    type="email"
+                    id="reviewClientEmail"
+                    name="email"
+                    placeholder="Enter your email"
+                    maxlength="150"
+                    autocomplete="email"
+                    required
+                >
+
+                <small
+                    id="reviewClientEmailError"
+                    class="review-field-error"
+                ></small>
+
+            </div>
+
+
+            <div class="review-form-group">
+
+                <label>
+                    Your Rating
+                </label>
+
+                <div
+                    id="reviewRating"
+                    class="review-rating-input"
+                    role="radiogroup"
+                    aria-label="Choose a rating from one to five stars"
+                >
+
+                    <button
+                        type="button"
+                        class="rating-star"
+                        data-rating="1"
+                        aria-label="1 star"
+                        aria-checked="false"
+                        role="radio"
+                    >
+                        <i class="fa-regular fa-star"></i>
+                    </button>
+
+                    <button
+                        type="button"
+                        class="rating-star"
+                        data-rating="2"
+                        aria-label="2 stars"
+                        aria-checked="false"
+                        role="radio"
+                    >
+                        <i class="fa-regular fa-star"></i>
+                    </button>
+
+                    <button
+                        type="button"
+                        class="rating-star"
+                        data-rating="3"
+                        aria-label="3 stars"
+                        aria-checked="false"
+                        role="radio"
+                    >
+                        <i class="fa-regular fa-star"></i>
+                    </button>
+
+                    <button
+                        type="button"
+                        class="rating-star"
+                        data-rating="4"
+                        aria-label="4 stars"
+                        aria-checked="false"
+                        role="radio"
+                    >
+                        <i class="fa-regular fa-star"></i>
+                    </button>
+
+                    <button
+                        type="button"
+                        class="rating-star"
+                        data-rating="5"
+                        aria-label="5 stars"
+                        aria-checked="false"
+                        role="radio"
+                    >
+                        <i class="fa-regular fa-star"></i>
+                    </button>
+
+                </div>
+
+                <input
+                    type="hidden"
+                    id="reviewRatingValue"
+                    name="rating"
+                    value=""
+                >
+
+                <small
+                    id="reviewRatingError"
+                    class="review-field-error"
+                ></small>
+
+            </div>
+
+
+            <div class="review-form-group">
+
+                <label for="reviewText">
+                    Your Review
+                </label>
+
+                <textarea
+                    id="reviewText"
+                    name="review"
+                    rows="5"
+                    maxlength="1000"
+                    placeholder="Tell us about your experience..."
+                    required
+                ></textarea>
+
+                <div class="review-text-meta">
+
+                    <small
+                        id="reviewTextError"
+                        class="review-field-error"
+                    ></small>
+
+                    <span id="reviewCharacterCount">
+                        0 / 1000
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="reviewFormMessage"
+                class="review-form-message"
+                role="alert"
+                hidden
+            ></div>
+
+
+            <button
+                type="submit"
+                id="submitReviewBtn"
+                class="book-btn review-submit-btn"
+            >
+                Submit Review
+            </button>
+
+        </form>
+
+
+        <!-- ================= ALREADY REVIEWED ================= -->
+
+        <div
+            id="reviewAlreadySubmitted"
+            class="review-already-submitted"
+            hidden
+        >
+
+            <div class="review-status-icon">
+                <i class="fa-solid fa-check"></i>
+            </div>
+
+            <h3>
+                Review Already Submitted
+            </h3>
+
+            <p>
+                A review has already been submitted using this email address.
+                Only one review can be submitted per client.
+            </p>
+
+            <button
+                type="button"
+                class="book-btn"
+                data-close-review-modal
+            >
+                Close
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
         <!-- ================= CONTACT ================= -->
 
         <section

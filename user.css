@@ -2107,3 +2107,50 @@ textarea:disabled {
         animation-iteration-count: 1 !important;
     }
 }
+
+/* =========================================================
+   REVIEW ACTIONS
+========================================================= */
+
+.review-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid #eeeeee;
+}
+
+
+.review-delete-btn {
+    appearance: none;
+    border: 1px solid #dddddd;
+    background: #ffffff;
+    color: #555555;
+    padding: 8px 13px;
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+.review-delete-btn:hover {
+    background: #111111;
+    color: #ffffff;
+    border-color: #111111;
+}
+
+
+.review-delete-btn:focus-visible {
+    outline: 2px solid #111111;
+    outline-offset: 2px;
+}
+
+
+.review-delete-btn:active {
+    transform: translateY(1px);
+}
