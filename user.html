@@ -163,7 +163,7 @@
         </div>
 
 
-        <div class="stat-card">
+        <!-- <div class="stat-card">
 
             <p>
                 Gallery Photos
@@ -177,7 +177,7 @@
                 Across your client galleries
             </span>
 
-        </div>
+        </div>-->
 
 
         <div class="stat-card">
@@ -218,43 +218,113 @@
 </section>
 
 
-
 <!-- =========================================================
-     PROFILE
+     BOOKINGS
 ========================================================= -->
 
 <section
     class="dashboard-section"
-    id="profile"
+    id="bookings"
 >
 
     <div class="section-heading">
 
         <div>
+
             <p class="section-eyebrow">
-                PROFILE
+                BOOKINGS
             </p>
 
             <h2>
-                Your Photographer Profile
+                Upcoming Bookings
             </h2>
 
             <p>
-                Keep your public photographer profile
-                updated so clients know who they are booking.
+                Keep an eye on your latest photography
+                sessions and client appointments.
             </p>
+
         </div>
 
+
         <a
-            href="setup.html"
+            href="bookingMng.html"
             class="btn-secondary"
         >
-            Update Profile
+            Manage Bookings
         </a>
 
     </div>
 
+
+    <div class="booking-toolbar">
+
+        <input
+            type="search"
+            id="searchBooking"
+            placeholder="Search bookings..."
+            autocomplete="off"
+        >
+
+    </div>
+
+
+    <div class="booking-table-container">
+
+        <table class="booking-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Client
+                    </th>
+
+                    <th>
+                        Service
+                    </th>
+
+                    <th>
+                        Date
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="bookingTable">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <div
+        class="booking-empty"
+        id="bookingEmptyState"
+        hidden
+    >
+
+        <h3>
+            No bookings found
+        </h3>
+
+        <p>
+            Your upcoming bookings will appear here.
+        </p>
+
+    </div>
+
 </section>
+
 
 
 
@@ -324,12 +394,12 @@
             </p>
 
             <h2>
-                Your Client Galleries
+             Client Galleries
             </h2>
 
             <p>
                 Prepare, manage and share galleries
-                with your photography clients.
+                with your clients.
             </p>
 
         </div>
@@ -453,7 +523,7 @@
             <div>
 
                 <h3>
-                    Recent Galleries
+                latest Galleries
                 </h3>
 
                 <p>
@@ -527,7 +597,7 @@
             </p>
 
             <h2>
-                Portfolio Storage
+                Your Recent Work Storage
             </h2>
 
             <p>
@@ -679,113 +749,43 @@
 </section>
 
 
-
 <!-- =========================================================
-     BOOKINGS
+     PROFILE
 ========================================================= -->
 
 <section
     class="dashboard-section"
-    id="bookings"
+    id="profile"
 >
 
     <div class="section-heading">
 
         <div>
-
             <p class="section-eyebrow">
-                BOOKINGS
+                PROFILE
             </p>
 
             <h2>
-                Upcoming Bookings
+                Your Photographer Profile
             </h2>
 
             <p>
-                Keep an eye on your latest photography
-                sessions and client appointments.
+                Keep your public photographer profile
+                updated so clients know who they are booking.
             </p>
-
         </div>
 
-
         <a
-            href="bookingMng.html"
+            href="setup.html"
             class="btn-secondary"
         >
-            Manage Bookings
+            Update Profile
         </a>
 
     </div>
 
-
-    <div class="booking-toolbar">
-
-        <input
-            type="search"
-            id="searchBooking"
-            placeholder="Search bookings..."
-            autocomplete="off"
-        >
-
-    </div>
-
-
-    <div class="booking-table-container">
-
-        <table class="booking-table">
-
-            <thead>
-
-                <tr>
-
-                    <th>
-                        Client
-                    </th>
-
-                    <th>
-                        Service
-                    </th>
-
-                    <th>
-                        Date
-                    </th>
-
-                    <th>
-                        Status
-                    </th>
-
-                </tr>
-
-            </thead>
-
-
-            <tbody id="bookingTable">
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-
-    <div
-        class="booking-empty"
-        id="bookingEmptyState"
-        hidden
-    >
-
-        <h3>
-            No bookings found
-        </h3>
-
-        <p>
-            Your upcoming bookings will appear here.
-        </p>
-
-    </div>
-
 </section>
+
 
 
 
