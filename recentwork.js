@@ -5360,9 +5360,7 @@ async function initializeRecentWork() {
     renderActiveAlbum();
 
     setupEvents();
-
 }
-
 
 /* =========================================================
    START

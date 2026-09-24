@@ -1,3 +1,4 @@
+
 /* =========================================================
    PROFESSIONAL STUDIO
    PUBLIC PHOTOGRAPHER PROFILE
@@ -73,12 +74,6 @@ function getClientProfile() {
 
     }
 
-
-    /*
-       Keep compatibility with older frontend
-       profile values without creating a new
-       profile storage system.
-    */
 
     var name =
         localStorage.getItem(
@@ -395,11 +390,6 @@ function getSafeProfileUrl(
     }
 
 
-    /*
-       Only allow normal web URLs for the
-       public social links.
-    */
-
     if (
         url.indexOf("https://") === 0 ||
         url.indexOf("http://") === 0
@@ -448,11 +438,6 @@ function setProfileText(
 
 /* =========================================================
    PROFILE DATA ATTRIBUTES
-   These are intentionally optional.
-
-   If the corresponding attributes are added
-   to the HTML later, the same JS will work
-   without changing the profile data structure.
 ========================================================= */
 
 function renderProfileDataAttributes() {
@@ -511,12 +496,6 @@ function renderClientPhotographerName() {
         getClientPhotographerName();
 
 
-    /*
-       Explicit profile selectors are preferred.
-       The existing page can continue working even
-       if these attributes are not present yet.
-    */
-
     document
         .querySelectorAll(
             "[data-profile-name], #profileName, #photographerName"
@@ -530,14 +509,6 @@ function renderClientPhotographerName() {
             }
         );
 
-
-    /*
-       Existing hero heading fallback.
-
-       This only updates the hero if it is clearly
-       acting as the photographer heading. It does
-       not replace the existing hero copy.
-    */
 
     var heroName =
         document.querySelector(
@@ -1425,41 +1396,6 @@ function getStartingPrice(
 
 
 /* =========================================================
-   ESCAPE SERVICE HTML
-========================================================= */
-
-function escapeServiceHTML(
-    value
-) {
-
-    return String(
-        value || ""
-    )
-    .replace(
-        /&/g,
-        "&amp;"
-    )
-    .replace(
-        /</g,
-        "&lt;"
-    )
-    .replace(
-        />/g,
-        "&gt;"
-    )
-    .replace(
-        /"/g,
-        "&quot;"
-    )
-    .replace(
-        /'/g,
-        "&#039;"
-    );
-
-}
-
-
-/* =========================================================
    CREATE SERVICE CARD
 ========================================================= */
 
@@ -2050,15 +1986,18 @@ function loadClientEquipment() {
                 );
 
 
-          card.className =
-    "equipment-category-card";
-var heading =
-    document.createElement(
-        "div"
-    );
+            card.className =
+                "equipment-category-card";
 
-heading.className =
-    "equipment-category-heading";
+
+            var heading =
+                document.createElement(
+                    "div"
+                );
+
+
+            heading.className =
+                "equipment-category-heading";
 
 
             var icon =
@@ -2105,8 +2044,9 @@ heading.className =
                     "ul"
                 );
 
-                list.className =
-    "equipment-items";
+
+            list.className =
+                "equipment-items";
 
 
             category.items
@@ -2162,6 +2102,663 @@ heading.className =
 
 
 /* =========================================================
+   RECENT WORK STORAGE
+========================================================= */
+
+var RECENT_WORK_STORAGE_KEY =
+    "professionalStudio.portfolioStorage";
+
+var RECENT_WORK_DB_NAME =
+    "ProfessionalStudioDB";
+
+var RECENT_WORK_DB_VERSION =
+    1;
+
+var RECENT_WORK_STORE =
+    "recentWorkPhotos";
+
+
+/* =========================================================
+   OPEN RECENT WORK DATABASE
+========================================================= */
+
+function openRecentWorkDatabase() {
+
+    return new Promise(
+        function(resolve, reject) {
+
+            if (!window.indexedDB) {
+
+                reject(
+                    new Error(
+                        "IndexedDB is not supported."
+                    )
+                );
+
+                return;
+
+            }
+
+
+            var request =
+                window.indexedDB.open(
+                    RECENT_WORK_DB_NAME,
+                    RECENT_WORK_DB_VERSION
+                );
+
+
+            request.onsuccess =
+                function(event) {
+
+                    resolve(
+                        event.target.result
+                    );
+
+                };
+
+
+            request.onerror =
+                function() {
+
+                    reject(
+                        request.error ||
+                        new Error(
+                            "Could not open Recent Work database."
+                        )
+                    );
+
+                };
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   GET RECENT WORK PHOTO
+========================================================= */
+
+function getRecentWorkPhoto(
+    blobKey
+) {
+
+    return openRecentWorkDatabase()
+        .then(
+            function(db) {
+
+                return new Promise(
+                    function(resolve, reject) {
+
+                        var transaction;
+
+
+                        try {
+
+                            transaction =
+                                db.transaction(
+                                    RECENT_WORK_STORE,
+                                    "readonly"
+                                );
+
+                        } catch (error) {
+
+                            reject(error);
+
+                            return;
+
+                        }
+
+
+                        var store =
+                            transaction.objectStore(
+                                RECENT_WORK_STORE
+                            );
+
+
+                        var request =
+                            store.get(
+                                blobKey
+                            );
+
+
+                        request.onsuccess =
+                            function() {
+
+                                resolve(
+                                    request.result ||
+                                    null
+                                );
+
+                            };
+
+
+                        request.onerror =
+                            function() {
+
+                                reject(
+                                    request.error ||
+                                    new Error(
+                                        "Could not read Recent Work image."
+                                    )
+                                );
+
+                            };
+
+                    }
+                );
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   READ RECENT WORK STORAGE
+========================================================= */
+
+function getRecentWorkStorage() {
+
+    try {
+
+        var raw =
+            localStorage.getItem(
+                RECENT_WORK_STORAGE_KEY
+            );
+
+
+        if (!raw) {
+
+            return {
+                albums: [],
+                files: []
+            };
+
+        }
+
+
+        var parsed =
+            JSON.parse(
+                raw
+            );
+
+
+        return {
+
+            albums:
+                Array.isArray(
+                    parsed.albums
+                )
+                    ? parsed.albums
+                    : [],
+
+            files:
+                Array.isArray(
+                    parsed.files
+                )
+                    ? parsed.files
+                    : []
+
+        };
+
+    }
+    catch (error) {
+
+        console.warn(
+            "Could not read Recent Work:",
+            error
+        );
+
+
+        return {
+            albums: [],
+            files: []
+        };
+
+    }
+
+}
+
+
+/* =========================================================
+   ESCAPE RECENT WORK HTML
+========================================================= */
+
+function escapeRecentWorkHTML(
+    value
+) {
+
+    return String(
+        value || ""
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
+
+
+/* =========================================================
+   RECENT WORK EMPTY STATE
+========================================================= */
+
+function showRecentWorkEmptyState() {
+
+    var empty =
+        document.getElementById(
+            "recentWorkEmpty"
+        );
+
+
+    if (empty) {
+
+        empty.hidden =
+            false;
+
+    }
+
+}
+
+
+/* =========================================================
+   HIDE RECENT WORK EMPTY STATE
+========================================================= */
+
+function hideRecentWorkEmptyState() {
+
+    var empty =
+        document.getElementById(
+            "recentWorkEmpty"
+        );
+
+
+    if (empty) {
+
+        empty.hidden =
+            true;
+
+    }
+
+}
+
+
+/* =========================================================
+   RENDER RECENT WORK
+========================================================= */
+
+function renderPortfolioRecentWork() {
+
+    var grid =
+        document.getElementById(
+            "recentWorkPreview"
+        );
+
+
+    if (!grid) {
+
+        console.warn(
+            "Recent Work preview container was not found."
+        );
+
+        return;
+
+    }
+
+
+    var storage =
+        getRecentWorkStorage();
+
+
+    /*
+       Only public albums are shown.
+
+       Missing isPublic is treated as public,
+       matching the main Recent Work module.
+    */
+
+    var publicAlbums =
+        storage.albums.filter(
+            function(album) {
+
+                return (
+                    album &&
+                    album.isPublic !== false
+                );
+
+            }
+        );
+
+
+    grid.innerHTML =
+        "";
+
+
+    /*
+       Remove stale empty-state content.
+    */
+
+    hideRecentWorkEmptyState();
+
+
+    if (!publicAlbums.length) {
+
+        showRecentWorkEmptyState();
+
+        return;
+
+    }
+
+
+    publicAlbums.forEach(
+        function(album) {
+
+            var albumFiles =
+                storage.files.filter(
+                    function(file) {
+
+                        return (
+                            file &&
+                            file.albumId ===
+                            album.id
+                        );
+
+                    }
+                );
+
+
+            /*
+               Explicit cover first.
+               Otherwise use the first available file.
+            */
+
+            var coverFile =
+                albumFiles.find(
+                    function(file) {
+
+                        return (
+                            file &&
+                            file.id ===
+                            album.coverFileId
+                        );
+
+                    }
+                );
+
+
+            if (!coverFile) {
+
+                coverFile =
+                    albumFiles[0] ||
+                    null;
+
+            }
+
+
+            var card =
+                document.createElement(
+                    "a"
+                );
+
+
+            card.className =
+                "work-card recent-work-card";
+
+
+            card.href =
+                "gallery.html?album=" +
+                encodeURIComponent(
+                    album.id
+                );
+
+
+            var imageContainer =
+                document.createElement(
+                    "div"
+                );
+
+
+            imageContainer.className =
+                "work-image";
+
+
+            var placeholder =
+                document.createElement(
+                    "div"
+                );
+
+
+            placeholder.className =
+                "recent-work-image-placeholder";
+
+
+            placeholder.textContent =
+                "Loading...";
+
+
+            imageContainer.appendChild(
+                placeholder
+            );
+
+
+            var content =
+                document.createElement(
+                    "div"
+                );
+
+
+            content.className =
+                "work-content";
+
+
+            var heading =
+                document.createElement(
+                    "h3"
+                );
+
+
+            heading.textContent =
+                album.name ||
+                "Untitled Album";
+
+
+            var count =
+                document.createElement(
+                    "p"
+                );
+
+
+            count.textContent =
+                albumFiles.length +
+                (
+                    albumFiles.length === 1
+                        ? " photo"
+                        : " photos"
+                );
+
+
+            content.appendChild(
+                heading
+            );
+
+
+            content.appendChild(
+                count
+            );
+
+
+            card.appendChild(
+                imageContainer
+            );
+
+
+            card.appendChild(
+                content
+            );
+
+
+            grid.appendChild(
+                card
+            );
+
+
+            /*
+               No media in the album.
+            */
+
+            if (!coverFile) {
+
+                placeholder.textContent =
+                    "No preview image";
+
+                return;
+
+            }
+
+
+            var blobKey =
+                coverFile.blobKey ||
+                coverFile.id;
+
+
+            getRecentWorkPhoto(
+                blobKey
+            )
+            .then(
+                function(record) {
+
+                    if (
+                        !record ||
+                        !record.blob
+                    ) {
+
+                        placeholder.textContent =
+                            "Preview unavailable";
+
+                        return;
+
+                    }
+
+
+                    var image =
+                        document.createElement(
+                            "img"
+                        );
+
+
+                    var objectURL =
+                        URL.createObjectURL(
+                            record.blob
+                        );
+
+
+                    image.src =
+                        objectURL;
+
+
+                    image.alt =
+                        album.name ||
+                        "Recent Work";
+
+
+                    image.loading =
+                        "lazy";
+
+
+                    image.decoding =
+                        "async";
+
+
+                    image.onload =
+                        function() {
+
+                            if (
+                                placeholder &&
+                                placeholder.parentNode
+                            ) {
+
+                                placeholder.remove();
+
+                            }
+
+                        };
+
+
+                    image.onerror =
+                        function() {
+
+                            URL.revokeObjectURL(
+                                objectURL
+                            );
+
+                            image.remove();
+
+                            placeholder.textContent =
+                                "Preview unavailable";
+
+                        };
+
+
+                    imageContainer.insertBefore(
+                        image,
+                        imageContainer.firstChild
+                    );
+
+                }
+            )
+            .catch(
+                function(error) {
+
+                    console.warn(
+                        "Could not load Recent Work cover:",
+                        error
+                    );
+
+
+                    placeholder.textContent =
+                        "Preview unavailable";
+
+                }
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   RECENT WORK UPDATES
+========================================================= */
+
+window.addEventListener(
+    "professionalStudioRecentWorkUpdated",
+    function() {
+
+        renderPortfolioRecentWork();
+
+    }
+);
+
+
+/* =========================================================
    STORAGE EVENT
 ========================================================= */
 
@@ -2198,6 +2795,16 @@ window.addEventListener(
 
         }
 
+
+        if (
+            event.key ===
+            RECENT_WORK_STORAGE_KEY
+        ) {
+
+            renderPortfolioRecentWork();
+
+        }
+
     }
 );
 
@@ -2227,6 +2834,14 @@ document.addEventListener(
         loadClientServices();
 
         loadClientEquipment();
+
+        /*
+           IMPORTANT:
+           This was the missing call that prevented
+           Recent Work from rendering at all.
+        */
+
+        renderPortfolioRecentWork();
 
     }
 );

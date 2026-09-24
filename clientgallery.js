@@ -1,4859 +1,2775 @@
 /* =========================================================
    PROFESSIONAL STUDIO
-   CLIENT GALLERIES
-   FRONTEND CONTROLLER
-   =========================================================
+   PUBLIC PHOTOGRAPHER PROFILE
+   CLIENT PAGE JAVASCRIPT
+========================================================= */
 
-   Includes:
-   - Purchased gallery support
-   - Gallery Shop connection
-   - IndexedDB media storage
-   - Wedding Album support
-   - Demo Gallery
-   - Demo download testing
-   - Storage limit enforcement
-   - Media validation
-   - Media deletion
-   - Album assignment
-   - Delivery readiness
-   - Password/access settings
-   - Gallery expiry handling
-   ========================================================= */
+"use strict";
 
-(() => {
-    "use strict";
 
-    /* =========================================================
-       STORAGE
-    ========================================================= */
+/* =========================================================
+   STORAGE KEYS
+========================================================= */
 
-    const STORAGE_KEY = "professionalStudioGalleries";
-    const PENDING_PURCHASE_KEY = "professionalStudioPendingGallery";
-    const PURCHASE_HISTORY_KEY = "professionalStudioGalleryPurchases";
+var PROFILE_STORAGE_KEY =
+    "professionalStudio.profile";
 
-    const DB_NAME = "professionalstudioDB";
-    const DB_VERSION = 2;
-    const MEDIA_STORE = "clientGalleryMedia";
+var SERVICES_STORAGE_KEY =
+    "professionalStudio.services";
 
-    const WEDDING_ALBUM_NAME = "WEDDING ALBUM";
+var EQUIPMENT_STORAGE_KEY =
+    "professionalStudio.equipment";
 
-    const DEMO_GALLERY_ID = "professional-studio-demo-gallery";
+var PORTFOLIO_STORAGE_KEY =
+    "professionalStudio.portfolioStorage";
 
-    const DEMO_PRICING = {
-        3: 643,
-        6: 1287,
-        12: 2573
-    };
 
-    /* =========================================================
-       DEMO GALLERY
-    ========================================================= */
+/* =========================================================
+   RECENT WORK INDEXEDDB
+========================================================= */
 
-    const DEMO_GALLERY = {
-        id: DEMO_GALLERY_ID,
-        galleryName: "Aarav & Meera Wedding",
-        clientName: "Aarav & Meera",
-        description:
-            "A demonstration client gallery showing media delivery, download permissions, albums and access settings.",
+var RECENT_WORK_DB_NAME =
+    "ProfessionalStudioDB";
 
-        status: "ready",
-        deliveryStatus: "ready",
+var RECENT_WORK_DB_VERSION =
+    1;
 
-        storageLimitGB: 100,
-        storageUsedGB: 18.6,
+var RECENT_WORK_STORE_NAME =
+    "recentWorkPhotos";
 
-        duration: 12,
 
-        createdAt: "2026-09-01T10:00:00",
-        expiryDate: "2027-09-01T10:00:00",
+/* =========================================================
+   OBJECT URL TRACKING
+========================================================= */
 
-        passwordEnabled: true,
-        password: "PS-DEMO-2026",
+var recentWorkObjectURLs = [];
 
-        downloadsEnabled: true,
-        visible: true,
 
-        demo: true,
+/* =========================================================
+   SAFE LOCAL STORAGE READER
+========================================================= */
 
-        media: [
-            {
-                id: "demo-photo-1",
-                galleryId: DEMO_GALLERY_ID,
-                name: "Wedding Ceremony",
-                type: "photo",
-                sizeMB: 4.8,
-                sectionId: "wedding-album",
-                createdAt: "2026-09-01T10:00:00",
-                isCover: true,
-                clientSelected: false
-            },
-            {
-                id: "demo-photo-2",
-                galleryId: DEMO_GALLERY_ID,
-                name: "Reception Portrait",
-                type: "photo",
-                sizeMB: 5.1,
-                sectionId: "wedding-album",
-                createdAt: "2026-09-01T10:02:00",
-                isCover: false,
-                clientSelected: false
-            },
-            {
-                id: "demo-photo-3",
-                galleryId: DEMO_GALLERY_ID,
-                name: "Couple Portrait",
-                type: "photo",
-                sizeMB: 6.2,
-                sectionId: "wedding-album",
-                createdAt: "2026-09-01T10:04:00",
-                isCover: false,
-                clientSelected: true
-            },
-            {
-                id: "demo-video-1",
-                galleryId: DEMO_GALLERY_ID,
-                name: "Wedding Highlights",
-                type: "video",
-                sizeMB: 48.5,
-                sectionId: "highlights",
-                createdAt: "2026-09-01T10:06:00",
-                isCover: false,
-                clientSelected: false
-            },
-            {
-                id: "demo-photo-4",
-                galleryId: DEMO_GALLERY_ID,
-                name: "Reception",
-                type: "photo",
-                sizeMB: 4.3,
-                sectionId: "reception",
-                createdAt: "2026-09-01T10:08:00",
-                isCover: false,
-                clientSelected: false
-            },
-            {
-                id: "demo-video-2",
-                galleryId: DEMO_GALLERY_ID,
-                name: "First Dance",
-                type: "video",
-                sizeMB: 32.7,
-                sectionId: "highlights",
-                createdAt: "2026-09-01T10:10:00",
-                isCover: false,
-                clientSelected: true
-            }
-        ],
+function readLocalStorage(
+    key,
+    fallback
+) {
 
-        albums: [
-            {
-                id: "wedding-album",
-                name: WEDDING_ALBUM_NAME,
-                description: "Client selection album",
-                mediaIds: [
-                    "demo-photo-1",
-                    "demo-photo-2",
-                    "demo-photo-3"
-                ],
-                isWeddingAlbum: true,
-                selectionEnabled: true,
-                maxSelections: 50,
-                selectedMediaIds: [
-                    "demo-photo-3"
-                ],
-                selectedCount: 1,
-                status: "open",
-                submittedAt: null,
-                submittedBy: null,
-                photographerApproved: false,
-                approvedAt: null
-            },
-            {
-                id: "reception",
-                name: "Reception",
-                description: "Reception photographs",
-                mediaIds: [
-                    "demo-photo-4"
-                ],
-                isWeddingAlbum: false,
-                selectionEnabled: false,
-                maxSelections: 0,
-                selectedMediaIds: [],
-                selectedCount: 0,
-                status: "open"
-            },
-            {
-                id: "highlights",
-                name: "Highlights",
-                description: "Highlight videos",
-                mediaIds: [
-                    "demo-video-1",
-                    "demo-video-2"
-                ],
-                isWeddingAlbum: false,
-                selectionEnabled: false,
-                maxSelections: 0,
-                selectedMediaIds: [],
-                selectedCount: 0,
-                status: "open"
-            }
-        ]
-    };
+    try {
 
-    /* =========================================================
-       STATE
-    ========================================================= */
+        var saved =
+            localStorage.getItem(key);
 
-    const state = {
-        galleries: [],
-        selectedGalleryId: null,
+        if (!saved) {
 
-        activeTab: "overview",
-        mediaFilter: "all",
-        searchTerm: "",
+            return fallback;
 
-        editingAlbumId: null,
-
-        mediaObjectUrls: new Set(),
-
-        db: null,
-
-        demoMode: false
-    };
-
-    /* =========================================================
-       DOM
-    ========================================================= */
-
-    const $ = (id) => document.getElementById(id);
-
-    const dom = {
-        totalGalleries: $("totalGalleries"),
-        activeGalleries: $("activeGalleries"),
-        totalStorage: $("totalStorage"),
-        expiringGalleries: $("expiringGalleries"),
-
-        gallerySearch: $("gallerySearch"),
-        statusFilter: $("statusFilter"),
-        galleryGrid: $("galleryGrid"),
-
-        galleryModal: $("galleryModal"),
-
-        modalGalleryName: $("modalGalleryName"),
-        modalClientName: $("modalClientName"),
-        modalStatus: $("modalStatus"),
-
-        modalStorage: $("modalStorage"),
-        modalStorageProgress: $("modalStorageProgress"),
-        modalStorageText: $("modalStorageText"),
-
-        modalDuration: $("modalDuration"),
-        modalExpiry: $("modalExpiry"),
-        modalExpiryNote: $("modalExpiryNote"),
-        modalDownloads: $("modalDownloads"),
-
-        modalGalleryLink: $("modalGalleryLink"),
-        copyLinkBtn: $("copyLinkBtn"),
-
-        checkGalleryName: $("checkGalleryName"),
-        checkMedia: $("checkMedia"),
-        checkPassword: $("checkPassword"),
-        checkDownloads: $("checkDownloads"),
-        checkStorage: $("checkStorage"),
-
-        deliveryStatus: $("deliveryStatus"),
-        deliveryMessage: $("deliveryMessage"),
-        deliveryExpiry: $("deliveryExpiry"),
-        sendToClientBtn: $("sendToClientBtn"),
-
-        mediaUpload: $("mediaUpload"),
-        uploadZone: $("uploadZone"),
-        mediaCount: $("mediaCount"),
-        mediaFilter: $("mediaFilter"),
-        mediaGrid: $("mediaGrid"),
-
-        createAlbumBtn: $("createAlbumBtn"),
-        albumsGrid: $("albumsGrid"),
-
-        passwordEnabled: $("passwordEnabled"),
-        passwordSetting: $("passwordSetting"),
-        galleryPassword: $("galleryPassword"),
-        generatePassword: $("generatePassword"),
-        savePassword: $("savePassword"),
-
-        downloadsEnabled: $("downloadsEnabled"),
-        galleryVisible: $("galleryVisible"),
-
-        gallerySettingsForm: $("gallerySettingsForm"),
-        editGalleryName: $("editGalleryName"),
-        editClientName: $("editClientName"),
-        editGalleryDescription: $("editGalleryDescription"),
-        deleteGalleryBtn: $("deleteGalleryBtn"),
-
-        albumModal: $("albumModal"),
-        albumForm: $("albumForm"),
-        albumName: $("albumName"),
-
-        toast: $("toast"),
-        toastMessage: $("toastMessage")
-    };
-
-    /* =========================================================
-       HELPERS
-    ========================================================= */
-
-    function generateId(prefix = "id") {
-        return (
-            prefix +
-            "_" +
-            Date.now().toString(36) +
-            "_" +
-            Math.random().toString(36).slice(2, 9)
-        );
-    }
-
-    function escapeHTML(value) {
-        return String(value ?? "")
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-    }
-
-    function formatMB(mb) {
-        const value = Number(mb) || 0;
-
-        if (value < 1) {
-            return `${(value * 1024).toFixed(0)} KB`;
         }
 
-        if (value < 1024) {
-            return `${value.toFixed(1)} MB`;
-        }
+        return JSON.parse(saved);
 
-        return `${(value / 1024).toFixed(2)} GB`;
-    }
+    } catch (error) {
 
-    function formatGB(gb) {
-        return `${(Number(gb) || 0).toFixed(2)} GB`;
-    }
-
-    function formatDate(value) {
-        if (!value) return "—";
-
-        const date = new Date(value);
-
-        if (Number.isNaN(date.getTime())) {
-            return "—";
-        }
-
-        return date.toLocaleDateString(undefined, {
-            day: "numeric",
-            month: "short",
-            year: "numeric"
-        });
-    }
-
-    function daysBetweenNow(value) {
-        if (!value) return 0;
-
-        const target = new Date(value).getTime();
-        const now = Date.now();
-
-        return Math.ceil((target - now) / 86400000);
-    }
-
-    function getSelectedGallery() {
-        return state.galleries.find(
-            (gallery) => gallery.id === state.selectedGalleryId
-        );
-    }
-
-    function isPhoto(media) {
-        return (
-            media?.type === "photo" ||
-            media?.type === "image" ||
-            String(media?.type || "").startsWith("image/")
-        );
-    }
-
-    function isVideoMedia(media) {
-        return (
-            media?.type === "video" ||
-            String(media?.type || "").startsWith("video/")
-        );
-    }
-
-    function isSupportedFile(file) {
-        if (!file) return false;
-
-        const type = String(file.type || "").toLowerCase();
-        const name = String(file.name || "").toLowerCase();
-
-        const imageExtensions = [
-            ".jpg",
-            ".jpeg",
-            ".png",
-            ".webp",
-            ".gif"
-        ];
-
-        const videoExtensions = [
-            ".mp4",
-            ".webm",
-            ".mov",
-            ".m4v"
-        ];
-
-        const imageByType = type.startsWith("image/");
-        const videoByType = type.startsWith("video/");
-
-        const imageByExtension = imageExtensions.some((ext) =>
-            name.endsWith(ext)
+        console.warn(
+            "Professional Studio: unable to read storage key:",
+            key,
+            error
         );
 
-        const videoByExtension = videoExtensions.some((ext) =>
-            name.endsWith(ext)
+        return fallback;
+
+    }
+
+}
+
+
+/* =========================================================
+   SAFE HTML ESCAPE
+========================================================= */
+
+function escapeHTML(value) {
+
+    return String(value == null ? "" : value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* =========================================================
+   PROFILE
+========================================================= */
+
+function getProfileData() {
+
+    var profile =
+        readLocalStorage(
+            PROFILE_STORAGE_KEY,
+            null
         );
 
-        return (
-            imageByType ||
-            videoByType ||
-            imageByExtension ||
-            videoByExtension
-        );
-    }
 
-    function getMediaType(file) {
-        const type = String(file?.type || "").toLowerCase();
-        const name = String(file?.name || "").toLowerCase();
-
-        if (
-            type.startsWith("video/") ||
-            [".mp4", ".webm", ".mov", ".m4v"].some((ext) =>
-                name.endsWith(ext)
-            )
-        ) {
-            return "video";
-        }
-
-        return "photo";
-    }
-
-    function fileSizeMB(file) {
-        return (Number(file?.size) || 0) / (1024 * 1024);
-    }
-
-    function revokeObjectUrls() {
-        state.mediaObjectUrls.forEach((url) => {
-            try {
-                URL.revokeObjectURL(url);
-            } catch (_) {}
-        });
-
-        state.mediaObjectUrls.clear();
-    }
-
-    function showToast(message, duration = 2800) {
-        if (!dom.toast || !dom.toastMessage) {
-            return;
-        }
-
-        dom.toastMessage.textContent = message;
-
-        dom.toast.classList.add("show");
-
-        clearTimeout(showToast.timer);
-
-        showToast.timer = setTimeout(() => {
-            dom.toast.classList.remove("show");
-        }, duration);
-    }
-
-    function getGalleryStatus(gallery) {
-        const daysLeft = daysBetweenNow(gallery.expiryDate);
-
-        if (daysLeft <= 0) {
-            return "expired";
-        }
-
-        if (gallery.deliveryStatus === "sent") {
-            return "sent";
-        }
-
-        if (gallery.deliveryStatus === "ready") {
-            return "ready";
-        }
-
-        return "preparing";
-    }
-
-    function getStatusLabel(status) {
-        const labels = {
-            ready: "Ready",
-            sent: "Sent",
-            preparing: "Preparing",
-            expired: "Expired"
-        };
-
-        return labels[status] || "Preparing";
-    }
-
-    function syncGalleryStatus(gallery) {
-        gallery.status = getGalleryStatus(gallery);
-        return gallery;
-    }
-
-    /* =========================================================
-       LOCAL STORAGE
-    ========================================================= */
-
-    function loadGalleries() {
-        try {
-            const raw = localStorage.getItem(STORAGE_KEY);
-
-            if (!raw) {
-                return [];
-            }
-
-            const parsed = JSON.parse(raw);
-
-            return Array.isArray(parsed) ? parsed : [];
-        } catch (error) {
-            console.error("Unable to load galleries:", error);
-            return [];
-        }
-    }
-
-    function saveGalleries() {
-        try {
-            localStorage.setItem(
-                STORAGE_KEY,
-                JSON.stringify(state.galleries)
-            );
-
-            window.dispatchEvent(
-                new CustomEvent(
-                    "professionalStudioClientGalleriesUpdated"
-                )
-            );
-
-            return true;
-        } catch (error) {
-            console.error("Unable to save galleries:", error);
-            showToast("Unable to save gallery changes.");
-            return false;
-        }
-    }
-
-    /* =========================================================
-       NORMALIZATION
-    ========================================================= */
-
-    function createWeddingAlbumSection() {
-        return {
-            id: "wedding-album",
-            name: WEDDING_ALBUM_NAME,
-            description: "Client selection album",
-            mediaIds: [],
-            isWeddingAlbum: true,
-            selectionEnabled: true,
-            maxSelections: 50,
-            selectedMediaIds: [],
-            selectedCount: 0,
-            status: "open",
-            submittedAt: null,
-            submittedBy: null,
-            photographerApproved: false,
-            approvedAt: null
-        };
-    }
-
-    function normalizeMedia(media, galleryId) {
-        return {
-            id: media?.id || generateId("media"),
-            galleryId,
-            name: media?.name || "Untitled media",
-            type: media?.type || "photo",
-            sizeMB: Number(media?.sizeMB) || 0,
-            sectionId: media?.sectionId || "wedding-album",
-            createdAt: media?.createdAt || new Date().toISOString(),
-            isCover: Boolean(media?.isCover),
-            clientSelected: Boolean(media?.clientSelected),
-            blobKey: media?.blobKey || null
-        };
-    }
-
-    function normalizeAlbum(album) {
-        return {
-            id: album?.id || generateId("album"),
-            name: album?.name || "Untitled Album",
-            description: album?.description || "",
-            mediaIds: Array.isArray(album?.mediaIds)
-                ? album.mediaIds
-                : [],
-            isWeddingAlbum: Boolean(album?.isWeddingAlbum),
-            selectionEnabled: Boolean(album?.selectionEnabled),
-            maxSelections: Number(album?.maxSelections) || 0,
-            selectedMediaIds: Array.isArray(album?.selectedMediaIds)
-                ? album.selectedMediaIds
-                : [],
-            selectedCount:
-                Number(album?.selectedCount) ||
-                (Array.isArray(album?.selectedMediaIds)
-                    ? album.selectedMediaIds.length
-                    : 0),
-            status: album?.status || "open",
-            submittedAt: album?.submittedAt || null,
-            submittedBy: album?.submittedBy || null,
-            photographerApproved: Boolean(
-                album?.photographerApproved
-            ),
-            approvedAt: album?.approvedAt || null
-        };
-    }
-
-    function normalizeGallery(gallery) {
-        const normalized = {
-            id: gallery?.id || generateId("gallery"),
-
-            galleryName:
-                gallery?.galleryName ||
-                gallery?.name ||
-                "Untitled Gallery",
-
-            clientName:
-                gallery?.clientName ||
-                "Unnamed Client",
-
-            description: gallery?.description || "",
-
-            duration: Number(gallery?.duration) || 3,
-
-            storageLimitGB:
-                Number(gallery?.storageLimitGB) || 1,
-
-            storageUsedGB:
-                Number(gallery?.storageUsedGB) || 0,
-
-            createdAt:
-                gallery?.createdAt ||
-                new Date().toISOString(),
-
-            expiryDate:
-                gallery?.expiryDate ||
-                new Date(
-                    Date.now() + 90 * 86400000
-                ).toISOString(),
-
-            passwordEnabled:
-                gallery?.passwordEnabled !== false,
-
-            password:
-                gallery?.password || "",
-
-            downloadsEnabled:
-                gallery?.downloadsEnabled !== false,
-
-            visible:
-                gallery?.visible !== false,
-
-            deliveryStatus:
-                gallery?.deliveryStatus ||
-                gallery?.status ||
-                "preparing",
-
-            sentAt:
-                gallery?.sentAt ||
-                null,
-
-            media: Array.isArray(gallery?.media)
-                ? gallery.media.map((media) =>
-                      normalizeMedia(
-                          media,
-                          gallery?.id
-                      )
-                  )
-                : [],
-
-            albums: Array.isArray(gallery?.albums)
-                ? gallery.albums.map(normalizeAlbum)
-                : []
-        };
-
-        if (
-            !normalized.albums.some(
-                (album) => album.id === "wedding-album"
-            )
-        ) {
-            normalized.albums.unshift(
-                createWeddingAlbumSection()
-            );
-        }
-
-        syncGalleryStatus(normalized);
-
-        return normalized;
-    }
-
-    function normalizeAllGalleries() {
-        state.galleries = state.galleries.map(normalizeGallery);
-    }
-
-    /* =========================================================
-       INDEXED DB
-    ========================================================= */
-
-    function openDatabase() {
-        return new Promise((resolve, reject) => {
-            if (!("indexedDB" in window)) {
-                reject(
-                    new Error(
-                        "IndexedDB is not supported by this browser."
-                    )
-                );
-                return;
-            }
-
-            const request = indexedDB.open(
-                DB_NAME,
-                DB_VERSION
-            );
-
-            request.onupgradeneeded = (event) => {
-                const database = event.target.result;
-
-                if (
-                    !database.objectStoreNames.contains(
-                        MEDIA_STORE
-                    )
-                ) {
-                    const store =
-                        database.createObjectStore(
-                            MEDIA_STORE,
-                            {
-                                keyPath: "id"
-                            }
-                        );
-
-                    store.createIndex(
-                        "galleryId",
-                        "galleryId",
-                        {
-                            unique: false
-                        }
-                    );
-                }
-            };
-
-            request.onsuccess = () => {
-                const database = request.result;
-
-                database.onversionchange = () => {
-                    database.close();
-                };
-
-                resolve(database);
-            };
-
-            request.onerror = () => {
-                reject(
-                    request.error ||
-                        new Error(
-                            "Unable to open IndexedDB."
-                        )
-                );
-            };
-        });
-    }
-
-    function idbRequest(
-        mode,
-        operation
+    if (
+        profile &&
+        typeof profile === "object"
     ) {
-        return new Promise((resolve, reject) => {
-            if (!state.db) {
-                reject(
-                    new Error(
-                        "IndexedDB is not initialized."
-                    )
+
+        return profile;
+
+    }
+
+
+    /*
+       Compatibility with older profile storage.
+    */
+
+    var possibleNameKeys = [
+        "photographerName",
+        "profileName",
+        "name",
+        "userName"
+    ];
+
+
+    for (
+        var i = 0;
+        i < possibleNameKeys.length;
+        i++
+    ) {
+
+        var value =
+            localStorage.getItem(
+                possibleNameKeys[i]
+            );
+
+
+        if (
+            value &&
+            value.trim()
+        ) {
+
+            return {
+                name: value.trim()
+            };
+
+        }
+
+    }
+
+
+    return {};
+
+}
+
+
+/* =========================================================
+   PHOTOGRAPHER NAME
+========================================================= */
+
+function getPhotographerName() {
+
+    var profile =
+        getProfileData();
+
+
+    var possibleNames = [
+
+        profile.name,
+
+        profile.fullName,
+
+        profile.photographerName,
+
+        profile.displayName
+
+    ];
+
+
+    for (
+        var i = 0;
+        i < possibleNames.length;
+        i++
+    ) {
+
+        if (
+            typeof possibleNames[i] ===
+                "string" &&
+            possibleNames[i].trim()
+        ) {
+
+            return possibleNames[i].trim();
+
+        }
+
+    }
+
+
+    return "Photographer";
+
+}
+
+
+/* =========================================================
+   RENDER PROFILE
+========================================================= */
+
+function renderPublicProfile() {
+
+    var profile =
+        getProfileData();
+
+
+    var photographerName =
+        getPhotographerName();
+
+
+    /*
+       Common profile fields.
+       Only update elements that actually exist.
+    */
+
+    var nameElements =
+        document.querySelectorAll(
+            "[data-profile-name], #photographerName, #name"
+        );
+
+
+    nameElements.forEach(
+        function(element) {
+
+            element.textContent =
+                photographerName;
+
+        }
+    );
+
+
+    var aboutText =
+        document.getElementById(
+            "aboutText"
+        );
+
+
+    if (
+        aboutText &&
+        profile.about
+    ) {
+
+        aboutText.textContent =
+            profile.about;
+
+    }
+
+
+    var bioText =
+        document.querySelector(
+            "[data-profile-bio]"
+        );
+
+
+    if (
+        bioText &&
+        profile.bio
+    ) {
+
+        bioText.textContent =
+            profile.bio;
+
+    }
+
+
+    var locationElements =
+        document.querySelectorAll(
+            "[data-profile-location]"
+        );
+
+
+    locationElements.forEach(
+        function(element) {
+
+            var location =
+                profile.location ||
+                profile.city ||
+                profile.address ||
+                "";
+
+            if (location) {
+
+                element.textContent =
+                    location;
+
+            }
+
+        }
+    );
+
+
+    var phoneElements =
+        document.querySelectorAll(
+            "[data-profile-phone]"
+        );
+
+
+    phoneElements.forEach(
+        function(element) {
+
+            if (profile.phone) {
+
+                element.textContent =
+                    profile.phone;
+
+            }
+
+        }
+    );
+
+
+    var emailElements =
+        document.querySelectorAll(
+            "[data-profile-email]"
+        );
+
+
+    emailElements.forEach(
+        function(element) {
+
+            if (profile.email) {
+
+                element.textContent =
+                    profile.email;
+
+            }
+
+        }
+    );
+
+
+    /*
+       Social links.
+    */
+
+    var socialKeys = [
+        "instagram",
+        "facebook",
+        "youtube",
+        "twitter",
+        "linkedin"
+    ];
+
+
+    socialKeys.forEach(
+        function(key) {
+
+            var links =
+                document.querySelectorAll(
+                    "[data-social='" +
+                    key +
+                    "']"
                 );
-                return;
-            }
 
-            let transaction;
 
-            try {
-                transaction =
-                    state.db.transaction(
-                        MEDIA_STORE,
-                        mode
-                    );
+            links.forEach(
+                function(link) {
 
-                const store =
-                    transaction.objectStore(
-                        MEDIA_STORE
-                    );
+                    var value =
+                        profile[key];
 
-                let request;
-                let result;
 
-                request = operation(store);
+                    if (
+                        typeof value ===
+                            "string" &&
+                        value.trim()
+                    ) {
 
-                if (request) {
-                    request.onsuccess = () => {
-                        result = request.result;
-                    };
+                        link.href =
+                            value.trim();
 
-                    request.onerror = () => {
-                        reject(
-                            request.error ||
-                                new Error(
-                                    "IndexedDB request failed."
-                                )
-                        );
-                    };
+                        link.style.display =
+                            "";
+
+                    } else {
+
+                        link.style.display =
+                            "none";
+
+                    }
+
                 }
+            );
 
-                transaction.oncomplete = () => {
-                    resolve(result);
-                };
+        }
+    );
 
-                transaction.onerror = () => {
-                    reject(
-                        transaction.error ||
-                            new Error(
-                                "IndexedDB transaction failed."
-                            )
-                    );
-                };
+}
 
-                transaction.onabort = () => {
-                    reject(
-                        transaction.error ||
-                            new Error(
-                                "IndexedDB transaction aborted."
-                            )
-                    );
-                };
-            } catch (error) {
-                reject(error);
+
+/* =========================================================
+   SMOOTH SCROLLING
+========================================================= */
+
+function initializeSmoothScrolling() {
+
+    var links =
+        document.querySelectorAll(
+            'a[href^="#"]'
+        );
+
+
+    links.forEach(
+        function(link) {
+
+            link.addEventListener(
+                "click",
+                function(event) {
+
+                    var targetID =
+                        link.getAttribute(
+                            "href"
+                        );
+
+
+                    if (
+                        !targetID ||
+                        targetID === "#"
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    var target =
+                        document.querySelector(
+                            targetID
+                        );
+
+
+                    if (!target) {
+
+                        return;
+
+                    }
+
+
+                    event.preventDefault();
+
+
+                    target.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start"
+                    });
+
+                }
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   REVEAL ANIMATIONS
+========================================================= */
+
+function initializeRevealAnimations() {
+
+    var elements =
+        document.querySelectorAll(
+            ".section, " +
+            ".portfolio-block, " +
+            ".equipment-grid, " +
+            ".pricing-grid, " +
+            ".work-card, " +
+            ".contact-info"
+        );
+
+
+    if (!elements.length) {
+
+        return;
+
+    }
+
+
+    elements.forEach(
+        function(element) {
+
+            element.classList.add(
+                "reveal"
+            );
+
+        }
+    );
+
+
+    if (
+        !("IntersectionObserver" in window)
+    ) {
+
+        elements.forEach(
+            function(element) {
+
+                element.classList.add(
+                    "visible"
+                );
+
             }
-        });
-    }
-
-    async function putMediaBlob(record) {
-        return idbRequest(
-            "readwrite",
-            (store) => store.put(record)
-        );
-    }
-
-    async function getMediaBlob(id) {
-        return idbRequest(
-            "readonly",
-            (store) => store.get(id)
-        );
-    }
-
-    async function deleteMediaBlob(id) {
-        return idbRequest(
-            "readwrite",
-            (store) => store.delete(id)
-        );
-    }
-
-    async function getAllGalleryBlobs(galleryId) {
-        return idbRequest(
-            "readonly",
-            (store) =>
-                store
-                    .index("galleryId")
-                    .getAll(galleryId)
-        );
-    }
-
-    /* =========================================================
-       STORAGE RECALCULATION
-    ========================================================= */
-
-    function calculateStorageGB(gallery) {
-        const totalMB = (gallery.media || []).reduce(
-            (sum, media) =>
-                sum + (Number(media.sizeMB) || 0),
-            0
         );
 
-        return totalMB / 1024;
+        return;
+
     }
 
-    function recalculateGalleryStorage(gallery) {
-        gallery.storageUsedGB =
-            calculateStorageGB(gallery);
 
-        return gallery.storageUsedGB;
+    var observer =
+        new IntersectionObserver(
+            function(entries) {
+
+                entries.forEach(
+                    function(entry) {
+
+                        if (
+                            !entry.isIntersecting
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        entry.target.classList.add(
+                            "visible"
+                        );
+
+
+                        observer.unobserve(
+                            entry.target
+                        );
+
+                    }
+                );
+
+            },
+            {
+                threshold: 0.12
+            }
+        );
+
+
+    elements.forEach(
+        function(element) {
+
+            observer.observe(
+                element
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   EXPERIENCE METERS
+========================================================= */
+
+function initializeExperienceMeters() {
+
+    var meters =
+        document.querySelectorAll(
+            "[data-progress], " +
+            ".experience-progress"
+        );
+
+
+    if (!meters.length) {
+
+        return;
+
     }
 
-    function syncAllStorage() {
-        let changed = false;
 
-        state.galleries.forEach((gallery) => {
-            const oldValue =
-                Number(gallery.storageUsedGB) || 0;
+    meters.forEach(
+        function(meter) {
 
-            const newValue =
-                recalculateGalleryStorage(gallery);
+            var value =
+                meter.getAttribute(
+                    "data-progress"
+                );
+
 
             if (
-                Math.abs(oldValue - newValue) >
-                0.000001
+                value === null
             ) {
-                changed = true;
+
+                return;
+
             }
 
-            syncGalleryStatus(gallery);
-        });
 
-        if (changed) {
-            saveGalleries();
-        }
-    }
-
-    /* =========================================================
-       PENDING GALLERY SHOP PURCHASE
-    ========================================================= */
-
-    function processPendingPurchase() {
-        try {
-            const raw =
-                localStorage.getItem(
-                    PENDING_PURCHASE_KEY
+            var numericValue =
+                Math.max(
+                    0,
+                    Math.min(
+                        100,
+                        Number(value)
+                    )
                 );
 
-            if (!raw) {
-                return;
-            }
 
-            const purchase =
-                JSON.parse(raw);
+            meter.style.width =
+                "0%";
 
-            if (!purchase) {
-                return;
-            }
 
-            const duration =
-                Number(purchase.duration) || 3;
+            requestAnimationFrame(
+                function() {
 
-            const now = new Date();
+                    meter.style.width =
+                        numericValue +
+                        "%";
 
-            const expiry = new Date(now);
-
-            expiry.setMonth(
-                expiry.getMonth() + duration
+                }
             );
 
-            const gallery =
-                normalizeGallery({
-                    id:
-                        purchase.galleryId ||
-                        generateId("gallery"),
+        }
+    );
 
-                    galleryName:
-                        purchase.galleryName ||
-                        "New Client Gallery",
+}
 
-                    clientName:
-                        purchase.clientName ||
-                        "New Client",
 
-                    description:
-                        purchase.description ||
+/* =========================================================
+   NAVBAR
+========================================================= */
+
+function initializeNavbar() {
+
+    var navbar =
+        document.querySelector(
+            ".navbar"
+        );
+
+
+    if (!navbar) {
+
+        return;
+
+    }
+
+
+    function updateNavbar() {
+
+        if (
+            window.scrollY > 30
+        ) {
+
+            navbar.classList.add(
+                "scrolled"
+            );
+
+        } else {
+
+            navbar.classList.remove(
+                "scrolled"
+            );
+
+        }
+
+    }
+
+
+    window.addEventListener(
+        "scroll",
+        updateNavbar,
+        {
+            passive: true
+        }
+    );
+
+
+    updateNavbar();
+
+}
+
+
+/* =========================================================
+   ACTIVE NAVIGATION
+========================================================= */
+
+function initializeActiveNavigation() {
+
+    var sections =
+        document.querySelectorAll(
+            "section[id]"
+        );
+
+
+    var navLinks =
+        document.querySelectorAll(
+            ".nav-links a"
+        );
+
+
+    if (
+        !sections.length ||
+        !navLinks.length
+    ) {
+
+        return;
+
+    }
+
+
+    function updateActiveLink() {
+
+        var currentSection =
+            "";
+
+
+        sections.forEach(
+            function(section) {
+
+                var sectionTop =
+                    section.offsetTop -
+                    150;
+
+
+                var sectionBottom =
+                    sectionTop +
+                    section.offsetHeight;
+
+
+                if (
+                    window.scrollY >=
+                        sectionTop &&
+                    window.scrollY <
+                        sectionBottom
+                ) {
+
+                    currentSection =
+                        section.id;
+
+                }
+
+            }
+        );
+
+
+        navLinks.forEach(
+            function(link) {
+
+                link.classList.remove(
+                    "active"
+                );
+
+
+                var href =
+                    link.getAttribute(
+                        "href"
+                    );
+
+
+                if (
+                    href ===
+                    "#" + currentSection
+                ) {
+
+                    link.classList.add(
+                        "active"
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+
+    window.addEventListener(
+        "scroll",
+        updateActiveLink,
+        {
+            passive: true
+        }
+    );
+
+
+    updateActiveLink();
+
+}
+
+
+/* =========================================================
+   BOOK BUTTONS
+========================================================= */
+
+function initializeBookButtons() {
+
+    var buttons =
+        document.querySelectorAll(
+            ".book-btn"
+        );
+
+
+    buttons.forEach(
+        function(button) {
+
+            button.addEventListener(
+                "click",
+                function() {
+
+                    button.classList.add(
+                        "clicked"
+                    );
+
+
+                    setTimeout(
+                        function() {
+
+                            button.classList.remove(
+                                "clicked"
+                            );
+
+                        },
+                        300
+                    );
+
+                }
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   SERVICES
+========================================================= */
+
+function getStoredServices() {
+
+    var services =
+        readLocalStorage(
+            SERVICES_STORAGE_KEY,
+            []
+        );
+
+
+    return Array.isArray(
+        services
+    )
+        ? services
+        : [];
+
+}
+
+
+/* =========================================================
+   FORMAT CURRENCY
+========================================================= */
+
+function formatCurrency(
+    value
+) {
+
+    if (
+        value === null ||
+        value === undefined ||
+        value === ""
+    ) {
+
+        return "Price on request";
+
+    }
+
+
+    var number =
+        Number(
+            String(value)
+                .replace(/[₹,\s]/g, "")
+        );
+
+
+    if (
+        !Number.isFinite(number)
+    ) {
+
+        return String(value);
+
+    }
+
+
+    return (
+        "₹" +
+        number.toLocaleString(
+            "en-IN"
+        )
+    );
+
+}
+
+
+/* =========================================================
+   GET SERVICE PACKAGES
+========================================================= */
+
+function getServicePackages(
+    service
+) {
+
+    if (
+        !service ||
+        typeof service !== "object"
+    ) {
+
+        return [];
+
+    }
+
+
+    /*
+       Current service structure.
+    */
+
+    if (
+        Array.isArray(
+            service.packages
+        )
+    ) {
+
+        return service.packages;
+
+    }
+
+
+    /*
+       Compatibility with older object-based
+       package structure.
+    */
+
+    if (
+        service.packages &&
+        typeof service.packages ===
+            "object"
+    ) {
+
+        return Object.keys(
+            service.packages
+        ).map(
+            function(key) {
+
+                var pkg =
+                    service.packages[key] ||
+                    {};
+
+
+                return {
+                    id: key,
+
+                    name:
+                        pkg.name ||
+                        key,
+
+                    price:
+                        pkg.price ||
                         "",
 
-                    duration,
+                    duration:
+                        pkg.duration ||
+                        pkg.coverage ||
+                        "",
 
-                    storageLimitGB:
-                        Number(
-                            purchase.storageLimitGB
-                        ) || 1,
+                    delivery:
+                        pkg.delivery ||
+                        "",
 
-                    storageUsedGB: 0,
+                    description:
+                        pkg.description ||
+                        "",
 
-                    createdAt:
-                        now.toISOString(),
+                    photos:
+                        pkg.photos ||
+                        ""
 
-                    expiryDate:
-                        expiry.toISOString(),
+                };
 
-                    passwordEnabled: true,
-                    password: "",
-
-                    downloadsEnabled: true,
-                    visible: true,
-
-                    deliveryStatus:
-                        "preparing",
-
-                    media: [],
-                    albums: [
-                        createWeddingAlbumSection()
-                    ]
-                });
-
-            state.galleries.push(gallery);
-
-            try {
-                const history =
-                    JSON.parse(
-                        localStorage.getItem(
-                            PURCHASE_HISTORY_KEY
-                        ) || "[]"
-                    );
-
-                const purchases =
-                    Array.isArray(history)
-                        ? history
-                        : [];
-
-                purchases.push({
-                    id: generateId("purchase"),
-                    galleryId: gallery.id,
-                    duration,
-                    price:
-                        Number(
-                            purchase.price
-                        ) ||
-                        DEMO_PRICING[
-                            duration
-                        ] ||
-                        0,
-                    createdAt:
-                        now.toISOString()
-                });
-
-                localStorage.setItem(
-                    PURCHASE_HISTORY_KEY,
-                    JSON.stringify(
-                        purchases
-                    )
-                );
-            } catch (error) {
-                console.warn(
-                    "Unable to update purchase history:",
-                    error
-                );
-            }
-
-            localStorage.removeItem(
-                PENDING_PURCHASE_KEY
-            );
-
-            state.selectedGalleryId =
-                gallery.id;
-
-            saveGalleries();
-
-            showToast(
-                "New client gallery created."
-            );
-        } catch (error) {
-            console.error(
-                "Pending gallery processing failed:",
-                error
-            );
-        }
-    }
-
-    /* =========================================================
-       STATS
-    ========================================================= */
-
-    function renderStats() {
-        const galleries =
-            state.galleries;
-
-        const active =
-            galleries.filter(
-                (gallery) => {
-                    const status =
-                        getGalleryStatus(
-                            gallery
-                        );
-
-                    return (
-                        status !==
-                            "expired"
-                    );
-                }
-            );
-
-        const expiring =
-            galleries.filter(
-                (gallery) => {
-                    const days =
-                        daysBetweenNow(
-                            gallery.expiryDate
-                        );
-
-                    return (
-                        days > 0 &&
-                        days <= 30
-                    );
-                }
-            );
-
-        const storage =
-            galleries.reduce(
-                (sum, gallery) =>
-                    sum +
-                    (
-                        Number(
-                            gallery.storageUsedGB
-                        ) || 0
-                    ),
-                0
-            );
-
-        if (dom.totalGalleries) {
-            dom.totalGalleries.textContent =
-                galleries.length;
-        }
-
-        if (dom.activeGalleries) {
-            dom.activeGalleries.textContent =
-                active.length;
-        }
-
-        if (dom.totalStorage) {
-            dom.totalStorage.textContent =
-                formatGB(storage);
-        }
-
-        if (dom.expiringGalleries) {
-            dom.expiringGalleries.textContent =
-                expiring.length;
-        }
-    }
-
-    /* =========================================================
-       GALLERY GRID
-    ========================================================= */
-
-    function getFilteredGalleries() {
-        const search =
-            state.searchTerm
-                .trim()
-                .toLowerCase();
-
-        const filter =
-            dom.statusFilter?.value ||
-            "all";
-
-        return state.galleries.filter(
-            (gallery) => {
-                const status =
-                    getGalleryStatus(
-                        gallery
-                    );
-
-                const matchesSearch =
-                    !search ||
-                    gallery.galleryName
-                        .toLowerCase()
-                        .includes(search) ||
-                    gallery.clientName
-                        .toLowerCase()
-                        .includes(search);
-
-                if (!matchesSearch) {
-                    return false;
-                }
-
-                if (
-                    filter ===
-                    "expired"
-                ) {
-                    return (
-                        status ===
-                        "expired"
-                    );
-                }
-
-                if (
-                    filter ===
-                    "active"
-                ) {
-                    return (
-                        status !==
-                        "expired"
-                    );
-                }
-
-                if (
-                    filter ===
-                    "expiring"
-                ) {
-                    const days =
-                        daysBetweenNow(
-                            gallery.expiryDate
-                        );
-
-                    return (
-                        days > 0 &&
-                        days <= 30
-                    );
-                }
-
-                return true;
             }
         );
+
     }
 
-    function renderGalleryGrid() {
-        if (!dom.galleryGrid) {
-            return;
-        }
 
-        const galleries =
-            getFilteredGalleries();
+    return [];
 
-        if (!galleries.length) {
-            dom.galleryGrid.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon">◎</div>
-                    <h3>No galleries found</h3>
-                    <p>
-                        Create a client gallery or adjust
-                        your search and filters.
-                    </p>
-                </div>
-            `;
+}
 
-            return;
-        }
 
-        dom.galleryGrid.innerHTML =
-            galleries
-                .map(
-                    (gallery) => {
-                        const status =
-                            getGalleryStatus(
-                                gallery
-                            );
+/* =========================================================
+   RENDER SERVICES
+========================================================= */
 
-                        const days =
-                            daysBetweenNow(
-                                gallery.expiryDate
-                            );
+function loadClientServices() {
 
-                        const mediaCount =
-                            gallery.media
-                                ?.length ||
-                            0;
+    var container =
+        document.getElementById(
+            "servicesContainer"
+        );
 
-                        const wedding =
-                            gallery.albums?.find(
-                                (album) =>
-                                    album.isWeddingAlbum
-                            );
 
-                        const selectedCount =
-                            wedding
-                                ?.selectedMediaIds
-                                ?.length ||
-                            0;
+    if (!container) {
 
-                        return `
-                            <article
-                                class="gallery-card"
-                                data-gallery-id="${escapeHTML(
-                                    gallery.id
-                                )}"
-                            >
-                                <div class="gallery-card-top">
-                                    <span class="status-badge ${status}">
-                                        ${escapeHTML(
-                                            getStatusLabel(
-                                                status
-                                            )
-                                        )}
-                                    </span>
+        return;
 
-                                    <span class="gallery-card-date">
-                                        ${escapeHTML(
-                                            formatDate(
-                                                gallery.createdAt
-                                            )
-                                        )}
-                                    </span>
-                                </div>
-
-                                <div class="gallery-card-body">
-                                    <h3>
-                                        ${escapeHTML(
-                                            gallery.galleryName
-                                        )}
-                                    </h3>
-
-                                    <p>
-                                        ${escapeHTML(
-                                            gallery.clientName
-                                        )}
-                                    </p>
-
-                                    <div class="gallery-card-meta">
-                                        <span>
-                                            ${mediaCount}
-                                            media
-                                        </span>
-
-                                        <span>
-                                            ${formatGB(
-                                                gallery.storageUsedGB
-                                            )}
-                                            /
-                                            ${formatGB(
-                                                gallery.storageLimitGB
-                                            )}
-                                        </span>
-
-                                        <span>
-                                            ${
-                                                days > 0
-                                                    ? `${days} days left`
-                                                    : "Expired"
-                                            }
-                                        </span>
-                                    </div>
-
-                                    ${
-                                        wedding
-                                            ? `
-                                                <div class="gallery-card-selection">
-                                                    Wedding Album:
-                                                    <strong>
-                                                        ${selectedCount}
-                                                        selected
-                                                    </strong>
-                                                </div>
-                                            `
-                                            : ""
-                                    }
-                                </div>
-
-                                <div class="gallery-card-footer">
-                                    <button
-                                        type="button"
-                                        class="btn btn-primary"
-                                        data-manage-gallery="${escapeHTML(
-                                            gallery.id
-                                        )}"
-                                    >
-                                        Manage Gallery
-                                    </button>
-                                </div>
-                            </article>
-                        `;
-                    }
-                )
-                .join("");
     }
 
-    /* =========================================================
-       DEMO SECTION
-    ========================================================= */
 
-    function renderDemoSection() {
-        const existing =
-            document.getElementById(
-                "professionalStudioDemoGallery"
-            );
+    var services =
+        getStoredServices();
 
-        if (existing) {
-            existing.remove();
-        }
 
-        if (!dom.galleryGrid) {
-            return;
-        }
+    container.innerHTML =
+        "";
 
-        const section =
-            document.createElement(
-                "section"
-            );
 
-        section.id =
-            "professionalStudioDemoGallery";
+    if (!services.length) {
 
-        section.style.cssText = `
-            margin: 0 0 24px;
-            padding: 22px;
-            border: 1px solid #dcdcdc;
-            background: #fff;
-            border-radius: 12px;
-        `;
-
-        section.innerHTML = `
-            <div
-                style="
-                    display:flex;
-                    justify-content:space-between;
-                    gap:20px;
-                    align-items:flex-start;
-                    flex-wrap:wrap;
-                "
-            >
-                <div style="flex:1;min-width:260px;">
-                    <div
-                        style="
-                            font-size:11px;
-                            font-weight:700;
-                            letter-spacing:.12em;
-                            text-transform:uppercase;
-                            color:#777;
-                            margin-bottom:7px;
-                        "
-                    >
-                        Demo Client Gallery
-                    </div>
-
-                    <h3
-                        style="
-                            margin:0 0 6px;
-                            font-size:19px;
-                            color:#111;
-                        "
-                    >
-                        ${escapeHTML(
-                            DEMO_GALLERY.galleryName
-                        )}
-                    </h3>
-
-                    <p
-                        style="
-                            margin:0;
-                            color:#666;
-                            font-size:14px;
-                            line-height:1.5;
-                        "
-                    >
-                        Use this gallery to test the
-                        client-gallery workflow before
-                        connecting real client data.
-                    </p>
-                </div>
-
-                <div
-                    style="
-                        display:flex;
-                        gap:8px;
-                        flex-wrap:wrap;
-                    "
-                >
-                    <button
-                        type="button"
-                        id="openDemoGalleryBtn"
-                        class="btn btn-primary"
-                    >
-                        Open Demo Gallery
-                    </button>
-
-                    <button
-                        type="button"
-                        id="shareDemoGalleryBtn"
-                        class="btn btn-secondary"
-                    >
-                        Share Demo Link
-                    </button>
-                </div>
-            </div>
-
-            <div
-                style="
-                    margin-top:18px;
-                    padding-top:18px;
-                    border-top:1px solid #ededed;
-                    display:grid;
-                    grid-template-columns:
-                        repeat(
-                            auto-fit,
-                            minmax(180px,1fr)
-                        );
-                    gap:12px;
-                "
-            >
-                <div
-                    style="
-                        padding:14px;
-                        background:#f7f7f7;
-                        border-radius:8px;
-                    "
-                >
-                    <div
-                        style="
-                            font-size:11px;
-                            color:#777;
-                            text-transform:uppercase;
-                            letter-spacing:.08em;
-                            margin-bottom:5px;
-                        "
-                    >
-                        Demo Media
-                    </div>
-
-                    <strong
-                        style="
-                            font-size:18px;
-                            color:#111;
-                        "
-                    >
-                        ${DEMO_GALLERY.media.length}
-                    </strong>
-
-                    <div
-                        style="
-                            margin-top:4px;
-                            color:#777;
-                            font-size:12px;
-                        "
-                    >
-                        Photos + videos
-                    </div>
-                </div>
-
-                <div
-                    style="
-                        padding:14px;
-                        background:#f7f7f7;
-                        border-radius:8px;
-                    "
-                >
-                    <div
-                        style="
-                            font-size:11px;
-                            color:#777;
-                            text-transform:uppercase;
-                            letter-spacing:.08em;
-                            margin-bottom:5px;
-                        "
-                    >
-                        Download Testing
-                    </div>
-
-                    <strong
-                        id="demoDownloadSummary"
-                        style="
-                            font-size:18px;
-                            color:#111;
-                        "
-                    >
-                        ENABLED
-                    </strong>
-
-                    <div
-                        style="
-                            margin-top:4px;
-                            color:#777;
-                            font-size:12px;
-                        "
-                    >
-                        Open the demo to test
-                    </div>
-                </div>
-
-                <div
-                    style="
-                        padding:14px;
-                        background:#f7f7f7;
-                        border-radius:8px;
-                    "
-                >
-                    <div
-                        style="
-                            font-size:11px;
-                            color:#777;
-                            text-transform:uppercase;
-                            letter-spacing:.08em;
-                            margin-bottom:5px;
-                        "
-                    >
-                        Demo Pricing
-                    </div>
-
-                    <strong
-                        style="
-                            font-size:18px;
-                            color:#111;
-                        "
-                    >
-                        ₹${DEMO_PRICING[3]}
-                    </strong>
-
-                    <div
-                        style="
-                            margin-top:4px;
-                            color:#777;
-                            font-size:12px;
-                        "
-                    >
-                        3 month example
-                    </div>
-                </div>
+        container.innerHTML = `
+            <div class="services-empty">
+                <h3>Services Coming Soon</h3>
+                <p>
+                    Photography services will appear here
+                    once they have been published.
+                </p>
             </div>
         `;
 
-        dom.galleryGrid.parentNode.insertBefore(
-            section,
-            dom.galleryGrid
-        );
+        return;
 
-        const openButton =
-            document.getElementById(
-                "openDemoGalleryBtn"
-            );
-
-        const shareButton =
-            document.getElementById(
-                "shareDemoGalleryBtn"
-            );
-
-        openButton?.addEventListener(
-            "click",
-            () => {
-                openDemoGallery();
-            }
-        );
-
-        shareButton?.addEventListener(
-            "click",
-            () => {
-                shareDemoGallery();
-            }
-        );
     }
 
-    function openDemoGallery() {
-        state.demoMode = true;
-        state.selectedGalleryId =
-            DEMO_GALLERY_ID;
 
-        openGalleryModal(
-            DEMO_GALLERY
-        );
-    }
+    services.forEach(
+        function(service) {
 
-    async function shareDemoGallery() {
-        const demoLink =
-            "https://professionalstudio.vercel.app/demo/client-gallery";
-
-        try {
             if (
-                navigator.clipboard &&
-                window.isSecureContext
+                !service ||
+                typeof service !==
+                    "object"
             ) {
-                await navigator.clipboard.writeText(
-                    demoLink
-                );
-
-                showToast(
-                    "Demo gallery link copied."
-                );
 
                 return;
+
             }
-        } catch (error) {
-            console.warn(
-                "Clipboard unavailable:",
-                error
-            );
-        }
 
-        window.prompt(
-            "Copy the demo gallery link:",
-            demoLink
-        );
-    }
 
-    /* =========================================================
-       MODAL
-    ========================================================= */
-
-    function openGalleryModal(gallery) {
-        if (!gallery) {
-            return;
-        }
-
-        state.selectedGalleryId =
-            gallery.id;
-
-        state.demoMode =
-            gallery.id ===
-            DEMO_GALLERY_ID;
-
-        state.activeTab = "overview";
-        state.mediaFilter = "all";
-
-        renderModal(gallery);
-
-        if (dom.galleryModal) {
-            dom.galleryModal.classList.add(
-                "active"
-            );
-            dom.galleryModal.setAttribute(
-                "aria-hidden",
-                "false"
-            );
-        }
-    }
-
-    function closeGalleryModal() {
-        revokeObjectUrls();
-
-        state.demoMode = false;
-
-        if (dom.galleryModal) {
-            dom.galleryModal.classList.remove(
-                "active"
-            );
-
-            dom.galleryModal.setAttribute(
-                "aria-hidden",
-                "true"
-            );
-        }
-    }
-
-    function renderModal(gallery) {
-        if (!gallery) return;
-
-        syncGalleryStatus(gallery);
-
-        renderModalHeader(gallery);
-        renderModalOverview(gallery);
-        renderDeliveryReadiness(gallery);
-        renderMedia(gallery);
-        renderAlbums(gallery);
-        renderSettings(gallery);
-
-        switchTab(
-            state.activeTab,
-            false
-        );
-    }
-
-    function renderModalHeader(gallery) {
-        if (dom.modalGalleryName) {
-            dom.modalGalleryName.textContent =
-                gallery.galleryName;
-        }
-
-        if (dom.modalClientName) {
-            dom.modalClientName.textContent =
-                gallery.clientName;
-        }
-
-        if (dom.modalStatus) {
-            const status =
-                getGalleryStatus(
-                    gallery
+            var card =
+                document.createElement(
+                    "article"
                 );
 
-            dom.modalStatus.textContent =
-                state.demoMode
-                    ? "DEMO • Ready"
-                    : getStatusLabel(
-                          status
-                      );
 
-            dom.modalStatus.className =
-                `status-badge ${status}`;
-        }
-    }
+            card.className =
+                "service-preview-card";
 
-    function renderModalOverview(gallery) {
-        const used =
-            Number(
-                gallery.storageUsedGB
-            ) || 0;
 
-        const limit =
-            Number(
-                gallery.storageLimitGB
-            ) || 0;
-
-        const percent =
-            limit > 0
-                ? Math.min(
-                      100,
-                      (used / limit) *
-                          100
-                  )
-                : 0;
-
-        if (dom.modalStorage) {
-            dom.modalStorage.textContent =
-                `${formatGB(
-                    used
-                )} / ${formatGB(
-                    limit
-                )}`;
-        }
-
-        if (dom.modalStorageText) {
-            dom.modalStorageText.textContent =
-                `${formatGB(
-                    used
-                )} used of ${formatGB(
-                    limit
-                )}`;
-        }
-
-        if (
-            dom.modalStorageProgress
-        ) {
-            dom.modalStorageProgress.style.width =
-                `${percent}%`;
-
-            dom.modalStorageProgress.setAttribute(
-                "aria-valuenow",
-                String(
-                    Math.round(
-                        percent
-                    )
-                )
-            );
-        }
-
-        if (dom.modalDuration) {
-            dom.modalDuration.textContent =
-                `${gallery.duration} ${
-                    gallery.duration ===
-                    1
-                        ? "month"
-                        : "months"
-                }`;
-        }
-
-        if (dom.modalExpiry) {
-            dom.modalExpiry.textContent =
-                formatDate(
-                    gallery.expiryDate
+            var title =
+                document.createElement(
+                    "h3"
                 );
-        }
 
-        const days =
-            daysBetweenNow(
-                gallery.expiryDate
+
+            title.textContent =
+                service.name ||
+                "Photography Service";
+
+
+            card.appendChild(
+                title
             );
 
-        if (dom.modalExpiryNote) {
-            if (days <= 0) {
-                dom.modalExpiryNote.textContent =
-                    "This gallery has expired.";
-            } else if (days <= 7) {
-                dom.modalExpiryNote.textContent =
-                    `${days} ${
-                        days === 1
-                            ? "day"
-                            : "days"
-                    } remaining.`;
-            } else {
-                dom.modalExpiryNote.textContent =
-                    `${days} days remaining.`;
-            }
-        }
-
-        if (dom.modalDownloads) {
-            dom.modalDownloads.textContent =
-                gallery.downloadsEnabled
-                    ? "Enabled"
-                    : "Disabled";
-        }
-
-        if (dom.modalGalleryLink) {
-            dom.modalGalleryLink.value =
-                gallery.demo
-                    ? "https://professionalstudio.vercel.app/demo/client-gallery"
-                    : `https://professionalstudio.vercel.app/client/${encodeURIComponent(
-                          gallery.id
-                      )}`;
-        }
-    }
-
-    /* =========================================================
-       DELIVERY READINESS
-    ========================================================= */
-
-    function setCheckState(
-        element,
-        complete
-    ) {
-        if (!element) return;
-
-        element.classList.toggle(
-            "complete",
-            Boolean(complete)
-        );
-
-        element.classList.toggle(
-            "checked",
-            Boolean(complete)
-        );
-
-        const icon =
-            element.querySelector(
-                ".check-icon"
-            );
-
-        if (icon) {
-            icon.textContent =
-                complete
-                    ? "✓"
-                    : "○";
-        }
-    }
-
-    function renderDeliveryReadiness(
-        gallery
-    ) {
-        if (!gallery) return;
-
-        const hasName =
-            Boolean(
-                gallery.galleryName?.trim()
-            );
-
-        const hasMedia =
-            Array.isArray(
-                gallery.media
-            ) &&
-            gallery.media.length > 0;
-
-        const passwordConfigured =
-            gallery.passwordEnabled
-                ? Boolean(
-                      gallery.password?.trim()
-                  )
-                : true;
-
-        /*
-         * Download permission is a setting,
-         * not a requirement to deliver.
-         *
-         * A photographer should be able to
-         * intentionally disable downloads.
-         */
-        const downloadsConfigured =
-            typeof gallery.downloadsEnabled ===
-            "boolean";
-
-        const storageOkay =
-            Number(
-                gallery.storageUsedGB
-            ) <=
-            Number(
-                gallery.storageLimitGB
-            );
-
-        const notExpired =
-            daysBetweenNow(
-                gallery.expiryDate
-            ) > 0;
-
-        const visible =
-            gallery.visible !== false;
-
-        setCheckState(
-            dom.checkGalleryName,
-            hasName
-        );
-
-        setCheckState(
-            dom.checkMedia,
-            hasMedia
-        );
-
-        setCheckState(
-            dom.checkPassword,
-            passwordConfigured
-        );
-
-        setCheckState(
-            dom.checkDownloads,
-            downloadsConfigured
-        );
-
-        setCheckState(
-            dom.checkStorage,
-            storageOkay
-        );
-
-        const downloadSmall =
-            dom.checkDownloads?.querySelector(
-                "small"
-            );
-
-        if (downloadSmall) {
-            downloadSmall.textContent =
-                gallery.downloadsEnabled
-                    ? "Downloads enabled"
-                    : "Downloads disabled";
-        }
-
-        const ready =
-            hasName &&
-            hasMedia &&
-            passwordConfigured &&
-            downloadsConfigured &&
-            storageOkay &&
-            notExpired &&
-            visible;
-
-        if (dom.deliveryStatus) {
-            dom.deliveryStatus.classList.toggle(
-                "ready",
-                ready
-            );
-
-            dom.deliveryStatus.classList.toggle(
-                "preparing",
-                !ready
-            );
-
-            dom.deliveryStatus.textContent =
-                ready
-                    ? "Ready to deliver"
-                    : "Preparing";
-        }
-
-        if (dom.deliveryMessage) {
-            if (!visible) {
-                dom.deliveryMessage.textContent =
-                    "Make the gallery visible before delivering it.";
-            } else if (!notExpired) {
-                dom.deliveryMessage.textContent =
-                    "This gallery has expired.";
-            } else if (!hasMedia) {
-                dom.deliveryMessage.textContent =
-                    "Add at least one media item.";
-            } else if (!passwordConfigured) {
-                dom.deliveryMessage.textContent =
-                    "Add a gallery password or disable password protection.";
-            } else if (!storageOkay) {
-                dom.deliveryMessage.textContent =
-                    "Storage limit exceeded.";
-            } else if (ready) {
-                dom.deliveryMessage.textContent =
-                    "Everything is ready to deliver this gallery.";
-            } else {
-                dom.deliveryMessage.textContent =
-                    "Complete the remaining gallery setup.";
-            }
-        }
-
-        if (dom.deliveryExpiry) {
-            dom.deliveryExpiry.textContent =
-                notExpired
-                    ? `${daysBetweenNow(
-                          gallery.expiryDate
-                      )} days remaining`
-                    : "Expired";
-        }
-
-        if (dom.sendToClientBtn) {
-            dom.sendToClientBtn.disabled =
-                !ready ||
-                state.demoMode;
-
-            dom.sendToClientBtn.title =
-                state.demoMode
-                    ? "Demo gallery cannot be delivered."
-                    : ready
-                    ? "Send gallery to client"
-                    : "Complete the required setup first";
-        }
-    }
-
-    /* =========================================================
-       MEDIA
-    ========================================================= */
-
-    async function renderMedia(
-        gallery
-    ) {
-        if (!dom.mediaGrid) {
-            return;
-        }
-
-        revokeObjectUrls();
-
-        const media =
-            Array.isArray(
-                gallery.media
-            )
-                ? gallery.media
-                : [];
-
-        let filtered =
-            media.slice();
-
-        /*
-         * IMPORTANT:
-         * HTML values are:
-         * all / photo / video
-         */
-        if (
-            state.mediaFilter ===
-            "photo"
-        ) {
-            filtered =
-                media.filter(
-                    isPhoto
-                );
-        }
-
-        if (
-            state.mediaFilter ===
-            "video"
-        ) {
-            filtered =
-                media.filter(
-                    isVideoMedia
-                );
-        }
-
-        if (dom.mediaCount) {
-            dom.mediaCount.textContent =
-                `${filtered.length} ${
-                    filtered.length === 1
-                        ? "item"
-                        : "items"
-                }`;
-        }
-
-        if (!filtered.length) {
-            dom.mediaGrid.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon">□</div>
-                    <h3>No media found</h3>
-                    <p>
-                        ${
-                            media.length
-                                ? "Try another media filter."
-                                : "Upload photos or videos to this gallery."
-                        }
-                    </p>
-                </div>
-            `;
-
-            return;
-        }
-
-        const cards =
-            await Promise.all(
-                filtered.map(
-                    (item) =>
-                        buildMediaCard(
-                            gallery,
-                            item
-                        )
-                )
-            );
-
-        dom.mediaGrid.innerHTML =
-            cards.join("");
-    }
-
-    async function buildMediaCard(
-        gallery,
-        media
-    ) {
-        if (state.demoMode) {
-            return buildDemoMediaCard(
-                gallery,
-                media
-            );
-        }
-
-        let previewHTML = `
-            <div class="media-preview-placeholder">
-                <span>
-                    ${
-                        isVideoMedia(media)
-                            ? "VIDEO"
-                            : "PHOTO"
-                    }
-                </span>
-            </div>
-        `;
-
-        try {
-            const record =
-                await getMediaBlob(
-                    media.blobKey ||
-                        media.id
-                );
 
             if (
-                record?.blob instanceof
-                Blob
+                service.description
             ) {
-                const url =
-                    URL.createObjectURL(
-                        record.blob
+
+                var description =
+                    document.createElement(
+                        "p"
                     );
 
-                state.mediaObjectUrls.add(
-                    url
+
+                description.className =
+                    "service-preview-description";
+
+
+                description.textContent =
+                    service.description;
+
+
+                card.appendChild(
+                    description
                 );
 
-                if (
-                    isVideoMedia(media)
-                ) {
-                    previewHTML = `
-                        <video
-                            class="media-preview"
-                            src="${url}"
-                            muted
-                            preload="metadata"
-                        ></video>
-                    `;
-                } else {
-                    previewHTML = `
-                        <img
-                            class="media-preview"
-                            src="${url}"
-                            alt="${escapeHTML(
-                                media.name
-                            )}"
-                            loading="lazy"
-                        >
-                    `;
-                }
             }
-        } catch (error) {
-            console.warn(
-                "Unable to load media preview:",
-                error
-            );
-        }
 
-        return buildMediaCardHTML(
-            gallery,
-            media,
-            previewHTML
-        );
-    }
 
-    function buildDemoMediaCard(
-        gallery,
-        media
-    ) {
-        const isVideo =
-            isVideoMedia(media);
+            var packages =
+                getServicePackages(
+                    service
+                );
 
-        const icon =
-            isVideo
-                ? "▶"
-                : "PHOTO";
 
-        const downloadEnabled =
-            gallery.downloadsEnabled;
+            if (
+                packages.length
+            ) {
 
-        return `
-            <article
-                class="media-card demo-media-card"
-                data-media-id="${escapeHTML(
-                    media.id
-                )}"
-            >
-                <div
-                    class="media-preview demo-preview"
-                    style="
-                        display:flex;
-                        align-items:center;
-                        justify-content:center;
-                        min-height:180px;
-                        background:#f1f1f1;
-                        color:#777;
-                        font-size:13px;
-                        letter-spacing:.08em;
-                    "
-                >
-                    ${icon}
-                </div>
+                var packageGrid =
+                    document.createElement(
+                        "div"
+                    );
 
-                <div class="media-card-body">
-                    <div
-                        style="
-                            display:flex;
-                            justify-content:space-between;
-                            gap:10px;
-                            align-items:flex-start;
-                        "
-                    >
-                        <div>
-                            <strong>
+
+                packageGrid.className =
+                    "service-package-grid";
+
+
+                packages.forEach(
+                    function(pkg) {
+
+                        var packageCard =
+                            document.createElement(
+                                "div"
+                            );
+
+
+                        packageCard.className =
+                            "service-package";
+
+
+                        packageCard.innerHTML = `
+                            <h4>
                                 ${escapeHTML(
-                                    media.name
+                                    pkg.name ||
+                                    "Package"
                                 )}
-                            </strong>
+                            </h4>
 
-                            <div
-                                style="
-                                    margin-top:4px;
-                                    font-size:12px;
-                                    color:#777;
-                                "
-                            >
+                            <div class="package-price">
                                 ${escapeHTML(
-                                    media.type
-                                )}
-                                ·
-                                ${formatMB(
-                                    media.sizeMB
+                                    formatCurrency(
+                                        pkg.price
+                                    )
                                 )}
                             </div>
-                        </div>
 
-                        <span
-                            style="
-                                font-size:10px;
-                                padding:4px 7px;
-                                border:1px solid #ddd;
-                                border-radius:4px;
-                                text-transform:uppercase;
-                            "
-                        >
-                            Demo
-                        </span>
-                    </div>
-
-                    <div
-                        style="
-                            margin-top:13px;
-                            padding:10px;
-                            border:1px solid ${
-                                downloadEnabled
-                                    ? "#cfcfcf"
-                                    : "#e5e5e5"
-                            };
-                            background:${
-                                downloadEnabled
-                                    ? "#fafafa"
-                                    : "#f3f3f3"
-                            };
-                            border-radius:7px;
-                        "
-                    >
-                        <div
-                            style="
-                                display:flex;
-                                justify-content:space-between;
-                                gap:8px;
-                                align-items:center;
-                                margin-bottom:8px;
-                            "
-                        >
-                            <strong
-                                style="
-                                    font-size:11px;
-                                    text-transform:uppercase;
-                                    letter-spacing:.08em;
-                                "
-                            >
-                                Download
-                            </strong>
-
-                            <span
-                                style="
-                                    font-size:11px;
-                                    font-weight:700;
-                                    color:${
-                                        downloadEnabled
-                                            ? "#111"
-                                            : "#888"
-                                    };
-                                "
-                            >
-                                ${
-                                    downloadEnabled
-                                        ? "ENABLED"
-                                        : "DISABLED"
-                                }
-                            </span>
-                        </div>
-
-                        <button
-                            type="button"
-                            class="btn ${
-                                downloadEnabled
-                                    ? "btn-primary"
-                                    : "btn-secondary"
-                            } demo-download-btn"
-                            data-demo-download="${escapeHTML(
-                                media.id
-                            )}"
                             ${
-                                downloadEnabled
-                                    ? ""
-                                    : "disabled"
-                            }
-                            style="
-                                width:100%;
-                                ${
-                                    downloadEnabled
-                                        ? ""
-                                        : "opacity:.55;cursor:not-allowed;"
-                                }
-                            "
-                        >
-                            ${
-                                downloadEnabled
-                                    ? "Download Demo File"
-                                    : "Downloads Disabled"
-                            }
-                        </button>
-                    </div>
-                </div>
-            </article>
-        `;
-    }
-
-    function buildMediaCardHTML(
-        gallery,
-        media,
-        previewHTML
-    ) {
-        const albumOptions =
-            gallery.albums
-                .map(
-                    (album) => `
-                        <option
-                            value="${escapeHTML(
-                                album.id
-                            )}"
-                            ${
-                                album.id ===
-                                media.sectionId
-                                    ? "selected"
+                                pkg.duration
+                                    ? `
+                                        <span>
+                                            ${escapeHTML(
+                                                pkg.duration
+                                            )}
+                                        </span>
+                                      `
                                     : ""
                             }
-                        >
-                            ${escapeHTML(
-                                album.name
-                            )}
-                        </option>
-                    `
-                )
-                .join("");
 
-        return `
-            <article
-                class="media-card"
-                data-media-id="${escapeHTML(
-                    media.id
-                )}"
-            >
-                ${previewHTML}
-
-                <div class="media-card-body">
-                    <strong>
-                        ${escapeHTML(
-                            media.name
-                        )}
-                    </strong>
-
-                    <div
-                        style="
-                            margin-top:4px;
-                            font-size:12px;
-                            color:#777;
-                        "
-                    >
-                        ${escapeHTML(
-                            media.type
-                        )}
-                        ·
-                        ${formatMB(
-                            media.sizeMB
-                        )}
-                    </div>
-
-                    <label
-                        style="
-                            display:block;
-                            margin-top:12px;
-                            font-size:11px;
-                            color:#777;
-                        "
-                    >
-                        Album
-
-                        <select
-                            class="media-album-select"
-                            data-media-id="${escapeHTML(
-                                media.id
-                            )}"
-                            style="
-                                display:block;
-                                width:100%;
-                                margin-top:5px;
-                            "
-                        >
-                            ${albumOptions}
-                        </select>
-                    </label>
-
-                    <button
-                        type="button"
-                        class="btn btn-secondary media-delete-btn"
-                        data-delete-media="${escapeHTML(
-                            media.id
-                        )}"
-                        style="
-                            width:100%;
-                            margin-top:10px;
-                        "
-                    >
-                        Delete Media
-                    </button>
-                </div>
-            </article>
-        `;
-    }
-
-    /* =========================================================
-       DEMO DOWNLOAD
-       ========================================================= */
-
-    function createDemoDownloadBlob(
-        media
-    ) {
-        const content =
-            [
-                "PROFESSIONAL STUDIO",
-                "DEMO CLIENT GALLERY",
-                "",
-                `Media: ${media.name}`,
-                `Type: ${media.type}`,
-                `Size: ${formatMB(
-                    media.sizeMB
-                )}`,
-                "",
-                "This is a demo download file.",
-                "It exists only to test the",
-                "client gallery download workflow."
-            ].join("\n");
-
-        return new Blob(
-            [content],
-            {
-                type: "text/plain"
-            }
-        );
-    }
-
-    function downloadDemoMedia(
-        mediaId
-    ) {
-        const gallery =
-            DEMO_GALLERY;
-
-        if (
-            !gallery.downloadsEnabled
-        ) {
-            showToast(
-                "Downloads are currently disabled."
-            );
-
-            return;
-        }
-
-        const media =
-            gallery.media.find(
-                (item) =>
-                    item.id ===
-                    mediaId
-            );
-
-        if (!media) {
-            showToast(
-                "Demo media could not be found."
-            );
-
-            return;
-        }
-
-        const blob =
-            createDemoDownloadBlob(
-                media
-            );
-
-        const url =
-            URL.createObjectURL(
-                blob
-            );
-
-        const anchor =
-            document.createElement(
-                "a"
-            );
-
-        anchor.href = url;
-
-        anchor.download =
-            `${media.name
-                .replace(
-                    /[^a-z0-9-_]+/gi,
-                    "-"
-                )
-                .replace(
-                    /^-+|-+$/g,
-                    ""
-                )
-                .toLowerCase() ||
-                "demo-media"}-demo.txt`;
-
-        document.body.appendChild(
-            anchor
-        );
-
-        anchor.click();
-
-        anchor.remove();
-
-        setTimeout(() => {
-            URL.revokeObjectURL(
-                url
-            );
-        }, 1000);
-
-        showToast(
-            `Demo download started: ${media.name}`
-        );
-    }
-
-    /* =========================================================
-       ALBUMS
-    ========================================================= */
-
-    function renderAlbums(gallery) {
-        if (!dom.albumsGrid) {
-            return;
-        }
-
-        const albums =
-            Array.isArray(
-                gallery.albums
-            )
-                ? gallery.albums
-                : [];
-
-        if (!albums.length) {
-            dom.albumsGrid.innerHTML = `
-                <div class="empty-state">
-                    <h3>No albums</h3>
-                    <p>Create an album to organize gallery media.</p>
-                </div>
-            `;
-
-            return;
-        }
-
-        dom.albumsGrid.innerHTML =
-            albums
-                .map(
-                    (album) => {
-                        const count =
-                            gallery.media.filter(
-                                (media) =>
-                                    media.sectionId ===
-                                    album.id
-                            ).length;
-
-                        const selected =
-                            album
-                                .selectedMediaIds
-                                ?.length ||
-                            0;
-
-                        return `
-                            <article
-                                class="album-card"
-                                data-album-id="${escapeHTML(
-                                    album.id
-                                )}"
-                            >
-                                <div class="album-card-body">
-                                    <div
-                                        style="
-                                            display:flex;
-                                            justify-content:space-between;
-                                            gap:10px;
-                                            align-items:flex-start;
-                                        "
-                                    >
-                                        <div>
-                                            <h4>
-                                                ${escapeHTML(
-                                                    album.name
-                                                )}
-                                            </h4>
-
-                                            ${
-                                                album.description
-                                                    ? `
-                                                        <p>
-                                                            ${escapeHTML(
-                                                                album.description
-                                                            )}
-                                                        </p>
-                                                    `
-                                                    : ""
-                                            }
-                                        </div>
-
-                                        ${
-                                            album.isWeddingAlbum
-                                                ? `
-                                                    <span
-                                                        style="
-                                                            font-size:10px;
-                                                            text-transform:uppercase;
-                                                            letter-spacing:.08em;
-                                                            border:1px solid #ddd;
-                                                            padding:5px 7px;
-                                                            border-radius:4px;
-                                                        "
-                                                    >
-                                                        Selection
-                                                    </span>
-                                                `
-                                                : ""
-                                        }
-                                    </div>
-
-                                    <div
-                                        style="
-                                            margin-top:12px;
-                                            display:flex;
-                                            gap:15px;
-                                            flex-wrap:wrap;
-                                            font-size:12px;
-                                            color:#777;
-                                        "
-                                    >
+                            ${
+                                pkg.photos
+                                    ? `
                                         <span>
-                                            ${count}
-                                            media
+                                            ${escapeHTML(
+                                                pkg.photos
+                                            )}
                                         </span>
+                                      `
+                                    : ""
+                            }
 
-                                        ${
-                                            album.isWeddingAlbum
-                                                ? `
-                                                    <span>
-                                                        ${selected}
-                                                        selected
-                                                    </span>
-                                                `
-                                                : ""
-                                        }
-                                    </div>
+                            ${
+                                pkg.delivery
+                                    ? `
+                                        <span>
+                                            ${escapeHTML(
+                                                pkg.delivery
+                                            )}
+                                        </span>
+                                      `
+                                    : ""
+                            }
 
-                                    ${
-                                        !album.isWeddingAlbum &&
-                                        !state.demoMode
-                                            ? `
-                                                <button
-                                                    type="button"
-                                                    class="btn btn-secondary album-delete-btn"
-                                                    data-delete-album="${escapeHTML(
-                                                        album.id
-                                                    )}"
-                                                    style="
-                                                        margin-top:12px;
-                                                    "
-                                                >
-                                                    Delete Album
-                                                </button>
-                                            `
-                                            : ""
-                                    }
-                                </div>
-                            </article>
+                            ${
+                                pkg.description
+                                    ? `
+                                        <p>
+                                            ${escapeHTML(
+                                                pkg.description
+                                            )}
+                                        </p>
+                                      `
+                                    : ""
+                            }
                         `;
-                    }
-                )
-                .join("");
 
-        if (state.demoMode) {
-            const demoNotice =
+
+                        packageGrid.appendChild(
+                            packageCard
+                        );
+
+                    }
+                );
+
+
+                card.appendChild(
+                    packageGrid
+                );
+
+            }
+
+
+            var actions =
                 document.createElement(
                     "div"
                 );
 
-            demoNotice.style.cssText = `
-                margin-top:12px;
-                padding:11px 13px;
-                background:#f7f7f7;
-                border:1px solid #e5e5e5;
-                border-radius:7px;
-                font-size:12px;
-                color:#666;
-            `;
 
-            demoNotice.textContent =
-                "Demo albums are read-only. Wedding Album shows the client-selection state.";
+            actions.className =
+                "service-preview-actions";
 
-            dom.albumsGrid.appendChild(
-                demoNotice
-            );
-        }
-    }
 
-    function openCreateAlbumModal() {
-        if (state.demoMode) {
-            showToast(
-                "Demo gallery albums are read-only."
-            );
-            return;
-        }
-
-        state.editingAlbumId = null;
-
-        if (dom.albumName) {
-            dom.albumName.value = "";
-        }
-
-        if (dom.albumModal) {
-            dom.albumModal.classList.add(
-                "active"
-            );
-        }
-    }
-
-    function closeAlbumModal() {
-        if (dom.albumModal) {
-            dom.albumModal.classList.remove(
-                "active"
-            );
-        }
-    }
-
-    function createAlbum() {
-        const gallery =
-            getSelectedGallery();
-
-        if (!gallery) {
-            return;
-        }
-
-        if (state.demoMode) {
-            showToast(
-                "Demo gallery albums are read-only."
-            );
-            return;
-        }
-
-        const name =
-            dom.albumName?.value
-                ?.trim();
-
-        if (!name) {
-            showToast(
-                "Enter an album name."
-            );
-            return;
-        }
-
-        gallery.albums.push(
-            normalizeAlbum({
-                id: generateId(
-                    "album"
-                ),
-                name,
-                description: "",
-                mediaIds: [],
-                isWeddingAlbum: false,
-                selectionEnabled: false,
-                maxSelections: 0,
-                selectedMediaIds: [],
-                selectedCount: 0,
-                status: "open"
-            })
-        );
-
-        saveGalleries();
-
-        closeAlbumModal();
-
-        renderAlbums(
-            gallery
-        );
-
-        showToast(
-            "Album created."
-        );
-    }
-
-    function deleteAlbum(
-        albumId
-    ) {
-        const gallery =
-            getSelectedGallery();
-
-        if (
-            !gallery ||
-            state.demoMode
-        ) {
-            return;
-        }
-
-        const album =
-            gallery.albums.find(
-                (item) =>
-                    item.id ===
-                    albumId
-            );
-
-        if (!album) {
-            return;
-        }
-
-        if (album.isWeddingAlbum) {
-            showToast(
-                "The Wedding Album cannot be deleted."
-            );
-            return;
-        }
-
-        const confirmed =
-            window.confirm(
-                `Delete "${album.name}"? Media will remain in the gallery.`
-            );
-
-        if (!confirmed) {
-            return;
-        }
-
-        gallery.media.forEach(
-            (media) => {
-                if (
-                    media.sectionId ===
-                    album.id
-                ) {
-                    media.sectionId =
-                        "wedding-album";
-                }
-            }
-        );
-
-        gallery.albums =
-            gallery.albums.filter(
-                (item) =>
-                    item.id !==
-                    album.id
-            );
-
-        syncAlbumMediaIds(
-            gallery
-        );
-
-        saveGalleries();
-
-        renderAlbums(
-            gallery
-        );
-
-        renderMedia(
-            gallery
-        );
-
-        showToast(
-            "Album deleted."
-        );
-    }
-
-    function syncAlbumMediaIds(
-        gallery
-    ) {
-        gallery.albums.forEach(
-            (album) => {
-                album.mediaIds =
-                    gallery.media
-                        .filter(
-                            (media) =>
-                                media.sectionId ===
-                                album.id
-                        )
-                        .map(
-                            (media) =>
-                                media.id
-                        );
-            }
-        );
-    }
-
-    function assignMediaToAlbum(
-        mediaId,
-        albumId
-    ) {
-        const gallery =
-            getSelectedGallery();
-
-        if (
-            !gallery ||
-            state.demoMode
-        ) {
-            return;
-        }
-
-        const media =
-            gallery.media.find(
-                (item) =>
-                    item.id ===
-                    mediaId
-            );
-
-        const album =
-            gallery.albums.find(
-                (item) =>
-                    item.id ===
-                    albumId
-            );
-
-        if (!media || !album) {
-            return;
-        }
-
-        media.sectionId =
-            album.id;
-
-        syncAlbumMediaIds(
-            gallery
-        );
-
-        saveGalleries();
-
-        renderAlbums(
-            gallery
-        );
-
-        showToast(
-            `Media moved to ${album.name}.`
-        );
-    }
-
-    /* =========================================================
-       UPLOAD
-    ========================================================= */
-
-    async function uploadFiles(
-        fileList
-    ) {
-        const gallery =
-            getSelectedGallery();
-
-        if (!gallery) {
-            return;
-        }
-
-        if (state.demoMode) {
-            showToast(
-                "The demo gallery is read-only."
-            );
-            return;
-        }
-
-        if (
-            getGalleryStatus(
-                gallery
-            ) === "expired"
-        ) {
-            showToast(
-                "This gallery has expired and cannot receive new media."
-            );
-            return;
-        }
-
-        const files =
-            Array.from(
-                fileList || []
-            );
-
-        if (!files.length) {
-            return;
-        }
-
-        const invalidFiles =
-            files.filter(
-                (file) =>
-                    !isSupportedFile(
-                        file
-                    )
-            );
-
-        if (
-            invalidFiles.length
-        ) {
-            showToast(
-                `${invalidFiles.length} unsupported file${
-                    invalidFiles.length ===
-                    1
-                        ? ""
-                        : "s"
-                }. Use JPG, PNG, WEBP, GIF, MP4, WEBM, MOV or M4V.`
-            );
-
-            return;
-        }
-
-        const currentUsedMB =
-            (Number(
-                gallery.storageUsedGB
-            ) || 0) * 1024;
-
-        const incomingMB =
-            files.reduce(
-                (sum, file) =>
-                    sum +
-                    fileSizeMB(
-                        file
-                    ),
-                0
-            );
-
-        const limitMB =
-            (Number(
-                gallery.storageLimitGB
-            ) || 0) * 1024;
-
-        if (
-            currentUsedMB +
-                incomingMB >
-            limitMB
-        ) {
-            const availableMB =
-                Math.max(
-                    0,
-                    limitMB -
-                        currentUsedMB
+            var bookLink =
+                document.createElement(
+                    "a"
                 );
 
-            showToast(
-                `Upload exceeds your gallery storage. ${formatMB(
-                    availableMB
-                )} is available.`
+
+            bookLink.href =
+                "booking.html?service=" +
+                encodeURIComponent(
+                    service.name ||
+                    ""
+                );
+
+
+            bookLink.className =
+                "book-btn";
+
+
+            bookLink.textContent =
+                "Book This Service";
+
+
+            actions.appendChild(
+                bookLink
             );
 
-            return;
+
+            card.appendChild(
+                actions
+            );
+
+
+            container.appendChild(
+                card
+            );
+
         }
+    );
 
-        const originalMedia =
-            gallery.media.slice();
+}
 
-        const createdRecords = [];
 
-        try {
-            for (
-                const file of files
-            ) {
-                const mediaId =
-                    generateId(
-                        "media"
-                    );
+/* =========================================================
+   EQUIPMENT
+========================================================= */
 
-                const blobKey =
-                    mediaId;
+function getStoredEquipment() {
 
-                const media =
-                    normalizeMedia(
-                        {
-                            id: mediaId,
-                            galleryId:
-                                gallery.id,
-                            name:
-                                file.name,
-                            type:
-                                getMediaType(
-                                    file
-                                ),
-                            sizeMB:
-                                fileSizeMB(
-                                    file
-                                ),
-                            sectionId:
-                                "wedding-album",
-                            createdAt:
-                                new Date().toISOString(),
-                            isCover:
-                                false,
-                            clientSelected:
-                                false,
-                            blobKey
-                        },
-                        gallery.id
-                    );
+    var equipment =
+        readLocalStorage(
+            EQUIPMENT_STORAGE_KEY,
+            []
+        );
 
-                const record = {
-                    id: mediaId,
-                    galleryId:
-                        gallery.id,
-                    blob: file,
-                    name:
-                        file.name,
-                    type:
-                        file.type ||
-                        getMediaType(
-                            file
-                        ),
-                    sizeMB:
-                        media.sizeMB,
-                    createdAt:
-                        media.createdAt
+
+    if (
+        Array.isArray(equipment)
+    ) {
+
+        return equipment;
+
+    }
+
+
+    if (
+        equipment &&
+        typeof equipment ===
+            "object"
+    ) {
+
+        return Object.keys(
+            equipment
+        ).map(
+            function(category) {
+
+                return {
+                    name: category,
+                    items:
+                        Array.isArray(
+                            equipment[category]
+                        )
+                            ? equipment[category]
+                            : []
                 };
 
-                await putMediaBlob(
-                    record
-                );
-
-                createdRecords.push(
-                    record
-                );
-
-                gallery.media.push(
-                    media
-                );
             }
+        );
 
-            syncAlbumMediaIds(
-                gallery
-            );
-
-            recalculateGalleryStorage(
-                gallery
-            );
-
-            saveGalleries();
-
-            renderStats();
-
-            renderGalleryGrid();
-
-            renderModalOverview(
-                gallery
-            );
-
-            renderDeliveryReadiness(
-                gallery
-            );
-
-            await renderMedia(
-                gallery
-            );
-
-            renderAlbums(
-                gallery
-            );
-
-            showToast(
-                `${files.length} ${
-                    files.length === 1
-                        ? "file"
-                        : "files"
-                } uploaded successfully.`
-            );
-        } catch (error) {
-            console.error(
-                "Media upload failed:",
-                error
-            );
-
-            gallery.media =
-                originalMedia;
-
-            for (
-                const record of createdRecords
-            ) {
-                try {
-                    await deleteMediaBlob(
-                        record.id
-                    );
-                } catch (
-                    cleanupError
-                ) {
-                    console.warn(
-                        "Upload cleanup failed:",
-                        cleanupError
-                    );
-                }
-            }
-
-            recalculateGalleryStorage(
-                gallery
-            );
-
-            showToast(
-                "Upload failed. No partial media was kept."
-            );
-
-            await renderMedia(
-                gallery
-            );
-        } finally {
-            if (dom.mediaUpload) {
-                dom.mediaUpload.value =
-                    "";
-            }
-        }
     }
 
-    /* =========================================================
-       DELETE MEDIA
-    ========================================================= */
 
-    async function removeMedia(
-        mediaId
-    ) {
-        const gallery =
-            getSelectedGallery();
+    return [];
 
-        if (
-            !gallery ||
-            state.demoMode
-        ) {
-            return;
-        }
+}
 
-        const mediaIndex =
-            gallery.media.findIndex(
-                (media) =>
-                    media.id ===
-                    mediaId
-            );
 
-        if (
-            mediaIndex === -1
-        ) {
-            return;
-        }
+/* =========================================================
+   RENDER EQUIPMENT
+========================================================= */
 
-        const media =
-            gallery.media[
-                mediaIndex
-            ];
+function loadClientEquipment() {
 
-        const confirmed =
-            window.confirm(
-                `Delete "${media.name}" from this gallery?`
-            );
-
-        if (!confirmed) {
-            return;
-        }
-
-        gallery.media.splice(
-            mediaIndex,
-            1
+    var container =
+        document.getElementById(
+            "equipmentGrid"
         );
 
-        syncAlbumMediaIds(
-            gallery
-        );
 
-        recalculateGalleryStorage(
-            gallery
-        );
+    if (!container) {
 
-        try {
-            await deleteMediaBlob(
-                media.blobKey ||
-                    media.id
-            );
-        } catch (error) {
-            console.warn(
-                "Unable to delete media blob:",
-                error
-            );
-        }
+        return;
 
-        saveGalleries();
-
-        renderStats();
-        renderGalleryGrid();
-        renderModalOverview(
-            gallery
-        );
-        renderDeliveryReadiness(
-            gallery
-        );
-
-        await renderMedia(
-            gallery
-        );
-
-        renderAlbums(
-            gallery
-        );
-
-        showToast(
-            "Media deleted."
-        );
     }
 
-    /* =========================================================
-       SETTINGS
-    ========================================================= */
 
-    function renderSettings(
-        gallery
-    ) {
-        if (dom.editGalleryName) {
-            dom.editGalleryName.value =
-                gallery.galleryName;
-        }
+    var equipment =
+        getStoredEquipment();
 
-        if (dom.editClientName) {
-            dom.editClientName.value =
-                gallery.clientName;
-        }
 
-        if (
-            dom.editGalleryDescription
-        ) {
-            dom.editGalleryDescription.value =
-                gallery.description ||
-                "";
-        }
+    container.innerHTML =
+        "";
 
-        if (
-            dom.passwordEnabled
-        ) {
-            dom.passwordEnabled.checked =
-                gallery.passwordEnabled;
-        }
 
-        if (
-            dom.galleryPassword
-        ) {
-            dom.galleryPassword.value =
-                gallery.password || "";
+    if (!equipment.length) {
 
-            dom.galleryPassword.disabled =
-                !gallery.passwordEnabled;
-        }
-
-        if (
-            dom.downloadsEnabled
-        ) {
-            dom.downloadsEnabled.checked =
-                gallery.downloadsEnabled;
-        }
-
-        if (
-            dom.galleryVisible
-        ) {
-            dom.galleryVisible.checked =
-                gallery.visible;
-        }
-
-        if (
-            dom.passwordSetting
-        ) {
-            dom.passwordSetting.classList.toggle(
-                "disabled",
-                !gallery.passwordEnabled
-            );
-        }
-    }
-
-    function saveGalleryInformation(
-        event
-    ) {
-        event?.preventDefault();
-
-        const gallery =
-            getSelectedGallery();
-
-        if (
-            !gallery ||
-            state.demoMode
-        ) {
-            return;
-        }
-
-        const name =
-            dom.editGalleryName?.value
-                ?.trim();
-
-        const clientName =
-            dom.editClientName?.value
-                ?.trim();
-
-        if (!name) {
-            showToast(
-                "Gallery name is required."
-            );
-            return;
-        }
-
-        if (!clientName) {
-            showToast(
-                "Client name is required."
-            );
-            return;
-        }
-
-        gallery.galleryName =
-            name;
-
-        gallery.clientName =
-            clientName;
-
-        gallery.description =
-            dom.editGalleryDescription
-                ?.value
-                ?.trim() || "";
-
-        syncGalleryStatus(
-            gallery
-        );
-
-        saveGalleries();
-
-        renderStats();
-        renderGalleryGrid();
-
-        renderModalHeader(
-            gallery
-        );
-
-        renderModalOverview(
-            gallery
-        );
-
-        renderDeliveryReadiness(
-            gallery
-        );
-
-        showToast(
-            "Gallery information saved."
-        );
-    }
-
-    /* =========================================================
-       PASSWORD
-    ========================================================= */
-
-    function generateGalleryPassword() {
-        const characters =
-            "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
-
-        let password = "";
-
-        for (
-            let i = 0;
-            i < 10;
-            i++
-        ) {
-            password +=
-                characters[
-                    Math.floor(
-                        Math.random() *
-                            characters.length
-                    )
-                ];
-        }
-
-        if (dom.galleryPassword) {
-            dom.galleryPassword.value =
-                password;
-        }
-    }
-
-    function saveGalleryPassword() {
-        const gallery =
-            getSelectedGallery();
-
-        if (
-            !gallery ||
-            state.demoMode
-        ) {
-            return;
-        }
-
-        const enabled =
-            Boolean(
-                dom.passwordEnabled
-                    ?.checked
-            );
-
-        const password =
-            dom.galleryPassword
-                ?.value
-                ?.trim() || "";
-
-        if (
-            enabled &&
-            !password
-        ) {
-            showToast(
-                "Enter a password or generate one."
-            );
-            return;
-        }
-
-        gallery.passwordEnabled =
-            enabled;
-
-        gallery.password =
-            enabled
-                ? password
-                : "";
-
-        saveGalleries();
-
-        renderSettings(
-            gallery
-        );
-
-        renderDeliveryReadiness(
-            gallery
-        );
-
-        showToast(
-            enabled
-                ? "Gallery password saved."
-                : "Gallery password protection disabled."
-        );
-    }
-
-    function togglePasswordUI() {
-        const enabled =
-            Boolean(
-                dom.passwordEnabled
-                    ?.checked
-            );
-
-        if (
-            dom.galleryPassword
-        ) {
-            dom.galleryPassword.disabled =
-                !enabled;
-        }
-
-        if (
-            dom.passwordSetting
-        ) {
-            dom.passwordSetting.classList.toggle(
-                "disabled",
-                !enabled
-            );
-        }
-    }
-
-    /* =========================================================
-       ACCESS SETTINGS
-    ========================================================= */
-
-    function saveDownloadsSetting() {
-        const gallery =
-            getSelectedGallery();
-
-        if (
-            !gallery ||
-            state.demoMode
-        ) {
-            return;
-        }
-
-        gallery.downloadsEnabled =
-            Boolean(
-                dom.downloadsEnabled
-                    ?.checked
-            );
-
-        saveGalleries();
-
-        renderModalOverview(
-            gallery
-        );
-
-        renderDeliveryReadiness(
-            gallery
-        );
-
-        showToast(
-            gallery.downloadsEnabled
-                ? "Client downloads enabled."
-                : "Client downloads disabled."
-        );
-    }
-
-    function saveVisibilitySetting() {
-        const gallery =
-            getSelectedGallery();
-
-        if (
-            !gallery ||
-            state.demoMode
-        ) {
-            return;
-        }
-
-        gallery.visible =
-            Boolean(
-                dom.galleryVisible
-                    ?.checked
-            );
-
-        saveGalleries();
-
-        renderDeliveryReadiness(
-            gallery
-        );
-
-        showToast(
-            gallery.visible
-                ? "Gallery is now visible."
-                : "Gallery is hidden."
-        );
-    }
-
-    /* =========================================================
-       DEMO DOWNLOAD SETTING
-       ========================================================= */
-
-    function toggleDemoDownloads() {
-        if (!state.demoMode) {
-            return;
-        }
-
-        DEMO_GALLERY.downloadsEnabled =
-            !DEMO_GALLERY.downloadsEnabled;
-
-        const gallery =
-            DEMO_GALLERY;
-
-        renderModalOverview(
-            gallery
-        );
-
-        renderDeliveryReadiness(
-            gallery
-        );
-
-        renderMedia(
-            gallery
-        );
-
-        const summary =
-            document.getElementById(
-                "demoDownloadSummary"
-            );
-
-        if (summary) {
-            summary.textContent =
-                gallery.downloadsEnabled
-                    ? "ENABLED"
-                    : "DISABLED";
-        }
-
-        showToast(
-            gallery.downloadsEnabled
-                ? "Demo downloads ENABLED."
-                : "Demo downloads DISABLED."
-        );
-    }
-
-    /* =========================================================
-       SHARE / COPY
-    ========================================================= */
-
-    async function copyGalleryLink() {
-        const gallery =
-            getSelectedGallery();
-
-        if (!gallery) {
-            return;
-        }
-
-        const link =
-            gallery.demo
-                ? "https://professionalstudio.vercel.app/demo/client-gallery"
-                : `https://professionalstudio.vercel.app/client/${encodeURIComponent(
-                      gallery.id
-                  )}`;
-
-        try {
-            if (
-                navigator.clipboard &&
-                window.isSecureContext
-            ) {
-                await navigator.clipboard.writeText(
-                    link
-                );
-
-                showToast(
-                    "Gallery link copied."
-                );
-
-                return;
-            }
-        } catch (error) {
-            console.warn(
-                "Clipboard failed:",
-                error
-            );
-        }
-
-        window.prompt(
-            "Copy gallery link:",
-            link
-        );
-    }
-
-    /* =========================================================
-       SEND TO CLIENT
-    ========================================================= */
-
-    function sendGalleryToClient() {
-        const gallery =
-            getSelectedGallery();
-
-        if (
-            !gallery ||
-            state.demoMode
-        ) {
-            return;
-        }
-
-        const hasName =
-            Boolean(
-                gallery.galleryName?.trim()
-            );
-
-        const hasMedia =
-            gallery.media.length >
-            0;
-
-        const passwordOkay =
-            gallery.passwordEnabled
-                ? Boolean(
-                      gallery.password
-                  )
-                : true;
-
-        const storageOkay =
-            gallery.storageUsedGB <=
-            gallery.storageLimitGB;
-
-        const notExpired =
-            daysBetweenNow(
-                gallery.expiryDate
-            ) > 0;
-
-        const visible =
-            gallery.visible !== false;
-
-        if (
-            !hasName ||
-            !hasMedia ||
-            !passwordOkay ||
-            !storageOkay ||
-            !notExpired ||
-            !visible
-        ) {
-            showToast(
-                "Complete the gallery setup before sending."
-            );
-            return;
-        }
-
-        gallery.deliveryStatus =
-            "sent";
-
-        gallery.sentAt =
-            new Date().toISOString();
-
-        saveGalleries();
-
-        syncGalleryStatus(
-            gallery
-        );
-
-        renderModalHeader(
-            gallery
-        );
-
-        renderDeliveryReadiness(
-            gallery
-        );
-
-        renderGalleryGrid();
-
-        showToast(
-            "Gallery marked as sent to client."
-        );
-    }
-
-    /* =========================================================
-       DELETE GALLERY
-    ========================================================= */
-
-    async function deleteGallery() {
-        const gallery =
-            getSelectedGallery();
-
-        if (
-            !gallery ||
-            state.demoMode
-        ) {
-            return;
-        }
-
-        const confirmed =
-            window.confirm(
-                `Delete "${gallery.galleryName}"? This cannot be undone.`
-            );
-
-        if (!confirmed) {
-            return;
-        }
-
-        const media =
-            gallery.media || [];
-
-        for (
-            const item of media
-        ) {
-            try {
-                await deleteMediaBlob(
-                    item.blobKey ||
-                        item.id
-                );
-            } catch (error) {
-                console.warn(
-                    "Unable to remove media blob:",
-                    error
-                );
-            }
-        }
-
-        state.galleries =
-            state.galleries.filter(
-                (item) =>
-                    item.id !==
-                    gallery.id
-            );
-
-        state.selectedGalleryId =
-            null;
-
-        saveGalleries();
-
-        closeGalleryModal();
-
-        renderStats();
-        renderGalleryGrid();
-
-        showToast(
-            "Gallery deleted."
-        );
-    }
-
-    /* =========================================================
-       TABS
-    ========================================================= */
-
-    function switchTab(
-        tabName,
-        rerender = true
-    ) {
-        state.activeTab =
-            tabName;
-
-        document
-            .querySelectorAll(
-                "[data-tab]"
-            )
-            .forEach(
-                (element) => {
-                    element.classList.toggle(
-                        "active",
-                        element.dataset
-                            .tab ===
-                            tabName
-                    );
-                }
-            );
-
-        document
-            .querySelectorAll(
-                ".modal-tab-panel"
-            )
-            .forEach(
-                (panel) => {
-                    panel.classList.toggle(
-                        "active",
-                        panel.dataset
-                            .tabPanel ===
-                            tabName
-                    );
-                }
-            );
-
-        if (!rerender) {
-            return;
-        }
-
-        const gallery =
-            state.demoMode
-                ? DEMO_GALLERY
-                : getSelectedGallery();
-
-        if (!gallery) {
-            return;
-        }
-
-        if (
-            tabName ===
-            "media"
-        ) {
-            renderMedia(
-                gallery
-            );
-        }
-
-        if (
-            tabName ===
-            "albums"
-        ) {
-            renderAlbums(
-                gallery
-            );
-        }
-
-        if (
-            tabName ===
-            "settings"
-        ) {
-            renderSettings(
-                gallery
-            );
-        }
-    }
-
-    /* =========================================================
-       EVENT HANDLERS
-    ========================================================= */
-
-    function bindEvents() {
-        dom.gallerySearch?.addEventListener(
-            "input",
-            (event) => {
-                state.searchTerm =
-                    event.target.value ||
-                    "";
-
-                renderGalleryGrid();
-            }
-        );
-
-        dom.statusFilter?.addEventListener(
-            "change",
-            () => {
-                renderGalleryGrid();
-            }
-        );
-
-        dom.mediaFilter?.addEventListener(
-            "change",
-            (event) => {
-                state.mediaFilter =
-                    event.target.value ||
-                    "all";
-
-                const gallery =
-                    state.demoMode
-                        ? DEMO_GALLERY
-                        : getSelectedGallery();
-
-                if (gallery) {
-                    renderMedia(
-                        gallery
-                    );
-                }
-            }
-        );
-
-        dom.mediaUpload?.addEventListener(
-            "change",
-            (event) => {
-                uploadFiles(
-                    event.target.files
-                );
-            }
-        );
-
-        dom.uploadZone?.addEventListener(
-            "dragover",
-            (event) => {
-                event.preventDefault();
-
-                dom.uploadZone.classList.add(
-                    "dragover"
-                );
-            }
-        );
-
-        dom.uploadZone?.addEventListener(
-            "dragleave",
-            () => {
-                dom.uploadZone.classList.remove(
-                    "dragover"
-                );
-            }
-        );
-
-        dom.uploadZone?.addEventListener(
-            "drop",
-            (event) => {
-                event.preventDefault();
-
-                dom.uploadZone.classList.remove(
-                    "dragover"
-                );
-
-                uploadFiles(
-                    event.dataTransfer
-                        ?.files
-                );
-            }
-        );
-
-        dom.createAlbumBtn?.addEventListener(
-            "click",
-            openCreateAlbumModal
-        );
-
-        dom.albumForm?.addEventListener(
-            "submit",
-            (event) => {
-                event.preventDefault();
-                createAlbum();
-            }
-        );
-
-        dom.generatePassword?.addEventListener(
-            "click",
-            generateGalleryPassword
-        );
-
-        dom.passwordEnabled?.addEventListener(
-            "change",
-            togglePasswordUI
-        );
-
-        dom.savePassword?.addEventListener(
-            "click",
-            saveGalleryPassword
-        );
-
-        dom.downloadsEnabled?.addEventListener(
-            "change",
-            saveDownloadsSetting
-        );
-
-        dom.galleryVisible?.addEventListener(
-            "change",
-            saveVisibilitySetting
-        );
-
-        dom.gallerySettingsForm?.addEventListener(
-            "submit",
-            saveGalleryInformation
-        );
-
-        dom.deleteGalleryBtn?.addEventListener(
-            "click",
-            deleteGallery
-        );
-
-        dom.copyLinkBtn?.addEventListener(
-            "click",
-            copyGalleryLink
-        );
-
-        dom.sendToClientBtn?.addEventListener(
-            "click",
-            sendGalleryToClient
-        );
-
-        /*
-         * Main gallery grid buttons
-         */
-        dom.galleryGrid?.addEventListener(
-            "click",
-            (event) => {
-                const manageButton =
-                    event.target.closest(
-                        "[data-manage-gallery]"
-                    );
-
-                if (
-                    manageButton
-                ) {
-                    const id =
-                        manageButton.dataset
-                            .manageGallery;
-
-                    const gallery =
-                        state.galleries.find(
-                            (item) =>
-                                item.id ===
-                                id
-                        );
-
-                    if (gallery) {
-                        openGalleryModal(
-                            gallery
-                        );
-                    }
-
-                    return;
-                }
-            }
-        );
-
-        /*
-         * Modal tab buttons
-         */
-        document.addEventListener(
-            "click",
-            (event) => {
-                const tabButton =
-                    event.target.closest(
-                        "[data-tab]"
-                    );
-
-                if (
-                    tabButton &&
-                    dom.galleryModal?.contains(
-                        tabButton
-                    )
-                ) {
-                    event.preventDefault();
-
-                    switchTab(
-                        tabButton.dataset
-                            .tab
-                    );
-
-                    return;
-                }
-
-                /*
-                 * QUICK ACTION FIX
-                 *
-                 * HTML uses:
-                 * data-open-tab="media"
-                 * data-open-tab="albums"
-                 * data-open-tab="access"
-                 */
-                const openTabButton =
-                    event.target.closest(
-                        "[data-open-tab]"
-                    );
-
-                if (
-                    openTabButton &&
-                    dom.galleryModal?.contains(
-                        openTabButton
-                    )
-                ) {
-                    event.preventDefault();
-
-                    const tab =
-                        openTabButton.dataset
-                            .openTab;
-
-                    if (
-                        tab ===
-                        "access"
-                    ) {
-                        switchTab(
-                            "settings"
-                        );
-                    } else {
-                        switchTab(
-                            tab
-                        );
-                    }
-
-                    return;
-                }
-
-                /*
-                 * Demo download button
-                 */
-                const demoDownload =
-                    event.target.closest(
-                        "[data-demo-download]"
-                    );
-
-                if (
-                    demoDownload
-                ) {
-                    downloadDemoMedia(
-                        demoDownload.dataset
-                            .demoDownload
-                    );
-
-                    return;
-                }
-
-                /*
-                 * Demo download setting
-                 *
-                 * This can be wired to a button
-                 * if the HTML contains
-                 * data-demo-download-toggle.
-                 */
-                const demoToggle =
-                    event.target.closest(
-                        "[data-demo-download-toggle]"
-                    );
-
-                if (
-                    demoToggle
-                ) {
-                    toggleDemoDownloads();
-                    return;
-                }
-
-                /*
-                 * Delete media
-                 */
-                const deleteMediaButton =
-                    event.target.closest(
-                        "[data-delete-media]"
-                    );
-
-                if (
-                    deleteMediaButton
-                ) {
-                    removeMedia(
-                        deleteMediaButton
-                            .dataset
-                            .deleteMedia
-                    );
-
-                    return;
-                }
-
-                /*
-                 * Delete album
-                 */
-                const deleteAlbumButton =
-                    event.target.closest(
-                        "[data-delete-album]"
-                    );
-
-                if (
-                    deleteAlbumButton
-                ) {
-                    deleteAlbum(
-                        deleteAlbumButton
-                            .dataset
-                            .deleteAlbum
-                    );
-
-                    return;
-                }
-
-                /*
-                 * Close album modal
-                 */
-                const closeAlbum =
-                    event.target.closest(
-                        "[data-close-album-modal]"
-                    );
-
-                if (
-                    closeAlbum
-                ) {
-                    closeAlbumModal();
-                    return;
-                }
-
-                /*
-                 * Close gallery modal
-                 */
-                const closeGallery =
-                    event.target.closest(
-                        "[data-close-gallery-modal]"
-                    );
-
-                if (
-                    closeGallery
-                ) {
-                    closeGalleryModal();
-                    return;
-                }
-            }
-        );
-
-        /*
-         * Media album assignment
-         */
-        dom.mediaGrid?.addEventListener(
-            "change",
-            (event) => {
-                const select =
-                    event.target.closest(
-                        ".media-album-select"
-                    );
-
-                if (!select) {
-                    return;
-                }
-
-                assignMediaToAlbum(
-                    select.dataset
-                        .mediaId,
-                    select.value
-                );
-            }
-        );
-
-        /*
-         * Modal background click
-         */
-        dom.galleryModal?.addEventListener(
-            "click",
-            (event) => {
-                if (
-                    event.target ===
-                    dom.galleryModal
-                ) {
-                    closeGalleryModal();
-                }
-            }
-        );
-
-        /*
-         * Album modal background click
-         */
-        dom.albumModal?.addEventListener(
-            "click",
-            (event) => {
-                if (
-                    event.target ===
-                    dom.albumModal
-                ) {
-                    closeAlbumModal();
-                }
-            }
-        );
-
-        /*
-         * Escape key
-         */
-        document.addEventListener(
-            "keydown",
-            (event) => {
-                if (
-                    event.key !==
-                    "Escape"
-                ) {
-                    return;
-                }
-
-                if (
-                    dom.albumModal?.classList.contains(
-                        "active"
-                    )
-                ) {
-                    closeAlbumModal();
-                    return;
-                }
-
-                if (
-                    dom.galleryModal?.classList.contains(
-                        "active"
-                    )
-                ) {
-                    closeGalleryModal();
-                }
-            }
-        );
-
-        /*
-         * Mobile menu
-         */
-        const mobileMenuButton =
-            document.querySelector(
-                "[data-mobile-menu]"
-            ) ||
-            document.querySelector(
-                ".mobile-menu-btn"
-            );
-
-        const mobileMenu =
-            document.querySelector(
-                "[data-mobile-nav]"
-            ) ||
-            document.querySelector(
-                ".mobile-nav"
-            );
-
-        mobileMenuButton?.addEventListener(
-            "click",
-            () => {
-                mobileMenu?.classList.toggle(
-                    "active"
-                );
-            }
-        );
-
-        /*
-         * Close mobile menu after navigation
-         */
-        mobileMenu?.addEventListener(
-            "click",
-            (event) => {
-                if (
-                    event.target.closest(
-                        "a"
-                    )
-                ) {
-                    mobileMenu.classList.remove(
-                        "active"
-                    );
-                }
-            }
-        );
-
-        /*
-         * Refresh when another tab/window
-         * changes the gallery storage.
-         */
-        window.addEventListener(
-            "storage",
-            (event) => {
-                if (
-                    event.key ===
-                    STORAGE_KEY
-                ) {
-                    state.galleries =
-                        loadGalleries();
-
-                    normalizeAllGalleries();
-
-                    syncAllStorage();
-
-                    renderStats();
-                    renderGalleryGrid();
-
-                    const gallery =
-                        getSelectedGallery();
-
-                    if (
-                        gallery &&
-                        dom.galleryModal?.classList.contains(
-                            "active"
-                        )
-                    ) {
-                        renderModal(
-                            gallery
-                        );
-                    }
-                }
-            }
-        );
-
-        window.addEventListener(
-            "professionalStudioClientGalleriesUpdated",
-            () => {
-                state.galleries =
-                    loadGalleries();
-
-                normalizeAllGalleries();
-
-                syncAllStorage();
-
-                renderStats();
-                renderGalleryGrid();
-            }
-        );
-    }
-
-    /* =========================================================
-       DEMO DOWNLOAD CONTROL
-       ========================================================= */
-
-    function injectDemoDownloadTester() {
-        if (!dom.galleryModal) {
-            return;
-        }
-
-        /*
-         * The existing HTML does not have a dedicated
-         * demo-download setting control, so we inject
-         * a clearly visible tester when the demo opens.
-         */
-
-        const existing =
-            document.getElementById(
-                "demoDownloadTester"
-            );
-
-        existing?.remove();
-
-        if (!state.demoMode) {
-            return;
-        }
-
-        const mediaPanel =
-            dom.galleryModal.querySelector(
-                '[data-tab-panel="media"]'
-            ) ||
-            dom.galleryModal.querySelector(
-                "#media"
-            );
-
-        if (!mediaPanel) {
-            return;
-        }
-
-        const tester =
-            document.createElement(
-                "div"
-            );
-
-        tester.id =
-            "demoDownloadTester";
-
-        tester.style.cssText = `
-            margin: 0 0 18px;
-            padding: 16px;
-            border: 2px solid #222;
-            background: #fff;
-            border-radius: 9px;
-        `;
-
-        tester.innerHTML = `
-            <div
-                style="
-                    display:flex;
-                    justify-content:space-between;
-                    align-items:flex-start;
-                    gap:16px;
-                    flex-wrap:wrap;
-                "
-            >
-                <div>
-                    <div
-                        style="
-                            font-size:11px;
-                            font-weight:800;
-                            letter-spacing:.1em;
-                            text-transform:uppercase;
-                            margin-bottom:6px;
-                        "
-                    >
-                        DEMO DOWNLOAD TEST
-                    </div>
-
-                    <strong
-                        id="demoDownloadTesterStatus"
-                        style="
-                            font-size:17px;
-                        "
-                    >
-                        Downloads are ${
-                            DEMO_GALLERY.downloadsEnabled
-                                ? "ENABLED"
-                                : "DISABLED"
-                        }
-                    </strong>
-
-                    <p
-                        style="
-                            margin:6px 0 0;
-                            color:#666;
-                            font-size:13px;
-                            line-height:1.45;
-                        "
-                    >
-                        ${
-                            DEMO_GALLERY.downloadsEnabled
-                                ? "The Download Demo File buttons below should work."
-                                : "Download buttons below should be disabled."
-                        }
-                    </p>
-                </div>
-
-                <button
-                    type="button"
-                    class="btn btn-secondary"
-                    data-demo-download-toggle
-                >
-                    ${
-                        DEMO_GALLERY.downloadsEnabled
-                            ? "Disable Downloads"
-                            : "Enable Downloads"
-                    }
-                </button>
+        container.innerHTML = `
+            <div class="equipment-empty">
+                <h3>Professional Equipment</h3>
+                <p>
+                    Equipment details will appear here
+                    once they have been added.
+                </p>
             </div>
         `;
 
-        mediaPanel.prepend(
-            tester
-        );
+        return;
+
     }
 
-    /* =========================================================
-       PATCH DEMO RENDERING
-       ========================================================= */
 
-    const originalOpenDemoGallery =
-        openDemoGallery;
+    equipment.forEach(
+        function(category) {
 
-    /*
-     * Re-render the tester after opening.
-     */
-    function openDemoGalleryWithTester() {
-        originalOpenDemoGallery();
+            if (
+                !category ||
+                typeof category !==
+                    "object"
+            ) {
 
-        setTimeout(() => {
-            injectDemoDownloadTester();
-        }, 0);
-    }
+                return;
 
-    /*
-     * Replace demo button listeners created
-     * in the demo section.
-     */
-    function bindDemoSectionButtons() {
-        const openButton =
-            document.getElementById(
-                "openDemoGalleryBtn"
-            );
-
-        openButton?.addEventListener(
-            "click",
-            () => {
-                openDemoGalleryWithTester();
             }
-        );
-    }
 
-    /* =========================================================
-       PUBLIC API
-    ========================================================= */
 
-    window.ProfessionalStudioClientGalleries = {
-        getGalleries() {
-            return state.galleries;
-        },
-
-        getDemoGallery() {
-            return DEMO_GALLERY;
-        },
-
-        openDemoGallery:
-            openDemoGalleryWithTester,
-
-        shareDemoGallery,
-
-        openGallery(
-            galleryId
-        ) {
-            const gallery =
-                state.galleries.find(
-                    (item) =>
-                        item.id ===
-                        galleryId
+            var card =
+                document.createElement(
+                    "article"
                 );
 
-            if (gallery) {
-                openGalleryModal(
-                    gallery
+
+            card.className =
+                "equipment-card";
+
+
+            var heading =
+                document.createElement(
+                    "h3"
                 );
+
+
+            heading.textContent =
+                category.name ||
+                category.category ||
+                "Equipment";
+
+
+            card.appendChild(
+                heading
+            );
+
+
+            var items =
+                Array.isArray(
+                    category.items
+                )
+                    ? category.items
+                    : [];
+
+
+            if (!items.length) {
+
+                return;
+
             }
-        },
 
-        closeGallery:
-            closeGalleryModal,
 
-        refresh() {
-            state.galleries =
-                loadGalleries();
+            var list =
+                document.createElement(
+                    "ul"
+                );
 
-            normalizeAllGalleries();
 
-            syncAllStorage();
+            items.forEach(
+                function(item) {
 
-            renderStats();
-            renderGalleryGrid();
-            renderDemoSection();
-            bindDemoSectionButtons();
-        }
-    };
+                    var li =
+                        document.createElement(
+                            "li"
+                        );
 
-    /* =========================================================
-       INIT
-    ========================================================= */
 
-    async function init() {
-        try {
-            state.db =
-                await openDatabase();
-        } catch (error) {
-            console.error(
-                "Client Gallery IndexedDB unavailable:",
-                error
+                    if (
+                        typeof item ===
+                        "string"
+                    ) {
+
+                        li.textContent =
+                            item;
+
+                    } else {
+
+                        li.textContent =
+                            item.name ||
+                            item.model ||
+                            item.title ||
+                            "Equipment";
+
+                    }
+
+
+                    list.appendChild(
+                        li
+                    );
+
+                }
             );
 
-            showToast(
-                "Gallery storage is unavailable in this browser."
+
+            card.appendChild(
+                list
             );
+
+
+            container.appendChild(
+                card
+            );
+
         }
+    );
 
-        state.galleries =
-            loadGalleries();
+}
 
-        normalizeAllGalleries();
 
-        processPendingPurchase();
+/* =========================================================
+   RECENT WORK
+   INDEXEDDB
+========================================================= */
 
-        normalizeAllGalleries();
 
-        syncAllStorage();
+/*
+   Open the SAME database used by Recent Work.
 
-        bindEvents();
+   Do not create a new database name here.
+*/
 
-        renderStats();
-        renderGalleryGrid();
-        renderDemoSection();
-        bindDemoSectionButtons();
+function openRecentWorkDB() {
+
+    return new Promise(
+        function(resolve, reject) {
+
+            if (
+                !window.indexedDB
+            ) {
+
+                reject(
+                    new Error(
+                        "IndexedDB is not supported."
+                    )
+                );
+
+                return;
+
+            }
+
+
+            var request =
+                indexedDB.open(
+                    RECENT_WORK_DB_NAME,
+                    RECENT_WORK_DB_VERSION
+                );
+
+
+            request.onsuccess =
+                function() {
+
+                    resolve(
+                        request.result
+                    );
+
+                };
+
+
+            request.onerror =
+                function() {
+
+                    reject(
+                        request.error ||
+                        new Error(
+                            "Unable to open Recent Work database."
+                        )
+                    );
+
+                };
+
+
+            request.onblocked =
+                function() {
+
+                    reject(
+                        new Error(
+                            "Recent Work database is blocked."
+                        )
+                    );
+
+                };
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   GET ALL RECENT WORK MEDIA
+========================================================= */
+
+function getAllRecentWorkMedia(
+    db
+) {
+
+    return new Promise(
+        function(resolve, reject) {
+
+            var transaction;
+
+
+            try {
+
+                transaction =
+                    db.transaction(
+                        RECENT_WORK_STORE_NAME,
+                        "readonly"
+                    );
+
+            } catch (error) {
+
+                reject(error);
+
+                return;
+
+            }
+
+
+            var store =
+                transaction.objectStore(
+                    RECENT_WORK_STORE_NAME
+                );
+
+
+            var request =
+                store.getAll();
+
+
+            request.onsuccess =
+                function() {
+
+                    resolve(
+                        Array.isArray(
+                            request.result
+                        )
+                            ? request.result
+                            : []
+                    );
+
+                };
+
+
+            request.onerror =
+                function() {
+
+                    reject(
+                        request.error ||
+                        new Error(
+                            "Unable to read Recent Work media."
+                        )
+                    );
+
+                };
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   GET SINGLE MEDIA RECORD
+========================================================= */
+
+function getRecentWorkMediaByID(
+    db,
+    id
+) {
+
+    return new Promise(
+        function(resolve, reject) {
+
+            if (
+                !id
+            ) {
+
+                resolve(
+                    null
+                );
+
+                return;
+
+            }
+
+
+            var transaction =
+                db.transaction(
+                    RECENT_WORK_STORE_NAME,
+                    "readonly"
+                );
+
+
+            var store =
+                transaction.objectStore(
+                    RECENT_WORK_STORE_NAME
+                );
+
+
+            var request =
+                store.get(id);
+
+
+            request.onsuccess =
+                function() {
+
+                    resolve(
+                        request.result ||
+                        null
+                    );
+
+                };
+
+
+            request.onerror =
+                function() {
+
+                    reject(
+                        request.error
+                    );
+
+                };
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   FIND ACTUAL BLOB
+========================================================= */
+
+async function resolveRecentWorkBlob(
+    db,
+    fileMetadata,
+    allMedia
+) {
+
+    if (!fileMetadata) {
+
+        return null;
+
     }
+
+
+    /*
+       Some versions store the blob directly.
+    */
 
     if (
-        document.readyState ===
-        "loading"
+        fileMetadata.blob instanceof Blob
     ) {
-        document.addEventListener(
-            "DOMContentLoaded",
-            init,
-            {
-                once: true
+
+        return fileMetadata.blob;
+
+    }
+
+
+    if (
+        fileMetadata.file instanceof Blob
+    ) {
+
+        return fileMetadata.file;
+
+    }
+
+
+    /*
+       Canonical metadata references the stored
+       media using blobKey / id.
+    */
+
+    var possibleKeys = [
+
+        fileMetadata.blobKey,
+
+        fileMetadata.id,
+
+        fileMetadata.key
+
+    ];
+
+
+    for (
+        var i = 0;
+        i < possibleKeys.length;
+        i++
+    ) {
+
+        var key =
+            possibleKeys[i];
+
+
+        if (
+            !key
+        ) {
+
+            continue;
+
+        }
+
+
+        /*
+           Try the IndexedDB primary key.
+        */
+
+        try {
+
+            var record =
+                await getRecentWorkMediaByID(
+                    db,
+                    key
+                );
+
+
+            if (
+                record &&
+                record.blob instanceof Blob
+            ) {
+
+                return record.blob;
+
+            }
+
+
+            if (
+                record &&
+                record.file instanceof Blob
+            ) {
+
+                return record.file;
+
+            }
+
+        } catch (error) {
+
+            /*
+               Continue to the metadata search.
+            */
+
+        }
+
+
+        /*
+           Fallback search through all media records.
+        */
+
+        if (
+            Array.isArray(allMedia)
+        ) {
+
+            var matchingRecord =
+                allMedia.find(
+                    function(record) {
+
+                        return (
+                            String(
+                                record.id
+                            ) ===
+                            String(
+                                key
+                            ) ||
+
+                            String(
+                                record.blobKey
+                            ) ===
+                            String(
+                                key
+                            ) ||
+
+                            String(
+                                record.key
+                            ) ===
+                            String(
+                                key
+                            )
+                        );
+
+                    }
+                );
+
+
+            if (
+                matchingRecord
+            ) {
+
+                if (
+                    matchingRecord.blob
+                    instanceof Blob
+                ) {
+
+                    return matchingRecord.blob;
+
+                }
+
+
+                if (
+                    matchingRecord.file
+                    instanceof Blob
+                ) {
+
+                    return matchingRecord.file;
+
+                }
+
+            }
+
+        }
+
+    }
+
+
+    return null;
+
+}
+
+
+/* =========================================================
+   RECENT WORK STORAGE
+========================================================= */
+
+function getRecentWorkStorage() {
+
+    var storage =
+        readLocalStorage(
+            PORTFOLIO_STORAGE_KEY,
+            {}
+        );
+
+
+    if (
+        !storage ||
+        typeof storage !==
+            "object"
+    ) {
+
+        return {
+
+            usedMB: 0,
+
+            files: [],
+
+            albums: []
+
+        };
+
+    }
+
+
+    return {
+
+        usedMB:
+            Number(
+                storage.usedMB
+            ) || 0,
+
+        files:
+            Array.isArray(
+                storage.files
+            )
+                ? storage.files
+                : [],
+
+        albums:
+            Array.isArray(
+                storage.albums
+            )
+                ? storage.albums
+                : []
+
+    };
+
+}
+
+
+/* =========================================================
+   PUBLIC ALBUMS
+========================================================= */
+
+function getPublicRecentWorkAlbums() {
+
+    var storage =
+        getRecentWorkStorage();
+
+
+    return storage.albums.filter(
+        function(album) {
+
+            /*
+               Only explicitly private albums are hidden.
+
+               This matches gallery.html behavior.
+            */
+
+            return (
+                album &&
+                album.isPublic !== false
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   ALBUM MEDIA
+========================================================= */
+
+function getAlbumMediaMetadata(
+    album,
+    files
+) {
+
+    if (
+        !album ||
+        !Array.isArray(files)
+    ) {
+
+        return [];
+
+    }
+
+
+    return files.filter(
+        function(file) {
+
+            return (
+                file &&
+                String(
+                    file.albumId
+                ) ===
+                String(
+                    album.id
+                )
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   FIND ALBUM COVER METADATA
+========================================================= */
+
+function findRecentWorkCoverMetadata(
+    album,
+    albumFiles
+) {
+
+    if (
+        !albumFiles.length
+    ) {
+
+        return null;
+
+    }
+
+
+    /*
+       Explicit cover first.
+    */
+
+    var coverFileID =
+        album.coverFileId ||
+        album.coverImageId ||
+        null;
+
+
+    if (
+        coverFileID
+    ) {
+
+        var explicitCover =
+            albumFiles.find(
+                function(file) {
+
+                    return (
+                        String(
+                            file.id
+                        ) ===
+                        String(
+                            coverFileID
+                        )
+                    );
+
+                }
+            );
+
+
+        if (
+            explicitCover
+        ) {
+
+            return explicitCover;
+
+        }
+
+    }
+
+
+    /*
+       Fallback to first file in the album.
+    */
+
+    return albumFiles[0];
+
+}
+
+
+/* =========================================================
+   CLEAN RECENT WORK OBJECT URLS
+========================================================= */
+
+function cleanupRecentWorkObjectURLs() {
+
+    recentWorkObjectURLs.forEach(
+        function(url) {
+
+            try {
+
+                URL.revokeObjectURL(
+                    url
+                );
+
+            } catch (error) {}
+
+        }
+    );
+
+
+    recentWorkObjectURLs =
+        [];
+
+}
+
+
+/* =========================================================
+   CREATE IMAGE URL
+========================================================= */
+
+function createRecentWorkImageURL(
+    blob
+) {
+
+    if (
+        !(blob instanceof Blob)
+    ) {
+
+        return "";
+
+    }
+
+
+    var url =
+        URL.createObjectURL(
+            blob
+        );
+
+
+    recentWorkObjectURLs.push(
+        url
+    );
+
+
+    return url;
+
+}
+
+
+/* =========================================================
+   CREATE RECENT WORK CARD
+========================================================= */
+
+function createRecentWorkCard(
+    album,
+    imageURL,
+    photoCount
+) {
+
+    var card =
+        document.createElement(
+            "article"
+        );
+
+
+    card.className =
+        "work-card";
+
+
+    /*
+       The card still points to the public
+       gallery page.
+
+       Album-specific navigation is intentionally
+       not invented here because gallery.html's
+       current album-query behavior must remain
+       authoritative.
+    */
+
+    var link =
+        document.createElement(
+            "a"
+        );
+
+
+    link.href =
+        "gallery.html";
+
+
+    var image =
+        document.createElement(
+            "img"
+        );
+
+
+    image.src =
+        imageURL;
+
+
+    image.alt =
+        album.name ||
+        "Recent Work";
+
+
+    image.loading =
+        "lazy";
+
+
+    link.appendChild(
+        image
+    );
+
+
+    card.appendChild(
+        link
+    );
+
+
+    var heading =
+        document.createElement(
+            "h3"
+        );
+
+
+    heading.textContent =
+        album.name ||
+        "Untitled Album";
+
+
+    card.appendChild(
+        heading
+    );
+
+
+    var description =
+        document.createElement(
+            "p"
+        );
+
+
+    description.textContent =
+        photoCount === 1
+            ? "1 photo"
+            : photoCount +
+              " photos";
+
+
+    card.appendChild(
+        description
+    );
+
+
+    return card;
+
+}
+
+
+/* =========================================================
+   EMPTY RECENT WORK STATE
+========================================================= */
+
+function showRecentWorkEmptyState() {
+
+    var container =
+        document.getElementById(
+            "recentWorkPreview"
+        );
+
+
+    var empty =
+        document.getElementById(
+            "recentWorkEmpty"
+        );
+
+
+    if (container) {
+
+        container.innerHTML =
+            "";
+
+    }
+
+
+    if (empty) {
+
+        empty.hidden =
+            false;
+
+    }
+
+}
+
+
+/* =========================================================
+   LOAD RECENT WORK PREVIEW
+========================================================= */
+
+async function loadClientRecentWork() {
+
+    var container =
+        document.getElementById(
+            "recentWorkPreview"
+        );
+
+
+    if (!container) {
+
+        return;
+
+    }
+
+
+    var empty =
+        document.getElementById(
+            "recentWorkEmpty"
+        );
+
+
+    if (empty) {
+
+        empty.hidden =
+            true;
+
+    }
+
+
+    cleanupRecentWorkObjectURLs();
+
+
+    container.innerHTML =
+        "";
+
+
+    var publicAlbums =
+        getPublicRecentWorkAlbums();
+
+
+    if (
+        !publicAlbums.length
+    ) {
+
+        showRecentWorkEmptyState();
+
+        return;
+
+    }
+
+
+    var db;
+
+
+    try {
+
+        db =
+            await openRecentWorkDB();
+
+    } catch (error) {
+
+        console.warn(
+            "Professional Studio: Recent Work database unavailable.",
+            error
+        );
+
+
+        showRecentWorkEmptyState();
+
+        return;
+
+    }
+
+
+    var allMedia;
+
+
+    try {
+
+        allMedia =
+            await getAllRecentWorkMedia(
+                db
+            );
+
+    } catch (error) {
+
+        console.warn(
+            "Professional Studio: unable to read Recent Work media.",
+            error
+        );
+
+
+        db.close();
+
+        showRecentWorkEmptyState();
+
+        return;
+
+    }
+
+
+    /*
+       The Portfolio page is a preview.
+       Keep the same five-card visual scale
+       as the old hardcoded section.
+    */
+
+    var albumsToRender =
+        publicAlbums.slice(
+            0,
+            5
+        );
+
+
+    var renderedCount =
+        0;
+
+
+    for (
+        var i = 0;
+        i < albumsToRender.length;
+        i++
+    ) {
+
+        var album =
+            albumsToRender[i];
+
+
+        var albumFiles =
+            getAlbumMediaMetadata(
+                album,
+                getRecentWorkStorage().files
+            );
+
+
+        if (
+            !albumFiles.length
+        ) {
+
+            continue;
+
+        }
+
+
+        var coverMetadata =
+            findRecentWorkCoverMetadata(
+                album,
+                albumFiles
+            );
+
+
+        if (
+            !coverMetadata
+        ) {
+
+            continue;
+
+        }
+
+
+        var blob =
+            await resolveRecentWorkBlob(
+                db,
+                coverMetadata,
+                allMedia
+            );
+
+
+        if (
+            !blob
+        ) {
+
+            console.warn(
+                "Professional Studio: unable to resolve cover image for album:",
+                album.name
+            );
+
+            continue;
+
+        }
+
+
+        var imageURL =
+            createRecentWorkImageURL(
+                blob
+            );
+
+
+        if (
+            !imageURL
+        ) {
+
+            continue;
+
+        }
+
+
+        var card =
+            createRecentWorkCard(
+                album,
+                imageURL,
+                albumFiles.length
+            );
+
+
+        container.appendChild(
+            card
+        );
+
+
+        renderedCount++;
+
+    }
+
+
+    db.close();
+
+
+    if (
+        renderedCount === 0
+    ) {
+
+        showRecentWorkEmptyState();
+
+        return;
+
+    }
+
+
+    /*
+       Add dynamically created cards to the
+       existing reveal behavior.
+    */
+
+    initializeRecentWorkCardReveal();
+
+}
+
+
+/* =========================================================
+   RECENT WORK CARD REVEAL
+========================================================= */
+
+function initializeRecentWorkCardReveal() {
+
+    var cards =
+        document.querySelectorAll(
+            "#recentWorkPreview .work-card"
+        );
+
+
+    if (
+        !cards.length
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        !("IntersectionObserver" in window)
+    ) {
+
+        cards.forEach(
+            function(card) {
+
+                card.classList.add(
+                    "visible"
+                );
+
             }
         );
-    } else {
-        init();
+
+        return;
+
     }
-})();
+
+
+    var observer =
+        new IntersectionObserver(
+            function(entries) {
+
+                entries.forEach(
+                    function(entry) {
+
+                        if (
+                            !entry.isIntersecting
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        entry.target.classList.add(
+                            "visible"
+                        );
+
+
+                        observer.unobserve(
+                            entry.target
+                        );
+
+                    }
+                );
+
+            },
+            {
+                threshold: 0.12
+            }
+        );
+
+
+    cards.forEach(
+        function(card) {
+
+            observer.observe(
+                card
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   RECENT WORK UPDATE EVENT
+========================================================= */
+
+window.addEventListener(
+    "professionalStudioRecentWorkUpdated",
+    function() {
+
+        loadClientRecentWork();
+
+    }
+);
+
+
+/* =========================================================
+   STORAGE EVENT
+========================================================= */
+
+window.addEventListener(
+    "storage",
+    function(event) {
+
+        if (
+            event.key ===
+            PORTFOLIO_STORAGE_KEY
+        ) {
+
+            loadClientRecentWork();
+
+        }
+
+
+        if (
+            event.key ===
+            PROFILE_STORAGE_KEY
+        ) {
+
+            renderPublicProfile();
+
+        }
+
+
+        if (
+            event.key ===
+            SERVICES_STORAGE_KEY
+        ) {
+
+            loadClientServices();
+
+        }
+
+
+        if (
+            event.key ===
+            EQUIPMENT_STORAGE_KEY
+        ) {
+
+            loadClientEquipment();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   PAGE VISIBILITY REFRESH
+========================================================= */
+
+document.addEventListener(
+    "visibilitychange",
+    function() {
+
+        if (
+            document.visibilityState !==
+            "visible"
+        ) {
+
+            return;
+
+        }
+
+
+        renderPublicProfile();
+
+        loadClientServices();
+
+        loadClientEquipment();
+
+        loadClientRecentWork();
+
+    }
+);
+
+
+/* =========================================================
+   CLEANUP
+========================================================= */
+
+window.addEventListener(
+    "beforeunload",
+    function() {
+
+        cleanupRecentWorkObjectURLs();
+
+    }
+);
+
+
+
+/* =========================================================
+   INITIALIZATION
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        renderPublicProfile();
+
+        initializeSmoothScrolling();
+
+        initializeRevealAnimations();
+
+        initializeExperienceMeters();
+
+        initializeNavbar();
+
+        initializeActiveNavigation();
+
+        initializeBookButtons();
+
+        loadClientServices();
+
+        loadClientEquipment();
+
+        loadClientRecentWork();
+
+    }
+);
