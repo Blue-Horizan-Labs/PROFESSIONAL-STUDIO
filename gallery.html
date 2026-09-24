@@ -7,8 +7,8 @@
 <meta charset="UTF-8">
 
 <meta
- name="viewport"
- content="width=device-width, initial-scale=1.0">
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
 
 <title>Recent Work | Photographer</title>
 
@@ -736,6 +736,16 @@ footer{
     margin-top:20px;
 
     font-size:14px;
+}
+
+.copyright a{
+    color:#fff;
+
+    text-decoration:none;
+}
+
+.copyright a:hover{
+    text-decoration:underline;
 }
 
 .powered-by{
@@ -1556,7 +1566,6 @@ footer{
 
 <header class="navbar">
 
-
 <div class="logo">
     Photographer
 </div>
@@ -1573,15 +1582,14 @@ footer{
 
 </nav>
 
-
 </header>
+
 
 <!-- =====================================================
      HERO
 ===================================================== -->
 
 <section class="gallery-hero">
-
 
 <div class="hero-content">
 
@@ -1596,8 +1604,8 @@ footer{
 
 </div>
 
-
 </section>
+
 
 <!-- =====================================================
      RECENT WORK / ALBUMS
@@ -1606,7 +1614,6 @@ footer{
 <section
     class="recent-work"
     id="recentWork">
-
 
 <div class="section-heading">
 
@@ -1620,7 +1627,6 @@ footer{
 
 </div>
 
-
 <div
     class="album-grid"
     id="albumGrid">
@@ -1629,8 +1635,8 @@ footer{
 
 </div>
 
-
 </section>
+
 
 <!-- =====================================================
      ALBUM VIEWER
@@ -1639,7 +1645,6 @@ footer{
 <section
     class="album-viewer"
     id="albumViewer">
-
 
 <div class="viewer-header">
 
@@ -1655,7 +1660,6 @@ footer{
 
     </div>
 
-
     <button
         class="close-album"
         id="closeAlbum">
@@ -1666,7 +1670,6 @@ footer{
 
 </div>
 
-
 <div
     class="gallery-grid"
     id="galleryGrid">
@@ -1675,8 +1678,8 @@ footer{
 
 </div>
 
-
 </section>
+
 
 <!-- =====================================================
      CTA
@@ -1700,15 +1703,14 @@ footer{
 
 </a>
 
-
 </section>
+
 
 <!-- =====================================================
      BACK SECTION
 ===================================================== -->
 
 <section class="back-section">
-
 
 <a
     href="client.html"
@@ -1718,15 +1720,14 @@ footer{
 
 </a>
 
-
 </section>
+
 
 <!-- =====================================================
      FOOTER
 ===================================================== -->
 
 <footer>
-
 
 <div class="footer-content">
 
@@ -1768,8 +1769,8 @@ footer{
 
 </div>
 
-
 </footer>
+
 
 <!-- =====================================================
      LIGHTBOX
@@ -1780,7 +1781,6 @@ footer{
     class="lightbox"
     aria-hidden="true">
 
-
 <button
     class="close-btn"
     id="lightboxClose"
@@ -1789,7 +1789,6 @@ footer{
     &times;
 
 </button>
-
 
 <button
     class="nav-btn prev"
@@ -1800,12 +1799,10 @@ footer{
 
 </button>
 
-
 <img
     id="lightboxImage"
     src=""
     alt="Gallery Image">
-
 
 <button
     class="nav-btn next"
@@ -1815,7 +1812,6 @@ footer{
     &#10095;
 
 </button>
-
 
 <div class="image-counter">
 
@@ -1831,8 +1827,8 @@ footer{
 
 </div>
 
-
 </div>
+
 
 <!-- =====================================================
      JAVASCRIPT
@@ -1846,6 +1842,15 @@ footer{
 
 const RECENT_WORK_STORAGE_KEY =
     "professionalStudio.portfolioStorage";
+
+const RECENT_WORK_DB_NAME =
+    "ProfessionalStudioDB";
+
+const RECENT_WORK_DB_VERSION =
+    1;
+
+const RECENT_WORK_OBJECT_STORE =
+    "recentWorkPhotos";
 
 
 /* =========================================================
@@ -1910,6 +1915,349 @@ let currentIndex = 0;
 
 
 /* =========================================================
+   INDEXEDDB
+========================================================= */
+
+let databasePromise = null;
+
+
+/* =========================================================
+   OBJECT URL MANAGEMENT
+========================================================= */
+
+const activeObjectUrls =
+    new Set();
+
+
+function createObjectURL(blob){
+
+    if(!blob){
+
+        return "";
+
+    }
+
+
+    const url =
+        URL.createObjectURL(blob);
+
+
+    activeObjectUrls.add(url);
+
+
+    return url;
+
+}
+
+
+function revokeObjectURL(url){
+
+    if(!url){
+
+        return;
+
+    }
+
+
+    if(activeObjectUrls.has(url)){
+
+        URL.revokeObjectURL(url);
+
+        activeObjectUrls.delete(url);
+
+    }
+
+}
+
+
+function revokeAllObjectURLs(){
+
+    activeObjectUrls.forEach(
+        url => {
+
+            URL.revokeObjectURL(url);
+
+        }
+    );
+
+
+    activeObjectUrls.clear();
+
+}
+
+
+/* =========================================================
+   OPEN INDEXEDDB
+========================================================= */
+
+function openDatabase(){
+
+    if(databasePromise){
+
+        return databasePromise;
+
+    }
+
+
+    databasePromise =
+        new Promise(
+            (resolve,reject) => {
+
+                if(
+                    !("indexedDB" in window)
+                ){
+
+                    reject(
+                        new Error(
+                            "IndexedDB is not supported by this browser."
+                        )
+                    );
+
+                    return;
+
+                }
+
+
+                const request =
+                    indexedDB.open(
+                        RECENT_WORK_DB_NAME,
+                        RECENT_WORK_DB_VERSION
+                    );
+
+
+                request.onupgradeneeded =
+                    event => {
+
+                        const db =
+                            event.target.result;
+
+
+                        if(
+                            !db.objectStoreNames.contains(
+                                RECENT_WORK_OBJECT_STORE
+                            )
+                        ){
+
+                            const store =
+                                db.createObjectStore(
+                                    RECENT_WORK_OBJECT_STORE,
+                                    {
+                                        keyPath:"id"
+                                    }
+                                );
+
+
+                            store.createIndex(
+                                "albumId",
+                                "albumId",
+                                {
+                                    unique:false
+                                }
+                            );
+
+                        }
+
+                    };
+
+
+                request.onsuccess =
+                    event => {
+
+                        const db =
+                            event.target.result;
+
+
+                        db.onversionchange =
+                            () => {
+
+                                db.close();
+
+                            };
+
+
+                        resolve(db);
+
+                    };
+
+
+                request.onerror =
+                    () => {
+
+                        reject(
+                            request.error ||
+                            new Error(
+                                "Unable to open Recent Work database."
+                            )
+                        );
+
+                    };
+
+            }
+        );
+
+
+    return databasePromise;
+
+}
+
+
+/* =========================================================
+   GET PHOTO BLOB
+========================================================= */
+
+async function getPhotoBlob(blobKey){
+
+    if(!blobKey){
+
+        return null;
+
+    }
+
+
+    const db =
+        await openDatabase();
+
+
+    return new Promise(
+        (resolve,reject) => {
+
+            const transaction =
+                db.transaction(
+                    RECENT_WORK_OBJECT_STORE,
+                    "readonly"
+                );
+
+
+            const store =
+                transaction.objectStore(
+                    RECENT_WORK_OBJECT_STORE
+                );
+
+
+            const request =
+                store.get(blobKey);
+
+
+            request.onsuccess =
+                () => {
+
+                    const record =
+                        request.result;
+
+
+                    if(!record){
+
+                        resolve(null);
+
+                        return;
+
+                    }
+
+
+                    if(record.blob){
+
+                        resolve(record.blob);
+
+                        return;
+
+                    }
+
+
+                    resolve(null);
+
+                };
+
+
+            request.onerror =
+                () => {
+
+                    reject(
+                        request.error ||
+                        new Error(
+                            "Unable to read gallery image."
+                        )
+                    );
+
+                };
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   GET PHOTO URL
+========================================================= */
+
+async function getPhotoObjectURL(file){
+
+    if(!file){
+
+        return "";
+
+    }
+
+
+    /*
+       New Recent Work architecture:
+       file.blobKey points to the actual Blob
+       stored in IndexedDB.
+    */
+
+    if(file.blobKey){
+
+        try{
+
+            const blob =
+                await getPhotoBlob(
+                    file.blobKey
+                );
+
+
+            if(blob){
+
+                return createObjectURL(
+                    blob
+                );
+
+            }
+
+        }catch(error){
+
+            console.error(
+                "Unable to load gallery image:",
+                error
+            );
+
+        }
+
+    }
+
+
+    /*
+       Legacy compatibility:
+       Older metadata may still contain a URL.
+       Keep this fallback so existing old data
+       does not immediately break.
+    */
+
+    if(
+        typeof file.url === "string" &&
+        file.url.trim()
+    ){
+
+        return file.url;
+
+    }
+
+
+    return "";
+
+}
+
+
+/* =========================================================
    READ RECENT WORK STORAGE
 ========================================================= */
 
@@ -1922,12 +2270,17 @@ function getRecentWorkStorage(){
                 RECENT_WORK_STORAGE_KEY
             );
 
+
         if(!saved){
 
             return {
+
                 usedMB:0,
+
                 files:[],
+
                 albums:[]
+
             };
 
         }
@@ -1961,10 +2314,15 @@ function getRecentWorkStorage(){
             error
         );
 
+
         return {
+
             usedMB:0,
+
             files:[],
+
             albums:[]
+
         };
 
     }
@@ -1973,7 +2331,7 @@ function getRecentWorkStorage(){
 
 
 /* =========================================================
-   BUILD ALBUMS
+   BUILD ALBUM DATA
 ========================================================= */
 
 function getRecentWorkAlbums(){
@@ -1997,28 +2355,31 @@ function getRecentWorkAlbums(){
     }
 
 
+    /*
+       Public gallery rule:
+       If isPublic is explicitly false,
+       do not expose the album here.
+
+       Older albums without the property remain
+       visible for backwards compatibility.
+    */
+
     return albums
+
+        .filter(
+            album =>
+                album.isPublic !== false
+        )
+
         .map(
             album => {
 
                 const albumFiles =
                     files.filter(
                         file =>
-                            file.albumId === album.id
+                            file.albumId ===
+                            album.id
                     );
-
-
-                if(!albumFiles.length){
-
-                    return {
-                        id:album.id,
-                        serviceName:
-                            album.name || "Untitled Album",
-                        coverImage:"",
-                        photos:[]
-                    };
-
-                }
 
 
                 let coverFile =
@@ -2032,34 +2393,46 @@ function getRecentWorkAlbums(){
                 if(!coverFile){
 
                     coverFile =
-                        albumFiles[0];
+                        albumFiles[0] || null;
 
                 }
 
 
                 return {
 
-                    id:album.id,
+                    id:
+                        album.id,
 
                     serviceName:
                         album.name ||
                         "Untitled Album",
 
-                    coverImage:
-                        coverFile.url,
+                    coverFile:
+                        coverFile,
 
-                    photos:
+                    files:
                         albumFiles
-                            .map(
-                                file =>
-                                    file.url
-                            )
-                            .filter(Boolean)
 
                 };
 
             }
+
         );
+
+}
+
+
+/* =========================================================
+   GET IMAGE COUNT TEXT
+========================================================= */
+
+function getPhotoCountText(count){
+
+    return `${count} ${
+        count === 1
+        ? "Photo"
+        : "Photos"
+    }`;
 
 }
 
@@ -2068,13 +2441,22 @@ function getRecentWorkAlbums(){
    RENDER ALBUMS
 ========================================================= */
 
-function renderAlbums(){
+async function renderAlbums(){
+
+    /*
+       Clean URLs from a previous render before
+       generating new ones.
+    */
+
+    revokeAllObjectURLs();
+
 
     const albums =
         getRecentWorkAlbums();
 
 
-    albumGrid.innerHTML = "";
+    albumGrid.innerHTML =
+        "";
 
 
     if(!albums.length){
@@ -2094,112 +2476,243 @@ function renderAlbums(){
     }
 
 
-    albums.forEach(
-        album => {
+    /*
+       Create cards immediately so the page
+       remains responsive while image blobs load.
+    */
 
-            const card =
-                document.createElement("article");
+    const cards =
+        albums.map(
+            album => {
+
+                const card =
+                    document.createElement(
+                        "article"
+                    );
 
 
-            card.className =
-                "album-card";
+                card.className =
+                    "album-card";
 
 
-            card.innerHTML = `
+                card.dataset.albumId =
+                    album.id;
 
-                <div class="album-cover">
 
-                    ${
-                        album.coverImage
+                card.innerHTML = `
 
-                        ? `
+                    <div class="album-cover">
 
-                            <img
-                                src="${escapeAttribute(album.coverImage)}"
-                                alt="${escapeAttribute(album.serviceName)}"
-                                loading="lazy">
+                        <div
+                            class="album-cover-placeholder"
+                            style="
+                                width:100%;
+                                height:100%;
+                                display:flex;
+                                align-items:center;
+                                justify-content:center;
+                                color:#999;
+                                font-size:.9rem;
+                            ">
 
-                        `
+                            Loading image...
 
-                        : `
+                        </div>
 
-                            <div
-                                style="
-                                    width:100%;
-                                    height:100%;
-                                    display:flex;
-                                    align-items:center;
-                                    justify-content:center;
-                                    color:#999;
-                                    font-size:.9rem;
-                                ">
 
-                                No cover image
+                        <span class="photo-count">
 
-                            </div>
+                            ${album.files.length}
 
-                        `
+                            ${
+                                album.files.length === 1
+                                ? "Photo"
+                                : "Photos"
+                            }
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="album-content">
+
+                        <h3>
+                            ${escapeHTML(album.serviceName)}
+                        </h3>
+
+                        <p>
+
+                            ${album.files.length}
+
+                            ${
+                                album.files.length === 1
+                                ? "Photo"
+                                : "Photos"
+                            }
+
+                        </p>
+
+
+                        <span class="view-album">
+
+                            View Album
+
+                            <span>
+                                →
+                            </span>
+
+                        </span>
+
+                    </div>
+
+                `;
+
+
+                card.addEventListener(
+                    "click",
+                    () => openAlbum(album.id)
+                );
+
+
+                albumGrid.appendChild(card);
+
+
+                return {
+
+                    album,
+
+                    card
+
+                };
+
+            }
+        );
+
+
+    /*
+       Load album cover images from IndexedDB.
+    */
+
+    await Promise.all(
+        cards.map(
+            async ({
+                album,
+                card
+            }) => {
+
+                const cover =
+                    card.querySelector(
+                        ".album-cover"
+                    );
+
+
+                if(!album.coverFile){
+
+                    const placeholder =
+                        cover.querySelector(
+                            ".album-cover-placeholder"
+                        );
+
+
+                    if(placeholder){
+
+                        placeholder.textContent =
+                            "No cover image";
+
                     }
 
 
-                    <span class="photo-count">
+                    return;
 
-                        ${album.photos.length}
-
-                        ${
-                            album.photos.length === 1
-                            ? "Photo"
-                            : "Photos"
-                        }
-
-                    </span>
-
-                </div>
+                }
 
 
-                <div class="album-content">
-
-                    <h3>
-                        ${escapeHTML(album.serviceName)}
-                    </h3>
-
-                    <p>
-
-                        ${album.photos.length}
-
-                        ${
-                            album.photos.length === 1
-                            ? "Photo"
-                            : "Photos"
-                        }
-
-                    </p>
+                const imageUrl =
+                    await getPhotoObjectURL(
+                        album.coverFile
+                    );
 
 
-                    <span class="view-album">
+                if(!imageUrl){
 
-                        View Album
-
-                        <span>
-                            →
-                        </span>
-
-                    </span>
-
-                </div>
-
-            `;
+                    const placeholder =
+                        cover.querySelector(
+                            ".album-cover-placeholder"
+                        );
 
 
-            card.addEventListener(
-                "click",
-                () => openAlbum(album.id)
-            );
+                    if(placeholder){
+
+                        placeholder.textContent =
+                            "No cover image";
+
+                    }
 
 
-            albumGrid.appendChild(card);
+                    return;
 
-        }
+                }
+
+
+                const image =
+                    document.createElement(
+                        "img"
+                    );
+
+
+                image.src =
+                    imageUrl;
+
+
+                image.alt =
+                    album.serviceName;
+
+
+                image.loading =
+                    "lazy";
+
+
+                image.addEventListener(
+                    "error",
+                    () => {
+
+                        revokeObjectURL(
+                            imageUrl
+                        );
+
+                        image.remove();
+
+                    },
+                    {
+                        once:true
+                    }
+                );
+
+
+                const placeholder =
+                    cover.querySelector(
+                        ".album-cover-placeholder"
+                    );
+
+
+                if(placeholder){
+
+                    placeholder.replaceWith(
+                        image
+                    );
+
+                }else{
+
+                    cover.insertBefore(
+                        image,
+                        cover.firstChild
+                    );
+
+                }
+
+            }
+        )
     );
 
 }
@@ -2209,7 +2722,7 @@ function renderAlbums(){
    OPEN ALBUM
 ========================================================= */
 
-function openAlbum(albumId){
+async function openAlbum(albumId){
 
     const albums =
         getRecentWorkAlbums();
@@ -2229,8 +2742,20 @@ function openAlbum(albumId){
     }
 
 
-    currentAlbum =
-        album;
+    currentAlbum = {
+
+        id:
+            album.id,
+
+        serviceName:
+            album.serviceName,
+
+        files:
+            album.files,
+
+        photos:[]
+
+    };
 
 
     currentIndex =
@@ -2242,18 +2767,16 @@ function openAlbum(albumId){
 
 
     viewerCount.textContent =
-        `${album.photos.length} ${
-            album.photos.length === 1
-            ? "Photo"
-            : "Photos"
-        }`;
+        getPhotoCountText(
+            album.files.length
+        );
 
 
     galleryGrid.innerHTML =
         "";
 
 
-    if(!album.photos.length){
+    if(!album.files.length){
 
         galleryGrid.innerHTML = `
 
@@ -2268,45 +2791,8 @@ function openAlbum(albumId){
 
     }else{
 
-        album.photos.forEach(
-            (photo,index) => {
-
-                const item =
-                    document.createElement("div");
-
-
-                item.className =
-                    "gallery-item";
-
-
-                const img =
-                    document.createElement("img");
-
-
-                img.src =
-                    photo;
-
-
-                img.alt =
-                    `${album.serviceName} ${index + 1}`;
-
-
-                img.loading =
-                    "lazy";
-
-
-                item.appendChild(img);
-
-
-                item.addEventListener(
-                    "click",
-                    () => openLightbox(index)
-                );
-
-
-                galleryGrid.appendChild(item);
-
-            }
+        await renderAlbumPhotos(
+            album
         );
 
     }
@@ -2335,6 +2821,149 @@ function openAlbum(albumId){
 
 
 /* =========================================================
+   RENDER ALBUM PHOTOS
+========================================================= */
+
+async function renderAlbumPhotos(album){
+
+    galleryGrid.innerHTML =
+        "";
+
+
+    const loadedPhotos = [];
+
+
+    /*
+       Load every actual Blob from IndexedDB.
+       Only successfully loaded images become
+       part of the lightbox array.
+    */
+
+    for(
+        let index = 0;
+        index < album.files.length;
+        index++
+    ){
+
+        const file =
+            album.files[index];
+
+
+        const imageUrl =
+            await getPhotoObjectURL(
+                file
+            );
+
+
+        if(!imageUrl){
+
+            continue;
+
+        }
+
+
+        loadedPhotos.push(
+            imageUrl
+        );
+
+
+        const item =
+            document.createElement(
+                "div"
+            );
+
+
+        item.className =
+            "gallery-item";
+
+
+        const img =
+            document.createElement(
+                "img"
+            );
+
+
+        img.src =
+            imageUrl;
+
+
+        img.alt =
+            `${album.serviceName} ${index + 1}`;
+
+
+        img.loading =
+            "lazy";
+
+
+        img.addEventListener(
+            "error",
+            () => {
+
+                revokeObjectURL(
+                    imageUrl
+                );
+
+            },
+            {
+                once:true
+            }
+        );
+
+
+        item.appendChild(
+            img
+        );
+
+
+        const photoIndex =
+            loadedPhotos.length - 1;
+
+
+        item.addEventListener(
+            "click",
+            () =>
+                openLightbox(
+                    photoIndex
+                )
+        );
+
+
+        galleryGrid.appendChild(
+            item
+        );
+
+    }
+
+
+    currentAlbum.photos =
+        loadedPhotos;
+
+
+    viewerCount.textContent =
+        getPhotoCountText(
+            loadedPhotos.length
+        );
+
+
+    if(!loadedPhotos.length){
+
+        galleryGrid.innerHTML = `
+
+            <div class="empty-gallery">
+
+                The photos in this album
+                are currently unavailable.
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+/* =========================================================
    CLOSE ALBUM
 ========================================================= */
 
@@ -2342,35 +2971,56 @@ closeAlbum.addEventListener(
     "click",
     () => {
 
-        albumViewer.classList.remove(
-            "active"
-        );
-
-
-        recentWorkSection.style.display =
-            "block";
-
-
-        galleryGrid.innerHTML =
-            "";
-
-
-        currentAlbum =
-            null;
-
-
-        window.scrollTo({
-
-            top:
-                recentWorkSection.offsetTop - 30,
-
-            behavior:
-                "smooth"
-
-        });
+        closeAlbumView();
 
     }
 );
+
+
+/* =========================================================
+   CLOSE ALBUM VIEW
+========================================================= */
+
+function closeAlbumView(){
+
+    closeLightbox();
+
+
+    albumViewer.classList.remove(
+        "active"
+    );
+
+
+    recentWorkSection.style.display =
+        "block";
+
+
+    galleryGrid.innerHTML =
+        "";
+
+
+    currentAlbum =
+        null;
+
+
+    currentIndex =
+        0;
+
+
+    revokeAllObjectURLs();
+
+
+    window.scrollTo({
+
+        top:
+            recentWorkSection.offsetTop - 30,
+
+        behavior:
+            "smooth"
+
+    });
+
+}
 
 
 /* =========================================================
@@ -2387,6 +3037,16 @@ function openLightbox(index){
 
 
     if(!currentAlbum.photos.length){
+
+        return;
+
+    }
+
+
+    if(
+        index < 0 ||
+        index >= currentAlbum.photos.length
+    ){
 
         return;
 
@@ -2593,7 +3253,7 @@ prevBtn.addEventListener(
 
 lightbox.addEventListener(
     "click",
-    (event) => {
+    event => {
 
         if(
             event.target ===
@@ -2614,7 +3274,7 @@ lightbox.addEventListener(
 
 document.addEventListener(
     "keydown",
-    (event) => {
+    event => {
 
         if(
             !lightbox.classList.contains(
@@ -2627,21 +3287,36 @@ document.addEventListener(
         }
 
 
-        if(event.key === "ArrowRight"){
+        if(
+            event.key ===
+            "ArrowRight"
+        ){
+
+            event.preventDefault();
 
             nextImage();
 
         }
 
 
-        if(event.key === "ArrowLeft"){
+        if(
+            event.key ===
+            "ArrowLeft"
+        ){
+
+            event.preventDefault();
 
             previousImage();
 
         }
 
 
-        if(event.key === "Escape"){
+        if(
+            event.key ===
+            "Escape"
+        ){
+
+            event.preventDefault();
 
             closeLightbox();
 
@@ -2664,7 +3339,18 @@ let touchEndX =
 
 lightbox.addEventListener(
     "touchstart",
-    (event) => {
+    event => {
+
+        if(
+            !lightbox.classList.contains(
+                "active"
+            )
+        ){
+
+            return;
+
+        }
+
 
         touchStartX =
             event.changedTouches[0]
@@ -2679,7 +3365,18 @@ lightbox.addEventListener(
 
 lightbox.addEventListener(
     "touchend",
-    (event) => {
+    event => {
+
+        if(
+            !lightbox.classList.contains(
+                "active"
+            )
+        ){
+
+            return;
+
+        }
+
 
         touchEndX =
             event.changedTouches[0]
@@ -2763,45 +3460,133 @@ function escapeAttribute(value){
 
 
 /* =========================================================
-   STORAGE CHANGE LISTENER
+   REFRESH GALLERY
+========================================================= */
+
+let refreshTimer =
+    null;
+
+
+function scheduleGalleryRefresh(){
+
+    clearTimeout(
+        refreshTimer
+    );
+
+
+    refreshTimer =
+        setTimeout(
+            async () => {
+
+                /*
+                   If the visitor is currently viewing
+                   an album, close it first so stale
+                   object URLs are not retained.
+                */
+
+                const wasViewingAlbum =
+                    Boolean(
+                        currentAlbum
+                    );
+
+
+                if(wasViewingAlbum){
+
+                    closeLightbox();
+
+                    albumViewer.classList.remove(
+                        "active"
+                    );
+
+                    recentWorkSection.style.display =
+                        "block";
+
+                    galleryGrid.innerHTML =
+                        "";
+
+                    currentAlbum =
+                        null;
+
+                }
+
+
+                revokeAllObjectURLs();
+
+
+                await renderAlbums();
+
+            },
+            100
+        );
+
+}
+
+
+/* =========================================================
+   CROSS-TAB STORAGE CHANGE
 ========================================================= */
 
 window.addEventListener(
     "storage",
-    (event) => {
+    event => {
 
         if(
             event.key ===
             RECENT_WORK_STORAGE_KEY
         ){
 
-            renderAlbums();
-
-
-            if(currentAlbum){
-
-                const updatedAlbums =
-                    getRecentWorkAlbums();
-
-
-                const updatedAlbum =
-                    updatedAlbums.find(
-                        album =>
-                            album.id ===
-                            currentAlbum.id
-                    );
-
-
-                if(updatedAlbum){
-
-                    currentAlbum =
-                        updatedAlbum;
-
-                }
-
-            }
+            scheduleGalleryRefresh();
 
         }
+
+    }
+);
+
+
+/* =========================================================
+   SAME-TAB RECENT WORK CHANGE
+========================================================= */
+
+window.addEventListener(
+    "professionalStudioRecentWorkUpdated",
+    () => {
+
+        scheduleGalleryRefresh();
+
+    }
+);
+
+
+/* =========================================================
+   PAGE VISIBILITY REFRESH
+========================================================= */
+
+document.addEventListener(
+    "visibilitychange",
+    () => {
+
+        if(
+            document.visibilityState ===
+            "visible"
+        ){
+
+            scheduleGalleryRefresh();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   CLEANUP
+========================================================= */
+
+window.addEventListener(
+    "beforeunload",
+    () => {
+
+        revokeAllObjectURLs();
 
     }
 );
