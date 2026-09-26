@@ -1549,3 +1549,13 @@ a {
         grid-template-columns: 1fr;
     }
 }
+
+.footer-bottom {
+        margin-top: 20px;
+        padding-top: 18px;
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+    }
+
+    

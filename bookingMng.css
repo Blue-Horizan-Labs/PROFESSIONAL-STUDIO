@@ -1384,3 +1384,19 @@ a {
     }
 
 }
+
+
+.footer-bottom {
+        margin-top: 20px;
+        padding-top: 18px;
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+    }
+
+    .footer-bottom p,
+    .footer-links a {
+        font-size: 13px;
+    }
+
+    
