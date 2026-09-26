@@ -1142,3 +1142,16 @@ input:focus-visible {
     }
 
 }
+
+.footer-bottom {
+        margin-top: 2px;
+        padding-top: 1px;
+          padding-bottom: 10px;
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+    }
+
+      .footer-bottom p {
+        font-size: 13px;
+    }

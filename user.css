@@ -2154,3 +2154,17 @@ textarea:disabled {
 .review-delete-btn:active {
     transform: translateY(1px);
 }
+
+
+.footer-bottom {
+        margin-top: 2px;
+        padding-top: 1px;
+          padding-bottom: 10px;
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+    }
+
+      .footer-bottom p {
+        font-size: 13px;
+    }
