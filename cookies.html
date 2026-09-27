@@ -1,42 +1,634 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Learn what cookies are, how Professional Studio may use them, and how to manage cookie settings in your browser.">
-<title>Cookie Policy | Professional Studio</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-:root{--ink:#111;--muted:#696875;--purple:#7c3aed;--purple-dark:#6425d8;--lilac:#f4efff;--line:#eceaf0;--paper:#fff;--soft:#faf9fc;--shadow:0 18px 55px rgba(31,20,55,.07)}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font-family:Poppins,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.7}a{color:inherit;text-decoration:none}.wrap{max-width:1120px;margin:auto;padding:0 28px}
-.nav{height:76px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f0eef3}.brand{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:700;letter-spacing:-.04em}.brand-mark{width:35px;height:35px;display:grid;place-items:center;border-radius:10px;background:#111;color:#fff;font-size:18px}.navlinks{display:flex;align-items:center;gap:27px;font-size:13px;font-weight:500}.navlinks a:not(.nav-cta){color:#5e5c67}.navlinks a:hover{color:var(--purple)}.nav-cta,.button{display:inline-flex;justify-content:center;align-items:center;border-radius:999px;background:#111;color:white;font-size:13px;font-weight:600;padding:11px 19px;transition:transform .18s,background .18s}.nav-cta:hover,.button:hover{background:#29272f;transform:translateY(-1px)}
-.hero{text-align:center;padding:67px 0 37px;background:radial-gradient(ellipse at 50% 0%,#f6f0ff 0,rgba(255,255,255,0) 65%)}.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:7px 13px;border:1px solid #e7d9ff;background:#fbf8ff;color:#7040c9;border-radius:99px;font-size:10px;font-weight:600;letter-spacing:.08em}.spark{color:#f0a300}.hero h1{margin:18px auto 11px;font-size:clamp(36px,5.7vw,57px);line-height:1.15;letter-spacing:-.055em;font-weight:700}.accent{color:var(--purple)}.hero p{max-width:640px;margin:0 auto;color:var(--muted);font-size:14px}.updated{margin-top:16px;color:#85818e;font-size:11px}
-.content{display:grid;grid-template-columns:245px minmax(0,1fr);gap:42px;padding-top:14px;padding-bottom:74px;align-items:start}.toc{position:sticky;top:22px;padding:20px 18px;border:1px solid var(--line);border-radius:15px;background:#fff;box-shadow:0 8px 28px rgba(20,15,30,.035)}.toc-title{margin:0 0 11px;color:#777481;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}.toc nav{display:grid;gap:3px}.toc a{padding:7px 9px;border-radius:8px;color:#625f6b;font-size:11px}.toc a:hover{background:var(--lilac);color:var(--purple)}.policy{min-width:0}.notice{margin:0 0 22px;padding:16px 18px;border:1px solid #e7d9ff;border-radius:13px;background:#fbf8ff;color:#51466a;font-size:11.5px}.notice strong{color:#3d2a61}.policy section{padding:0 0 22px;margin:0 0 22px;border-bottom:1px solid var(--line);scroll-margin-top:25px}.policy section:last-child{border:0;margin-bottom:0}.policy h2{margin:0 0 9px;font-size:20px;letter-spacing:-.04em;line-height:1.35}.policy h3{margin:16px 0 5px;font-size:13px;letter-spacing:-.015em}.policy p{margin:0 0 10px;color:#615e69;font-size:12px}.policy ul{margin:8px 0 10px;padding-left:19px;color:#615e69;font-size:12px}.policy li{padding:3px 0 3px 3px}.policy a.inline{color:var(--purple);text-decoration:underline;text-underline-offset:3px}.cookie-types{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:14px 0}.type{padding:15px;border:1px solid var(--line);border-radius:12px;background:#fff}.type-label{display:inline-block;margin-bottom:5px;padding:3px 8px;border-radius:99px;background:var(--lilac);color:#7040c9;font-size:9px;font-weight:700;letter-spacing:.035em}.type h3{margin:0 0 5px;font-size:12px}.type p{margin:0;font-size:10.5px}.callout{margin-top:12px;padding:13px 15px;border-left:3px solid var(--purple);border-radius:0 9px 9px 0;background:var(--soft);color:#66626e;font-size:11px}.contact-card{padding:16px 18px;border:1px solid var(--line);border-radius:13px;background:var(--soft)}.contact-card p:last-child{margin-bottom:0}.contact-card a{color:var(--purple);font-weight:600}
-.bottom{margin-bottom:50px;padding:33px 35px;border:1px solid #e9e0f8;border-radius:20px;background:linear-gradient(120deg,#faf7ff,#fff);display:flex;align-items:center;justify-content:space-between;gap:25px}.bottom h2{margin:0 0 5px;font-size:21px;letter-spacing:-.04em}.bottom p{margin:0;color:var(--muted);font-size:11.5px}.bottom .button{flex:none}.footer{border-top:1px solid var(--line);padding:22px 0;color:#777481;font-size:10.5px}.footer .wrap{display:flex;align-items:center;justify-content:space-between;gap:15px}.footer-links{display:flex;gap:19px}.footer a:hover{color:var(--purple)}
-@media(max-width:780px){.content{grid-template-columns:1fr;gap:23px;padding-top:0}.toc{position:static}.toc nav{grid-template-columns:repeat(2,minmax(0,1fr))}.hero{padding-top:53px}.bottom{align-items:flex-start;flex-direction:column}.bottom .button{align-self:flex-start}}
-@media(max-width:480px){.wrap{padding-left:18px;padding-right:18px}.nav{height:66px}.brand{font-size:15px}.brand-mark{width:32px;height:32px}.navlinks{gap:10px}.navlinks a:not(.nav-cta){display:none}.nav-cta{font-size:11px;padding:9px 14px}.hero h1{font-size:38px}.hero p{font-size:12px}.cookie-types{grid-template-columns:1fr}.policy h2{font-size:18px}.policy p,.policy ul{font-size:11.5px}.bottom{padding:25px 21px}.footer .wrap{align-items:flex-start;flex-direction:column}.footer-links{flex-wrap:wrap}}
-</style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description"
+        content="Learn what cookies are, how Professional Studio may use them, and how to manage cookie settings in your browser.">
+    <title>Cookie Policy | Professional Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --ink: #111;
+            --muted: #696875;
+            --purple: #7c3aed;
+            --purple-dark: #6425d8;
+            --lilac: #f4efff;
+            --line: #eceaf0;
+            --paper: #fff;
+            --soft: #faf9fc;
+            --shadow: 0 18px 55px rgba(31, 20, 55, .07);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background: var(--paper);
+            color: var(--ink);
+            font-family: Poppins, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+            line-height: 1.7;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .wrap {
+            max-width: 1120px;
+            margin: auto;
+            padding: 0 28px;
+        }
+
+        .nav {
+            height: 76px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #f0eef3;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -.04em;
+        }
+
+        .brand-mark {
+            width: 35px;
+            height: 35px;
+            display: grid;
+            place-items: center;
+            border-radius: 10px;
+            background: #111;
+            color: #fff;
+            font-size: 18px;
+        }
+
+        .navlinks {
+            display: flex;
+            align-items: center;
+            gap: 27px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .navlinks a:not(.nav-cta) {
+            color: #5e5c67;
+        }
+
+        .navlinks a:hover,
+        .footer a:hover {
+            color: var(--purple);
+        }
+
+        .nav-cta,
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 11px 19px;
+            border-radius: 999px;
+            background: #111;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            transition: transform .18s, background .18s;
+        }
+
+        .nav-cta:hover,
+        .button:hover {
+            background: #29272f;
+            transform: translateY(-1px);
+        }
+
+        .hero {
+            padding: 67px 0 37px;
+            background: radial-gradient(ellipse at 50% 0%, #f6f0ff 0, rgba(255, 255, 255, 0) 65%);
+            text-align: center;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 13px;
+            border: 1px solid #e7d9ff;
+            border-radius: 99px;
+            background: #fbf8ff;
+            color: #7040c9;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .08em;
+        }
+
+        .spark {
+            color: #f0a300;
+        }
+
+        .hero h1 {
+            margin: 18px auto 11px;
+            font-size: clamp(36px, 5.7vw, 57px);
+            line-height: 1.15;
+            letter-spacing: -.055em;
+            font-weight: 700;
+        }
+
+        .accent {
+            color: var(--purple);
+        }
+
+        .hero p {
+            max-width: 640px;
+            margin: 0 auto;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .updated {
+            margin-top: 16px;
+            color: #85818e;
+            font-size: 11px;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 245px minmax(0, 1fr);
+            gap: 42px;
+            align-items: start;
+            padding: 14px 0 74px;
+        }
+
+        .toc {
+            position: sticky;
+            top: 22px;
+            padding: 20px 18px;
+            border: 1px solid var(--line);
+            border-radius: 15px;
+            background: #fff;
+            box-shadow: 0 8px 28px rgba(20, 15, 30, .035);
+        }
+
+        .toc-title {
+            margin: 0 0 11px;
+            color: #777481;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+        }
+
+        .toc nav {
+            display: grid;
+            gap: 3px;
+        }
+
+        .toc a {
+            padding: 7px 9px;
+            border-radius: 8px;
+            color: #625f6b;
+            font-size: 11px;
+        }
+
+        .toc a:hover {
+            background: var(--lilac);
+            color: var(--purple);
+        }
+
+        .policy {
+            min-width: 0;
+        }
+
+        .notice {
+            margin: 0 0 22px;
+            padding: 16px 18px;
+            border: 1px solid #e7d9ff;
+            border-radius: 13px;
+            background: #fbf8ff;
+            color: #51466a;
+            font-size: 11.5px;
+        }
+
+        .notice strong {
+            color: #3d2a61;
+        }
+
+        .policy section {
+            margin: 0 0 22px;
+            padding: 0 0 22px;
+            border-bottom: 1px solid var(--line);
+            scroll-margin-top: 25px;
+        }
+
+        .policy section:last-child {
+            margin-bottom: 0;
+            border: 0;
+        }
+
+        .policy h2 {
+            margin: 0 0 9px;
+            font-size: 20px;
+            line-height: 1.35;
+            letter-spacing: -.04em;
+        }
+
+        .policy h3 {
+            margin: 16px 0 5px;
+            font-size: 13px;
+            letter-spacing: -.015em;
+        }
+
+        .policy p,
+        .policy ul {
+            color: #615e69;
+            font-size: 12px;
+        }
+
+        .policy p {
+            margin: 0 0 10px;
+        }
+
+        .policy ul {
+            margin: 8px 0 10px;
+            padding-left: 19px;
+        }
+
+        .policy li {
+            padding: 3px 0 3px 3px;
+        }
+
+        .policy a.inline {
+            color: var(--purple);
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+        .cookie-types {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 11px;
+            margin: 14px 0;
+        }
+
+        .type {
+            padding: 15px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: #fff;
+        }
+
+        .type-label {
+            display: inline-block;
+            margin-bottom: 5px;
+            padding: 3px 8px;
+            border-radius: 99px;
+            background: var(--lilac);
+            color: #7040c9;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: .035em;
+        }
+
+        .type h3 {
+            margin: 0 0 5px;
+            font-size: 12px;
+        }
+
+        .type p {
+            margin: 0;
+            font-size: 10.5px;
+        }
+
+        .callout {
+            margin-top: 12px;
+            padding: 13px 15px;
+            border-left: 3px solid var(--purple);
+            border-radius: 0 9px 9px 0;
+            background: var(--soft);
+            color: #66626e;
+            font-size: 11px;
+        }
+
+        .contact-card {
+            padding: 16px 18px;
+            border: 1px solid var(--line);
+            border-radius: 13px;
+            background: var(--soft);
+        }
+
+        .contact-card p:last-child {
+            margin-bottom: 0;
+        }
+
+        .contact-card a {
+            color: var(--purple);
+            font-weight: 600;
+        }
+
+        .bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 25px;
+            margin-bottom: 50px;
+            padding: 33px 35px;
+            border: 1px solid #e9e0f8;
+            border-radius: 20px;
+            background: linear-gradient(120deg, #faf7ff, #fff);
+        }
+
+        .bottom h2 {
+            margin: 0 0 5px;
+            font-size: 21px;
+            letter-spacing: -.04em;
+        }
+
+        .bottom p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 11.5px;
+        }
+
+        .bottom .button {
+            flex: none;
+        }
+
+        .footer {
+            padding: 22px 0;
+            border-top: 1px solid var(--line);
+            color: #777481;
+            font-size: 10.5px;
+        }
+
+        .footer .wrap {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 19px;
+        }
+
+        @media (max-width: 780px) {
+            .content {
+                grid-template-columns: 1fr;
+                gap: 23px;
+                padding-top: 0;
+            }
+
+            .toc {
+                position: static;
+            }
+
+            .toc nav {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .hero {
+                padding-top: 53px;
+            }
+
+            .bottom {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .bottom .button {
+                align-self: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .wrap {
+                padding-right: 18px;
+                padding-left: 18px;
+            }
+
+            .nav {
+                height: 66px;
+            }
+
+            .brand {
+                font-size: 15px;
+            }
+
+            .brand-mark {
+                width: 32px;
+                height: 32px;
+            }
+
+            .navlinks {
+                gap: 10px;
+            }
+
+            .navlinks a:not(.nav-cta) {
+                display: none;
+            }
+
+            .nav-cta {
+                padding: 9px 14px;
+                font-size: 11px;
+            }
+
+            .hero h1 {
+                font-size: 38px;
+            }
+
+            .hero p {
+                font-size: 12px;
+            }
+
+            .cookie-types {
+                grid-template-columns: 1fr;
+            }
+
+            .policy h2 {
+                font-size: 18px;
+            }
+
+            .policy p,
+            .policy ul {
+                font-size: 11.5px;
+            }
+
+            .bottom {
+                padding: 25px 21px;
+            }
+
+            .footer .wrap {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .footer-links {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
 </head>
+
 <body>
-<header class="wrap nav"><a class="brand" href="https://professionalstudio.vercel.app/"><span class="brand-mark">▣</span>Professional Studio</a><nav class="navlinks" aria-label="Main navigation"><a href="https://professionalstudio.vercel.app/">Home</a><a href="https://professionalstudio.vercel.app/pricing.html">Pricing</a><a class="nav-cta" href="https://professionalstudio.vercel.app/auth/signup.html">Start free</a></nav></header>
-<main>
-<section class="hero wrap"><span class="eyebrow"><span class="spark">✦</span> YOUR PRIVACY, IN FOCUS</span><h1>Cookie <span class="accent">policy.</span></h1><p>This page explains what cookies are, how they can support the Professional Studio website, and the choices available to you.</p><div class="updated">Last updated: September 27, 2026</div></section>
-<div class="content wrap">
-<aside class="toc"><p class="toc-title">On this page</p><nav aria-label="Cookie policy contents"><a href="#about">About cookies</a><a href="#how-we-use">How cookies may be used</a><a href="#types">Cookie types</a><a href="#choices">Your choices</a><a href="#other-tech">Similar technologies</a><a href="#changes">Policy changes</a><a href="#contact">Contact</a></nav></aside>
-<article class="policy">
-<div class="notice"><strong>A note about this policy:</strong> The cookies used on a particular visit depend on the features and services running on the site at that time. This page describes common purposes; it does not identify specific cookie names or claim that every category below is currently active.</div>
-<section id="about"><h2>About cookies</h2><p>Cookies are small text files that a website may store in your browser or on your device. They can help a site remember information between pages or visits, such as a session or a preference. Similar technologies, including local storage and pixels, may serve related purposes.</p><p>In this policy, “Professional Studio,” “we,” and “our” refer to the Professional Studio website and services.</p></section>
-<section id="how-we-use"><h2>How cookies may be used</h2><p>Depending on which parts of Professional Studio you use, cookies or similar technologies may support the following purposes:</p><ul><li>Keeping essential site functions and security working.</li><li>Remembering choices you make, such as language or display preferences.</li><li>Understanding how visitors use pages so the experience can be maintained and improved.</li><li>Supporting embedded content or services provided by other companies.</li></ul><p>We do not list specific cookie names, providers, or expiration periods here because those details can change with the website’s configuration.</p></section>
-<section id="types"><h2>Types of cookies</h2><p>These descriptions explain common categories. They are not confirmation that every category is enabled on every page.</p><div class="cookie-types"><article class="type"><span class="type-label">SITE FUNCTIONS</span><h3>Essential</h3><p>May support core features, security, and navigation. If used, these cookies are needed for the requested site function to work.</p></article><article class="type"><span class="type-label">YOUR PREFERENCES</span><h3>Functional</h3><p>May remember choices to make a later visit more convenient, such as saved preferences.</p></article><article class="type"><span class="type-label">SITE IMPROVEMENT</span><h3>Analytics</h3><p>May provide aggregated information about page use and performance to help improve the experience.</p></article><article class="type"><span class="type-label">EMBEDDED SERVICES</span><h3>Third-party</h3><p>Content or tools from another provider may use their own technologies, subject to that provider’s policies.</p></article></div><div class="callout">When a third-party service is embedded in a page, its provider may collect information under its own privacy and cookie terms.</div></section>
-<section id="choices"><h2>Your choices</h2><p>Most browsers let you view, block, or delete cookies through their privacy or site settings. You can also configure a browser to notify you when a cookie is set. The available controls vary by browser and device.</p><p>Blocking or deleting cookies may affect how some site features work. For example, features that rely on a browser session or a saved preference may need to be set up again.</p><p>If the website presents a cookie preference control, you can use it to manage the choices offered there. Browser settings remain available for controlling cookies stored by websites.</p></section>
-<section id="other-tech"><h2>Cookies and other technologies</h2><p>Some pages or embedded services may use technologies such as local storage, tags, or pixels. Browser settings may control some of these technologies, while others are managed through the feature or service that provides them.</p><p>Links to external websites are governed by those websites’ own privacy practices.</p></section>
-<section id="changes"><h2>Changes to this policy</h2><p>We may update this page when the website, its features, or applicable requirements change. The “Last updated” date at the top indicates when this text was most recently revised.</p></section>
-<section id="contact"><h2>Contact</h2><div class="contact-card"><p>If you have a question about this Cookie Policy, contact the Professional Studio team:</p><p><a href="mailto:bluehorizanlabs@gmail.com?subject=Cookie%20Policy">bluehorizanlabs@gmail.com</a></p></div></section>
-</article></div>
-<section class="bottom wrap"><div><h2>Explore Professional Studio</h2><p>Build your portfolio, manage bookings and deliver client galleries from one place.</p></div><a class="button" href="https://professionalstudio.vercel.app/">Visit the homepage <span aria-hidden="true">&nbsp;→</span></a></section>
-</main>
-<footer class="footer"><div class="wrap"><span>© 2026 Professional Studio. All Rights Reserved.</span><nav class="footer-links" aria-label="Footer"><a href="https://professionalstudio.vercel.app/">Home</a><a href="https://professionalstudio.vercel.app/pricing.html">Pricing</a><a href="https://professionalstudio.vercel.app/privacy.html">Privacy</a><a href="https://professionalstudio.vercel.app/terms.html">Terms</a></nav></div></footer>
+    <header class="wrap nav">
+        <a class="brand" href="https://professionalstudio.vercel.app/">
+            <span class="brand-mark">▣</span>Professional Studio
+        </a>
+        <nav class="navlinks" aria-label="Main navigation">
+            <a href="https://professionalstudio.vercel.app/">Home</a>
+            <a href="https://professionalstudio.vercel.app/pricing.html">Pricing</a>
+            <a class="nav-cta" href="https://professionalstudio.vercel.app/auth/signup.html">Start free</a>
+        </nav>
+    </header>
+    <main>
+        <section class="hero wrap">
+            <span class="eyebrow"><span class="spark">✦</span> YOUR PRIVACY, IN FOCUS</span>
+            <h1>Cookie <span class="accent">policy.</span></h1>
+            <p>This page explains what cookies are, how they can support the Professional Studio website, and the
+                choices available to you.</p>
+            <div class="updated">Last updated: September 27, 2026</div>
+        </section>
+        <div class="content wrap">
+            <aside class="toc">
+                <p class="toc-title">On this page</p>
+                <nav aria-label="Cookie policy contents">
+                    <a href="#about">About cookies</a>
+                    <a href="#how-we-use">How cookies may be used</a>
+                    <a href="#types">Cookie types</a>
+                    <a href="#choices">Your choices</a>
+                    <a href="#other-tech">Similar technologies</a>
+                    <a href="#changes">Policy changes</a>
+                    <a href="#contact">Contact</a>
+                </nav>
+            </aside>
+            <article class="policy">
+                <div class="notice">
+                    <strong>A note about this policy:</strong> The cookies used on a particular visit depend on the
+                    features and services running on the site at that time. This page describes common purposes; it does
+                    not identify specific cookie names or claim that every category below is currently active.
+                </div>
+                <section id="about">
+                    <h2>About cookies</h2>
+                    <p>Cookies are small text files that a website may store in your browser or on your device. They can
+                        help a site remember information between pages or visits, such as a session or a preference.
+                        Similar technologies, including local storage and pixels, may serve related purposes.</p>
+                    <p>In this policy, “Professional Studio,” “we,” and “our” refer to the Professional Studio website
+                        and services.</p>
+                </section>
+                <section id="how-we-use">
+                    <h2>How cookies may be used</h2>
+                    <p>Depending on which parts of Professional Studio you use, cookies or similar technologies may
+                        support the following purposes:</p>
+                    <ul>
+                        <li>Keeping essential site functions and security working.</li>
+                        <li>Remembering choices you make, such as language or display preferences.</li>
+                        <li>Understanding how visitors use pages so the experience can be maintained and improved.</li>
+                        <li>Supporting embedded content or services provided by other companies.</li>
+                    </ul>
+                    <p>We do not list specific cookie names, providers, or expiration periods here because those details
+                        can change with the website’s configuration.</p>
+                </section>
+                <section id="types">
+                    <h2>Types of cookies</h2>
+                    <p>These descriptions explain common categories. They are not confirmation that every category is
+                        enabled on every page.</p>
+                    <div class="cookie-types">
+                        <article class="type">
+                            <span class="type-label">SITE FUNCTIONS</span>
+                            <h3>Essential</h3>
+                            <p>May support core features, security, and navigation. If used, these cookies are needed
+                                for the requested site function to work.</p>
+                        </article>
+                        <article class="type">
+                            <span class="type-label">YOUR PREFERENCES</span>
+                            <h3>Functional</h3>
+                            <p>May remember choices to make a later visit more convenient, such as saved preferences.
+                            </p>
+                        </article>
+                        <article class="type">
+                            <span class="type-label">SITE IMPROVEMENT</span>
+                            <h3>Analytics</h3>
+                            <p>May provide aggregated information about page use and performance to help improve the
+                                experience.</p>
+                        </article>
+                        <article class="type">
+                            <span class="type-label">EMBEDDED SERVICES</span>
+                            <h3>Third-party</h3>
+                            <p>Content or tools from another provider may use their own technologies, subject to that
+                                provider’s policies.</p>
+                        </article>
+                    </div>
+                    <div class="callout">When a third-party service is embedded in a page, its provider may collect
+                        information under its own privacy and cookie terms.</div>
+                </section>
+                <section id="choices">
+                    <h2>Your choices</h2>
+                    <p>Most browsers let you view, block, or delete cookies through their privacy or site settings. You
+                        can also configure a browser to notify you when a cookie is set. The available controls vary by
+                        browser and device.</p>
+                    <p>Blocking or deleting cookies may affect how some site features work. For example, features that
+                        rely on a browser session or a saved preference may need to be set up again.</p>
+                    <p>If the website presents a cookie preference control, you can use it to manage the choices offered
+                        there. Browser settings remain available for controlling cookies stored by websites.</p>
+                </section>
+                <section id="other-tech">
+                    <h2>Cookies and other technologies</h2>
+                    <p>Some pages or embedded services may use technologies such as local storage, tags, or pixels.
+                        Browser settings may control some of these technologies, while others are managed through the
+                        feature or service that provides them.</p>
+                    <p>Links to external websites are governed by those websites’ own privacy practices.</p>
+                </section>
+                <section id="changes">
+                    <h2>Changes to this policy</h2>
+                    <p>We may update this page when the website, its features, or applicable requirements change. The
+                        “Last updated” date at the top indicates when this text was most recently revised.</p>
+                </section>
+                <section id="contact">
+                    <h2>Contact</h2>
+                    <div class="contact-card">
+                        <p>If you have a question about this Cookie Policy, contact the Professional Studio team:</p>
+                        <p><a
+                                href="mailto:bluehorizanlabs@gmail.com?subject=Cookie%20Policy">bluehorizanlabs@gmail.com</a>
+                        </p>
+                    </div>
+                </section>
+            </article>
+        </div>
+        <section class="bottom wrap">
+            <div>
+                <h2>Explore Professional Studio</h2>
+                <p>Build your portfolio, manage bookings and deliver client galleries from one place.</p>
+            </div>
+            <a class="button" href="https://professionalstudio.vercel.app/">Visit the homepage <span
+                    aria-hidden="true">&nbsp;→</span></a>
+        </section>
+    </main>
+    <footer class="footer">
+        <div class="wrap">
+            <span>© 2026 Professional Studio. All Rights Reserved.</span>
+            <nav class="footer-links" aria-label="Footer">
+                <a href="https://professionalstudio.vercel.app/">Home</a>
+                <a href="https://professionalstudio.vercel.app/pricing.html">Pricing</a>
+                <a href="https://professionalstudio.vercel.app/privacy.html">Privacy</a>
+                <a href="https://professionalstudio.vercel.app/terms.html">Terms</a>
+            </nav>
+        </div>
+    </footer>
 </body>
+
 </html>
