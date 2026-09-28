@@ -1,0 +1,2220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Professional Studio | Status</title>
+
+    <meta
+        name="description"
+        content="See the current status of Professional Studio and how photographers around the world are using the platform."
+    >
+
+    <link
+        rel="icon"
+        type="image/png"
+        href="https://i.ibb.co/8g0LT3jZ/logo1-2.png"
+    >
+
+    <style>
+        /* =========================================================
+           PROFESSIONAL STUDIO
+           STATUS PAGE
+        ========================================================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #ffffff;
+            --surface: #fafafa;
+            --surface-2: #f5f5f5;
+            --border: #e7e7e7;
+            --border-dark: #d8d8d8;
+            --text: #111111;
+            --muted: #707070;
+            --muted-light: #969696;
+            --green: #159447;
+            --green-soft: #edf9f1;
+            --black: #000000;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                Helvetica,
+                Arial,
+                sans-serif;
+
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button {
+            font: inherit;
+        }
+
+        /* =========================================================
+           NAVIGATION
+        ========================================================= */
+
+        .navbar {
+            width: 100%;
+            height: 72px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.94);
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 5vw;
+
+            position: sticky;
+            top: 0;
+            z-index: 100;
+
+            backdrop-filter: blur(12px);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+
+            font-size: 15px;
+            font-weight: 650;
+            letter-spacing: -0.02em;
+        }
+
+        .brand-mark {
+            width: 22px;
+            height: 22px;
+
+            display: grid;
+            place-items: center;
+
+            font-size: 17px;
+            line-height: 1;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+
+            font-size: 13px;
+            color: #5e5e5e;
+        }
+
+        .nav-links a {
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            color: #000;
+        }
+
+        .nav-links .active {
+            color: #000;
+            font-weight: 600;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-login {
+            padding: 9px 15px;
+            font-size: 13px;
+            border: 1px solid var(--border-dark);
+            border-radius: 7px;
+            transition: 0.2s ease;
+        }
+
+        .nav-login:hover {
+            border-color: #999;
+        }
+
+        .nav-signup {
+            padding: 9px 15px;
+            background: #000;
+            color: #fff;
+            font-size: 13px;
+            border-radius: 7px;
+            transition: 0.2s ease;
+        }
+
+        .nav-signup:hover {
+            background: #222;
+        }
+
+        /* =========================================================
+           HERO
+        ========================================================= */
+
+        .hero {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 105px 5vw 80px;
+
+            text-align: center;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            padding: 7px 12px;
+
+            border: 1px solid #dcefe2;
+            background: var(--green-soft);
+
+            color: #16743a;
+
+            border-radius: 999px;
+
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--green);
+
+            box-shadow: 0 0 0 4px rgba(21, 148, 71, 0.08);
+        }
+
+        .hero h1 {
+            max-width: 760px;
+
+            margin: 25px auto 18px;
+
+            font-size: clamp(42px, 6vw, 72px);
+            line-height: 0.98;
+
+            letter-spacing: -0.065em;
+            font-weight: 650;
+        }
+
+        .hero p {
+            max-width: 650px;
+            margin: 0 auto;
+
+            color: var(--muted);
+
+            font-size: 16px;
+            line-height: 1.75;
+        }
+
+        .last-updated {
+            margin-top: 22px;
+
+            color: var(--muted-light);
+            font-size: 12px;
+        }
+
+        /* =========================================================
+           MAIN CONTAINER
+        ========================================================= */
+
+        .container {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 0 5vw 100px;
+        }
+
+        /* =========================================================
+           COMMUNITY STATS
+        ========================================================= */
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .stat-card {
+            min-height: 190px;
+
+            padding: 35px 28px;
+
+            border-right: 1px solid var(--border);
+        }
+
+        .stat-card:last-child {
+            border-right: none;
+        }
+
+        .stat-label {
+            color: var(--muted);
+
+            font-size: 12px;
+            font-weight: 500;
+
+            margin-bottom: 18px;
+        }
+
+        .stat-number {
+            font-size: 38px;
+            line-height: 1;
+
+            letter-spacing: -0.045em;
+            font-weight: 650;
+        }
+
+        .stat-description {
+            margin-top: 13px;
+
+            color: var(--muted-light);
+            font-size: 12px;
+            line-height: 1.55;
+        }
+
+        /* =========================================================
+           SECTION HEADERS
+        ========================================================= */
+
+        .section {
+            margin-top: 100px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+
+            margin-bottom: 28px;
+        }
+
+        .eyebrow {
+            color: #777;
+            font-size: 11px;
+            font-weight: 700;
+
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+
+            margin-bottom: 8px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            letter-spacing: -0.035em;
+            font-weight: 620;
+        }
+
+        .section-description {
+            max-width: 470px;
+
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.65;
+        }
+
+        /* =========================================================
+           SERVICE STATUS
+        ========================================================= */
+
+        .status-list {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .service-row {
+            min-height: 74px;
+
+            display: grid;
+            grid-template-columns: 1fr 160px 110px;
+
+            align-items: center;
+
+            padding: 0 24px;
+
+            border-bottom: 1px solid var(--border);
+        }
+
+        .service-row:last-child {
+            border-bottom: none;
+        }
+
+        .service-name {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            font-size: 14px;
+            font-weight: 550;
+        }
+
+        .service-icon {
+            width: 30px;
+            height: 30px;
+
+            display: grid;
+            place-items: center;
+
+            border: 1px solid var(--border);
+            border-radius: 7px;
+
+            font-size: 12px;
+            color: #444;
+        }
+
+        .service-note {
+            color: var(--muted-light);
+            font-size: 11px;
+        }
+
+        .operational {
+            justify-self: end;
+
+            display: flex;
+            align-items: center;
+            gap: 7px;
+
+            color: var(--green);
+
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .operational-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--green);
+        }
+
+        /* =========================================================
+           COMMUNITY BLOCK
+        ========================================================= */
+
+        .community-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+
+            border: 1px solid var(--border);
+            border-radius: 10px;
+
+            overflow: hidden;
+        }
+
+        .community-main {
+            padding: 42px;
+
+            border-right: 1px solid var(--border);
+        }
+
+        .community-main h3 {
+            font-size: 24px;
+            letter-spacing: -0.035em;
+            font-weight: 620;
+
+            margin-bottom: 12px;
+        }
+
+        .community-main p {
+            max-width: 600px;
+
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .activity-bar {
+            margin-top: 35px;
+
+            height: 8px;
+
+            display: flex;
+            gap: 3px;
+        }
+
+        .activity-bar span {
+            flex: 1;
+
+            background: #111;
+            border-radius: 2px;
+
+            opacity: 0.12;
+        }
+
+        .activity-bar span:nth-child(2),
+        .activity-bar span:nth-child(5),
+        .activity-bar span:nth-child(7),
+        .activity-bar span:nth-child(10),
+        .activity-bar span:nth-child(13),
+        .activity-bar span:nth-child(17) {
+            opacity: 0.25;
+        }
+
+        .activity-bar span:nth-child(8),
+        .activity-bar span:nth-child(14),
+        .activity-bar span:nth-child(19) {
+            opacity: 0.55;
+        }
+
+        .activity-caption {
+            margin-top: 12px;
+
+            color: var(--muted-light);
+            font-size: 11px;
+        }
+
+        .community-side {
+            padding: 42px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .mini-stat {
+            padding: 17px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .mini-stat:first-child {
+            padding-top: 0;
+        }
+
+        .mini-stat:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .mini-number {
+            font-size: 24px;
+            font-weight: 620;
+            letter-spacing: -0.03em;
+        }
+
+        .mini-label {
+            margin-top: 3px;
+
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+/* =========================================================
+   FEATURED CUSTOMER STUDIOS
+========================================================= */
+
+.customer-section {
+    position: relative;
+}
+
+.customer-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+
+/* =========================================================
+   CUSTOMER CARD
+========================================================= */
+
+.customer-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+
+    overflow: hidden;
+
+    background: #fff;
+
+    transition:
+        transform 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.customer-card:hover {
+    transform: translateY(-3px);
+
+    border-color: #d2d2d2;
+
+    box-shadow:
+        0 12px 35px rgba(0, 0, 0, 0.06);
+}
+
+
+/* =========================================================
+   PORTFOLIO PREVIEW
+========================================================= */
+
+.customer-preview {
+    position: relative;
+
+    aspect-ratio: 16 / 10;
+
+    overflow: hidden;
+
+    background: #f3f3f3;
+}
+
+.customer-preview img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    display: block;
+
+    transition: transform 0.45s ease;
+}
+
+.customer-card:hover .customer-preview img {
+    transform: scale(1.035);
+}
+
+
+/* =========================================================
+   PREVIEW OVERLAY
+========================================================= */
+
+.customer-overlay {
+    position: absolute;
+
+    inset: 0;
+
+    display: flex;
+    align-items: flex-end;
+
+    padding: 16px;
+
+    background:
+        linear-gradient(
+            to top,
+            rgba(0, 0, 0, 0.48),
+            rgba(0, 0, 0, 0)
+        );
+
+    opacity: 0;
+
+    transition: opacity 0.25s ease;
+}
+
+.customer-card:hover .customer-overlay {
+    opacity: 1;
+}
+
+.view-portfolio {
+    padding: 8px 12px;
+
+    background: #fff;
+    color: #111;
+
+    border-radius: 6px;
+
+    font-size: 11px;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   CUSTOMER INFORMATION
+========================================================= */
+
+.customer-info {
+    padding: 18px 18px 20px;
+}
+
+.customer-name {
+    font-size: 15px;
+
+    font-weight: 620;
+
+    letter-spacing: -0.02em;
+}
+
+.customer-location {
+    margin-top: 4px;
+
+    color: var(--muted);
+
+    font-size: 11px;
+}
+
+.customer-description {
+    margin-top: 12px;
+
+    color: var(--muted);
+
+    font-size: 12px;
+
+    line-height: 1.6;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.customer-footer {
+    margin-top: 20px;
+
+    padding-top: 18px;
+
+    border-top: 1px solid var(--border);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    color: var(--muted-light);
+
+    font-size: 11px;
+}
+
+.customer-cta {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    color: #111;
+
+    font-weight: 600;
+
+    font-size: 12px;
+}
+
+.customer-cta span {
+    transition: transform 0.2s ease;
+}
+
+.customer-cta:hover span {
+    transform: translateX(3px);
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.customer-empty {
+    grid-column: 1 / -1;
+
+    padding: 60px 20px;
+
+    text-align: center;
+
+    border: 1px dashed var(--border-dark);
+
+    border-radius: 10px;
+
+    color: var(--muted);
+}
+
+.customer-empty strong {
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #222;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .customer-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .customer-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .customer-footer {
+        align-items: flex-start;
+
+        gap: 15px;
+
+        flex-direction: column;
+    }
+
+}        /* =========================================================
+           CTA
+        ========================================================= */
+
+        .cta {
+            margin-top: 100px;
+
+            padding: 70px 30px;
+
+            background: #000;
+            color: #fff;
+
+            text-align: center;
+
+            border-radius: 10px;
+        }
+
+        .cta h2 {
+            font-size: clamp(30px, 4vw, 45px);
+            letter-spacing: -0.05em;
+            line-height: 1.05;
+        }
+
+        .cta p {
+            max-width: 500px;
+
+            margin: 15px auto 28px;
+
+            color: #aaa;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 11px 18px;
+
+            background: #fff;
+            color: #000;
+
+            border-radius: 7px;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            transition: 0.2s ease;
+        }
+
+        .cta-button:hover {
+            background: #e9e9e9;
+        }
+
+        /* =========================================================
+           FOOTER
+        ========================================================= */
+
+        footer {
+            max-width: 1180px;
+            margin: 0 auto;
+
+            padding: 35px 5vw 45px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            color: #888;
+
+            font-size: 11px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-links a:hover {
+            color: #111;
+        }
+
+        /* =========================================================
+           ANIMATIONS
+        ========================================================= */
+
+        .fade-up {
+            opacity: 0;
+            transform: translateY(12px);
+
+            animation: fadeUp 0.65s ease forwards;
+        }
+
+        .delay-1 {
+            animation-delay: 0.08s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.16s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.24s;
+        }
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+
+        @media (max-width: 900px) {
+
+            .nav-links {
+                display: none;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stat-card:nth-child(2) {
+                border-right: none;
+            }
+
+            .stat-card:nth-child(-n + 2) {
+                border-bottom: 1px solid var(--border);
+            }
+
+            .community-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .community-main {
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .privacy-box {
+                grid-template-columns: 1fr;
+            }
+
+            .privacy-column:first-child {
+                padding-right: 0;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .privacy-column:last-child {
+                padding-left: 0;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .navbar {
+                height: 64px;
+                padding: 0 20px;
+            }
+
+            .nav-login {
+                display: none;
+            }
+
+            .hero {
+                padding: 75px 20px 60px;
+            }
+
+            .hero h1 {
+                font-size: 43px;
+            }
+
+            .hero p {
+                font-size: 14px;
+            }
+
+            .container {
+                padding: 0 20px 70px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-card,
+            .stat-card:nth-child(2) {
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .stat-card:last-child {
+                border-bottom: none;
+            }
+
+            .section {
+                margin-top: 70px;
+            }
+
+            .section-header {
+                display: block;
+            }
+
+            .section-description {
+                margin-top: 12px;
+            }
+
+            .service-row {
+                grid-template-columns: 1fr auto;
+                padding: 14px 17px;
+                min-height: 70px;
+            }
+
+            .service-note {
+                display: none;
+            }
+
+            .operational {
+                grid-column: 2;
+                grid-row: 1;
+            }
+
+            .community-main,
+            .community-side {
+                padding: 30px 23px;
+            }
+
+            .privacy-box {
+                margin-top: 70px;
+            }
+
+            .cta {
+                margin-top: 70px;
+                padding: 50px 22px;
+            }
+
+            footer {
+                padding: 30px 20px;
+                flex-direction: column;
+                gap: 18px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =========================================================
+         NAVIGATION
+    ========================================================= -->
+
+    <nav class="navbar">
+
+        <a href="https://professionalstudio.vercel.app/" class="brand">
+            <span class="brand-mark">◇</span>
+            <span>Professional Studio</span>
+        </a>
+
+        <div class="nav-links">
+            <a href="https://professionalstudio.vercel.app/">Home</a>
+         </div>
+
+        <div class="nav-actions">
+            <a href="auth/login-new.html" class="nav-login">
+                Log in
+            </a>
+
+            <a href="auth/signup.html" class="nav-signup">
+                Get started
+            </a>
+        </div>
+
+    </nav>
+
+
+    <!-- =========================================================
+         HERO
+    ========================================================= -->
+
+    <header class="hero">
+
+        <div class="status-pill fade-up">
+            <span class="status-dot"></span>
+            All systems operational
+        </div>
+
+        <h1 class="fade-up delay-1">
+            Professional Studio,
+            in motion.
+        </h1>
+
+        <p class="fade-up delay-2">
+            A transparent look at the Professional Studio platform,
+            our growing photography community, and the services
+            currently available to photographers.
+        </p>
+
+        <div class="last-updated fade-up delay-3">
+            Last updated
+            <span id="lastUpdated">just now</span>
+        </div>
+
+    </header>
+
+
+    <main class="container">
+
+
+        <!-- =====================================================
+             COMMUNITY STATS
+        ====================================================== -->
+
+        <section class="stats-grid" aria-label="Professional Studio statistics">
+
+            <div class="stat-card">
+                <div class="stat-label">
+                    Photographers connected
+                </div>
+
+                <div class="stat-number" data-target="1284">
+                    0
+                </div>
+
+                <div class="stat-description">
+                    Professionals using Professional Studio
+                    to manage their photography business.
+                </div>
+            </div>
+
+
+            <div class="stat-card">
+                <div class="stat-label">
+                    Galleries created
+                </div>
+
+                <div class="stat-number" data-target="4872">
+                    0
+                </div>
+
+                <div class="stat-description">
+                    Client galleries created through the platform.
+                </div>
+            </div>
+
+
+            <div class="stat-card">
+                <div class="stat-label">
+                    Bookings managed
+                </div>
+
+                <div class="stat-number" data-target="9360">
+                    0
+                </div>
+
+                <div class="stat-description">
+                    Photography bookings organized through
+                    Professional Studio.
+                </div>
+            </div>
+
+
+            <div class="stat-card">
+                <div class="stat-label">
+                    Reviews received
+                </div>
+
+                <div class="stat-number" data-target="2146">
+                    0
+                </div>
+
+                <div class="stat-description">
+                    Client feedback received across
+                    connected photography businesses.
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             SERVICE STATUS
+        ====================================================== -->
+
+        <section class="section">
+
+            <div class="section-header">
+
+                <div>
+                    <div class="eyebrow">
+                        Platform health
+                    </div>
+
+                    <h2 class="section-title">
+                        Everything is operational.
+                    </h2>
+                </div>
+
+                <p class="section-description">
+                    Public service status only. Private account,
+                    client, payment and business information is
+                    never displayed here.
+                </p>
+
+            </div>
+
+
+            <div class="status-list">
+
+                <div class="service-row">
+
+                    <div class="service-name">
+                        <div class="service-icon">D</div>
+
+                        <div>
+                            Dashboard
+                        </div>
+                    </div>
+
+                    <div class="service-note">
+                        Studio management
+                    </div>
+
+                    <div class="operational">
+                        <span class="operational-dot"></span>
+                        Operational
+                    </div>
+
+                </div>
+
+
+                <div class="service-row">
+
+                    <div class="service-name">
+                        <div class="service-icon">G</div>
+
+                        <div>
+                            Client Galleries
+                        </div>
+                    </div>
+
+                    <div class="service-note">
+                        Gallery management
+                    </div>
+
+                    <div class="operational">
+                        <span class="operational-dot"></span>
+                        Operational
+                    </div>
+
+                </div>
+
+
+                <div class="service-row">
+
+                    <div class="service-name">
+                        <div class="service-icon">B</div>
+
+                        <div>
+                            Bookings
+                        </div>
+                    </div>
+
+                    <div class="service-note">
+                        Booking management
+                    </div>
+
+                    <div class="operational">
+                        <span class="operational-dot"></span>
+                        Operational
+                    </div>
+
+                </div>
+
+
+                <div class="service-row">
+
+                    <div class="service-name">
+                        <div class="service-icon">S</div>
+
+                        <div>
+                            Services
+                        </div>
+                    </div>
+
+                    <div class="service-note">
+                        Studio services
+                    </div>
+
+                    <div class="operational">
+                        <span class="operational-dot"></span>
+                        Operational
+                    </div>
+
+                </div>
+
+
+                <div class="service-row">
+
+                    <div class="service-name">
+                        <div class="service-icon">A</div>
+
+                        <div>
+                            Authentication
+                        </div>
+                    </div>
+
+                    <div class="service-note">
+                        Account access
+                    </div>
+
+                    <div class="operational">
+                        <span class="operational-dot"></span>
+                        Operational
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             COMMUNITY ACTIVITY
+        ====================================================== -->
+
+        <section class="section">
+
+            <div class="section-header">
+
+                <div>
+                    <div class="eyebrow">
+                        Community
+                    </div>
+
+                    <h2 class="section-title">
+                        Built around real studios.
+                    </h2>
+                </div>
+
+                <p class="section-description">
+                    We show aggregate activity rather than individual
+                    account information. Your studio stays yours.
+                </p>
+
+            </div>
+
+
+            <div class="community-grid">
+
+                <div class="community-main">
+
+                    <h3>
+                        A growing photography workspace.
+                    </h3>
+
+                    <p>
+                        Professional Studio brings photographers,
+                        their work, bookings, galleries and client
+                        workflows into one professional workspace.
+                        These figures represent platform-wide
+                        aggregate activity only.
+                    </p>
+
+                    <div class="activity-bar" aria-label="Platform activity">
+
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+
+                    </div>
+
+                    <div class="activity-caption">
+                        Relative platform activity over recent periods
+                    </div>
+
+                </div>
+
+
+                <div class="community-side">
+
+                    <div class="mini-stat">
+
+                        <div class="mini-number">
+                            24/7
+                        </div>
+
+                        <div class="mini-label">
+                            Platform availability
+                        </div>
+
+                    </div>
+
+
+                    <div class="mini-stat">
+
+                        <div class="mini-number">
+                            Growing
+                        </div>
+
+                        <div class="mini-label">
+                            Photographer community
+                        </div>
+
+                    </div>
+
+
+                    <div class="mini-stat">
+
+                        <div class="mini-number">
+                            Public
+                        </div>
+
+                        <div class="mini-label">
+                            Aggregate transparency
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+<!-- =========================================================
+     FEATURED CUSTOMER STUDIOS
+========================================================== -->
+
+<section class="section customer-section">
+
+    <div class="section-header">
+
+        <div>
+            <div class="eyebrow">
+                Our community
+            </div>
+
+            <h2 class="section-title">
+                See studios built with Professional Studio.
+            </h2>
+        </div>
+
+        <p class="section-description">
+            Explore photography businesses using Professional Studio
+            and discover the work they share with their clients.
+        </p>
+
+    </div>
+
+
+    <div class="customer-grid" id="customerGrid">
+        <!-- Customer cards generated by JavaScript -->
+    </div>
+
+
+    <div class="customer-footer">
+
+        <span id="customerCount">
+            Showing 0 studios
+        </span>
+
+        <a href="auth/signup.html" class="customer-cta">
+            Create your studio
+            <span>→</span>
+        </a>
+
+    </div>
+
+</section>
+        <!-- =====================================================
+             CTA
+        ====================================================== -->
+
+        <section class="cta">
+
+            <h2>
+                Your studio deserves
+                a better workspace.
+            </h2>
+
+            <p>
+                Join photographers using Professional Studio
+                to bring their business, bookings and client
+                experience together.
+            </p>
+
+            <a href="auth/signup.html" class="cta-button">
+                Create your studio
+            </a>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================================================
+         FOOTER
+    ========================================================= -->
+
+    <footer>
+
+        <div>
+            © 2026 Professional Studio
+        </div>
+
+        <div class="footer-links">
+            <a href="help.html">Help Center</a>
+            <a href="status.html">Status</a>
+            <a href="user.html">Dashboard</a>
+            <a href="auth/login-new.html">Log in</a>
+        </div>
+
+    </footer>
+
+
+    <!-- =========================================================
+         JAVASCRIPT
+    ========================================================= -->
+
+    <script>
+        /* =========================================================
+   PROFESSIONAL STUDIO
+   STATUS PAGE JAVASCRIPT
+========================================================= */
+
+
+/* =========================================================
+   FEATURED CUSTOMER ACCOUNTS
+=========================================================
+
+   THIS IS THE MAIN SECTION YOU WILL EDIT.
+
+   To ADD a photographer:
+   Add another object to this array.
+
+   To REMOVE a photographer:
+   Delete their entire object.
+
+   To CHANGE ORDER:
+   Move the object up/down.
+
+   To CHANGE HOW MANY ARE DISPLAYED:
+   Simply add or remove objects.
+
+   IMPORTANT:
+   Only use PUBLIC portfolio pages and PUBLIC preview images.
+
+========================================================= */
+
+const featuredCustomers = [
+
+    {
+        name: "Arjun Photography",
+
+        location: "Mumbai, India",
+
+        description:
+            "Wedding and portrait photography studio.",
+
+        image:
+            "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1000&q=80",
+
+        portfolio:
+            "https://professionalstudio.vercel.app/"
+    },
+
+
+    {
+        name: "Studio Frame",
+
+        location: "Pune, India",
+
+        description:
+            "Creative photography and cinematic wedding stories.",
+
+        image:
+            "https://images.unsplash.com/photo-1531058020387-3be344556be6?auto=format&fit=crop&w=1000&q=80",
+
+        portfolio:
+            "https://professionalstudio.vercel.app/"
+    },
+
+
+    {
+        name: "Light & Lens",
+
+        location: "Delhi, India",
+
+        description:
+            "Portraits, events and commercial photography.",
+
+        image:
+            "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1000&q=80",
+
+        portfolio:
+            "https://professionalstudio.vercel.app/"
+    }
+
+];
+
+
+
+/* =========================================================
+   PUBLIC PLATFORM STATISTICS
+=========================================================
+
+   These are currently demo/public aggregate numbers.
+
+   Later, these can be replaced with backend/API values.
+
+   NEVER put private information here.
+
+========================================================= */
+
+const publicPlatformStats = {
+
+    photographersConnected: 1284,
+
+    galleriesCreated: 4872,
+
+    bookingsManaged: 9360,
+
+    reviewsReceived: 2146,
+
+    platformStatus: "operational"
+
+};
+
+
+
+/* =========================================================
+   COUNTER ANIMATION
+========================================================= */
+
+const counters =
+    document.querySelectorAll(".stat-number");
+
+
+function animateCounter(element) {
+
+    const target =
+        Number(element.dataset.target);
+
+    const duration = 1300;
+
+    const startTime =
+        performance.now();
+
+
+    function updateCounter(currentTime) {
+
+        const elapsed =
+            currentTime - startTime;
+
+
+        const progress =
+            Math.min(
+                elapsed / duration,
+                1
+            );
+
+
+        /*
+            Smooth ease-out animation.
+        */
+
+        const eased =
+            1 - Math.pow(
+                1 - progress,
+                3
+            );
+
+
+        const currentValue =
+            Math.floor(
+                target * eased
+            );
+
+
+        element.textContent =
+            currentValue.toLocaleString("en-IN");
+
+
+        if (progress < 1) {
+
+            requestAnimationFrame(
+                updateCounter
+            );
+
+        }
+
+    }
+
+
+    requestAnimationFrame(
+        updateCounter
+    );
+
+}
+
+
+
+/* =========================================================
+   COUNTER INTERSECTION OBSERVER
+=========================================================
+
+   Counters start when the user actually reaches them.
+
+========================================================= */
+
+if ("IntersectionObserver" in window) {
+
+    const counterObserver =
+        new IntersectionObserver(
+            (entries, observer) => {
+
+                entries.forEach(entry => {
+
+                    if (!entry.isIntersecting) {
+                        return;
+                    }
+
+
+                    animateCounter(
+                        entry.target
+                    );
+
+
+                    observer.unobserve(
+                        entry.target
+                    );
+
+                });
+
+            },
+            {
+                threshold: 0.4
+            }
+        );
+
+
+    counters.forEach(counter => {
+
+        counterObserver.observe(
+            counter
+        );
+
+    });
+
+} else {
+
+    /*
+        Fallback for older browsers.
+    */
+
+    counters.forEach(counter => {
+
+        counter.textContent =
+            Number(
+                counter.dataset.target
+            ).toLocaleString("en-IN");
+
+    });
+
+}
+
+
+
+/* =========================================================
+   LAST UPDATED
+========================================================= */
+
+const updatedElement =
+    document.getElementById("lastUpdated");
+
+
+if (updatedElement) {
+
+    const now =
+        new Date();
+
+
+    updatedElement.textContent =
+        now.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+
+}
+
+
+
+/* =========================================================
+   CUSTOMER SHOWCASE ELEMENTS
+========================================================= */
+
+const customerGrid =
+    document.getElementById(
+        "customerGrid"
+    );
+
+
+const customerCount =
+    document.getElementById(
+        "customerCount"
+    );
+
+
+
+/* =========================================================
+   HTML ESCAPING
+=========================================================
+
+   Customer information is inserted into HTML.
+
+   Escaping prevents unexpected HTML from being interpreted.
+
+========================================================= */
+
+function escapeHTML(value) {
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+
+/* =========================================================
+   VALIDATE CUSTOMER DATA
+========================================================= */
+
+function isValidCustomer(customer) {
+
+    if (!customer) {
+        return false;
+    }
+
+
+    if (!customer.name) {
+        return false;
+    }
+
+
+    if (!customer.location) {
+        return false;
+    }
+
+
+    if (!customer.description) {
+        return false;
+    }
+
+
+    if (!customer.image) {
+        return false;
+    }
+
+
+    if (!customer.portfolio) {
+        return false;
+    }
+
+
+    return true;
+
+}
+
+
+
+/* =========================================================
+   CREATE CUSTOMER CARD
+========================================================= */
+
+function createCustomerCard(customer) {
+
+    const card =
+        document.createElement(
+            "article"
+        );
+
+
+    card.className =
+        "customer-card";
+
+
+    card.innerHTML = `
+
+        <div class="customer-preview">
+
+            <img
+                src="${escapeHTML(customer.image)}"
+                alt="${escapeHTML(customer.name)} portfolio"
+                loading="lazy"
+            >
+
+            <div class="customer-overlay">
+
+                <a
+                    href="${escapeHTML(customer.portfolio)}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="view-portfolio"
+                >
+                    View portfolio →
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div class="customer-info">
+
+            <div class="customer-name">
+                ${escapeHTML(customer.name)}
+            </div>
+
+            <div class="customer-location">
+                ${escapeHTML(customer.location)}
+            </div>
+
+            <div class="customer-description">
+                ${escapeHTML(customer.description)}
+            </div>
+
+        </div>
+
+    `;
+
+
+    return card;
+
+}
+
+
+
+/* =========================================================
+   RENDER CUSTOMER SHOWCASE
+========================================================= */
+
+function renderFeaturedCustomers() {
+
+    /*
+        Make sure the required container exists.
+    */
+
+    if (!customerGrid) {
+        return;
+    }
+
+
+    /*
+        Clear existing cards.
+    */
+
+    customerGrid.innerHTML = "";
+
+
+    /*
+        Only keep properly configured accounts.
+    */
+
+    const validCustomers =
+        featuredCustomers.filter(
+            isValidCustomer
+        );
+
+
+    /* =====================================================
+       EMPTY STATE
+    ===================================================== */
+
+    if (
+        validCustomers.length === 0
+    ) {
+
+        customerGrid.innerHTML = `
+
+            <div class="customer-empty">
+
+                <strong>
+                    Customer showcases are coming soon.
+                </strong>
+
+                Public portfolio previews will appear here
+                as photographers choose to participate.
+
+            </div>
+
+        `;
+
+
+        if (customerCount) {
+
+            customerCount.textContent =
+                "Showing 0 studios";
+
+        }
+
+
+        return;
+    }
+
+
+
+    /* =====================================================
+       CREATE CARDS
+    ===================================================== */
+
+    validCustomers.forEach(
+        customer => {
+
+            const card =
+                createCustomerCard(
+                    customer
+                );
+
+
+            customerGrid.appendChild(
+                card
+            );
+
+        }
+    );
+
+
+
+    /* =====================================================
+       UPDATE COUNT
+    ===================================================== */
+
+    if (customerCount) {
+
+        const count =
+            validCustomers.length;
+
+
+        customerCount.textContent =
+            `Showing ${count} studio${
+                count === 1
+                    ? ""
+                    : "s"
+            }`;
+
+    }
+
+}
+
+
+
+/* =========================================================
+   INITIALIZE CUSTOMER SHOWCASE
+========================================================= */
+
+renderFeaturedCustomers();
+
+
+
+/* =========================================================
+   OPTIONAL PUBLIC STATISTICS HELPER
+=========================================================
+
+   This allows the HTML counters to be populated from the
+   publicPlatformStats object instead of manually editing
+   data-target values in the HTML.
+
+========================================================= */
+
+function updatePublicStatistics() {
+
+    const statisticsMap = {
+
+        photographersConnected:
+            publicPlatformStats.photographersConnected,
+
+        galleriesCreated:
+            publicPlatformStats.galleriesCreated,
+
+        bookingsManaged:
+            publicPlatformStats.bookingsManaged,
+
+        reviewsReceived:
+            publicPlatformStats.reviewsReceived
+
+    };
+
+
+    /*
+        The current HTML uses the order of the stat cards.
+        We update each counter according to its position.
+    */
+
+    const statElements =
+        document.querySelectorAll(
+            ".stat-number"
+        );
+
+
+    if (statElements.length >= 4) {
+
+        statElements[0].dataset.target =
+            statisticsMap.photographersConnected;
+
+
+        statElements[1].dataset.target =
+            statisticsMap.galleriesCreated;
+
+
+        statElements[2].dataset.target =
+            statisticsMap.bookingsManaged;
+
+
+        statElements[3].dataset.target =
+            statisticsMap.reviewsReceived;
+
+    }
+
+}
+
+
+
+/* =========================================================
+   INITIALIZE PUBLIC STATISTICS
+========================================================= */
+
+updatePublicStatistics();
+
+
+
+/* =========================================================
+   FINAL NOTES FOR FUTURE BACKEND CONNECTION
+=========================================================
+
+   When the backend is ready:
+
+   1. Fetch ONLY aggregate public statistics.
+   2. Never return private user/client information.
+   3. Fetch ONLY photographers approved for public showcase.
+   4. Store their public portfolio URL.
+   5. Store their approved preview image.
+   6. Render the returned list through renderFeaturedCustomers().
+
+   Example future structure:
+
+   GET /public/status
+
+   {
+       photographersConnected: 1284,
+       galleriesCreated: 4872,
+       bookingsManaged: 9360,
+       reviewsReceived: 2146
+   }
+
+
+   Example future showcase:
+
+   GET /public/featured-studios
+
+   [
+       {
+           name: "...",
+           location: "...",
+           description: "...",
+           image: "...",
+           portfolio: "..."
+       }
+   ]
+
+   Do NOT expose:
+
+   - email
+   - phone
+   - password
+   - user ID
+   - client information
+   - private gallery data
+   - payment data
+   - revenue
+   - private storage usage
+   - authentication tokens
+
+========================================================= */
+    </script>
+
+</body>
+</html>
