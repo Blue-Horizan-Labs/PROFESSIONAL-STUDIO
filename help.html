@@ -1,882 +1,1147 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Help Center | Professional Studio</title>
-    <link
-    rel="icon"
-    type="image/png"
-    href="https://i.ibb.co/8g0LT3jZ/logo1-2.png" 
->
+    <title>Professional Studio | Help Center</title>
 
+    <meta
+        name="description"
+        content="Get help with your Professional Studio account, bookings, services, galleries, subscriptions, reviews, and more."
+    >
+
+    <link
+        rel="icon"
+        type="image/png"
+        href="https://i.ibb.co/8g0LT3jZ/logo1-2.png"
+    >
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
         rel="stylesheet"
     >
 
-    <style>
-
-        /* =========================
-           RESET
-        ========================= */
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: "Inter", sans-serif;
-            background: #ffffff;
-            color: #171717;
-            line-height: 1.6;
-        }
-
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-
-        /* =========================
-           NAVBAR
-        ========================= */
-
-        .navbar {
-            height: 75px;
-            padding: 0 7%;
-
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            border-bottom: 1px solid #eeeeee;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-
-            font-size: 19px;
-            font-weight: 700;
-        }
-
-        .logo-icon {
-            width: 38px;
-            height: 38px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            border-radius: 9px;
-
-            background: #171717;
-            color: #ffffff;
-
-            font-size: 15px;
-        }
-
-        .back-link {
-            color: #555555;
-            font-size: 14px;
-            font-weight: 500;
-
-            transition: color 0.2s ease;
-        }
-
-        .back-link:hover {
-            color: #111111;
-        }
-
-
-        /* =========================
-           HEADER
-        ========================= */
-
-        .help-header {
-            padding: 75px 20px 45px;
-            text-align: center;
-        }
-
-        .help-header h1 {
-            margin-bottom: 15px;
-
-            font-family: "Playfair Display", serif;
-            font-size: clamp(40px, 5vw, 58px);
-            line-height: 1.1;
-        }
-
-        .help-header p {
-            max-width: 580px;
-            margin: auto;
-
-            color: #666666;
-            font-size: 15px;
-        }
-
-
-        /* =========================
-           HELP CONTENT
-        ========================= */
-
-        .help-container {
-            max-width: 950px;
-            margin: auto;
-
-            padding: 25px 7% 80px;
-        }
-
-
-        /* =========================
-           SEARCH
-        ========================= */
-
-        .search-box {
-            margin-bottom: 45px;
-
-            position: relative;
-        }
-
-        .search-box input {
-            width: 100%;
-            height: 52px;
-
-            padding: 0 18px 0 48px;
-
-            border: 1px solid #dddddd;
-            border-radius: 9px;
-
-            outline: none;
-
-            font-family: inherit;
-            font-size: 14px;
-
-            transition: border 0.2s ease;
-        }
-
-        .search-box input:focus {
-            border-color: #171717;
-        }
-
-        .search-icon {
-            position: absolute;
-
-            left: 17px;
-            top: 50%;
-
-            transform: translateY(-50%);
-
-            color: #777777;
-            font-size: 15px;
-        }
-
-
-        /* =========================
-           HELP TOPICS
-        ========================= */
-
-        .topics-title {
-            margin-bottom: 20px;
-
-            font-family: "Playfair Display", serif;
-            font-size: 30px;
-        }
-
-        .topics {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-
-            margin-bottom: 55px;
-        }
-
-        .topic {
-            padding: 22px;
-
-            border: 1px solid #e5e5e5;
-            border-radius: 12px;
-
-            transition:
-                border-color 0.2s ease,
-                transform 0.2s ease;
-        }
-
-        .topic:hover {
-            border-color: #cccccc;
-            transform: translateY(-2px);
-        }
-
-        .topic-icon {
-            width: 40px;
-            height: 40px;
-
-            margin-bottom: 12px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            border-radius: 8px;
-
-            background: #f4f4f4;
-
-            font-size: 16px;
-        }
-
-        .topic h3 {
-            margin-bottom: 5px;
-
-            font-size: 15px;
-            font-weight: 600;
-        }
-
-        .topic p {
-            color: #666666;
-            font-size: 13px;
-        }
-
-
-        /* =========================
-           COMMON QUESTIONS
-        ========================= */
-
-.questions-title {
-    margin-bottom: 20px;
-    font-family: "Playfair Display", serif;
-    font-size: 30px;
-}
-
-.questions {
-    border-top: 1px solid #e5e5e5;
-}
-
-.question {
-    border-bottom: 1px solid #e5e5e5;
-}
-
-.question button {
-    width: 100%;
-    padding: 18px 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    border: none;
-    background: transparent;
-    color: #171717;
-    text-align: left;
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.question button:focus-visible {
-    outline: 2px solid #171717;
-    outline-offset: 4px;
-    border-radius: 4px;
-}
-
-.question button span:first-child {
-    flex: 1;
-}
-
-.question button span:last-child {
-    flex: 0 0 auto;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    font-weight: 400;
-    line-height: 1;
-    transition: transform 0.2s ease;
-}
-
-.question.active button span:last-child {
-    transform: rotate(45deg);
-}
-
-.answer {
-    display: none;
-    padding: 0 40px 18px 0;
-    color: #666666;
-    font-size: 13px;
-    line-height: 1.7;
-}
-
-.question.active .answer {
-    display: block;
-}
-
-        /* =========================
-           CONTACT SUPPORT
-        ========================= */
-
-        .support {
-            margin-top: 55px;
-            padding: 30px;
-
-            text-align: center;
-
-            border: 1px solid #e5e5e5;
-            border-radius: 12px;
-
-            background: #fafafa;
-        }
-
-        .support h2 {
-            margin-bottom: 8px;
-
-            font-family: "Playfair Display", serif;
-            font-size: 27px;
-        }
-
-        .support p {
-            margin-bottom: 18px;
-
-            color: #666666;
-            font-size: 14px;
-        }
-
-.support-btn {
-    display: inline-block;
-    padding: 11px 20px;
-    border-radius: 8px;
-    background: #171717;
-    color: #ffffff;
-    font-size: 13px;
-    font-weight: 600;
-    transition: background 0.2s ease;
-}
-        .support-btn:hover {
-            background: #333333;
-        }
-
-
-        /* =========================
-           SEARCH RESULT
-        ========================= */
-
-        .no-results {
-            display: none;
-
-            padding: 25px 0;
-
-            color: #666666;
-
-            font-size: 14px;
-            text-align: center;
-        }
-
-
-        /* =========================
-           RESPONSIVE
-        ========================= */
-
-        @media (max-width: 700px) {
-
-            .navbar {
-                padding: 0 5%;
-            }
-
-            .help-header {
-                padding: 60px 20px 35px;
-            }
-
-            .help-container {
-                padding: 20px 5% 60px;
-            }
-
-            .topics {
-                grid-template-columns: 1fr;
-            }
-
-            .support {
-                padding: 25px 18px;
-            }
-
-        }
-
-
-        @media (max-width: 450px) {
-
-            .logo {
-                font-size: 17px;
-            }
-
-            .logo-icon {
-                width: 34px;
-                height: 34px;
-            }
-
-            .back-link {
-                font-size: 13px;
-            }
-
-            .help-header h1 {
-                font-size: 40px;
-            }
-
-        }
-
-        
-.footer-bottom {
-        margin-top: 20px;
-        padding-top: 18px;
-        flex-direction: column;
-        text-align: center;
-        gap: 12px;
-    }
-
-      .footer-bottom p {
-        font-size: 13px;
-    }
-
-
-    
-
-    </style>
-
+    <link rel="stylesheet" href="help.css">
 </head>
-
 
 <body>
 
+    <!-- =====================================================
+         NAVIGATION
+    ====================================================== -->
 
-    <!-- =========================
-         NAVBAR
-    ========================= -->
+    <header class="site-header">
 
-    <header class="navbar">
+        <nav class="navbar">
 
-        <a href="index.html" class="logo">
+            <a
+                href="index.html"
+                class="brand"
+                aria-label="Professional Studio home"
+            >
+                <span class="brand-mark" aria-hidden="true">◇</span>
 
-            <span class="logo-icon">
-                ?
-            </span>
+                <span class="brand-name">
+                    Professional Studio
+                </span>
+            </a>
 
-            <span>
-                Professional Studio
-            </span>
+            <div class="nav-right">
 
-        </a>
+                <span class="nav-context">
+                    Help Center
+                </span>
 
-        <a href="index.html" class="back-link">
-            ← Back
-        </a>
+                <a
+                    href="index.html"
+                    class="back-link"
+                >
+                    Back to Studio
+                    <span aria-hidden="true">↗</span>
+                </a>
+
+            </div>
+
+        </nav>
 
     </header>
 
 
-    <!-- =========================
-         HEADER
-    ========================= -->
+    <!-- =====================================================
+         HERO
+    ====================================================== -->
 
-    <section class="help-header">
+    <main>
 
-        <h1>
-            How can we help?
-        </h1>
+        <section class="hero">
 
-        <p>
-            Find answers to common questions or learn more about
-            using Professional Studio.
-        </p>
+            <div class="hero-inner">
 
-    </section>
+                <div class="hero-copy">
 
+                    <span class="eyebrow">
+                        PROFESSIONAL STUDIO / SUPPORT
+                    </span>
 
-    <!-- =========================
-         HELP CONTENT
-    ========================= -->
+                    <h1>
+                        Everything you need to
+                        <em>run your studio.</em>
+                    </h1>
 
-    <main class="help-container">
+                    <p>
+                        Find answers, understand your workspace,
+                        and get help with the tools you use every day.
+                    </p>
 
-
-        <!-- SEARCH -->
-
-        <div class="search-box">
-
-            <span class="search-icon">
-                🔍
-            </span>
-
-            <input
-                type="text"
-                id="searchInput"
-                placeholder="Search for help..."
-                autocomplete="off"
-            >
-
-        </div>
-
-
-        <!-- HELP TOPICS -->
-
-        <h2 class="topics-title">
-            Help Topics
-        </h2>
-
-        <section class="topics" id="topics">
-
-
-            <div class="topic">
-
-                <div class="topic-icon">
-                    👤
                 </div>
 
-                <h3>
-                    Account
-                </h3>
 
-                <p>
-                    Get help with creating your account, logging in,
-                    and managing your profile.
-                </p>
+                <div class="hero-search">
 
-            </div>
+                    <div class="search-label">
+                        <span>SEARCH HELP</span>
+                        <span class="search-shortcut">/</span>
+                    </div>
 
+                    <div class="search-field">
 
-            <div class="topic">
+                        <span
+                            class="search-symbol"
+                            aria-hidden="true"
+                        >
+                            ⌕
+                        </span>
 
-                <div class="topic-icon">
-                    📅
+                        <label
+                            for="helpSearch"
+                            class="sr-only"
+                        >
+                            Search the Help Center
+                        </label>
+
+                        <input
+                            type="search"
+                            id="helpSearch"
+                            placeholder="Search bookings, galleries, services..."
+                            autocomplete="off"
+                            spellcheck="false"
+                            aria-controls="helpResults"
+                            aria-describedby="searchStatus"
+                        >
+
+                        <button
+                            type="button"
+                            class="clear-search"
+                            id="clearSearch"
+                            aria-label="Clear search"
+                            hidden
+                        >
+                            ×
+                        </button>
+
+                    </div>
+
+                    <p
+                        class="search-status"
+                        id="searchStatus"
+                        aria-live="polite"
+                    >
+                        Search across help topics and common questions.
+                    </p>
+
                 </div>
 
-                <h3>
-                    Bookings
-                </h3>
-
-                <p>
-                    Learn how to create, manage, accept, and track
-                    photography bookings.
-                </p>
-
             </div>
-
-
-            <div class="topic">
-
-                <div class="topic-icon">
-                    💳
-                </div>
-
-                <h3>
-                    Payments
-                </h3>
-
-                <p>
-                    Find information about pricing, payments,
-                    advances, and billing.
-                </p>
-
-            </div>
-
-
-            <div class="topic">
-
-                <div class="topic-icon">
-                    ⚙
-                </div>
-
-                <h3>
-                    Settings
-                </h3>
-
-                <p>
-                    Manage your studio information, profile,
-                    services, and preferences.
-                </p>
-
-            </div>
-
 
         </section>
 
 
-        <!-- COMMON QUESTIONS -->
+        <!-- =====================================================
+             HELP CONTENT
+        ====================================================== -->
 
-        <h2 class="questions-title">
-            Common Questions
-        </h2>
+        <section class="help-content">
 
-        <section class="questions" id="questions">
+            <div class="content-grid">
+
+                <!-- =============================================
+                     SIDE NAVIGATION
+                ============================================== -->
+
+                <aside class="help-sidebar">
+
+                    <div class="sidebar-heading">
+                        <span>EXPLORE</span>
+                    </div>
+
+                    <nav
+                        class="category-nav"
+                        aria-label="Help categories"
+                    >
+
+                        <button
+                            type="button"
+                            class="category-btn active"
+                            data-category="all"
+                        >
+                            <span>All topics</span>
+                            <span class="category-count">08</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="category-btn"
+                            data-category="account"
+                        >
+                            <span>Account</span>
+                            <span class="category-count">02</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="category-btn"
+                            data-category="studio"
+                        >
+                            <span>Studio setup</span>
+                            <span class="category-count">02</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="category-btn"
+                            data-category="bookings"
+                        >
+                            <span>Bookings</span>
+                            <span class="category-count">02</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="category-btn"
+                            data-category="galleries"
+                        >
+                            <span>Client galleries</span>
+                            <span class="category-count">02</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="category-btn"
+                            data-category="billing"
+                        >
+                            <span>Billing & plans</span>
+                            <span class="category-count">02</span>
+                        </button>
+
+                    </nav>
 
 
-            <div class="question">
+                    <div class="sidebar-note">
 
-                <button type="button">
+                        <span class="note-label">
+                            NEED MORE HELP?
+                        </span>
 
-                    <span>
-                        How do I create an account?
-                    </span>
+                        <p>
+                            Our support team can help when
+                            the documentation doesn't.
+                        </p>
 
-                    <span>
-                        +
-                    </span>
+                        <a href="contact.html">
+                            Contact support
+                            <span aria-hidden="true">↗</span>
+                        </a>
 
-                </button>
+                    </div>
 
-                <div class="answer">
-                    Select the sign-up option and enter the required
-                    information to create your Professional Studio
-                    account.
+                </aside>
+
+
+                <!-- =============================================
+                     MAIN RESULTS
+                ============================================== -->
+
+                <div
+                    class="help-results"
+                    id="helpResults"
+                >
+
+                    <div class="results-header">
+
+                        <div>
+                            <span class="section-kicker">
+                                HELP LIBRARY
+                            </span>
+
+                            <h2 id="resultsTitle">
+                                Help topics
+                            </h2>
+                        </div>
+
+                        <span
+                            class="result-count"
+                            id="resultCount"
+                        >
+                            8 topics
+                        </span>
+
+                    </div>
+
+
+                    <!-- =========================================
+                         TOPIC CARDS
+                    ========================================== -->
+
+                    <div class="topic-list" id="topicList">
+
+                        <!-- ACCOUNT -->
+
+                        <article
+                            class="topic-card"
+                            data-category="account"
+                            data-search="account create account login password profile change password sign up sign in"
+                        >
+
+                            <div class="topic-number">
+                                01
+                            </div>
+
+                            <div class="topic-body">
+
+                                <div class="topic-top">
+
+                                    <span class="topic-tag">
+                                        ACCOUNT
+                                    </span>
+
+                                    <span
+                                        class="topic-arrow"
+                                        aria-hidden="true"
+                                    >
+                                        ↗
+                                    </span>
+
+                                </div>
+
+                                <h3>
+                                    Account & access
+                                </h3>
+
+                                <p>
+                                    Create your Professional Studio account,
+                                    sign in, manage your profile, and update
+                                    account information.
+                                </p>
+
+                                <div class="topic-links">
+                                    <span>Account setup</span>
+                                    <span>Login & password</span>
+                                </div>
+
+                            </div>
+
+                        </article>
+
+
+                        <!-- STUDIO -->
+
+                        <article
+                            class="topic-card"
+                            data-category="studio"
+                            data-search="studio profile setup portfolio photographer equipment services packages business information"
+                        >
+
+                            <div class="topic-number">
+                                02
+                            </div>
+
+                            <div class="topic-body">
+
+                                <div class="topic-top">
+
+                                    <span class="topic-tag">
+                                        STUDIO
+                                    </span>
+
+                                    <span
+                                        class="topic-arrow"
+                                        aria-hidden="true"
+                                    >
+                                        ↗
+                                    </span>
+
+                                </div>
+
+                                <h3>
+                                    Studio setup
+                                </h3>
+
+                                <p>
+                                    Build your professional studio profile,
+                                    manage services and packages, portfolio
+                                    information, and equipment.
+                                </p>
+
+                                <div class="topic-links">
+                                    <span>Profile</span>
+                                    <span>Services</span>
+                                    <span>Portfolio</span>
+                                </div>
+
+                            </div>
+
+                        </article>
+
+
+                        <!-- BOOKINGS -->
+
+                        <article
+                            class="topic-card"
+                            data-category="bookings"
+                            data-search="booking bookings client appointment date package location request manage accept track"
+                        >
+
+                            <div class="topic-number">
+                                03
+                            </div>
+
+                            <div class="topic-body">
+
+                                <div class="topic-top">
+
+                                    <span class="topic-tag">
+                                        BOOKINGS
+                                    </span>
+
+                                    <span
+                                        class="topic-arrow"
+                                        aria-hidden="true"
+                                    >
+                                        ↗
+                                    </span>
+
+                                </div>
+
+                                <h3>
+                                    Bookings & clients
+                                </h3>
+
+                                <p>
+                                    Understand booking requests, client
+                                    information, selected packages, dates,
+                                    locations, and booking management.
+                                </p>
+
+                                <div class="topic-links">
+                                    <span>Booking requests</span>
+                                    <span>Client details</span>
+                                </div>
+
+                            </div>
+
+                        </article>
+
+
+                        <!-- GALLERIES -->
+
+                        <article
+                            class="topic-card"
+                            data-category="galleries"
+                            data-search="client gallery galleries photos media albums password downloads storage send client gallery shop"
+                        >
+
+                            <div class="topic-number">
+                                04
+                            </div>
+
+                            <div class="topic-body">
+
+                                <div class="topic-top">
+
+                                    <span class="topic-tag">
+                                        GALLERIES
+                                    </span>
+
+                                    <span
+                                        class="topic-arrow"
+                                        aria-hidden="true"
+                                    >
+                                        ↗
+                                    </span>
+
+                                </div>
+
+                                <h3>
+                                    Client galleries
+                                </h3>
+
+                                <p>
+                                    Organize client galleries, media,
+                                    albums, passwords, downloads, storage,
+                                    and gallery delivery.
+                                </p>
+
+                                <div class="topic-links">
+                                    <span>Gallery setup</span>
+                                    <span>Client delivery</span>
+                                </div>
+
+                            </div>
+
+                        </article>
+
+
+                        <!-- BILLING -->
+
+                        <article
+                            class="topic-card"
+                            data-category="billing"
+                            data-search="subscription plan pricing starter professional enterprise billing payment renewal storage upgrade downgrade"
+                        >
+
+                            <div class="topic-number">
+                                05
+                            </div>
+
+                            <div class="topic-body">
+
+                                <div class="topic-top">
+
+                                    <span class="topic-tag">
+                                        BILLING
+                                    </span>
+
+                                    <span
+                                        class="topic-arrow"
+                                        aria-hidden="true"
+                                    >
+                                        ↗
+                                    </span>
+
+                                </div>
+
+                                <h3>
+                                    Plans & subscriptions
+                                </h3>
+
+                                <p>
+                                    Understand Professional Studio plans,
+                                    subscription status, storage limits,
+                                    renewals, and plan changes.
+                                </p>
+
+                                <div class="topic-links">
+                                    <span>Plans</span>
+                                    <span>Storage</span>
+                                    <span>Renewals</span>
+                                </div>
+
+                            </div>
+
+                        </article>
+
+
+                        <!-- SERVICES -->
+
+                        <article
+                            class="topic-card"
+                            data-category="studio"
+                            data-search="services packages photography pricing service management package price duration"
+                        >
+
+                            <div class="topic-number">
+                                06
+                            </div>
+
+                            <div class="topic-body">
+
+                                <div class="topic-top">
+
+                                    <span class="topic-tag">
+                                        STUDIO
+                                    </span>
+
+                                    <span
+                                        class="topic-arrow"
+                                        aria-hidden="true"
+                                    >
+                                        ↗
+                                    </span>
+
+                                </div>
+
+                                <h3>
+                                    Services & packages
+                                </h3>
+
+                                <p>
+                                    Create and manage the photography
+                                    services and packages you offer to
+                                    potential clients.
+                                </p>
+
+                                <div class="topic-links">
+                                    <span>Services</span>
+                                    <span>Packages</span>
+                                </div>
+
+                            </div>
+
+                        </article>
+
+
+                        <!-- REVIEWS -->
+
+                        <article
+                            class="topic-card"
+                            data-category="account"
+                            data-search="reviews feedback client review rating testimonial reputation"
+                        >
+
+                            <div class="topic-number">
+                                07
+                            </div>
+
+                            <div class="topic-body">
+
+                                <div class="topic-top">
+
+                                    <span class="topic-tag">
+                                        REVIEWS
+                                    </span>
+
+                                    <span
+                                        class="topic-arrow"
+                                        aria-hidden="true"
+                                    >
+                                        ↗
+                                    </span>
+
+                                </div>
+
+                                <h3>
+                                    Reviews & feedback
+                                </h3>
+
+                                <p>
+                                    Learn how client feedback and reviews
+                                    are presented and how they contribute
+                                    to your studio profile.
+                                </p>
+
+                                <div class="topic-links">
+                                    <span>Client reviews</span>
+                                    <span>Feedback</span>
+                                </div>
+
+                            </div>
+
+                        </article>
+
+
+                        <!-- REFERRALS -->
+
+                        <article
+                            class="topic-card"
+                            data-category="billing"
+                            data-search="referral referral code sales marketing free month commission first subscription"
+                        >
+
+                            <div class="topic-number">
+                                08
+                            </div>
+
+                            <div class="topic-body">
+
+                                <div class="topic-top">
+
+                                    <span class="topic-tag">
+                                        REFERRALS
+                                    </span>
+
+                                    <span
+                                        class="topic-arrow"
+                                        aria-hidden="true"
+                                    >
+                                        ↗
+                                    </span>
+
+                                </div>
+
+                                <h3>
+                                    Referral program
+                                </h3>
+
+                                <p>
+                                    Understand referral codes, the
+                                    introductory access period, and how
+                                    referral rewards work.
+                                </p>
+
+                                <div class="topic-links">
+                                    <span>Referral codes</span>
+                                    <span>Rewards</span>
+                                </div>
+
+                            </div>
+
+                        </article>
+
+                    </div>
+
+
+                    <!-- =========================================
+                         NO SEARCH RESULTS
+                    ========================================== -->
+
+                    <div
+                        class="empty-state"
+                        id="emptyState"
+                        hidden
+                    >
+
+                        <div class="empty-mark">
+                            ⌕
+                        </div>
+
+                        <h3>
+                            No matching help found
+                        </h3>
+
+                        <p>
+                            Try another search term or browse
+                            all help topics.
+                        </p>
+
+                        <button
+                            type="button"
+                            id="resetSearch"
+                        >
+                            View all topics
+                        </button>
+
+                    </div>
+
+
+                    <!-- =========================================
+                         COMMON QUESTIONS
+                    ========================================== -->
+
+                    <section class="faq-section">
+
+                        <div class="faq-heading">
+
+                            <div>
+
+                                <span class="section-kicker">
+                                    QUICK ANSWERS
+                                </span>
+
+                                <h2>
+                                    Common questions
+                                </h2>
+
+                            </div>
+
+                            <p>
+                                The things photographers usually
+                                want answered first.
+                            </p>
+
+                        </div>
+
+
+                        <div class="faq-list">
+
+                            <!-- FAQ 1 -->
+
+                            <article class="faq-item">
+
+                                <button
+                                    type="button"
+                                    class="faq-question"
+                                    aria-expanded="false"
+                                    aria-controls="faqAnswer1"
+                                >
+
+                                    <span>
+                                        How do I create my
+                                        Professional Studio account?
+                                    </span>
+
+                                    <span
+                                        class="faq-icon"
+                                        aria-hidden="true"
+                                    >
+                                        +
+                                    </span>
+
+                                </button>
+
+                                <div
+                                    class="faq-answer"
+                                    id="faqAnswer1"
+                                    aria-hidden="true"
+                                >
+                                    <p>
+                                        Use the sign-up page to create
+                                        your account with the required
+                                        information. After signing in,
+                                        complete your studio profile so
+                                        your Professional Studio workspace
+                                        is ready to use.
+                                    </p>
+                                </div>
+
+                            </article>
+
+
+                            <!-- FAQ 2 -->
+
+                            <article class="faq-item">
+
+                                <button
+                                    type="button"
+                                    class="faq-question"
+                                    aria-expanded="false"
+                                    aria-controls="faqAnswer2"
+                                >
+
+                                    <span>
+                                        Where can I manage my studio
+                                        profile and services?
+                                    </span>
+
+                                    <span
+                                        class="faq-icon"
+                                        aria-hidden="true"
+                                    >
+                                        +
+                                    </span>
+
+                                </button>
+
+                                <div
+                                    class="faq-answer"
+                                    id="faqAnswer2"
+                                    aria-hidden="true"
+                                >
+                                    <p>
+                                        Your studio information and
+                                        professional details are managed
+                                        from your dashboard and profile
+                                        setup areas. Services and packages
+                                        have their own management section
+                                        so the offerings shown to clients
+                                        can be kept up to date.
+                                    </p>
+                                </div>
+
+                            </article>
+
+
+                            <!-- FAQ 3 -->
+
+                            <article class="faq-item">
+
+                                <button
+                                    type="button"
+                                    class="faq-question"
+                                    aria-expanded="false"
+                                    aria-controls="faqAnswer3"
+                                >
+
+                                    <span>
+                                        How do client bookings work?
+                                    </span>
+
+                                    <span
+                                        class="faq-icon"
+                                        aria-hidden="true"
+                                    >
+                                        +
+                                    </span>
+
+                                </button>
+
+                                <div
+                                    class="faq-answer"
+                                    id="faqAnswer3"
+                                    aria-hidden="true"
+                                >
+                                    <p>
+                                        Clients can provide their details,
+                                        select a service or package, choose
+                                        relevant booking information, and
+                                        submit a request. Studio owners can
+                                        then review and manage bookings from
+                                        their booking management workflow.
+                                    </p>
+                                </div>
+
+                            </article>
+
+
+                            <!-- FAQ 4 -->
+
+                            <article class="faq-item">
+
+                                <button
+                                    type="button"
+                                    class="faq-question"
+                                    aria-expanded="false"
+                                    aria-controls="faqAnswer4"
+                                >
+
+                                    <span>
+                                        How do client galleries work?
+                                    </span>
+
+                                    <span
+                                        class="faq-icon"
+                                        aria-hidden="true"
+                                    >
+                                        +
+                                    </span>
+
+                                </button>
+
+                                <div
+                                    class="faq-answer"
+                                    id="faqAnswer4"
+                                    aria-hidden="true"
+                                >
+                                    <p>
+                                        Client galleries are used to
+                                        organize and prepare photography
+                                        work for clients. Gallery setup
+                                        includes media, albums, access
+                                        settings, download controls,
+                                        passwords, and delivery status.
+                                    </p>
+                                </div>
+
+                            </article>
+
+
+                            <!-- FAQ 5 -->
+
+                            <article class="faq-item">
+
+                                <button
+                                    type="button"
+                                    class="faq-question"
+                                    aria-expanded="false"
+                                    aria-controls="faqAnswer5"
+                                >
+
+                                    <span>
+                                        What Professional Studio plans
+                                        are available?
+                                    </span>
+
+                                    <span
+                                        class="faq-icon"
+                                        aria-hidden="true"
+                                    >
+                                        +
+                                    </span>
+
+                                </button>
+
+                                <div
+                                    class="faq-answer"
+                                    id="faqAnswer5"
+                                    aria-hidden="true"
+                                >
+                                    <p>
+                                        Professional Studio currently
+                                        organizes subscriptions into
+                                        Starter, Professional, and
+                                        Enterprise plans. Each plan has
+                                        its own storage allowance and
+                                        subscription status.
+                                    </p>
+                                </div>
+
+                            </article>
+
+
+                            <!-- FAQ 6 -->
+
+                            <article class="faq-item">
+
+                                <button
+                                    type="button"
+                                    class="faq-question"
+                                    aria-expanded="false"
+                                    aria-controls="faqAnswer6"
+                                >
+
+                                    <span>
+                                        What happens if I cannot find
+                                        an answer here?
+                                    </span>
+
+                                    <span
+                                        class="faq-icon"
+                                        aria-hidden="true"
+                                    >
+                                        +
+                                    </span>
+
+                                </button>
+
+                                <div
+                                    class="faq-answer"
+                                    id="faqAnswer6"
+                                    aria-hidden="true"
+                                >
+                                    <p>
+                                        Contact the Professional Studio
+                                        support team and include enough
+                                        information to identify the issue,
+                                        such as the page you were using
+                                        and what happened. This helps
+                                        support investigate the problem
+                                        without making everyone play
+                                        detective.
+                                    </p>
+                                </div>
+
+                            </article>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- =========================================
+                         SUPPORT CTA
+                    ========================================== -->
+
+                    <section class="support-panel">
+
+                        <div class="support-copy">
+
+                            <span class="section-kicker">
+                                DIRECT SUPPORT
+                            </span>
+
+                            <h2>
+                                Couldn't find what you need?
+                            </h2>
+
+                            <p>
+                                Tell us what you're trying to do and
+                                what went wrong. We'll help you find
+                                the right path.
+                            </p>
+
+                        </div>
+
+                        <a
+                            href="contact.html"
+                            class="support-link"
+                        >
+                            Contact Support
+                            <span aria-hidden="true">↗</span>
+                        </a>
+
+                    </section>
+
                 </div>
 
             </div>
-
-
-            <div class="question">
-
-                <button type="button">
-
-                    <span>
-                        How can I manage my bookings?
-                    </span>
-
-                    <span>
-                        +
-                    </span>
-
-                </button>
-
-                <div class="answer">
-                    Your bookings can be managed from the booking
-                    management section of your Professional Studio
-                    dashboard.
-                </div>
-
-            </div>
-
-
-            <div class="question">
-
-                <button type="button">
-
-                    <span>
-                        Can I update my studio information?
-                    </span>
-
-                    <span>
-                        +
-                    </span>
-
-                </button>
-
-                <div class="answer">
-                    Yes. Your studio profile and relevant business
-                    information can be updated from your account
-                    settings.
-                </div>
-
-            </div>
-
-
-            <div class="question">
-
-                <button type="button">
-
-                    <span>
-                        What should I do if I have a problem?
-                    </span>
-
-                    <span>
-                        +
-                    </span>
-
-                </button>
-
-                <div class="answer">
-                    If you cannot find a solution here, contact our
-                    support team and provide details about the issue
-                    you are experiencing.
-                </div>
-
-            </div>
-
 
         </section>
-
-
-        <div
-            class="no-results"
-            id="noResults"
-        >
-            No matching help topics or questions found.
-        </div>
-
-
-        <!-- SUPPORT -->
-
-        <section class="support">
-
-            <h2>
-                Still need help?
-            </h2>
-
-            <p>
-                If you couldn't find what you're looking for,
-                contact our support team.
-            </p>
-
-            <a
-                href="contact.html"
-                class="support-btn"
-            >
-                Contact Support
-            </a>
-
-        </section>
-
-             <footer class="footer-bottom">
-
-    
-                <p>
-
-                © 2026 Professional Studio. All Rights Reserved.
-
-            </p>
-
-
-        <p>
-            Powered by <a href="https://bluehorizanlabs.vercel.app/" target="_blank"> Bluehorizanlabs</a> 
-        </p>
-    
-
-
 
     </main>
 
 
-    <!-- =========================
-         JAVASCRIPT
-    ========================= -->
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
 
-    <script>
+    <footer class="site-footer">
 
-        /* =========================
-           FAQ ACCORDION
-        ========================= */
+        <div class="footer-inner">
 
-        const questions =
-            document.querySelectorAll(".question");
+            <div class="footer-brand">
 
+                <a
+                    href="index.html"
+                    class="footer-logo"
+                >
+                    <span
+                        class="footer-mark"
+                        aria-hidden="true"
+                    >
+                        ◇
+                    </span>
 
-        questions.forEach(function(question) {
+                    Professional Studio
+                </a>
 
-            const button =
-                question.querySelector("button");
+                <p>
+                    A professional workspace for photographers.
+                </p>
 
-
-            button.addEventListener("click", function() {
-
-                question.classList.toggle("active");
-
-            });
-
-        });
-
-
-        /* =========================
-           SEARCH
-        ========================= */
-
-        const searchInput =
-            document.getElementById("searchInput");
-
-        const topics =
-            document.querySelectorAll(".topic");
-
-        const questionItems =
-            document.querySelectorAll(".question");
-
-        const noResults =
-            document.getElementById("noResults");
+            </div>
 
 
-        searchInput.addEventListener("input", function() {
+            <div class="footer-links">
 
-            const search =
-                searchInput.value.toLowerCase().trim();
+                <a href="index.html">
+                    Home
+                </a>
 
-            let found = false;
+                <a href="privacy.html">
+                    Privacy
+                </a>
 
+                <a href="terms.html">
+                    Terms
+                </a>
 
-            /* Search help topics */
+                <a href="contact.html">
+                    Contact
+                </a>
 
-            topics.forEach(function(topic) {
+            </div>
 
-                const text =
-                    topic.textContent.toLowerCase();
-
-                if (text.includes(search)) {
-
-                    topic.style.display = "";
-
-                    found = true;
-
-                } else {
-
-                    topic.style.display = "none";
-
-                }
-
-            });
+        </div>
 
 
-            /* Search questions */
+        <div class="footer-bottom">
 
-            questionItems.forEach(function(question) {
+            <p>
+                © <span id="currentYear">2026</span>
+                Professional Studio. All Rights Reserved.
+            </p>
 
-                const text =
-                    question.textContent.toLowerCase();
+            <p>
+                Powered by
+                <a
+                    href="https://bluehorizanlabs.vercel.app/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Bluehorizanlabs
+                </a>
+            </p>
 
-                if (text.includes(search)) {
+        </div>
 
-                    question.style.display = "";
-
-                    found = true;
-
-                } else {
-
-                    question.style.display = "none";
-
-                }
-
-            });
+    </footer>
 
 
-            /* Show result message */
-
-            if (search && !found) {
-
-                noResults.style.display = "block";
-
-            } else {
-
-                noResults.style.display = "none";
-
-            }
-
-        });
-
-    </script>
-
+    <script src="help.js" defer></script>
 
 </body>
 
