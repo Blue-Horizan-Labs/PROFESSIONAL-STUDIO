@@ -1394,8 +1394,7 @@ a {
         gap: 12px;
     }
 
-    .footer-bottom p,
-    .footer-links a {
+    .footer-bottom p {
         font-size: 13px;
     }
 
