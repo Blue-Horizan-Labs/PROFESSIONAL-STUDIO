@@ -533,6 +533,85 @@ textarea:focus{
     margin-top:24px;
 }
 
+.location-input-wrap{
+    display:flex;
+    align-items:stretch;
+    gap:8px;
+}
+
+.location-input-wrap input{
+    min-width:0;
+    flex:1;
+}
+
+.location-gps-btn{
+    flex-shrink:0;
+
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+
+    min-height:46px;
+    padding:0 14px;
+
+    border:1px solid #d8d8d8;
+    border-radius:10px;
+
+    background:#fff;
+    color:#111;
+
+    cursor:pointer;
+
+    font-size:12px;
+    font-weight:700;
+    white-space:nowrap;
+
+    transition:
+        border-color .2s ease,
+        background .2s ease,
+        transform .2s ease;
+}
+
+.location-gps-btn:hover{
+    border-color:#111;
+    background:#f7f7f7;
+    transform:translateY(-1px);
+}
+
+.location-gps-btn:focus-visible{
+    outline:none;
+    border-color:#111;
+
+    box-shadow:
+        0 0 0 3px rgba(17,17,17,.07);
+}
+
+.location-gps-btn:disabled{
+    opacity:.6;
+    cursor:not-allowed;
+    transform:none;
+}
+
+.location-status{
+    min-height:18px;
+
+    margin:8px 0 0;
+
+    color:#777;
+
+    font-size:11px;
+    line-height:1.5;
+}
+
+.location-status.success{
+    color:#444;
+}
+
+.location-status.error{
+    color:#9b1c1c;
+}
+
 
 /* ============================================================
    BOOKING SUMMARY
@@ -824,6 +903,15 @@ textarea:focus{
     .form-grid{
         grid-template-columns:1fr;
         gap:18px;
+    }
+
+    .location-input-wrap{
+        flex-direction:column;
+    }
+
+    .location-gps-btn{
+        width:100%;
+        min-height:44px;
     }
 
     .form-group-full{

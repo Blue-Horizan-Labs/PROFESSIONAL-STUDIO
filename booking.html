@@ -5,20 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Book Session | Professional Studio</title>
-<link
-    rel="icon"
-    type="image/png"
-    href="https://i.ibb.co/8g0LT3jZ/logo1-2.png" 
->
+
+    <link
+        rel="icon"
+        type="image/png"
+        href="https://i.ibb.co/8g0LT3jZ/logo1-2.png"
+    >
 
     <meta name="theme-color" content="#111111">
-    <meta name="description" content="Book a photography session with Professional Studio">
+    <meta
+        name="description"
+        content="Book a photography session with Professional Studio"
+    >
 
     <link rel="stylesheet" href="booking.css">
 
     <!-- FLATPICKR -->
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    >
 </head>
 
 <body>
@@ -58,13 +64,19 @@
 
             <!-- TITLE -->
             <div class="booking-intro">
-                <p class="eyebrow">BOOK YOUR SESSION</p>
 
-                <h1>Book Your Session</h1>
+                <p class="eyebrow">
+                    BOOK YOUR SESSION
+                </p>
+
+                <h1>
+                    Book Your Session
+                </h1>
 
                 <p>
                     Complete the details below to send your booking request.
                 </p>
+
             </div>
 
 
@@ -74,8 +86,10 @@
 
             <section class="selected-package-section">
 
-                <div id="selectedPackageCard"
-                     class="selected-package-card">
+                <div
+                    id="selectedPackageCard"
+                    class="selected-package-card"
+                >
 
                     <div class="package-loading">
                         Loading selected package...
@@ -100,15 +114,23 @@
                 <section class="form-section">
 
                     <div class="section-heading">
-                        <span class="section-number">01</span>
+
+                        <span class="section-number">
+                            01
+                        </span>
 
                         <div>
-                            <h2>Client Details</h2>
+
+                            <h2>
+                                Client Details
+                            </h2>
 
                             <p>
                                 Tell us how we can contact you.
                             </p>
+
                         </div>
+
                     </div>
 
 
@@ -126,7 +148,8 @@
                                 name="fullName"
                                 placeholder="Enter your full name"
                                 autocomplete="name"
-                                required>
+                                required
+                            >
 
                         </div>
 
@@ -143,7 +166,8 @@
                                 name="email"
                                 placeholder="you@example.com"
                                 autocomplete="email"
-                                required>
+                                required
+                            >
 
                         </div>
 
@@ -160,7 +184,8 @@
                                 name="phone"
                                 placeholder="Enter your phone number"
                                 autocomplete="tel"
-                                required>
+                                required
+                            >
 
                         </div>
 
@@ -176,15 +201,23 @@
                 <section class="form-section">
 
                     <div class="section-heading">
-                        <span class="section-number">02</span>
+
+                        <span class="section-number">
+                            02
+                        </span>
 
                         <div>
-                            <h2>Session Details</h2>
+
+                            <h2>
+                                Session Details
+                            </h2>
 
                             <p>
                                 Choose your dates, times and location.
                             </p>
+
                         </div>
+
                     </div>
 
 
@@ -206,16 +239,18 @@
                             name="eventDates"
                             placeholder="Select event dates"
                             autocomplete="off"
-                            required>
+                            required
+                        >
 
                     </div>
 
 
                     <!-- DATE / TIME ROWS -->
 
-                    <div id="dateTimeContainer"
-                         class="date-time-container">
-                    </div>
+                    <div
+                        id="dateTimeContainer"
+                        class="date-time-container"
+                    ></div>
 
 
                     <!-- TOTAL HOURS -->
@@ -242,16 +277,43 @@
                         </label>
 
                         <p class="field-help">
-                            Enter the location where the photography session will take place.
+                            Enter the location where the photography session
+                            will take place, or use your current GPS location.
                         </p>
 
-                        <input
-                            type="text"
-                            id="location"
-                            name="location"
-                            placeholder="Enter event or session location"
-                            autocomplete="street-address"
-                            required>
+                        <div class="location-input-wrap">
+
+                            <input
+                                type="text"
+                                id="location"
+                                name="location"
+                                placeholder="Enter event or session location"
+                                autocomplete="street-address"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                id="useCurrentLocationBtn"
+                                class="location-gps-btn"
+                            >
+                                <span aria-hidden="true">
+                                    ⌖
+                                </span>
+
+                                <span>
+                                    Use Current Location
+                                </span>
+                            </button>
+
+                        </div>
+
+                        <p
+                            id="locationStatus"
+                            class="location-status"
+                            role="status"
+                            aria-live="polite"
+                        ></p>
 
                     </div>
 
@@ -268,7 +330,8 @@
                             id="message"
                             name="message"
                             rows="5"
-                            placeholder="Tell us anything important about your session, event or requirements."></textarea>
+                            placeholder="Tell us anything important about your session, event or requirements."
+                        ></textarea>
 
                     </div>
 
@@ -283,7 +346,9 @@
 
                     <div class="summary-row">
 
-                        <span>Service</span>
+                        <span>
+                            Service
+                        </span>
 
                         <strong id="summaryService">
                             —
@@ -294,7 +359,9 @@
 
                     <div class="summary-row">
 
-                        <span>Package</span>
+                        <span>
+                            Package
+                        </span>
 
                         <strong id="summaryPackage">
                             —
@@ -308,7 +375,9 @@
 
                     <div class="summary-total">
 
-                        <span>Total</span>
+                        <span>
+                            Total
+                        </span>
 
                         <strong id="summaryPrice">
                             —
@@ -329,7 +398,8 @@
                     name="website"
                     tabindex="-1"
                     autocomplete="off"
-                    class="honeypot">
+                    class="honeypot"
+                >
 
 
                 <!-- =================================================
@@ -339,15 +409,15 @@
                 <button
                     type="submit"
                     id="submitBtn"
-                    class="submit-btn">
-
+                    class="submit-btn"
+                >
                     Submit Booking Request
-
                 </button>
 
 
                 <p class="booking-note">
-                    Your request will be marked as pending until the photographer confirms availability.
+                    Your request will be marked as pending until the
+                    photographer confirms availability.
                 </p>
 
             </form>
@@ -365,10 +435,9 @@
         id="successPopup"
         class="success-popup"
         role="status"
-        aria-live="polite">
-
+        aria-live="polite"
+    >
         Booking request submitted successfully.
-
     </div>
 
 
@@ -383,13 +452,17 @@
         </p>
 
         <p>
+
             Powered by
+
             <a
                 href="https://bluehorizanlabs.vercel.app/"
                 target="_blank"
-                rel="noopener noreferrer">
+                rel="noopener noreferrer"
+            >
                 Bluehorizanlabs
             </a>
+
         </p>
 
     </footer>
