@@ -2350,18 +2350,14 @@ textarea:disabled {
     color: #888888;
 }
 
-
 .payment-settings-button {
-    flex-shrink: 0;
-    min-width: 150px;
-    padding: 11px 18px;
-    border: 1px solid #dddddd;
-    border-radius: 7px;
-    background: #f5f5f5;
-    color: #999999;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: not-allowed;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    text-decoration: none;
+
+    cursor: pointer;
 }
 
 
