@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Professional Studio | Payment & Accounts
+    </title>
+
+    <meta
+        name="description"
+        content="Manage your Professional Studio payout accounts and payment preferences."
+    >
+
+    <link
+        rel="icon"
+        type="image/png"
+        href="https://i.ibb.co/8g0LT3jZ/logo1-2.png"
+    >
+
+    <link
+        rel="stylesheet"
+        href="payment-accounts.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     NAVBAR
+========================================================= -->
+
+<header class="navbar">
+
+    <a
+        href="user.html"
+        class="nav-brand"
+    >
+        Professional Studio
+    </a>
+
+
+    <nav class="nav-links">
+
+        <a href="user.html">
+            Dashboard
+        </a>
+
+        <a href="setup.html">
+            Profile
+        </a>
+
+        <a href="clientgallery.html">
+            Client Gallery
+        </a>
+
+        <a href="bookingMng.html">
+            Bookings
+        </a>
+
+        <a
+            href="user.html#settings"
+            class="nav-settings"
+        >
+            Settings
+        </a>
+
+    </nav>
+
+</header>
+
+
+
+<!-- =========================================================
+     PAGE HEADER
+========================================================= -->
+
+<main>
+
+    <section class="page-header">
+
+        <div class="page-header-inner">
+
+            <a
+                href="user.html#settings"
+                class="back-link"
+            >
+                ← Back to Settings
+            </a>
+
+
+            <p class="page-eyebrow">
+                PAYMENTS & ACCOUNTS
+            </p>
+
+
+            <h1>
+                Payment & Accounts
+            </h1>
+
+
+            <p class="page-description">
+                Manage the accounts and payout preferences
+                associated with your Professional Studio workspace.
+            </p>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <section class="account-page">
+
+        <div class="account-layout">
+
+
+            <!-- =================================================
+                 LEFT / MAIN COLUMN
+            ================================================== -->
+
+            <div class="account-main">
+
+
+                <!-- =============================================
+                     ACCOUNT STATUS
+                ============================================== -->
+
+                <section class="panel account-status-panel">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <p class="panel-eyebrow">
+                                ACCOUNT STATUS
+                            </p>
+
+                            <h2>
+                                Payout Account
+                            </h2>
+
+                            <p>
+                                Connect an account to receive eligible
+                                payouts from Professional Studio.
+                            </p>
+
+                        </div>
+
+
+                        <span
+                            class="status-badge status-not-connected"
+                            id="accountStatusBadge"
+                        >
+                            Not Connected
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        class="connected-account"
+                        id="connectedAccount"
+                    >
+
+                        <div class="account-icon">
+                            $
+                        </div>
+
+
+                        <div class="account-details">
+
+                            <span class="account-type">
+                                Payout Account
+                            </span>
+
+                            <strong id="accountDisplayName">
+                                No account connected
+                            </strong>
+
+                            <p id="accountDisplayDetails">
+                                Add your bank account below.
+                            </p>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            class="text-button danger-hidden"
+                            id="removeAccountBtn"
+                        >
+                            Remove
+                        </button>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =============================================
+                     BANK ACCOUNT
+                ============================================== -->
+
+                <section class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <p class="panel-eyebrow">
+                                BANK ACCOUNT
+                            </p>
+
+                            <h2>
+                                Payout Account Details
+                            </h2>
+
+                            <p>
+                                Enter the account where you want
+                                your Professional Studio payouts sent.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <form
+                        id="bankAccountForm"
+                        class="account-form"
+                        novalidate
+                    >
+
+
+                        <div class="form-grid">
+
+
+                            <div class="form-group form-full">
+
+                                <label for="accountHolder">
+                                    Account Holder Name
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="accountHolder"
+                                    name="accountHolder"
+                                    placeholder="Enter account holder name"
+                                    autocomplete="name"
+                                >
+
+                                <small
+                                    class="field-error"
+                                    id="accountHolderError"
+                                ></small>
+
+                            </div>
+
+
+
+                            <div class="form-group">
+
+                                <label for="bankName">
+                                    Bank Name
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="bankName"
+                                    name="bankName"
+                                    placeholder="e.g. State Bank of India"
+                                    autocomplete="organization"
+                                >
+
+                                <small
+                                    class="field-error"
+                                    id="bankNameError"
+                                ></small>
+
+                            </div>
+
+
+
+                            <div class="form-group">
+
+                                <label for="accountType">
+                                    Account Type
+                                </label>
+
+                                <select
+                                    id="accountType"
+                                    name="accountType"
+                                >
+
+                                    <option value="">
+                                        Select account type
+                                    </option>
+
+                                    <option value="Savings">
+                                        Savings
+                                    </option>
+
+                                    <option value="Current">
+                                        Current
+                                    </option>
+
+                                </select>
+
+                                <small
+                                    class="field-error"
+                                    id="accountTypeError"
+                                ></small>
+
+                            </div>
+
+
+
+                            <div class="form-group">
+
+                                <label for="accountNumber">
+                                    Account Number
+                                </label>
+
+                                <div class="password-input">
+
+                                    <input
+                                        type="password"
+                                        id="accountNumber"
+                                        name="accountNumber"
+                                        inputmode="numeric"
+                                        maxlength="18"
+                                        placeholder="Enter account number"
+                                        autocomplete="off"
+                                    >
+
+                                    <button
+                                        type="button"
+                                        class="input-action"
+                                        data-toggle="accountNumber"
+                                        aria-label="Show account number"
+                                    >
+                                        Show
+                                    </button>
+
+                                </div>
+
+                                <small
+                                    class="field-error"
+                                    id="accountNumberError"
+                                ></small>
+
+                            </div>
+
+
+
+                            <div class="form-group">
+
+                                <label for="confirmAccountNumber">
+                                    Confirm Account Number
+                                </label>
+
+                                <input
+                                    type="password"
+                                    id="confirmAccountNumber"
+                                    name="confirmAccountNumber"
+                                    inputmode="numeric"
+                                    maxlength="18"
+                                    placeholder="Re-enter account number"
+                                    autocomplete="off"
+                                >
+
+                                <small
+                                    class="field-error"
+                                    id="confirmAccountNumberError"
+                                ></small>
+
+                            </div>
+
+
+
+                            <div class="form-group form-full">
+
+                                <label for="ifsc">
+                                    IFSC Code
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="ifsc"
+                                    name="ifsc"
+                                    maxlength="11"
+                                    placeholder="e.g. SBIN0001234"
+                                    autocomplete="off"
+                                    autocapitalize="characters"
+                                >
+
+                                <small
+                                    class="field-help"
+                                >
+                                    11-character Indian bank IFSC code.
+                                </small>
+
+                                <small
+                                    class="field-error"
+                                    id="ifscError"
+                                ></small>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-security-note">
+
+                            <span class="security-symbol">
+                                ✓
+                            </span>
+
+                            <p>
+                                Your account details are currently
+                                handled in frontend demo mode.
+                                Production payment processing should
+                                use secure server-side storage.
+                            </p>
+
+                        </div>
+
+
+                        <div class="form-actions">
+
+                            <button
+                                type="button"
+                                class="btn-secondary"
+                                id="clearFormBtn"
+                            >
+                                Clear
+                            </button>
+
+                            <button
+                                type="submit"
+                                class="btn-primary"
+                            >
+                                Save Account
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </section>
+
+
+
+                <!-- =============================================
+                     UPI / ALTERNATIVE METHOD
+                ============================================== 
+
+                <section class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <p class="panel-eyebrow">
+                                ALTERNATIVE METHOD
+                            </p>
+
+                            <h2>
+                                UPI Payout
+                            </h2>
+
+                            <p>
+                                Keep a UPI ID available for future
+                                payout options.
+                            </p>
+
+                        </div>
+
+
+                        <span
+                            class="method-status"
+                            id="upiStatus"
+                        >
+                            Not Added
+                        </span>
+
+                    </div>
+
+
+                    <form
+                        id="upiForm"
+                        class="upi-form"
+                        novalidate
+                    >
+
+                        <div class="upi-input-wrap">
+
+                            <label for="upiId">
+                                UPI ID
+                            </label>
+
+                            <input
+                                type="text"
+                                id="upiId"
+                                placeholder="example@upi"
+                                autocomplete="off"
+                            >
+
+                            <small
+                                class="field-error"
+                                id="upiError"
+                            ></small>
+
+                        </div>
+
+
+                        <button
+                            type="submit"
+                            class="btn-secondary"
+                        >
+                            Save UPI
+                        </button>
+
+                    </form>
+
+                </section> -->
+
+
+
+                <!-- =============================================
+                     PAYOUT HISTORY
+                ============================================== -->
+
+                <section class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <p class="panel-eyebrow">
+                                ACTIVITY
+                            </p>
+
+                            <h2>
+                                Payout History
+                            </h2>
+
+                            <p>
+                                Review recent payout activity.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="payout-history"
+                        id="payoutHistory"
+                    >
+
+                        <div class="empty-history">
+
+                            <div class="empty-history-icon">
+                                —
+                            </div>
+
+                            <strong>
+                                No payout activity yet
+                            </strong>
+
+                            <p>
+                                Your payout history will appear
+                                here once payouts are processed.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 RIGHT SIDEBAR
+            ================================================== -->
+
+            <aside class="account-sidebar">
+
+
+                <!-- =============================================
+                     PAYOUT PREFERENCES
+                ============================================== -->
+
+                <section class="side-panel">
+
+                    <p class="panel-eyebrow">
+                        PAYOUT PREFERENCES
+                    </p>
+
+                    <h3>
+                        Default Method
+                    </h3>
+
+                    <div class="preference-row">
+
+                        <span>
+                            Bank Account
+                        </span>
+
+                        <strong id="defaultMethod">
+                            Not configured
+                        </strong>
+
+                    </div>
+
+
+                    <div class="preference-row">
+
+                        <span>
+                            Account Status
+                        </span>
+
+                        <strong id="sidebarStatus">
+                            Not connected
+                        </strong>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =============================================
+                     INFORMATION
+                ============================================== -->
+
+                <section class="side-panel information-panel">
+
+                    <p class="panel-eyebrow">
+                        IMPORTANT
+                    </p>
+
+                    <h3>
+                        About payouts
+                    </h3>
+
+                    <ul>
+
+                        <li>
+                            Payout details should belong to
+                            the account holder.
+                        </li>
+
+                        <li>
+                            Bank information should be verified
+                            before production payouts are enabled.
+                        </li>
+
+                        <li>
+                            Payment processing and payout
+                            verification will be handled securely
+                            by the backend in the production system.
+                        </li>
+
+                    </ul>
+
+                </section>
+
+
+
+                <!-- =============================================
+                     SUPPORT
+                ============================================== -->
+
+                <section class="side-panel support-panel">
+
+                    <span class="support-label">
+                        NEED HELP?
+                    </span>
+
+                    <h3>
+                        Payment support
+                    </h3>
+
+                    <p>
+                        Questions about payments or payouts?
+                        Contact Professional Studio support.
+                    </p>
+
+                    <a
+                        href="contact.html"
+                        class="support-link"
+                    >
+                        Contact Support →
+                    </a>
+
+                </section>
+
+            </aside>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+
+<!-- =========================================================
+     TOAST
+========================================================= -->
+
+<div
+    id="toast"
+    class="toast"
+    role="status"
+    aria-live="polite"
+></div>
+
+
+
+<!-- =========================================================
+     FOOTER
+========================================================= -->
+
+<footer class="footer">
+
+    <div class="footer-inner">
+
+        <div>
+
+            <strong>
+                Professional Studio
+            </strong>
+
+            <p>
+                Tools for modern photography businesses.
+            </p>
+
+        </div>
+
+
+        <div class="footer-links">
+
+            <a href="privacy.html">
+                Privacy
+            </a>
+
+            <a href="terms.html">
+                Terms
+            </a>
+
+            <a href="contact.html">
+                Contact
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="footer-bottom">
+
+        © 2026 Professional Studio.
+        All Rights Reserved.
+
+    </div>
+
+</footer>
+
+
+<script src="payment-accounts.js"></script>
+
+</body>
+
+</html>
