@@ -234,7 +234,6 @@ function syncBookingPaymentPlans() {
 
     let changed = false;
 
-
     bookings = bookings.map(
         booking => {
 
@@ -243,22 +242,11 @@ function syncBookingPaymentPlans() {
                     booking
                 );
 
-
             const packageData =
                 findPackageForBooking(
                     booking,
                     service
                 );
-
-
-            /*
-             * Keep the original booking payment plan
-             * once one has already been stored.
-             *
-             * This prevents a photographer from changing
-             * a service package later and accidentally
-             * changing an existing booking.
-             */
 
             if (
                 !booking.paymentPlan &&
@@ -284,12 +272,6 @@ function syncBookingPaymentPlans() {
 
             }
 
-
-            /*
-             * Fill package price only when the booking
-             * itself does not already contain it.
-             */
-
             if (
                 extractPrice(
                     booking.packagePrice
@@ -302,7 +284,6 @@ function syncBookingPaymentPlans() {
                         packageData.price
                     );
 
-
                 if (packagePrice > 0) {
 
                     booking.packagePrice =
@@ -314,17 +295,14 @@ function syncBookingPaymentPlans() {
 
             }
 
-
             const beforeAmount =
                 extractPrice(
                     booking.amountPaid
                 );
 
-
             ensureBookingPaymentState(
                 booking
             );
-
 
             if (
                 beforeAmount !==
@@ -337,17 +315,13 @@ function syncBookingPaymentPlans() {
 
             }
 
-
             return booking;
 
         }
     );
 
-
     if (changed) {
-
         saveBookings();
-
     }
 
 }
@@ -389,16 +363,13 @@ function setupEvents() {
                         ".filter-btn"
                     );
 
-
                 if (!button) {
                     return;
                 }
 
-
                 activeFilter =
                     button.dataset.filter ||
                     "all";
-
 
                 document
                     .querySelectorAll(
@@ -411,11 +382,9 @@ function setupEvents() {
                             )
                     );
 
-
                 button.classList.add(
                     "active"
                 );
-
 
                 renderBookings();
 
@@ -431,9 +400,12 @@ function setupEvents() {
             "click",
             () => {
 
-                calendarDate.setMonth(
-                    calendarDate.getMonth() - 1
-                );
+                calendarDate =
+                    new Date(
+                        calendarDate.getFullYear(),
+                        calendarDate.getMonth() - 1,
+                        1
+                    );
 
                 selectedCalendarDate = null;
 
@@ -451,9 +423,12 @@ function setupEvents() {
             "click",
             () => {
 
-                calendarDate.setMonth(
-                    calendarDate.getMonth() + 1
-                );
+                calendarDate =
+                    new Date(
+                        calendarDate.getFullYear(),
+                        calendarDate.getMonth() + 1,
+                        1
+                    );
 
                 selectedCalendarDate = null;
 
@@ -528,7 +503,6 @@ function setupEvents() {
 
             }
 
-
             loadServices();
             loadBookings();
 
@@ -545,6 +519,118 @@ function setupEvents() {
 
 
 /* ============================================================
+   GLOBAL BOOKING ACTIONS
+============================================================ */
+
+document.addEventListener(
+    "click",
+    event => {
+
+        const button =
+            event.target.closest(
+                "[data-action]"
+            );
+
+        if (!button) {
+            return;
+        }
+
+        const action =
+            button.dataset.action;
+
+        const bookingId =
+            button.dataset.id;
+
+        if (!bookingId) {
+            return;
+        }
+
+        if (
+            action ===
+            "view"
+        ) {
+
+            openBookingModal(
+                bookingId
+            );
+
+            return;
+
+        }
+
+        if (
+            action ===
+            "accept"
+        ) {
+
+            updateBookingStatus(
+                bookingId,
+                "Accepted"
+            );
+
+            return;
+
+        }
+
+        if (
+            action ===
+            "confirm"
+        ) {
+
+            updateBookingStatus(
+                bookingId,
+                "Confirmed"
+            );
+
+            return;
+
+        }
+
+        if (
+            action ===
+            "reject"
+        ) {
+
+            updateBookingStatus(
+                bookingId,
+                "Cancelled"
+            );
+
+            return;
+
+        }
+
+        if (
+            action ===
+            "complete"
+        ) {
+
+            updateBookingStatus(
+                bookingId,
+                "Completed"
+            );
+
+            return;
+
+        }
+
+        if (
+            action ===
+            "cancel"
+        ) {
+
+            updateBookingStatus(
+                bookingId,
+                "Cancelled"
+            );
+
+        }
+
+    }
+);
+
+
+/* ============================================================
    OVERVIEW
 ============================================================ */
 
@@ -552,7 +638,6 @@ function renderOverview() {
 
     const total =
         bookings.length;
-
 
     const pending =
         bookings.filter(
@@ -562,7 +647,6 @@ function renderOverview() {
                 ) === "Pending"
         ).length;
 
-
     const accepted =
         bookings.filter(
             booking =>
@@ -570,7 +654,6 @@ function renderOverview() {
                     booking.status
                 ) === "Accepted"
         ).length;
-
 
     const confirmed =
         bookings.filter(
@@ -580,7 +663,6 @@ function renderOverview() {
                 ) === "Confirmed"
         ).length;
 
-
     const completed =
         bookings.filter(
             booking =>
@@ -588,7 +670,6 @@ function renderOverview() {
                     booking.status
                 ) === "Completed"
         ).length;
-
 
     totalBookings.textContent =
         total;
@@ -622,21 +703,17 @@ function getFilteredBookings() {
                     booking.status
                 );
 
-
             const matchesFilter =
                 activeFilter === "all" ||
                 status === activeFilter;
-
 
             if (!matchesFilter) {
                 return false;
             }
 
-
             if (!searchTerm) {
                 return true;
             }
-
 
             const searchableText = [
 
@@ -652,7 +729,6 @@ function getFilteredBookings() {
                 .filter(Boolean)
                 .join(" ")
                 .toLowerCase();
-
 
             return searchableText.includes(
                 searchTerm
@@ -673,14 +749,12 @@ function renderBookings() {
     const filteredBookings =
         getFilteredBookings();
 
-
     bookingCount.textContent =
         `${filteredBookings.length} ${
             filteredBookings.length === 1
                 ? "booking"
                 : "bookings"
         }`;
-
 
     if (!filteredBookings.length) {
 
@@ -718,7 +792,6 @@ function renderBookings() {
 
     }
 
-
     bookingsContainer.innerHTML =
         filteredBookings
             .map(
@@ -742,43 +815,35 @@ function createBookingCard(
             booking.status
         );
 
-
     ensureBookingPaymentState(
         booking
     );
-
 
     const clientName =
         booking.client ||
         booking.name ||
         "Unknown Client";
 
-
     const service =
         booking.service ||
         "Photography Service";
 
-
     const packageName =
         booking.package ||
         "Package";
-
 
     const price =
         extractPrice(
             booking.packagePrice
         );
 
-
     const dates =
         getBookingDates(
             booking
         );
 
-
     const firstDate =
         dates[0];
-
 
     const dateText =
         firstDate
@@ -787,27 +852,31 @@ function createBookingCard(
             )
             : "Date not provided";
 
-
     const timeText =
         firstDate
             ? formatTimeRange(
                 firstDate.startTime,
                 firstDate.endTime
             )
-            : booking.time ||
-              "Time not provided";
-
+            : booking.time
+                ? formatDisplayTime(
+                    booking.time
+                )
+                : "Time not provided";
 
     const location =
         booking.location ||
         "Location not provided";
-
 
     const initials =
         getInitials(
             clientName
         );
 
+    const id =
+        getBookingId(
+            booking
+        );
 
     let actionButtons = `
 
@@ -815,11 +884,7 @@ function createBookingCard(
             type="button"
             class="action-btn"
             data-action="view"
-            data-id="${escapeAttribute(
-                getBookingId(
-                    booking
-                )
-            )}"
+            data-id="${escapeAttribute(id)}"
         >
             View Details
         </button>
@@ -837,25 +902,16 @@ function createBookingCard(
                 type="button"
                 class="action-btn primary"
                 data-action="accept"
-                data-id="${escapeAttribute(
-                    getBookingId(
-                        booking
-                    )
-                )}"
+                data-id="${escapeAttribute(id)}"
             >
                 Accept
             </button>
-
 
             <button
                 type="button"
                 class="action-btn danger"
                 data-action="reject"
-                data-id="${escapeAttribute(
-                    getBookingId(
-                        booking
-                    )
-                )}"
+                data-id="${escapeAttribute(id)}"
             >
                 Reject
             </button>
@@ -873,13 +929,27 @@ function createBookingCard(
 
             <button
                 type="button"
+                class="action-btn primary"
+                data-action="confirm"
+                data-id="${escapeAttribute(id)}"
+            >
+                Confirm Booking
+            </button>
+
+            <button
+                type="button"
+                class="action-btn primary"
+                data-action="complete"
+                data-id="${escapeAttribute(id)}"
+            >
+                Mark Completed
+            </button>
+
+            <button
+                type="button"
                 class="action-btn danger"
                 data-action="cancel"
-                data-id="${escapeAttribute(
-                    getBookingId(
-                        booking
-                    )
-                )}"
+                data-id="${escapeAttribute(id)}"
             >
                 Cancel
             </button>
@@ -899,25 +969,16 @@ function createBookingCard(
                 type="button"
                 class="action-btn primary"
                 data-action="complete"
-                data-id="${escapeAttribute(
-                    getBookingId(
-                        booking
-                    )
-                )}"
+                data-id="${escapeAttribute(id)}"
             >
-                Mark Complete
+                Mark Completed
             </button>
-
 
             <button
                 type="button"
                 class="action-btn danger"
                 data-action="cancel"
-                data-id="${escapeAttribute(
-                    getBookingId(
-                        booking
-                    )
-                )}"
+                data-id="${escapeAttribute(id)}"
             >
                 Cancel
             </button>
@@ -936,27 +997,19 @@ function createBookingCard(
                 <div class="booking-main">
 
                     <h3 class="booking-service">
-                        ${escapeHtml(
-                            service
-                        )}
+                        ${escapeHtml(service)}
                     </h3>
 
-
                     <p class="booking-package">
-                        ${escapeHtml(
-                            packageName
-                        )}
+                        ${escapeHtml(packageName)}
                     </p>
 
                 </div>
 
-
                 <span
                     class="status-badge status-${status.toLowerCase()}"
                 >
-                    ${escapeHtml(
-                        status
-                    )}
+                    ${escapeHtml(status)}
                 </span>
 
             </div>
@@ -965,20 +1018,14 @@ function createBookingCard(
             <div class="booking-client">
 
                 <div class="client-avatar">
-                    ${escapeHtml(
-                        initials
-                    )}
+                    ${escapeHtml(initials)}
                 </div>
-
 
                 <div class="client-info">
 
                     <strong>
-                        ${escapeHtml(
-                            clientName
-                        )}
+                        ${escapeHtml(clientName)}
                     </strong>
-
 
                     <span>
                         ${escapeHtml(
@@ -1001,11 +1048,8 @@ function createBookingCard(
                         Next Session
                     </span>
 
-
                     <span class="meta-value">
-                        ${escapeHtml(
-                            dateText
-                        )}
+                        ${escapeHtml(dateText)}
                     </span>
 
                 </div>
@@ -1017,11 +1061,8 @@ function createBookingCard(
                         Time
                     </span>
 
-
                     <span class="meta-value">
-                        ${escapeHtml(
-                            timeText
-                        )}
+                        ${escapeHtml(timeText)}
                     </span>
 
                 </div>
@@ -1033,11 +1074,8 @@ function createBookingCard(
                         Location
                     </span>
 
-
                     <span class="meta-value">
-                        ${escapeHtml(
-                            location
-                        )}
+                        ${escapeHtml(location)}
                     </span>
 
                 </div>
@@ -1074,16 +1112,11 @@ function createBookingCard(
             <div class="booking-footer">
 
                 <strong class="booking-price">
-                    ${formatCurrency(
-                        price
-                    )}
+                    ${formatCurrency(price)}
                 </strong>
 
-
                 <div class="booking-actions">
-
                     ${actionButtons}
-
                 </div>
 
             </div>
@@ -1093,250 +1126,6 @@ function createBookingCard(
     `;
 
 }
-
-
-/* ============================================================
-   PAYMENT SUMMARY
-============================================================ */
-
-function createPaymentSummary(
-    booking,
-    status
-) {
-
-    if (
-        status === "Pending" ||
-        status === "Cancelled"
-    ) {
-
-        return "";
-
-    }
-
-
-    const payment =
-        getPaymentSummary(
-            booking
-        );
-
-
-    let statusClass =
-        "payment-pending";
-
-
-    if (
-        payment.status ===
-        "Partially Paid"
-    ) {
-
-        statusClass =
-            "payment-partial";
-
-    }
-
-
-    if (
-        payment.status ===
-        "Paid"
-    ) {
-
-        statusClass =
-            "payment-paid";
-
-    }
-
-
-    let detailText =
-        "Waiting for required payment.";
-
-
-    if (
-        payment.status ===
-        "Paid"
-    ) {
-
-        detailText =
-            "All scheduled payments completed.";
-
-    } else if (
-        payment.status ===
-        "Partially Paid"
-    ) {
-
-        detailText =
-            `${formatCurrency(
-                payment.remaining
-            )} remaining.`;
-
-    } else if (
-        payment.nextStage
-    ) {
-
-        detailText =
-            `${payment.nextStage.name} · ${formatCurrency(
-                payment.nextStage.amount
-            )}`;
-
-    }
-
-
-    return `
-
-        <div class="booking-payment-summary">
-
-            <div class="booking-payment-top">
-
-                <span class="booking-payment-label">
-                    PAYMENT
-                </span>
-
-
-                <span
-                    class="booking-payment-status ${statusClass}"
-                >
-                    ${escapeHtml(
-                        payment.status
-                    )}
-                </span>
-
-            </div>
-
-
-            <div class="booking-payment-amount">
-
-                ${formatCurrency(
-                    payment.paid
-                )}
-
-                paid of
-
-                ${formatCurrency(
-                    payment.total
-                )}
-
-            </div>
-
-
-            <div class="booking-payment-detail">
-
-                ${escapeHtml(
-                    detailText
-                )}
-
-            </div>
-
-        </div>
-
-    `;
-
-}
-
-
-/* ============================================================
-   BOOKING ACTIONS
-============================================================ */
-
-document.addEventListener(
-    "click",
-    event => {
-
-        const button =
-            event.target.closest(
-                "[data-action]"
-            );
-
-
-        if (!button) {
-            return;
-        }
-
-
-        const action =
-            button.dataset.action;
-
-
-        const bookingId =
-            button.dataset.id;
-
-
-        if (!bookingId) {
-            return;
-        }
-
-
-        if (
-            action ===
-            "view"
-        ) {
-
-            openBookingModal(
-                bookingId
-            );
-
-            return;
-
-        }
-
-
-        if (
-            action ===
-            "accept"
-        ) {
-
-            updateBookingStatus(
-                bookingId,
-                "Accepted"
-            );
-
-            return;
-
-        }
-
-
-        if (
-            action ===
-            "reject"
-        ) {
-
-            updateBookingStatus(
-                bookingId,
-                "Cancelled"
-            );
-
-            return;
-
-        }
-
-
-        if (
-            action ===
-            "complete"
-        ) {
-
-            updateBookingStatus(
-                bookingId,
-                "Completed"
-            );
-
-            return;
-
-        }
-
-
-        if (
-            action ===
-            "cancel"
-        ) {
-
-            updateBookingStatus(
-                bookingId,
-                "Cancelled"
-            );
-
-        }
-
-    }
-);
 
 
 /* ============================================================
@@ -1359,33 +1148,29 @@ function updateBookingStatus(
                 )
         );
 
-
     if (
         bookingIndex === -1
     ) {
-
         return;
-
     }
-
 
     const booking =
         bookings[
             bookingIndex
         ];
 
-
     const oldStatus =
         normalizeStatus(
             booking.status
         );
 
-
-    booking.status =
+    const normalizedNewStatus =
         normalizeStatus(
             newStatus
         );
 
+    booking.status =
+        normalizedNewStatus;
 
     const now =
         new Date().toISOString();
@@ -1400,6 +1185,21 @@ function updateBookingStatus(
             booking.acceptedAt ||
             now;
 
+        ensureBookingPaymentState(
+            booking
+        );
+
+    }
+
+
+    if (
+        booking.status ===
+        "Confirmed"
+    ) {
+
+        booking.confirmedAt =
+            booking.confirmedAt ||
+            now;
 
         ensureBookingPaymentState(
             booking
@@ -1431,12 +1231,6 @@ function updateBookingStatus(
 
     }
 
-
-    /*
-     * Keep a lightweight status history.
-     * This is useful later when the frontend
-     * receives a real backend.
-     */
 
     if (
         !Array.isArray(
@@ -1475,12 +1269,6 @@ function updateBookingStatus(
     renderCalendar();
 
 
-    /*
-     * If the modal is open for this booking,
-     * refresh it so the action buttons and
-     * payment information stay in sync.
-     */
-
     if (
         bookingModal &&
         bookingModal.classList.contains(
@@ -1516,54 +1304,44 @@ function openBookingModal(
                 )
         );
 
-
     if (!booking) {
         return;
     }
 
-
     ensureBookingPaymentState(
         booking
     );
-
 
     const clientName =
         booking.client ||
         booking.name ||
         "Unknown Client";
 
-
     const service =
         booking.service ||
         "Photography Service";
 
-
     const packageName =
         booking.package ||
         "Package";
-
 
     const status =
         normalizeStatus(
             booking.status
         );
 
-
     const dates =
         getBookingDates(
             booking
         );
-
 
     const payment =
         getPaymentSummary(
             booking
         );
 
-
     modalTitle.textContent =
         clientName;
-
 
     modalBookingId.textContent =
         getBookingId(
@@ -1579,69 +1357,40 @@ function openBookingModal(
                 CLIENT
             </div>
 
-
             <div class="detail-grid">
 
                 <div class="detail-item">
-
-                    <span>
-                        Name
-                    </span>
-
+                    <span>Name</span>
                     <strong>
-                        ${escapeHtml(
-                            clientName
-                        )}
+                        ${escapeHtml(clientName)}
                     </strong>
-
                 </div>
 
-
                 <div class="detail-item">
-
-                    <span>
-                        Email
-                    </span>
-
+                    <span>Email</span>
                     <strong>
                         ${escapeHtml(
-                            booking.email ||
-                            "-"
+                            booking.email || "-"
                         )}
                     </strong>
-
                 </div>
 
-
                 <div class="detail-item">
-
-                    <span>
-                        Phone
-                    </span>
-
+                    <span>Phone</span>
                     <strong>
                         ${escapeHtml(
-                            booking.phone ||
-                            "-"
+                            booking.phone || "-"
                         )}
                     </strong>
-
                 </div>
 
-
                 <div class="detail-item">
-
-                    <span>
-                        Instagram
-                    </span>
-
+                    <span>Instagram</span>
                     <strong>
                         ${escapeHtml(
-                            booking.instagram ||
-                            "-"
+                            booking.instagram || "-"
                         )}
                     </strong>
-
                 </div>
 
             </div>
@@ -1655,66 +1404,36 @@ function openBookingModal(
                 SERVICE
             </div>
 
-
             <div class="detail-grid">
 
                 <div class="detail-item">
-
-                    <span>
-                        Service
-                    </span>
-
+                    <span>Service</span>
                     <strong>
-                        ${escapeHtml(
-                            service
-                        )}
+                        ${escapeHtml(service)}
                     </strong>
-
                 </div>
 
-
                 <div class="detail-item">
-
-                    <span>
-                        Package
-                    </span>
-
+                    <span>Package</span>
                     <strong>
-                        ${escapeHtml(
-                            packageName
-                        )}
+                        ${escapeHtml(packageName)}
                     </strong>
-
                 </div>
 
-
                 <div class="detail-item">
-
-                    <span>
-                        Package Price
-                    </span>
-
+                    <span>Package Price</span>
                     <strong>
                         ${formatCurrency(
                             booking.packagePrice
                         )}
                     </strong>
-
                 </div>
 
-
                 <div class="detail-item">
-
-                    <span>
-                        Booking Status
-                    </span>
-
+                    <span>Booking Status</span>
                     <strong>
-                        ${escapeHtml(
-                            status
-                        )}
+                        ${escapeHtml(status)}
                     </strong>
-
                 </div>
 
             </div>
@@ -1728,7 +1447,6 @@ function openBookingModal(
                 SESSION DATES
             </div>
 
-
             <div class="detail-dates">
 
                 ${
@@ -1737,9 +1455,7 @@ function openBookingModal(
                             .map(
                                 date => `
 
-                                    <div
-                                        class="detail-date-row"
-                                    >
+                                    <div class="detail-date-row">
 
                                         <strong>
                                             ${escapeHtml(
@@ -1749,9 +1465,7 @@ function openBookingModal(
                                             )}
                                         </strong>
 
-
                                         <span>
-
                                             ${escapeHtml(
                                                 formatTimeRange(
                                                     date.startTime,
@@ -1769,7 +1483,6 @@ function openBookingModal(
                                                     )
                                                 )
                                             )}
-
                                         </span>
 
                                     </div>
@@ -1779,9 +1492,7 @@ function openBookingModal(
                             .join("")
                         : `
 
-                            <div
-                                class="detail-date-row"
-                            >
+                            <div class="detail-date-row">
 
                                 <strong>
                                     Date not provided
@@ -1803,10 +1514,7 @@ function openBookingModal(
                 PAYMENT
             </div>
 
-
-            ${createPaymentProgress(
-                booking
-            )}
+            ${createPaymentProgress(booking)}
 
         </div>
 
@@ -1817,10 +1525,7 @@ function openBookingModal(
                 PAYMENT PLAN
             </div>
 
-
-            ${createPaymentPlanMarkup(
-                booking
-            )}
+            ${createPaymentPlanMarkup(booking)}
 
         </div>
 
@@ -1830,7 +1535,6 @@ function openBookingModal(
             <div class="detail-group-title">
                 SESSION INFORMATION
             </div>
-
 
             <div class="detail-grid">
 
@@ -1848,7 +1552,6 @@ function openBookingModal(
 
                 </div>
 
-
                 <div class="detail-item">
 
                     <span>
@@ -1857,13 +1560,11 @@ function openBookingModal(
 
                     <strong>
                         ${escapeHtml(
-                            booking.location ||
-                            "-"
+                            booking.location || "-"
                         )}
                     </strong>
 
                 </div>
-
 
                 <div class="detail-item">
 
@@ -1878,7 +1579,6 @@ function openBookingModal(
                     </strong>
 
                 </div>
-
 
                 <div class="detail-item">
 
@@ -1909,13 +1609,10 @@ function openBookingModal(
                             CLIENT NOTES
                         </div>
 
-
                         <div class="notes-box">
-
                             ${escapeHtml(
                                 booking.notes
                             )}
-
                         </div>
 
                     </div>
@@ -1948,7 +1645,6 @@ function openBookingModal(
             >
                 Reject Booking
             </button>
-
 
             <button
                 type="button"
@@ -1984,6 +1680,28 @@ function openBookingModal(
                 Cancel Booking
             </button>
 
+            <button
+                type="button"
+                class="action-btn primary"
+                data-action="confirm"
+                data-id="${escapeAttribute(
+                    bookingId
+                )}"
+            >
+                Confirm Booking
+            </button>
+
+            <button
+                type="button"
+                class="action-btn primary"
+                data-action="complete"
+                data-id="${escapeAttribute(
+                    bookingId
+                )}"
+            >
+                Mark Completed
+            </button>
+
         `;
 
     }
@@ -2007,7 +1725,6 @@ function openBookingModal(
                 Cancel Booking
             </button>
 
-
             <button
                 type="button"
                 class="action-btn primary"
@@ -2028,15 +1745,134 @@ function openBookingModal(
         "open"
     );
 
-
     bookingModal.setAttribute(
         "aria-hidden",
         "false"
     );
 
-
     document.body.style.overflow =
         "hidden";
+
+}
+
+
+/* ============================================================
+   PAYMENT SUMMARY
+============================================================ */
+
+function createPaymentSummary(
+    booking,
+    status
+) {
+
+    if (
+        status === "Pending" ||
+        status === "Cancelled"
+    ) {
+
+        return "";
+
+    }
+
+    const payment =
+        getPaymentSummary(
+            booking
+        );
+
+    let statusClass =
+        "payment-pending";
+
+    if (
+        payment.status ===
+        "Partially Paid"
+    ) {
+
+        statusClass =
+            "payment-partial";
+
+    }
+
+    if (
+        payment.status ===
+        "Paid"
+    ) {
+
+        statusClass =
+            "payment-paid";
+
+    }
+
+    let detailText =
+        "Waiting for required payment.";
+
+    if (
+        payment.status ===
+        "Paid"
+    ) {
+
+        detailText =
+            "All scheduled payments completed.";
+
+    } else if (
+        payment.status ===
+        "Partially Paid"
+    ) {
+
+        detailText =
+            `${formatCurrency(
+                payment.remaining
+            )} remaining.`;
+
+    } else if (
+        payment.nextStage
+    ) {
+
+        detailText =
+            `${payment.nextStage.name} · ${formatCurrency(
+                payment.nextStage.amount
+            )}`;
+
+    }
+
+    return `
+
+        <div class="booking-payment-summary">
+
+            <div class="booking-payment-top">
+
+                <span class="booking-payment-label">
+                    PAYMENT
+                </span>
+
+                <span
+                    class="booking-payment-status ${statusClass}"
+                >
+                    ${escapeHtml(
+                        payment.status
+                    )}
+                </span>
+
+            </div>
+
+            <div class="booking-payment-amount">
+
+                ${formatCurrency(payment.paid)}
+
+                paid of
+
+                ${formatCurrency(payment.total)}
+
+            </div>
+
+            <div class="booking-payment-detail">
+
+                ${escapeHtml(detailText)}
+
+            </div>
+
+        </div>
+
+    `;
 
 }
 
@@ -2054,7 +1890,6 @@ function createPaymentProgress(
             booking
         );
 
-
     const percentage =
         payment.total > 0
             ? Math.min(
@@ -2069,7 +1904,6 @@ function createPaymentProgress(
             )
             : 0;
 
-
     return `
 
         <div class="payment-progress-box">
@@ -2081,7 +1915,6 @@ function createPaymentProgress(
                         payment.status
                     )}
                 </strong>
-
 
                 <span>
 
@@ -2099,7 +1932,6 @@ function createPaymentProgress(
 
             </div>
 
-
             <div class="payment-progress-track">
 
                 <div
@@ -2109,7 +1941,6 @@ function createPaymentProgress(
 
             </div>
 
-
             <div class="payment-progress-meta">
 
                 <span>
@@ -2118,7 +1949,6 @@ function createPaymentProgress(
                         payment.paid
                     )}
                 </span>
-
 
                 <span>
                     Remaining:
@@ -2137,7 +1967,7 @@ function createPaymentProgress(
 
 
 /* ============================================================
-   PAYMENT PLAN MARKUP
+   PAYMENT PLAN
 ============================================================ */
 
 function createPaymentPlanMarkup(
@@ -2149,19 +1979,16 @@ function createPaymentPlanMarkup(
             booking.paymentPlan
         );
 
-
     const price =
         extractPrice(
             booking.packagePrice
         );
-
 
     const stages =
         getPaymentStages(
             plan,
             price
         );
-
 
     if (!stages.length) {
 
@@ -2175,11 +2002,8 @@ function createPaymentPlanMarkup(
                         Full Payment
                     </strong>
 
-
                     <span>
-                        ${formatCurrency(
-                            price
-                        )}
+                        ${formatCurrency(price)}
                     </span>
 
                 </div>
@@ -2190,7 +2014,6 @@ function createPaymentPlanMarkup(
 
     }
 
-
     return `
 
         <div class="payment-plan-box">
@@ -2199,21 +2022,15 @@ function createPaymentPlanMarkup(
 
                 <strong>
                     ${escapeHtml(
-                        getPaymentPlanTitle(
-                            plan
-                        )
+                        getPaymentPlanTitle(plan)
                     )}
                 </strong>
 
-
                 <span>
-                    ${formatCurrency(
-                        price
-                    )}
+                    ${formatCurrency(price)}
                 </span>
 
             </div>
-
 
             ${stages
                 .map(
@@ -2228,36 +2045,25 @@ function createPaymentPlanMarkup(
                                 index
                             );
 
-
                         return `
 
-                            <div
-                                class="payment-stage"
-                            >
+                            <div class="payment-stage">
 
-                                <div
-                                    class="payment-stage-info"
-                                >
+                                <div class="payment-stage-info">
 
-                                    <span
-                                        class="payment-stage-name"
-                                    >
+                                    <span class="payment-stage-name">
                                         ${escapeHtml(
                                             stage.name
                                         )}
                                     </span>
 
-
-                                    <span
-                                        class="payment-stage-due"
-                                    >
+                                    <span class="payment-stage-due">
                                         ${escapeHtml(
                                             stage.due
                                         )}
                                     </span>
 
                                 </div>
-
 
                                 <span
                                     class="payment-stage-amount ${
@@ -2304,17 +2110,14 @@ function closeBookingModal() {
         return;
     }
 
-
     bookingModal.classList.remove(
         "open"
     );
-
 
     bookingModal.setAttribute(
         "aria-hidden",
         "true"
     );
-
 
     document.body.style.overflow =
         "";
@@ -2334,7 +2137,6 @@ function renderCalendar() {
     const month =
         calendarDate.getMonth();
 
-
     calendarMonth.textContent =
         new Intl.DateTimeFormat(
             "en-IN",
@@ -2346,10 +2148,8 @@ function renderCalendar() {
             calendarDate
         );
 
-
     calendarGrid.innerHTML =
         "";
-
 
     const firstDay =
         new Date(
@@ -2358,7 +2158,6 @@ function renderCalendar() {
             1
         );
 
-
     const lastDay =
         new Date(
             year,
@@ -2366,14 +2165,11 @@ function renderCalendar() {
             0
         );
 
-
     const daysInMonth =
         lastDay.getDate();
 
-
     let mondayFirstDay =
         firstDay.getDay() - 1;
-
 
     if (
         mondayFirstDay < 0
@@ -2384,14 +2180,12 @@ function renderCalendar() {
 
     }
 
-
     const previousMonthLastDay =
         new Date(
             year,
             month,
             0
         ).getDate();
-
 
     for (
         let i = mondayFirstDay - 1;
@@ -2403,14 +2197,12 @@ function renderCalendar() {
             previousMonthLastDay -
             i;
 
-
         const date =
             new Date(
                 year,
                 month - 1,
                 day
             );
-
 
         calendarGrid.appendChild(
             createCalendarDay(
@@ -2420,7 +2212,6 @@ function renderCalendar() {
         );
 
     }
-
 
     for (
         let day = 1;
@@ -2435,7 +2226,6 @@ function renderCalendar() {
                 day
             );
 
-
         calendarGrid.appendChild(
             createCalendarDay(
                 date,
@@ -2445,11 +2235,9 @@ function renderCalendar() {
 
     }
 
-
     const remainingCells =
         42 -
         calendarGrid.children.length;
-
 
     for (
         let day = 1;
@@ -2464,7 +2252,6 @@ function renderCalendar() {
                 day
             );
 
-
         calendarGrid.appendChild(
             createCalendarDay(
                 date,
@@ -2473,7 +2260,6 @@ function renderCalendar() {
         );
 
     }
-
 
     renderCalendarDetails();
 
@@ -2494,14 +2280,11 @@ function createCalendarDay(
             "button"
         );
 
-
     button.type =
         "button";
 
-
     button.className =
         "calendar-day";
-
 
     if (otherMonth) {
 
@@ -2511,18 +2294,15 @@ function createCalendarDay(
 
     }
 
-
     const dateKey =
         getDateKey(
             date
         );
 
-
     const bookingsForDate =
         getBookingsForDate(
             dateKey
         );
-
 
     const isToday =
         dateKey ===
@@ -2530,11 +2310,9 @@ function createCalendarDay(
             new Date()
         );
 
-
     const isSelected =
         selectedCalendarDate ===
         dateKey;
-
 
     if (isToday) {
 
@@ -2544,7 +2322,6 @@ function createCalendarDay(
 
     }
 
-
     if (
         bookingsForDate.length
     ) {
@@ -2552,7 +2329,6 @@ function createCalendarDay(
         button.classList.add(
             "has-booking"
         );
-
 
         if (
             bookingsForDate.length > 1
@@ -2566,7 +2342,6 @@ function createCalendarDay(
 
     }
 
-
     if (isSelected) {
 
         button.classList.add(
@@ -2575,20 +2350,16 @@ function createCalendarDay(
 
     }
 
-
     const dayNumber =
         document.createElement(
             "span"
         );
 
-
     dayNumber.className =
         "day-number";
 
-
     dayNumber.textContent =
         date.getDate();
-
 
     button.appendChild(
         dayNumber
@@ -2604,17 +2375,14 @@ function createCalendarDay(
                 "span"
             );
 
-
         dots.className =
             "booking-dots";
-
 
         const visibleDots =
             Math.min(
                 bookingsForDate.length,
                 3
             );
-
 
         for (
             let i = 0;
@@ -2627,13 +2395,11 @@ function createCalendarDay(
                     "span"
                 );
 
-
             dots.appendChild(
                 dot
             );
 
         }
-
 
         button.appendChild(
             dots
@@ -2678,7 +2444,6 @@ function renderCalendarDetails() {
                     Select a date
                 </strong>
 
-
                 <p>
                     Booked sessions for that date
                     will appear here.
@@ -2698,12 +2463,10 @@ function renderCalendarDetails() {
             selectedCalendarDate
         );
 
-
     const selectedDate =
         parseDateKey(
             selectedCalendarDate
         );
-
 
     const heading =
         formatLongDate(
@@ -2718,24 +2481,16 @@ function renderCalendarDetails() {
             <div class="selected-date-heading">
 
                 <strong>
-                    ${escapeHtml(
-                        heading
-                    )}
+                    ${escapeHtml(heading)}
                 </strong>
 
-
-                <span
-                    class="date-booking-count"
-                >
+                <span class="date-booking-count">
                     Available
                 </span>
 
             </div>
 
-
-            <div
-                class="calendar-details-empty"
-            >
+            <div class="calendar-details-empty">
 
                 <p>
                     No bookings are scheduled
@@ -2756,15 +2511,10 @@ function renderCalendarDetails() {
         <div class="selected-date-heading">
 
             <strong>
-                ${escapeHtml(
-                    heading
-                )}
+                ${escapeHtml(heading)}
             </strong>
 
-
-            <span
-                class="date-booking-count"
-            >
+            <span class="date-booking-count">
 
                 ${dateBookings.length}
 
@@ -2788,7 +2538,6 @@ function renderCalendarDetails() {
                             booking
                         );
 
-
                     const matchingDate =
                         dates.find(
                             date =>
@@ -2798,12 +2547,9 @@ function renderCalendarDetails() {
                                 selectedCalendarDate
                         );
 
-
                     return `
 
-                        <div
-                            class="calendar-booking"
-                        >
+                        <div class="calendar-booking">
 
                             <strong>
 
@@ -2814,7 +2560,6 @@ function renderCalendarDetails() {
                                 )}
 
                             </strong>
-
 
                             <span>
 
@@ -2843,7 +2588,6 @@ function renderCalendarDetails() {
                                 )}
 
                             </span>
-
 
                             <button
                                 type="button"
@@ -2882,11 +2626,9 @@ document.addEventListener(
                 "[data-calendar-booking]"
             );
 
-
         if (!button) {
             return;
         }
-
 
         openBookingModal(
             button.dataset.calendarBooking
@@ -2907,12 +2649,6 @@ function getBookingsForDate(
     return bookings.filter(
         booking => {
 
-            /*
-             * Cancelled bookings should not block
-             * availability or appear as active
-             * scheduled sessions on the calendar.
-             */
-
             if (
                 normalizeStatus(
                     booking.status
@@ -2923,12 +2659,10 @@ function getBookingsForDate(
 
             }
 
-
             const dates =
                 getBookingDates(
                     booking
                 );
-
 
             return dates.some(
                 date =>
@@ -2967,6 +2701,7 @@ function getBookingDates(
 
                 startTime:
                     date.startTime ||
+                    date.time ||
                     "",
 
                 endTime:
@@ -2992,9 +2727,11 @@ function getBookingDates(
 
                 startTime:
                     booking.time ||
+                    booking.startTime ||
                     "",
 
                 endTime:
+                    booking.endTime ||
                     ""
 
             }
@@ -3021,18 +2758,9 @@ function findServiceForBooking(
         return null;
     }
 
-
-    /*
-     * booking.js currently stores serviceType.
-     *
-     * Older/newer booking records may use serviceId,
-     * so support both.
-     */
-
     const serviceId =
         booking.serviceId ||
         booking.serviceType;
-
 
     if (serviceId) {
 
@@ -3047,13 +2775,11 @@ function findServiceForBooking(
                     )
             );
 
-
         if (byId) {
             return byId;
         }
 
     }
-
 
     const serviceName =
         String(
@@ -3063,11 +2789,9 @@ function findServiceForBooking(
             .trim()
             .toLowerCase();
 
-
     if (!serviceName) {
         return null;
     }
-
 
     return (
         services.find(
@@ -3107,17 +2831,9 @@ function findPackageForBooking(
 
     }
 
-
-    /*
-     * booking.js currently stores packageKey.
-     *
-     * Also support packageId for compatibility.
-     */
-
     const packageId =
         booking.packageId ||
         booking.packageKey;
-
 
     if (packageId) {
 
@@ -3132,13 +2848,11 @@ function findPackageForBooking(
                     )
             );
 
-
         if (byId) {
             return byId;
         }
 
     }
-
 
     const packageName =
         String(
@@ -3148,11 +2862,9 @@ function findPackageForBooking(
             .trim()
             .toLowerCase();
 
-
     if (!packageName) {
         return null;
     }
-
 
     return (
         service.packages.find(
@@ -3183,13 +2895,8 @@ function createDefaultPaymentPlan() {
         type: "full",
 
         advance: {
-
-            type:
-                "percentage",
-
-            value:
-                0
-
+            type: "percentage",
+            value: 0
         },
 
         installments: []
@@ -3206,7 +2913,6 @@ function normalizePaymentPlan(
     const defaultPlan =
         createDefaultPaymentPlan();
 
-
     if (
         !plan ||
         typeof plan !==
@@ -3216,7 +2922,6 @@ function normalizePaymentPlan(
         return defaultPlan;
 
     }
-
 
     const type =
         [
@@ -3228,7 +2933,6 @@ function normalizePaymentPlan(
         )
             ? plan.type
             : "full";
-
 
     const advance =
         plan.advance &&
@@ -3257,7 +2961,6 @@ function normalizePaymentPlan(
                     0
 
             };
-
 
     const installments =
         Array.isArray(
@@ -3295,7 +2998,6 @@ function normalizePaymentPlan(
                 )
             : [];
 
-
     return {
 
         type,
@@ -3322,7 +3024,6 @@ function getPaymentStages(
         normalizePaymentPlan(
             plan
         );
-
 
     const packagePrice =
         extractPrice(
@@ -3368,7 +3069,6 @@ function getPaymentStages(
                   100
                 : normalizedPlan.advance.value;
 
-
         const safeAdvance =
             Math.min(
                 packagePrice,
@@ -3377,7 +3077,6 @@ function getPaymentStages(
                     advanceAmount
                 )
             );
-
 
         return [
 
@@ -3471,26 +3170,14 @@ function ensureBookingPaymentState(
             booking.packagePrice
         );
 
-
     const plan =
         normalizePaymentPlan(
             booking.paymentPlan
         );
 
-
     booking.paymentPlan =
         plan;
 
-
-    /*
-     * Keep the manager compatible with both:
-     *
-     * 1. bookingMng payment state
-     * 2. bookingStatus paymentDetails state
-     *
-     * The client-facing status page is the source
-     * of truth once an actual payment has occurred.
-     */
 
     const paymentDetails =
         booking.paymentDetails &&
@@ -3499,29 +3186,20 @@ function ensureBookingPaymentState(
             ? booking.paymentDetails
             : null;
 
-
     const paymentDetailsPaid =
         getPaymentDetailsPaidAmount(
             paymentDetails
         );
-
 
     const legacyPaid =
         getLegacyPaidAmount(
             booking
         );
 
-
-    /*
-     * Prefer paymentDetails when it contains
-     * an actual numeric payment value.
-     */
-
     const resolvedPaid =
         paymentDetailsPaid !== null
             ? paymentDetailsPaid
             : legacyPaid;
-
 
     booking.amountPaid =
         Math.max(
@@ -3532,7 +3210,6 @@ function ensureBookingPaymentState(
             )
         );
 
-
     booking.remainingAmount =
         Math.max(
             0,
@@ -3540,30 +3217,19 @@ function ensureBookingPaymentState(
             booking.amountPaid
         );
 
-
-    /*
-     * Keep legacy fields synchronized so older
-     * dashboard code and newer booking-status
-     * code can coexist.
-     */
-
     booking.paid =
         booking.amountPaid;
 
-
     booking.remaining =
         booking.remainingAmount;
-
 
     const summary =
         getPaymentSummary(
             booking
         );
 
-
     booking.paymentStatus =
         summary.status;
-
 
     return booking;
 
@@ -3588,7 +3254,6 @@ function getPaymentDetailsPaidAmount(
 
     }
 
-
     const candidates = [
 
         paymentDetails.paidAmount,
@@ -3597,7 +3262,6 @@ function getPaymentDetailsPaidAmount(
         paymentDetails.paid
 
     ];
-
 
     for (
         const value of candidates
@@ -3613,7 +3277,6 @@ function getPaymentDetailsPaidAmount(
                 extractPrice(
                     value
                 );
-
 
             if (
                 Number.isFinite(
@@ -3633,13 +3296,6 @@ function getPaymentDetailsPaidAmount(
     }
 
 
-    /*
-     * If the payment details object does not
-     * contain a total field but contains transactions,
-     * calculate the paid amount from successful
-     * transaction records.
-     */
-
     if (
         Array.isArray(
             paymentDetails.transactions
@@ -3647,7 +3303,6 @@ function getPaymentDetailsPaidAmount(
     ) {
 
         let total = 0;
-
 
         paymentDetails.transactions
             .forEach(
@@ -3663,7 +3318,6 @@ function getPaymentDetailsPaidAmount(
 
                     }
 
-
                     const status =
                         String(
                             transaction.status ||
@@ -3672,7 +3326,6 @@ function getPaymentDetailsPaidAmount(
                         )
                             .trim()
                             .toLowerCase();
-
 
                     if (
                         [
@@ -3689,7 +3342,6 @@ function getPaymentDetailsPaidAmount(
 
                     }
 
-
                     total +=
                         extractPrice(
                             transaction.amount
@@ -3698,16 +3350,10 @@ function getPaymentDetailsPaidAmount(
                 }
             );
 
-
         return total;
 
     }
 
-
-    /*
-     * Some implementations may store the
-     * schedule with paid amounts.
-     */
 
     if (
         Array.isArray(
@@ -3716,7 +3362,6 @@ function getPaymentDetailsPaidAmount(
     ) {
 
         let total = 0;
-
 
         paymentDetails.schedule
             .forEach(
@@ -3732,7 +3377,6 @@ function getPaymentDetailsPaidAmount(
 
                     }
 
-
                     total +=
                         extractPrice(
                             stage.paidAmount ||
@@ -3742,7 +3386,6 @@ function getPaymentDetailsPaidAmount(
 
                 }
             );
-
 
         if (
             total > 0
@@ -3776,7 +3419,6 @@ function getLegacyPaidAmount(
 
     ];
 
-
     for (
         const value of candidates
     ) {
@@ -3793,16 +3435,10 @@ function getLegacyPaidAmount(
 
         }
 
-
         if (
             typeof value ===
             "string"
         ) {
-
-            /*
-             * Ignore labels such as:
-             * "Pending", "Paid", etc.
-             */
 
             if (
                 !/\d/.test(
@@ -3814,12 +3450,10 @@ function getLegacyPaidAmount(
 
             }
 
-
             const parsed =
                 extractPrice(
                     value
                 );
-
 
             if (
                 parsed > 0
@@ -3832,7 +3466,6 @@ function getLegacyPaidAmount(
         }
 
     }
-
 
     return 0;
 
@@ -3852,7 +3485,6 @@ function getPaymentSummary(
             booking.packagePrice
         );
 
-
     const paid =
         Math.max(
             0,
@@ -3864,7 +3496,6 @@ function getPaymentSummary(
             )
         );
 
-
     const remaining =
         Math.max(
             0,
@@ -3872,10 +3503,8 @@ function getPaymentSummary(
             paid
         );
 
-
     let status =
         "Pending";
-
 
     if (
         total <= 0
@@ -3900,19 +3529,16 @@ function getPaymentSummary(
 
     }
 
-
     const plan =
         normalizePaymentPlan(
             booking.paymentPlan
         );
-
 
     const stages =
         getPaymentStages(
             plan,
             total
         );
-
 
     const nextStage =
         stages.find(
@@ -3926,7 +3552,6 @@ function getPaymentSummary(
                 )
         ) ||
         null;
-
 
     return {
 
@@ -3962,7 +3587,6 @@ function isStagePaid(
             booking.packagePrice
         );
 
-
     if (
         !stages[stageIndex]
     ) {
@@ -3971,12 +3595,10 @@ function isStagePaid(
 
     }
 
-
     const stageAmount =
         extractPrice(
             stages[stageIndex].amount
         );
-
 
     const paidBeforeStage =
         stages
@@ -3996,12 +3618,10 @@ function isStagePaid(
                 0
             );
 
-
     const paid =
         extractPrice(
             booking.amountPaid
         );
-
 
     return (
         paid >=
@@ -4026,7 +3646,6 @@ function getPaymentPlanTitle(
             plan
         );
 
-
     if (
         normalized.type ===
         "advance"
@@ -4036,7 +3655,6 @@ function getPaymentPlanTitle(
 
     }
 
-
     if (
         normalized.type ===
         "installments"
@@ -4045,7 +3663,6 @@ function getPaymentPlanTitle(
         return "Custom Installments";
 
     }
-
 
     return "Full Payment";
 
@@ -4068,7 +3685,6 @@ function normalizeStatus(
             .trim()
             .toLowerCase();
 
-
     if (
         value ===
         "accepted"
@@ -4077,7 +3693,6 @@ function normalizeStatus(
         return "Accepted";
 
     }
-
 
     if (
         value ===
@@ -4088,7 +3703,6 @@ function normalizeStatus(
 
     }
 
-
     if (
         value ===
         "completed"
@@ -4097,7 +3711,6 @@ function normalizeStatus(
         return "Completed";
 
     }
-
 
     if (
         value ===
@@ -4111,7 +3724,6 @@ function normalizeStatus(
         return "Cancelled";
 
     }
-
 
     return "Pending";
 
@@ -4160,11 +3772,9 @@ function extractPrice(
 
     }
 
-
     if (!value) {
         return 0;
     }
-
 
     const cleaned =
         String(value)
@@ -4177,12 +3787,10 @@ function extractPrice(
                 ""
             );
 
-
     const number =
         Number(
             cleaned
         );
-
 
     return Number.isFinite(
         number
@@ -4201,7 +3809,6 @@ function formatCurrency(
         extractPrice(
             value
         );
-
 
     return new Intl.NumberFormat(
         "en-IN",
@@ -4242,18 +3849,15 @@ function calculateDateHours(
 
     }
 
-
     const start =
         parseTime(
             startTime
         );
 
-
     const end =
         parseTime(
             endTime
         );
-
 
     if (
         start === null ||
@@ -4264,11 +3868,9 @@ function calculateDateHours(
 
     }
 
-
     let difference =
         end -
         start;
-
 
     if (
         difference < 0
@@ -4278,7 +3880,6 @@ function calculateDateHours(
             24 * 60;
 
     }
-
 
     return difference /
         60;
@@ -4299,30 +3900,24 @@ function parseTime(
                 /^(\d{1,2}):(\d{2})\s*(AM|PM)?$/i
             );
 
-
     if (!match) {
         return null;
     }
-
 
     let hour =
         Number(
             match[1]
         );
 
-
     const minute =
         Number(
             match[2]
         );
 
-
     const period =
         match[3]
-            ? match[3]
-                .toUpperCase()
+            ? match[3].toUpperCase()
             : null;
-
 
     if (
         minute > 59
@@ -4331,7 +3926,6 @@ function parseTime(
         return null;
 
     }
-
 
     if (period) {
 
@@ -4343,7 +3937,6 @@ function parseTime(
             return null;
 
         }
-
 
         if (
             period ===
@@ -4366,7 +3959,6 @@ function parseTime(
 
     }
 
-
     if (
         hour > 23
     ) {
@@ -4375,11 +3967,98 @@ function parseTime(
 
     }
 
-
     return (
         hour * 60 +
         minute
     );
+
+}
+
+
+function formatDisplayTime(
+    value
+) {
+
+    if (!value) {
+        return "";
+    }
+
+    const minutes =
+        parseTime(
+            value
+        );
+
+    if (
+        minutes === null
+    ) {
+
+        return String(
+            value
+        );
+
+    }
+
+    const hour24 =
+        Math.floor(
+            minutes / 60
+        );
+
+    const minute =
+        minutes % 60;
+
+    const period =
+        hour24 >= 12
+            ? "PM"
+            : "AM";
+
+    const hour12 =
+        hour24 % 12 ||
+        12;
+
+    return `${hour12}:${String(
+        minute
+    ).padStart(
+        2,
+        "0"
+    )} ${period}`;
+
+}
+
+
+function formatTimeRange(
+    startTime,
+    endTime
+) {
+
+    if (
+        !startTime &&
+        !endTime
+    ) {
+
+        return "Time not provided";
+
+    }
+
+    const start =
+        formatDisplayTime(
+            startTime
+        );
+
+    if (!endTime) {
+
+        return (
+            start ||
+            String(startTime)
+        );
+
+    }
+
+    const end =
+        formatDisplayTime(
+            endTime
+        );
+
+    return `${start} - ${end}`;
 
 }
 
@@ -4393,7 +4072,6 @@ function formatHours(
             hours
         );
 
-
     if (
         !Number.isFinite(
             value
@@ -4404,7 +4082,6 @@ function formatHours(
         return "Not specified";
 
     }
-
 
     if (
         Number.isInteger(
@@ -4419,7 +4096,6 @@ function formatHours(
         }`;
 
     }
-
 
     return `${value.toFixed(
         1
@@ -4440,44 +4116,62 @@ function normalizeDateValue(
         return "";
     }
 
-
     const text =
         String(
             value
         ).trim();
 
-
     let date =
         null;
 
 
-    if (
-        /^\d{2}-\d{2}-\d{4}$/.test(
-            text
-        )
-    ) {
+    /*
+     * Handle DD-MM-YYYY manually.
+     * Do not allow the browser to interpret
+     * the date through UTC.
+     */
 
-        const parts =
-            text.split(
-                "-"
-            );
+    const dmyMatch =
+        text.match(
+            /^(\d{2})-(\d{2})-(\d{4})$/
+        );
 
+    const isoDateMatch =
+        text.match(
+            /^(\d{4})-(\d{2})-(\d{2})$/
+        );
+
+
+    if (dmyMatch) {
 
         date =
             new Date(
-
                 Number(
-                    parts[2]
+                    dmyMatch[3]
                 ),
-
                 Number(
-                    parts[1]
+                    dmyMatch[2]
                 ) - 1,
-
                 Number(
-                    parts[0]
+                    dmyMatch[1]
                 )
+            );
 
+    } else if (
+        isoDateMatch
+    ) {
+
+        date =
+            new Date(
+                Number(
+                    isoDateMatch[1]
+                ),
+                Number(
+                    isoDateMatch[2]
+                ) - 1,
+                Number(
+                    isoDateMatch[3]
+                )
             );
 
     } else {
@@ -4515,7 +4209,6 @@ function getDateKey(
     const year =
         date.getFullYear();
 
-
     const month =
         String(
             date.getMonth() + 1
@@ -4525,7 +4218,6 @@ function getDateKey(
                 "0"
             );
 
-
     const day =
         String(
             date.getDate()
@@ -4534,7 +4226,6 @@ function getDateKey(
                 2,
                 "0"
             );
-
 
     return `${year}-${month}-${day}`;
 
@@ -4555,7 +4246,6 @@ function parseDateKey(
             .map(
                 Number
             );
-
 
     return new Date(
 
@@ -4579,19 +4269,16 @@ function formatShortDate(
             value
         );
 
-
     if (!key) {
 
         return "Date not provided";
 
     }
 
-
     const date =
         parseDateKey(
             key
         );
-
 
     return new Intl.DateTimeFormat(
         "en-IN",
@@ -4623,19 +4310,16 @@ function formatLongDate(
             value
         );
 
-
     if (!key) {
 
         return "Date not provided";
 
     }
 
-
     const date =
         parseDateKey(
             key
         );
-
 
     return new Intl.DateTimeFormat(
         "en-IN",
@@ -4662,37 +4346,6 @@ function formatLongDate(
 
 
 /* ============================================================
-   TIME
-============================================================ */
-
-function formatTimeRange(
-    startTime,
-    endTime
-) {
-
-    if (
-        !startTime &&
-        !endTime
-    ) {
-
-        return "Time not provided";
-
-    }
-
-
-    if (!endTime) {
-
-        return startTime;
-
-    }
-
-
-    return `${startTime} - ${endTime}`;
-
-}
-
-
-/* ============================================================
    INITIALS
 ============================================================ */
 
@@ -4713,13 +4366,9 @@ function getInitials(
                 Boolean
             );
 
-
     if (!parts.length) {
-
         return "C";
-
     }
-
 
     if (
         parts.length ===
@@ -4734,7 +4383,6 @@ function getInitials(
             .toUpperCase();
 
     }
-
 
     return (
 

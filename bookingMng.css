@@ -520,7 +520,7 @@ a {
 
 
 /* ============================================================
-   PAYMENT SUMMARY ON CARD
+   PAYMENT SUMMARY
 ============================================================ */
 
 .booking-payment-summary {
@@ -1025,7 +1025,7 @@ a {
 
 
 /* ============================================================
-   PAYMENT PLAN MODAL
+   PAYMENT PLAN
 ============================================================ */
 
 .payment-plan-box {
@@ -1178,23 +1178,31 @@ a {
    FOOTER
 ============================================================ */
 
-.footer {
+footer {
     border-top: 1px solid #e5e5e5;
     padding: 25px;
-    text-align: center;
     background: #fff;
 }
 
-.footer p {
-    font-size: 0.8rem;
-    font-weight: 700;
+.footer-bottom {
+    width: 100%;
+    max-width: 1250px;
+    margin: auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
-.footer span {
-    display: block;
-    margin-top: 4px;
-    color: #888;
-    font-size: 0.65rem;
+.footer-bottom p {
+    font-size: 13px;
+}
+
+.footer-bottom a {
+    text-decoration: underline;
+    text-underline-offset: 2px;
 }
 
 
@@ -1329,6 +1337,11 @@ a {
         border-radius: 12px;
     }
 
+    .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+    }
+
 }
 
 
@@ -1384,18 +1397,3 @@ a {
     }
 
 }
-
-
-.footer-bottom {
-        margin-top: 20px;
-        padding-top: 18px;
-        flex-direction: column;
-        text-align: center;
-        gap: 12px;
-    }
-
-    .footer-bottom p {
-        font-size: 13px;
-    }
-
-    
