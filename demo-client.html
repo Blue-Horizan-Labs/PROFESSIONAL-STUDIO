@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Private Gallery | Professional Studio</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+:root{
+    --bg:#f8f7f4;
+    --surface:#ffffff;
+    --surface-soft:#f3f1ed;
+    --text:#171717;
+    --muted:#77736c;
+    --border:#e5e1da;
+    --accent:#171717;
+    --shadow:0 10px 35px rgba(0,0,0,.07);
+}
+
+body{
+    font-family:"Inter",sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.5;
+}
+
+button,
+input{
+    font:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+img{
+    display:block;
+    max-width:100%;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.site-header{
+    height:76px;
+    background:rgba(255,255,255,.95);
+    border-bottom:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 42px;
+    position:sticky;
+    top:0;
+    z-index:100;
+    backdrop-filter:blur(12px);
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:13px;
+}
+
+.brand-mark{
+    width:38px;
+    height:38px;
+    border-radius:10px;
+    background:#171717;
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:"Playfair Display",serif;
+    font-size:18px;
+}
+
+.brand-text strong{
+    display:block;
+    font-size:14px;
+    font-weight:700;
+}
+
+.brand-text span{
+    display:block;
+    font-size:11px;
+    color:var(--muted);
+    margin-top:1px;
+}
+
+.header-right{
+    display:flex;
+    align-items:center;
+    gap:18px;
+}
+
+.private-label{
+    font-size:12px;
+    color:var(--muted);
+}
+
+.btn{
+    border:0;
+    border-radius:9px;
+    padding:11px 17px;
+    font-size:13px;
+    font-weight:600;
+    transition:.2s ease;
+}
+
+.btn-dark{
+    background:#171717;
+    color:#fff;
+}
+
+.btn-dark:hover{
+    background:#333;
+}
+
+.btn-light{
+    background:#f1efeb;
+    color:#222;
+}
+
+.btn-light:hover{
+    background:#e7e4df;
+}
+
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.hero{
+    padding:72px 30px 54px;
+    text-align:center;
+    max-width:1050px;
+    margin:auto;
+}
+
+.hero-kicker{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:2px;
+    color:var(--muted);
+    margin-bottom:17px;
+}
+
+.hero h1{
+    font-family:"Playfair Display",serif;
+    font-size:clamp(38px,6vw,67px);
+    font-weight:500;
+    line-height:1.05;
+    margin-bottom:18px;
+}
+
+.hero-subtitle{
+    color:var(--muted);
+    max-width:600px;
+    margin:auto;
+    font-size:15px;
+}
+
+.hero-meta{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:8px 16px;
+    margin-top:22px;
+    font-size:12px;
+    color:var(--muted);
+}
+
+.meta-dot{
+    width:4px;
+    height:4px;
+    background:#aaa;
+    border-radius:50%;
+}
+
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+.main{
+    max-width:1420px;
+    margin:auto;
+    padding:0 30px 70px;
+}
+
+
+/* =========================================================
+   WEDDING ALBUM SELECTION
+========================================================= */
+
+.selection-box{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:25px 27px;
+    margin-bottom:32px;
+    box-shadow:var(--shadow);
+}
+
+.selection-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:20px;
+}
+
+.selection-title{
+    font-family:"Playfair Display",serif;
+    font-size:24px;
+}
+
+.selection-description{
+    font-size:13px;
+    color:var(--muted);
+    margin-top:5px;
+}
+
+.selection-info{
+    text-align:right;
+    font-size:12px;
+    color:var(--muted);
+}
+
+.selection-counter{
+    font-weight:700;
+    color:#171717;
+    font-size:15px;
+}
+
+.selection-actions{
+    display:flex;
+    gap:10px;
+    margin-top:20px;
+}
+
+
+/* =========================================================
+   GALLERY LAYOUT
+========================================================= */
+
+.gallery-layout{
+    display:grid;
+    grid-template-columns:220px minmax(0,1fr);
+    gap:38px;
+}
+
+.sidebar{
+    position:sticky;
+    top:105px;
+    align-self:start;
+}
+
+.sidebar-title{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:1.5px;
+    color:var(--muted);
+    margin-bottom:13px;
+}
+
+.section-list{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+}
+
+.section-button{
+    width:100%;
+    border:0;
+    background:transparent;
+    text-align:left;
+    padding:11px 13px;
+    border-radius:8px;
+    color:#666;
+    font-size:13px;
+    transition:.2s ease;
+}
+
+.section-button:hover{
+    background:#efede9;
+    color:#171717;
+}
+
+.section-button.active{
+    background:#171717;
+    color:#fff;
+}
+
+
+/* =========================================================
+   GALLERY CONTENT
+========================================================= */
+
+.gallery-toolbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:19px;
+    gap:20px;
+}
+
+.gallery-title{
+    font-family:"Playfair Display",serif;
+    font-size:28px;
+}
+
+.gallery-count{
+    font-size:12px;
+    color:var(--muted);
+}
+
+.media-grid{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:14px;
+}
+
+.media-card{
+    position:relative;
+    overflow:hidden;
+    border-radius:10px;
+    background:#ddd;
+    aspect-ratio:4/3;
+    cursor:pointer;
+}
+
+.media-card img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    transition:transform .45s ease;
+}
+
+.media-card:hover img{
+    transform:scale(1.04);
+}
+
+.media-overlay{
+    position:absolute;
+    inset:0;
+    background:linear-gradient(
+        to bottom,
+        rgba(0,0,0,.15),
+        transparent 35%,
+        rgba(0,0,0,.35)
+    );
+    opacity:0;
+    transition:.2s ease;
+}
+
+.media-card:hover .media-overlay{
+    opacity:1;
+}
+
+.media-select{
+    position:absolute;
+    top:12px;
+    right:12px;
+    width:24px;
+    height:24px;
+    border:1px solid rgba(255,255,255,.8);
+    background:rgba(0,0,0,.25);
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-size:13px;
+    z-index:2;
+}
+
+.media-card.selected{
+    outline:3px solid #171717;
+    outline-offset:-3px;
+}
+
+.media-card.selected .media-select{
+    background:#171717;
+}
+
+
+/* =========================================================
+   CLIENT NOTE
+========================================================= */
+
+.client-note{
+    margin-top:38px;
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:24px;
+}
+
+.note-label{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:1.5px;
+    color:var(--muted);
+    margin-bottom:9px;
+}
+
+.note-text{
+    font-family:"Playfair Display",serif;
+    font-size:20px;
+    line-height:1.5;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.site-footer{
+    border-top:1px solid var(--border);
+    padding:28px 30px;
+    color:var(--muted);
+    font-size:11px;
+}
+
+.footer-inner{
+    max-width:1420px;
+    margin:auto;
+    display:flex;
+    justify-content:space-between;
+    gap:20px;
+}
+
+
+/* =========================================================
+   VIEWER
+========================================================= */
+
+.viewer{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.96);
+    z-index:1000;
+    display:none;
+    align-items:center;
+    justify-content:center;
+}
+
+.viewer.open{
+    display:flex;
+}
+
+.viewer-image{
+    max-width:92vw;
+    max-height:88vh;
+    object-fit:contain;
+}
+
+.viewer-close,
+.viewer-prev,
+.viewer-next{
+    position:absolute;
+    width:44px;
+    height:44px;
+    border:1px solid rgba(255,255,255,.2);
+    border-radius:50%;
+    background:rgba(255,255,255,.08);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:22px;
+    cursor:pointer;
+}
+
+.viewer-close{
+    top:24px;
+    right:24px;
+}
+
+.viewer-prev{
+    left:25px;
+    top:50%;
+    transform:translateY(-50%);
+}
+
+.viewer-next{
+    right:25px;
+    top:50%;
+    transform:translateY(-50%);
+}
+
+.viewer-counter{
+    position:absolute;
+    bottom:24px;
+    left:50%;
+    transform:translateX(-50%);
+    color:#fff;
+    font-size:12px;
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+.toast{
+    position:fixed;
+    bottom:28px;
+    left:50%;
+    transform:translate(-50%,20px);
+    background:#171717;
+    color:#fff;
+    padding:12px 18px;
+    border-radius:8px;
+    font-size:12px;
+    opacity:0;
+    pointer-events:none;
+    transition:.25s ease;
+    z-index:2000;
+}
+
+.toast.show{
+    opacity:1;
+    transform:translate(-50%,0);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:900px){
+
+    .site-header{
+        padding:0 20px;
+    }
+
+    .private-label{
+        display:none;
+    }
+
+    .main{
+        padding-left:20px;
+        padding-right:20px;
+    }
+
+    .gallery-layout{
+        grid-template-columns:1fr;
+        gap:25px;
+    }
+
+    .sidebar{
+        position:static;
+    }
+
+    .section-list{
+        flex-direction:row;
+        overflow-x:auto;
+        padding-bottom:4px;
+    }
+
+    .section-button{
+        white-space:nowrap;
+        width:auto;
+    }
+
+    .media-grid{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+}
+
+
+@media(max-width:600px){
+
+    .site-header{
+        height:66px;
+    }
+
+    .brand-text{
+        display:none;
+    }
+
+    .hero{
+        padding:50px 20px 38px;
+    }
+
+    .hero h1{
+        font-size:42px;
+    }
+
+    .hero-meta{
+        flex-direction:column;
+    }
+
+    .meta-dot{
+        display:none;
+    }
+
+    .main{
+        padding:0 15px 50px;
+    }
+
+    .selection-box{
+        padding:20px;
+    }
+
+    .selection-top{
+        flex-direction:column;
+    }
+
+    .selection-info{
+        text-align:left;
+    }
+
+    .selection-actions{
+        flex-direction:column;
+    }
+
+    .selection-actions .btn{
+        width:100%;
+    }
+
+    .gallery-toolbar{
+        align-items:flex-start;
+        flex-direction:column;
+        gap:5px;
+    }
+
+    .media-grid{
+        grid-template-columns:1fr;
+        gap:10px;
+    }
+
+    .client-note{
+        padding:20px;
+    }
+
+    .footer-inner{
+        flex-direction:column;
+    }
+
+    .viewer-prev{
+        left:10px;
+    }
+
+    .viewer-next{
+        right:10px;
+    }
+}
+</style>
+</head>
+
+
+<body>
+
+<!-- =========================================================
+     HEADER
+========================================================= -->
+
+<header class="site-header">
+
+    <div class="brand">
+
+        <div class="brand-mark">
+            PS
+        </div>
+
+        <div class="brand-text">
+            <strong>Professional Studio</strong>
+            <span>Private Gallery</span>
+        </div>
+
+    </div>
+
+
+    <div class="header-right">
+
+        <span class="private-label">
+            Private Client Gallery
+        </span>
+
+        <button class="btn btn-dark" id="downloadGallery">
+            Download Gallery
+        </button>
+
+    </div>
+
+</header>
+
+
+<!-- =========================================================
+     HERO
+========================================================= -->
+
+<section class="hero">
+
+    <div class="hero-kicker">
+        Private Gallery
+    </div>
+
+    <h1>
+        Aarav &amp; Ananya
+    </h1>
+
+    <p class="hero-subtitle">
+        Your wedding photographs and videos are ready to view.
+    </p>
+
+    <div class="hero-meta">
+
+        <span>
+            For Aarav &amp; Ananya
+        </span>
+
+        <span class="meta-dot"></span>
+
+        <span>
+            Available until 30 Oct 2026
+        </span>
+
+        <span class="meta-dot"></span>
+
+        <span>
+            28 days left
+        </span>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
+<main class="main">
+
+
+    <!-- WEDDING ALBUM SELECTION -->
+
+    <section class="selection-box">
+
+        <div class="selection-top">
+
+            <div>
+
+                <h2 class="selection-title">
+                    Wedding Album Selection
+                </h2>
+
+                <p class="selection-description">
+                    Select the photographs you would like included in your wedding album.
+                </p>
+
+            </div>
+
+
+            <div class="selection-info">
+
+                <div class="selection-counter">
+                    <span id="selectionCount">0</span> / 20
+                </div>
+
+                <div>
+                    photographs selected
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="selection-actions">
+
+            <button
+                class="btn btn-dark"
+                id="submitSelection"
+            >
+                Submit Selection
+            </button>
+
+            <button
+                class="btn btn-light"
+                id="clearSelection"
+            >
+                Clear Selection
+            </button>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- GALLERY -->
+
+    <section class="gallery-layout">
+
+
+        <!-- SIDEBAR -->
+
+        <aside class="sidebar">
+
+            <div class="sidebar-title">
+                Gallery Sections
+            </div>
+
+            <div class="section-list" id="sectionList">
+
+                <button
+                    class="section-button active"
+                    data-section="all"
+                >
+                    All Media
+                </button>
+
+                <button
+                    class="section-button"
+                    data-section="ceremony"
+                >
+                    Ceremony
+                </button>
+
+                <button
+                    class="section-button"
+                    data-section="couple"
+                >
+                    Couple Portraits
+                </button>
+
+                <button
+                    class="section-button"
+                    data-section="reception"
+                >
+                    Reception
+                </button>
+
+                <button
+                    class="section-button"
+                    data-section="family"
+                >
+                    Family
+                </button>
+
+                <button
+                    class="section-button"
+                    data-section="details"
+                >
+                    Details
+                </button>
+
+            </div>
+
+        </aside>
+
+
+
+        <!-- GALLERY CONTENT -->
+
+        <div class="gallery-content">
+
+            <div class="gallery-toolbar">
+
+                <div>
+
+                    <h2
+                        class="gallery-title"
+                        id="galleryTitle"
+                    >
+                        All Media
+                    </h2>
+
+                    <div
+                        class="gallery-count"
+                        id="galleryCount"
+                    >
+                        12 photographs
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="media-grid"
+                id="mediaGrid"
+            ></div>
+
+
+            <!-- CLIENT NOTE -->
+
+            <div class="client-note">
+
+                <div class="note-label">
+                    Note from your photographer
+                </div>
+
+                <div class="note-text">
+                    Thank you for trusting us with your special day. We hope these photographs bring back every little moment.
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- =========================================================
+     FOOTER
+========================================================= -->
+
+<footer class="site-footer">
+
+    <div class="footer-inner">
+
+        <span>
+            © 2026 Professional Studio
+        </span>
+
+        <span>
+            Private gallery powered by Professional Studio
+        </span>
+
+    </div>
+
+</footer>
+
+
+<!-- =========================================================
+     MEDIA VIEWER
+========================================================= -->
+
+<div
+    class="viewer"
+    id="viewer"
+>
+
+    <button
+        class="viewer-close"
+        id="viewerClose"
+        aria-label="Close"
+    >
+        ×
+    </button>
+
+
+    <button
+        class="viewer-prev"
+        id="viewerPrev"
+        aria-label="Previous"
+    >
+        ‹
+    </button>
+
+
+    <img
+        class="viewer-image"
+        id="viewerImage"
+        src=""
+        alt="Gallery image"
+    >
+
+
+    <button
+        class="viewer-next"
+        id="viewerNext"
+        aria-label="Next"
+    >
+        ›
+    </button>
+
+
+    <div
+        class="viewer-counter"
+        id="viewerCounter"
+    >
+        1 / 12
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     TOAST
+========================================================= -->
+
+<div
+    class="toast"
+    id="toast"
+></div>
+
+
+
+<script>
+
+/* ============================================================
+   CLIENT GALLERY VISUAL PREVIEW
+   ------------------------------------------------------------
+   This is a standalone visual version of the client-facing
+   gallery. It does not use localStorage, IndexedDB,
+   authentication, or real downloads.
+============================================================ */
+
+
+/* ============================================================
+   DEMO MEDIA
+============================================================ */
+
+const media = [
+
+    {
+        id:"1",
+        section:"ceremony",
+        image:"https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1400&q=85"
+    },
+
+    {
+        id:"2",
+        section:"ceremony",
+        image:"https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1400&q=85"
+    },
+
+    {
+        id:"3",
+        section:"couple",
+        image:"https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1400&q=85"
+    },
+
+    {
+        id:"4",
+        section:"couple",
+        image:"https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=1400&q=85"
+    },
+
+    {
+        id:"5",
+        section:"reception",
+        image:"https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1400&q=85"
+    },
+
+    {
+        id:"6",
+        section:"reception",
+        image:"https://images.unsplash.com/photo-1507504031003-b417219a0fde?auto=format&fit=crop&w=1400&q=85"
+    },
+
+    {
+        id:"7",
+        section:"family",
+        image:"https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1400&q=85"
+    },
+
+    {
+        id:"8",
+        section:"family",
+        image:"https://images.unsplash.com/photo-1537633552985-df8429e8048b?auto=format&fit=crop&w=1400&q=85"
+    },
+
+    {
+        id:"9",
+        section:"details",
+        image:"https://images.unsplash.com/photo-1519657337289-077653f724ed?auto=format&fit=crop&w=1400&q=85"
+    },
+
+    {
+        id:"10",
+        section:"details",
+        image:"https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1400&q=85"
+    },
+
+    {
+        id:"11",
+        section:"couple",
+        image:"https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=1400&q=85"
+    },
+
+    {
+        id:"12",
+        section:"reception",
+        image:"https://images.unsplash.com/photo-1478146896981-b80fe463b330?auto=format&fit=crop&w=1400&q=85"
+    }
+
+];
+
+
+/* ============================================================
+   STATE
+============================================================ */
+
+let activeSection = "all";
+
+let selectedMedia = new Set();
+
+let viewerIndex = 0;
+
+let visibleMedia = [...media];
+
+
+/* ============================================================
+   DOM
+============================================================ */
+
+const mediaGrid =
+    document.getElementById("mediaGrid");
+
+const sectionButtons =
+    document.querySelectorAll(".section-button");
+
+const galleryTitle =
+    document.getElementById("galleryTitle");
+
+const galleryCount =
+    document.getElementById("galleryCount");
+
+const selectionCount =
+    document.getElementById("selectionCount");
+
+const submitSelection =
+    document.getElementById("submitSelection");
+
+const clearSelection =
+    document.getElementById("clearSelection");
+
+const downloadGallery =
+    document.getElementById("downloadGallery");
+
+const viewer =
+    document.getElementById("viewer");
+
+const viewerImage =
+    document.getElementById("viewerImage");
+
+const viewerCounter =
+    document.getElementById("viewerCounter");
+
+const viewerClose =
+    document.getElementById("viewerClose");
+
+const viewerPrev =
+    document.getElementById("viewerPrev");
+
+const viewerNext =
+    document.getElementById("viewerNext");
+
+const toast =
+    document.getElementById("toast");
+
+
+/* ============================================================
+   SECTION LABELS
+============================================================ */
+
+const sectionLabels = {
+
+    all:"All Media",
+
+    ceremony:"Ceremony",
+
+    couple:"Couple Portraits",
+
+    reception:"Reception",
+
+    family:"Family",
+
+    details:"Details"
+
+};
+
+
+/* ============================================================
+   RENDER GALLERY
+============================================================ */
+
+function renderGallery(){
+
+    visibleMedia =
+        activeSection === "all"
+            ? [...media]
+            : media.filter(
+                item =>
+                    item.section === activeSection
+            );
+
+
+    galleryTitle.textContent =
+        sectionLabels[activeSection];
+
+
+    galleryCount.textContent =
+        `${visibleMedia.length} photographs`;
+
+
+    mediaGrid.innerHTML = "";
+
+
+    visibleMedia.forEach(
+        (item,index) => {
+
+            const card =
+                document.createElement("div");
+
+            card.className =
+                "media-card";
+
+
+            if(
+                selectedMedia.has(item.id)
+            ){
+
+                card.classList.add(
+                    "selected"
+                );
+
+            }
+
+
+            card.innerHTML = `
+
+                <img
+                    src="${item.image}"
+                    alt="Wedding photograph"
+                    loading="lazy"
+                >
+
+                <div class="media-overlay"></div>
+
+                <button
+                    class="media-select"
+                    type="button"
+                    aria-label="Select photograph"
+                >
+                    ${selectedMedia.has(item.id) ? "✓" : ""}
+                </button>
+
+            `;
+
+
+            const selectButton =
+                card.querySelector(
+                    ".media-select"
+                );
+
+
+            selectButton.addEventListener(
+                "click",
+                event => {
+
+                    event.stopPropagation();
+
+                    toggleSelection(item.id);
+
+                }
+            );
+
+
+            card.addEventListener(
+                "click",
+                () => {
+
+                    openViewer(index);
+
+                }
+            );
+
+
+            mediaGrid.appendChild(card);
+
+        }
+    );
+
+}
+
+
+/* ============================================================
+   SELECTION
+============================================================ */
+
+function toggleSelection(id){
+
+    if(
+        selectedMedia.has(id)
+    ){
+
+        selectedMedia.delete(id);
+
+    }else{
+
+        if(
+            selectedMedia.size >= 20
+        ){
+
+            showToast(
+                "You can select up to 20 photographs."
+            );
+
+            return;
+
+        }
+
+        selectedMedia.add(id);
+
+    }
+
+
+    updateSelectionCount();
+
+    renderGallery();
+
+}
+
+
+function updateSelectionCount(){
+
+    selectionCount.textContent =
+        selectedMedia.size;
+
+}
+
+
+clearSelection.addEventListener(
+    "click",
+    () => {
+
+        selectedMedia.clear();
+
+        updateSelectionCount();
+
+        renderGallery();
+
+        showToast(
+            "Selection cleared."
+        );
+
+    }
+);
+
+
+submitSelection.addEventListener(
+    "click",
+    () => {
+
+        if(
+            selectedMedia.size === 0
+        ){
+
+            showToast(
+                "Please select at least one photograph."
+            );
+
+            return;
+
+        }
+
+
+        showToast(
+            `${selectedMedia.size} photographs selected for your album.`
+        );
+
+    }
+);
+
+
+/* ============================================================
+   SECTION FILTERING
+============================================================ */
+
+sectionButtons.forEach(
+    button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                sectionButtons.forEach(
+                    item =>
+                        item.classList.remove(
+                            "active"
+                        )
+                );
+
+
+                button.classList.add(
+                    "active"
+                );
+
+
+                activeSection =
+                    button.dataset.section;
+
+
+                renderGallery();
+
+            }
+        );
+
+    }
+);
+
+
+/* ============================================================
+   VIEWER
+============================================================ */
+
+function openViewer(index){
+
+    viewerIndex = index;
+
+    updateViewer();
+
+    viewer.classList.add(
+        "open"
+    );
+
+    document.body.style.overflow =
+        "hidden";
+
+}
+
+
+function updateViewer(){
+
+    const item =
+        visibleMedia[viewerIndex];
+
+
+    if(!item){
+        return;
+    }
+
+
+    viewerImage.src =
+        item.image;
+
+
+    viewerCounter.textContent =
+        `${viewerIndex + 1} / ${visibleMedia.length}`;
+
+}
+
+
+function closeViewer(){
+
+    viewer.classList.remove(
+        "open"
+    );
+
+    document.body.style.overflow =
+        "";
+
+}
+
+
+viewerClose.addEventListener(
+    "click",
+    closeViewer
+);
+
+
+viewer.addEventListener(
+    "click",
+    event => {
+
+        if(
+            event.target === viewer
+        ){
+
+            closeViewer();
+
+        }
+
+    }
+);
+
+
+viewerPrev.addEventListener(
+    "click",
+    event => {
+
+        event.stopPropagation();
+
+        if(
+            visibleMedia.length === 0
+        ){
+            return;
+        }
+
+
+        viewerIndex =
+            (
+                viewerIndex -
+                1 +
+                visibleMedia.length
+            ) %
+            visibleMedia.length;
+
+
+        updateViewer();
+
+    }
+);
+
+
+viewerNext.addEventListener(
+    "click",
+    event => {
+
+        event.stopPropagation();
+
+        if(
+            visibleMedia.length === 0
+        ){
+            return;
+        }
+
+
+        viewerIndex =
+            (
+                viewerIndex +
+                1
+            ) %
+            visibleMedia.length;
+
+
+        updateViewer();
+
+    }
+);
+
+
+/* ============================================================
+   KEYBOARD CONTROLS
+============================================================ */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if(
+            !viewer.classList.contains(
+                "open"
+            )
+        ){
+            return;
+        }
+
+
+        if(
+            event.key === "Escape"
+        ){
+
+            closeViewer();
+
+        }
+
+
+        if(
+            event.key === "ArrowLeft"
+        ){
+
+            viewerPrev.click();
+
+        }
+
+
+        if(
+            event.key === "ArrowRight"
+        ){
+
+            viewerNext.click();
+
+        }
+
+    }
+);
+
+
+/* ============================================================
+   DOWNLOAD DEMO
+============================================================ */
+
+downloadGallery.addEventListener(
+    "click",
+    () => {
+
+        showToast(
+            "Demo mode: gallery download would start here."
+        );
+
+    }
+);
+
+
+/* ============================================================
+   TOAST
+============================================================ */
+
+let toastTimer;
+
+
+function showToast(message){
+
+    toast.textContent =
+        message;
+
+
+    toast.classList.add(
+        "show"
+    );
+
+
+    clearTimeout(
+        toastTimer
+    );
+
+
+    toastTimer =
+        setTimeout(
+            () => {
+
+                toast.classList.remove(
+                    "show"
+                );
+
+            },
+            2600
+        );
+
+}
+
+
+/* ============================================================
+   INITIAL RENDER
+============================================================ */
+
+renderGallery();
+
+updateSelectionCount();
+
+</script>
+
+</body>
+</html>
