@@ -96,6 +96,11 @@ document.addEventListener("DOMContentLoaded", () => {
             "phone"
         );
 
+    const guestCount =
+        document.getElementById(
+            "guestCount"
+        );
+
     const locationInput =
         document.getElementById(
             "location"
@@ -174,6 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
         fullName,
         email,
         phone,
+        guestCount,
         locationInput,
         message
     ].filter(Boolean);
@@ -1006,91 +1012,83 @@ document.addEventListener("DOMContentLoaded", () => {
                                             amount /
                                             total
                                         ) * 100
-                                        : 0,
-
-                                due:
-                                    stage.due ??
-                                    stage.dueDate ??
-                                    stage.label ??
-                                    ""
+                                        : 0
 
                             };
 
                         }
-                    )
-                    .filter(
-                        stage =>
-                            stage.amount > 0
                     );
 
 
-            if (stages.length) {
-
-                const stageTotal =
-                    stages.reduce(
-                        (
-                            sum,
-                            stage
-                        ) =>
-                            sum +
-                            stage.amount,
-                        0
-                    );
-
-
-                /*
-                 * Keep package price authoritative.
-                 */
-
-                if (
-                    Math.abs(
-                        stageTotal -
-                        total
-                    ) > 0.01 &&
-                    total > 0
-                ) {
-
-                    const lastStage =
-                        stages[
-                            stages.length - 1
-                        ];
-
-
-                    lastStage.amount =
-                        Math.max(
-                            0,
-                            lastStage.amount +
-                            (
-                                total -
-                                stageTotal
-                            )
-                        );
-
-
-                    lastStage.percentage =
-                        total > 0
-                            ? (
-                                lastStage.amount /
-                                total
-                            ) * 100
-                            : 0;
-
-                }
-
+            if (
+                stages.length === 0
+            ) {
 
                 return {
 
                     type:
-                        "installments",
+                        "full",
 
                     totalAmount:
                         total,
 
-                    stages
+                    stages:[
+                        {
+                            id:
+                                "full",
+
+                            name:
+                                "Full Payment",
+
+                            amount:
+                                total,
+
+                            percentage:
+                                100
+                        }
+                    ]
 
                 };
 
             }
+
+
+            const stageTotal =
+                stages.reduce(
+                    (
+                        sum,
+                        stage
+                    ) =>
+                        sum +
+                        stage.amount,
+                    0
+                );
+
+
+            if (
+                stageTotal <= 0
+            ) {
+
+                stages[0].amount =
+                    total;
+
+                stages[0].percentage =
+                    100;
+
+            }
+
+
+            return {
+
+                type:
+                    "installments",
+
+                totalAmount:
+                    total,
+
+                stages
+
+            };
 
         }
 
@@ -1125,246 +1123,159 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =========================================================
-       PAYMENT STATE
+       SERVICE / PACKAGE LOOKUP
        ========================================================= */
 
-    function initializePaymentState(
-        booking,
-        paymentPlan
-    ) {
-
-        const total =
-            parsePrice(
-                booking.packagePrice
-            );
-
-
-        const normalizedPlan =
-            normalizePaymentPlan(
-                paymentPlan,
-                total
-            );
-
-
-        booking.paymentPlan =
-            normalizedPlan;
-
-
-        if (
-            !Array.isArray(
-                booking.paymentRecords
-            )
-        ) {
-
-            booking.paymentRecords = [];
-
-        }
-
-
-        if (
-            booking.amountPaid ===
-                undefined ||
-            booking.amountPaid ===
-                null
-        ) {
-
-            if (
-                booking.paid !==
-                    undefined &&
-                booking.paid !==
-                    null
-            ) {
-
-                booking.amountPaid =
-                    parsePrice(
-                        booking.paid
-                    );
-
-            }
-
-            else {
-
-                booking.amountPaid =
-                    0;
-
-            }
-
-        }
-
-
-        booking.amountPaid =
-            Math.min(
-                total,
-                Math.max(
-                    0,
-                    Number(
-                        booking.amountPaid
-                    ) || 0
-                )
-            );
-
-
-        booking.remainingAmount =
-            Math.max(
-                0,
-                total -
-                booking.amountPaid
-            );
-
-
-        if (
-            booking.amountPaid <= 0
-        ) {
-
-            booking.paymentStatus =
-                "Pending";
-
-        }
-
-        else if (
-            booking.remainingAmount <=
-            0.01
-        ) {
-
-            booking.paymentStatus =
-                "Paid";
-
-        }
-
-        else {
-
-            booking.paymentStatus =
-                "Partially Paid";
-
-        }
-
-
-        booking.payment =
-            booking.paymentStatus;
-
-
-        booking.advance =
-            booking.amountPaid > 0
-                ? formatPrice(
-                    booking.amountPaid
-                )
-                : "₹0";
-
-
-        booking.remaining =
-            formatPrice(
-                booking.remainingAmount
-            );
-
-
-        return booking;
-
-    }
-
-
-    /* =========================================================
-       LOAD SELECTED SERVICE + PACKAGE
-       ========================================================= */
-
-    function loadSelectedPackage() {
+    function findSelectedService() {
 
         const services =
             getServices();
 
 
         if (
-            !serviceId ||
-            !packageId
+            !services.length
         ) {
 
-            showSelectionError(
-                "The selected service or package is missing."
-            );
-
-            return false;
+            return null;
 
         }
 
 
-        selectedService =
-            services.find(
-                service => {
+        if (
+            serviceId
+        ) {
 
-                    const currentId =
+            const exact =
+                services.find(
+                    service =>
                         getServiceId(
                             service
-                        );
-
-
-                    return (
-                        currentId ===
+                        ) ===
                         String(
                             serviceId
-                        ) &&
-                        service.active !==
-                            false
-                    );
-
-                }
-            );
+                        )
+                );
 
 
-        if (!selectedService) {
+            if (
+                exact
+            ) {
 
-            showSelectionError(
-                "The selected photography service could not be found or is no longer available."
-            );
+                return exact;
 
-            return false;
+            }
 
         }
 
 
+        /*
+         * Backward-compatible fallback:
+         * If only one service exists, use it.
+         */
+
+        if (
+            services.length === 1
+        ) {
+
+            return services[0];
+
+        }
+
+
+        return null;
+
+    }
+
+
+    function getPackagesFromService(
+        service
+    ) {
+
+        if (!service) {
+
+            return [];
+
+        }
+
+
+        const possiblePackages =
+            service.packages ??
+            service.packageList ??
+            service.plans ??
+            [];
+
+
+        return Array.isArray(
+            possiblePackages
+        )
+            ? possiblePackages
+            : [];
+
+    }
+
+
+    function findSelectedPackage(
+        service
+    ) {
+
         const packages =
-            Array.isArray(
-                selectedService.packages
-            )
-                ? selectedService.packages
-                : [];
+            getPackagesFromService(
+                service
+            );
 
 
-        selectedPackage =
-            packages.find(
-                pkg => {
+        if (
+            !packages.length
+        ) {
 
-                    return (
+            return null;
+
+        }
+
+
+        if (
+            packageId
+        ) {
+
+            const exact =
+                packages.find(
+                    pkg =>
                         getPackageId(
                             pkg
                         ) ===
                         String(
                             packageId
                         )
-                    );
-
-                }
-            );
+                );
 
 
-        if (!selectedPackage) {
+            if (
+                exact
+            ) {
 
-            showSelectionError(
-                "The selected package could not be found."
-            );
+                return exact;
 
-            return false;
+            }
 
         }
 
 
-        renderSelectedPackage();
+        if (
+            packages.length === 1
+        ) {
 
-        return true;
+            return packages[0];
+
+        }
+
+
+        return null;
 
     }
 
 
     /* =========================================================
-       PACKAGE CARD
+       PACKAGE DISPLAY
        ========================================================= */
 
     function renderSelectedPackage() {
@@ -1372,6 +1283,48 @@ document.addEventListener("DOMContentLoaded", () => {
         if (
             !selectedPackageCard
         ) {
+
+            return;
+
+        }
+
+
+        if (
+            !selectedService ||
+            !selectedPackage
+        ) {
+
+            selectedPackageCard.innerHTML = `
+
+                <div class="package-error">
+
+                    <h2>
+                        Package not found
+                    </h2>
+
+                    <p>
+                        We could not find the selected
+                        service or package. Please return
+                        to the services page and select
+                        a package again.
+                    </p>
+
+                    <a href="client.html">
+                        Return to Services
+                    </a>
+
+                </div>
+
+            `;
+
+            if (
+                submitBtn
+            ) {
+
+                submitBtn.disabled =
+                    true;
+
+            }
 
             return;
 
@@ -1390,14 +1343,14 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
 
-        const packagePrice =
-            getPackagePrice(
+        const description =
+            getPackageDescription(
                 selectedPackage
             );
 
 
-        const description =
-            getPackageDescription(
+        const price =
+            getPackagePrice(
                 selectedPackage
             );
 
@@ -1420,93 +1373,119 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
 
+        const metaItems = [];
+
+
+        if (
+            coverage !== ""
+        ) {
+
+            metaItems.push(
+                `
+                    <span class="package-meta-item">
+                        ${escapeHTML(
+                            coverage
+                        )}
+                    </span>
+                `
+            );
+
+        }
+
+
+        if (
+            photos !== ""
+        ) {
+
+            metaItems.push(
+                `
+                    <span class="package-meta-item">
+                        ${escapeHTML(
+                            photos
+                        )} photos
+                    </span>
+                `
+            );
+
+        }
+
+
+        if (
+            delivery !== ""
+        ) {
+
+            metaItems.push(
+                `
+                    <span class="package-meta-item">
+                        Delivery:
+                        ${escapeHTML(
+                            delivery
+                        )}
+                    </span>
+                `
+            );
+
+        }
+
+
         selectedPackageCard.innerHTML = `
 
-            <div class="selected-package-inner">
+            <div class="package-topline">
 
-                <div class="selected-package-label">
-                    SELECTED PACKAGE
+                <div>
+
+                    <p class="package-service">
+                        ${escapeHTML(
+                            serviceName
+                        )}
+                    </p>
+
+                    <h2 class="package-name">
+                        ${escapeHTML(
+                            packageName
+                        )}
+                    </h2>
+
                 </div>
 
-                <div class="selected-package-service">
-                    ${escapeHTML(serviceName)}
+                <div class="package-price">
+                    ${escapeHTML(
+                        formatPrice(
+                            price
+                        )
+                    )}
                 </div>
-
-                <h2 class="selected-package-name">
-                    ${escapeHTML(packageName)}
-                </h2>
-
-                ${
-                    description
-                        ? `
-                            <p class="selected-package-description">
-                                ${escapeHTML(description)}
-                            </p>
-                        `
-                        : ""
-                }
-
-                <div class="selected-package-price">
-                    ${formatPrice(packagePrice)}
-                </div>
-
-                ${
-                    coverage ||
-                    photos ||
-                    delivery
-                        ? `
-                            <div class="selected-package-meta">
-
-                                ${
-                                    coverage
-                                        ? `
-                                            <div class="package-meta-item">
-                                                <span>Coverage</span>
-                                                <strong>
-                                                    ${escapeHTML(coverage)}
-                                                </strong>
-                                            </div>
-                                        `
-                                        : ""
-                                }
-
-                                ${
-                                    photos
-                                        ? `
-                                            <div class="package-meta-item">
-                                                <span>Photos</span>
-                                                <strong>
-                                                    ${escapeHTML(photos)}
-                                                </strong>
-                                            </div>
-                                        `
-                                        : ""
-                                }
-
-                                ${
-                                    delivery
-                                        ? `
-                                            <div class="package-meta-item">
-                                                <span>Delivery</span>
-                                                <strong>
-                                                    ${escapeHTML(delivery)}
-                                                </strong>
-                                            </div>
-                                        `
-                                        : ""
-                                }
-
-                            </div>
-                        `
-                        : ""
-                }
 
             </div>
+
+            ${
+                description
+                    ? `
+                        <p class="package-description">
+                            ${escapeHTML(
+                                description
+                            )}
+                        </p>
+                    `
+                    : ""
+            }
+
+            ${
+                metaItems.length
+                    ? `
+                        <div class="package-meta">
+                            ${metaItems.join("")}
+                        </div>
+                    `
+                    : ""
+            }
 
         `;
 
 
-        if (summaryService) {
+        if (
+            summaryService
+        ) {
 
             summaryService.textContent =
                 serviceName;
@@ -1514,7 +1493,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
-        if (summaryPackage) {
+        if (
+            summaryPackage
+        ) {
 
             summaryPackage.textContent =
                 packageName;
@@ -1522,11 +1503,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
-        if (summaryPrice) {
+        if (
+            summaryPrice
+        ) {
 
             summaryPrice.textContent =
                 formatPrice(
-                    packagePrice
+                    price
                 );
 
         }
@@ -1535,511 +1518,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =========================================================
-       ERROR STATE
+       DATE / TIME HELPERS
        ========================================================= */
 
-    function showSelectionError(
-        messageText
-    ) {
-
-        if (selectedPackageCard) {
-
-            selectedPackageCard.innerHTML = `
-
-                <div class="selected-package-inner">
-
-                    <div class="selected-package-label">
-                        BOOKING ERROR
-                    </div>
-
-                    <h2 class="selected-package-name">
-                        Unable to load package
-                    </h2>
-
-                    <p class="selected-package-description">
-                        ${escapeHTML(messageText)}
-                    </p>
-
-                </div>
-
-            `;
-
-        }
-
-
-        if (bookingForm) {
-
-            bookingForm.style.display =
-                "none";
-
-        }
-
-
-        if (submitBtn) {
-
-            submitBtn.disabled =
-                true;
-
-        }
-
-    }
-
-
-    /* =========================================================
-       BACK TO SERVICE
-       ========================================================= */
-
-    if (backToService) {
-
-        backToService.addEventListener(
-            "click",
-            event => {
-
-                event.preventDefault();
-
-
-                if (!selectedService) {
-
-                    window.location.href =
-                        "client.html";
-
-                    return;
-
-                }
-
-
-                const id =
-                    encodeURIComponent(
-                        getServiceId(
-                            selectedService
-                        )
-                    );
-
-
-                window.location.href =
-                    `service.html?id=${id}`;
-
-            }
-        );
-
-    }
-
-
-    /* =========================================================
-       FLATPICKR
-       ========================================================= */
-
-    let datePicker = null;
-
-
-    function initializeDatePicker() {
-
-        if (
-            !multiDate ||
-            typeof flatpickr ===
-                "undefined"
-        ) {
-
-            console.error(
-                "Flatpickr is not available."
-            );
-
-            return;
-
-        }
-
-
-        datePicker =
-            flatpickr(
-                multiDate,
-                {
-
-                    mode:
-                        "multiple",
-
-                    dateFormat:
-                        "d-m-Y",
-
-                    minDate:
-                        "today",
-
-                    allowInput:
-                        false,
-
-
-                    onChange(
-                        selectedDates
-                    ) {
-
-                        renderDateTimeRows(
-                            selectedDates
-                        );
-
-
-                        updateTotalHours();
-
-                    }
-
-                }
-            );
-
-    }
-
-
-    /* =========================================================
-       DATE FORMAT
-       ========================================================= */
-
-    function formatDateForStorage(
-        date
-    ) {
-
-        if (
-            !(date instanceof Date)
-        ) {
-
-            return "";
-
-        }
-
-
-        const day =
-            String(
-                date.getDate()
-            ).padStart(
-                2,
-                "0"
-            );
-
-
-        const month =
-            String(
-                date.getMonth() + 1
-            ).padStart(
-                2,
-                "0"
-            );
-
-
-        const year =
-            date.getFullYear();
-
-
-        return `${day}-${month}-${year}`;
-
-    }
-
-
-    function formatDateLong(
-        dateString
-    ) {
-
-        if (!dateString) {
-
-            return "";
-
-        }
-
-
-        const parts =
-            String(
-                dateString
-            ).split("-");
-
-
-        if (
-            parts.length === 3
-        ) {
-
-            const day =
-                Number(
-                    parts[0]
-                );
-
-
-            const month =
-                Number(
-                    parts[1]
-                ) - 1;
-
-
-            const year =
-                Number(
-                    parts[2]
-                );
-
-
-            const parsed =
-                new Date(
-                    year,
-                    month,
-                    day
-                );
-
-
-            if (
-                !Number.isNaN(
-                    parsed.getTime()
-                )
-            ) {
-
-                return parsed.toLocaleDateString(
-                    "en-IN",
-                    {
-                        weekday:
-                            "long",
-
-                        day:
-                            "numeric",
-
-                        month:
-                            "long",
-
-                        year:
-                            "numeric"
-                    }
-                );
-
-            }
-
-        }
-
-
-        const parsed =
-            new Date(
-                dateString
-            );
-
-
-        if (
-            !Number.isNaN(
-                parsed.getTime()
-            )
-        ) {
-
-            return parsed.toLocaleDateString(
-                "en-IN",
-                {
-                    weekday:
-                        "long",
-
-                    day:
-                        "numeric",
-
-                    month:
-                        "long",
-
-                    year:
-                        "numeric"
-                }
-            );
-
-        }
-
-
-        return dateString;
-
-    }
-
-
-    /* =========================================================
-       DATE / TIME ROWS
-       ========================================================= */
-
-    function renderDateTimeRows(
-        selectedDates
-    ) {
-
-        if (
-            !dateTimeContainer
-        ) {
-
-            return;
-
-        }
-
-
-        dateTimeContainer.innerHTML =
-            "";
-
-
-        if (
-            !selectedDates.length
-        ) {
-
-            return;
-
-        }
-
-
-        selectedDates.forEach(
-            (
-                date,
-                index
-            ) => {
-
-                const dateValue =
-                    formatDateForStorage(
-                        date
-                    );
-
-
-                const row =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                row.className =
-                    "date-time-row";
-
-
-                row.dataset.date =
-                    dateValue;
-
-
-                row.innerHTML = `
-
-                    <div class="date-time-date">
-
-                        <span class="date-label">
-                            ${escapeHTML(
-                                formatDateLong(
-                                    dateValue
-                                )
-                            )}
-                        </span>
-
-                    </div>
-
-
-                    <div class="date-time-fields">
-
-                        <div class="time-field">
-
-                            <label
-                                for="startTime_${index}"
-                            >
-                                Start Time
-                            </label>
-
-                            <input
-                                type="time"
-                                id="startTime_${index}"
-                                class="start-time"
-                                aria-label="Start time for ${escapeHTML(dateValue)}"
-                            >
-
-                        </div>
-
-
-                        <div class="time-separator">
-                            to
-                        </div>
-
-
-                        <div class="time-field">
-
-                            <label
-                                for="endTime_${index}"
-                            >
-                                End Time
-                            </label>
-
-                            <input
-                                type="time"
-                                id="endTime_${index}"
-                                class="end-time"
-                                aria-label="End time for ${escapeHTML(dateValue)}"
-                            >
-
-                        </div>
-
-
-                        <div class="hours-display">
-
-                            <span class="hours-label">
-                                Hours
-                            </span>
-
-                            <strong class="hours">
-                                0
-                            </strong>
-
-                        </div>
-
-                    </div>
-
-                `;
-
-
-                dateTimeContainer.appendChild(
-                    row
-                );
-
-
-                const startInput =
-                    row.querySelector(
-                        ".start-time"
-                    );
-
-
-                const endInput =
-                    row.querySelector(
-                        ".end-time"
-                    );
-
-
-                if (startInput) {
-
-                    startInput.addEventListener(
-                        "change",
-                        () => {
-
-                            updateRowHours(
-                                row
-                            );
-
-                            updateTotalHours();
-
-                        }
-                    );
-
-                }
-
-
-                if (endInput) {
-
-                    endInput.addEventListener(
-                        "change",
-                        () => {
-
-                            updateRowHours(
-                                row
-                            );
-
-                            updateTotalHours();
-
-                        }
-                    );
-
-                }
-
-            }
-        );
-
-    }
-
-
-    /* =========================================================
-       TIME CALCULATION
-       ========================================================= */
-
-    function timeToMinutes(
+    function padTimePart(
         value
     ) {
 
-        if (!value) {
+        return String(
+            value
+        ).padStart(
+            2,
+            "0"
+        );
+
+    }
+
+
+    function timeToMinutes(
+        time
+    ) {
+
+        if (
+            !time ||
+            typeof time !==
+            "string"
+        ) {
 
             return null;
 
@@ -2047,13 +1551,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         const parts =
-            String(
-                value
-            ).split(":");
+            time.split(":");
 
 
         if (
-            parts.length !== 2
+            parts.length < 2
         ) {
 
             return null;
@@ -2074,16 +1576,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         if (
-            !Number.isInteger(
+            !Number.isFinite(
                 hours
             ) ||
-            !Number.isInteger(
+            !Number.isFinite(
                 minutes
-            ) ||
-            hours < 0 ||
-            hours > 23 ||
-            minutes < 0 ||
-            minutes > 59
+            )
         ) {
 
             return null;
@@ -2099,20 +1597,473 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
+    function minutesToTime(
+        totalMinutes
+    ) {
+
+        let minutes =
+            Number(
+                totalMinutes
+            );
+
+
+        if (
+            !Number.isFinite(
+                minutes
+            )
+        ) {
+
+            return "";
+
+        }
+
+
+        minutes =
+            Math.max(
+                0,
+                Math.min(
+                    1439,
+                    Math.round(
+                        minutes
+                    )
+                )
+            );
+
+
+        const hours =
+            Math.floor(
+                minutes / 60
+            );
+
+
+        const remainder =
+            minutes % 60;
+
+
+        return `${padTimePart(
+            hours
+        )}:${padTimePart(
+            remainder
+        )}`;
+
+    }
+
+
+    /* =========================================================
+       12-HOUR TIME UI
+       ========================================================= */
+
+    function timeValueToParts(
+        timeValue
+    ) {
+
+        const fallback = {
+            hour: "9",
+            minute: "00",
+            period: "AM"
+        };
+
+
+        if (
+            !timeValue ||
+            typeof timeValue !==
+            "string"
+        ) {
+
+            return fallback;
+
+        }
+
+
+        const minutes =
+            timeToMinutes(
+                timeValue
+            );
+
+
+        if (
+            minutes === null
+        ) {
+
+            return fallback;
+
+        }
+
+
+        let hour24 =
+            Math.floor(
+                minutes / 60
+            );
+
+
+        const minute =
+            minutes % 60;
+
+
+        const period =
+            hour24 >= 12
+                ? "PM"
+                : "AM";
+
+
+        let hour12 =
+            hour24 % 12;
+
+
+        if (
+            hour12 === 0
+        ) {
+
+            hour12 =
+                12;
+
+        }
+
+
+        const allowedMinutes =
+            [
+                0,
+                15,
+                30,
+                45
+            ];
+
+
+        let nearestMinute =
+            allowedMinutes.reduce(
+                (
+                    closest,
+                    current
+                ) =>
+                    Math.abs(
+                        current -
+                        minute
+                    ) <
+                    Math.abs(
+                        closest -
+                        minute
+                    )
+                        ? current
+                        : closest,
+                allowedMinutes[0]
+            );
+
+
+        /*
+         * If the nearest quarter-hour rounds to 60,
+         * move to the next hour.
+         */
+
+        if (
+            nearestMinute ===
+                45 &&
+            minute >= 53
+        ) {
+
+            nearestMinute = 0;
+
+            hour12++;
+
+            if (
+                hour12 > 12
+            ) {
+
+                hour12 = 1;
+
+            }
+
+        }
+
+
+        return {
+
+            hour:
+                String(
+                    hour12
+                ),
+
+            minute:
+                padTimePart(
+                    nearestMinute
+                ),
+
+            period
+
+        };
+
+    }
+
+
+    function buildTimeSelects(
+        fieldName,
+        currentValue
+    ) {
+
+        const parts =
+            timeValueToParts(
+                currentValue
+            );
+
+
+        const hourOptions =
+            Array.from(
+                {
+                    length:12
+                },
+                (
+                    _,
+                    index
+                ) => {
+
+                    const hour =
+                        index + 1;
+
+                    return `
+                        <option
+                            value="${hour}"
+                            ${
+                                String(
+                                    hour
+                                ) ===
+                                parts.hour
+                                    ? "selected"
+                                    : ""
+                            }
+                        >
+                            ${hour}
+                        </option>
+                    `;
+
+                }
+            ).join("");
+
+
+        const minuteOptions =
+            [
+                "00",
+                "15",
+                "30",
+                "45"
+            ]
+                .map(
+                    minute => `
+                        <option
+                            value="${minute}"
+                            ${
+                                minute ===
+                                parts.minute
+                                    ? "selected"
+                                    : ""
+                            }
+                        >
+                            ${minute}
+                        </option>
+                    `
+                )
+                .join("");
+
+
+        const periodOptions =
+            [
+                "AM",
+                "PM"
+            ]
+                .map(
+                    period => `
+                        <option
+                            value="${period}"
+                            ${
+                                period ===
+                                parts.period
+                                    ? "selected"
+                                    : ""
+                            }
+                        >
+                            ${period}
+                        </option>
+                    `
+                )
+                .join("");
+
+
+        return `
+
+            <div
+                class="time-select-group"
+                data-time-field="${escapeHTML(
+                    fieldName
+                )}"
+            >
+
+                <select
+                    class="time-hour"
+                    aria-label="${escapeHTML(
+                        fieldName
+                    )} hour"
+                >
+                    ${hourOptions}
+                </select>
+
+                <select
+                    class="time-minute"
+                    aria-label="${escapeHTML(
+                        fieldName
+                    )} minute"
+                >
+                    ${minuteOptions}
+                </select>
+
+                <select
+                    class="time-period"
+                    aria-label="${escapeHTML(
+                        fieldName
+                    )} AM or PM"
+                >
+                    ${periodOptions}
+                </select>
+
+            </div>
+
+        `;
+
+    }
+
+
+    function readTimeSelects(
+        row,
+        fieldName
+    ) {
+
+        if (
+            !row
+        ) {
+
+            return "";
+
+        }
+
+
+        const group =
+            row.querySelector(
+                `[data-time-field="${fieldName}"]`
+            );
+
+
+        if (
+            !group
+        ) {
+
+            return "";
+
+        }
+
+
+        const hourSelect =
+            group.querySelector(
+                ".time-hour"
+            );
+
+        const minuteSelect =
+            group.querySelector(
+                ".time-minute"
+            );
+
+        const periodSelect =
+            group.querySelector(
+                ".time-period"
+            );
+
+
+        if (
+            !hourSelect ||
+            !minuteSelect ||
+            !periodSelect
+        ) {
+
+            return "";
+
+        }
+
+
+        let hour =
+            Number(
+                hourSelect.value
+            );
+
+
+        const minute =
+            Number(
+                minuteSelect.value
+            );
+
+
+        const period =
+            periodSelect.value;
+
+
+        if (
+            !Number.isFinite(
+                hour
+            ) ||
+            !Number.isFinite(
+                minute
+            )
+        ) {
+
+            return "";
+
+        }
+
+
+        if (
+            period === "AM"
+        ) {
+
+            if (
+                hour === 12
+            ) {
+
+                hour = 0;
+
+            }
+
+        }
+
+        else {
+
+            if (
+                hour !== 12
+            ) {
+
+                hour += 12;
+
+            }
+
+        }
+
+
+        return `${padTimePart(
+            hour
+        )}:${padTimePart(
+            minute
+        )}`;
+
+    }
+
+
     function calculateHours(
-        startValue,
-        endValue
+        startTime,
+        endTime
     ) {
 
         const start =
             timeToMinutes(
-                startValue
+                startTime
             );
-
 
         const end =
             timeToMinutes(
-                endValue
+                endTime
             );
 
 
@@ -2126,19 +2077,621 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
+        /*
+         * If the end time is earlier than the start time,
+         * treat it as an overnight session.
+         */
+
+        let difference =
+            end - start;
+
+
         if (
-            end <= start
+            difference < 0
         ) {
 
-            return 0;
+            difference +=
+                24 * 60;
 
         }
 
 
         return (
-            (end - start) /
+            difference /
             60
         );
+
+    }
+
+
+    function formatHours(
+        hours
+    ) {
+
+        const numeric =
+            Number(
+                hours
+            );
+
+
+        if (
+            !Number.isFinite(
+                numeric
+            )
+        ) {
+
+            return "0 hrs";
+
+        }
+
+
+        if (
+            Number.isInteger(
+                numeric
+            )
+        ) {
+
+            return `${numeric} hrs`;
+
+        }
+
+
+        return `${numeric.toFixed(
+            2
+        ).replace(
+            /\.00$/,
+            ""
+        )} hrs`;
+
+    }
+
+
+    /* =========================================================
+       DATE ROW RENDERING
+       ========================================================= */
+
+    function renderDateTimeRows(
+        selectedDates
+    ) {
+
+        if (
+            !dateTimeContainer
+        ) {
+
+            return;
+
+        }
+
+
+        /*
+         * Preserve any existing time values before rebuilding
+         * the rows. This matters when the user selects an
+         * additional date after already entering times.
+         */
+
+        const existingRows =
+            Array.from(
+                dateTimeContainer.querySelectorAll(
+                    ".date-time-row"
+                )
+            );
+
+
+        const existingTimes =
+            new Map();
+
+
+        existingRows.forEach(
+            row => {
+
+                const date =
+                    row.dataset.date;
+
+
+                if (
+                    !date
+                ) {
+
+                    return;
+
+                }
+
+
+                existingTimes.set(
+                    date,
+                    {
+                        start:
+                            readTimeSelects(
+                                row,
+                                "start"
+                            ),
+
+                        end:
+                            readTimeSelects(
+                                row,
+                                "end"
+                            )
+                    }
+                );
+
+            }
+        );
+
+
+        dateTimeContainer.innerHTML =
+            "";
+
+
+        if (
+            !Array.isArray(
+                selectedDates
+            ) ||
+            !selectedDates.length
+        ) {
+
+            updateTotalHours();
+
+            return;
+
+        }
+
+
+        selectedDates.forEach(
+            (
+                dateValue,
+                index
+            ) => {
+
+                const date =
+                    normalizeDateValue(
+                        dateValue
+                    );
+
+
+                if (
+                    !date
+                ) {
+
+                    return;
+
+                }
+
+
+                const previous =
+                    existingTimes.get(
+                        date
+                    );
+
+
+                const startValue =
+                    previous?.start ||
+                    "09:00";
+
+
+                const endValue =
+                    previous?.end ||
+                    "12:00";
+
+
+                const row =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                row.className =
+                    "date-time-row";
+
+
+                row.dataset.date =
+                    date;
+
+
+                row.innerHTML = `
+
+                    <div class="date-heading">
+
+                        <div>
+
+                            <span class="date-label">
+                                Date ${index + 1}
+                            </span>
+
+                            <h3>
+                                ${escapeHTML(
+                                    formatDateDisplay(
+                                        date
+                                    )
+                                )}
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="date-time-fields">
+
+                        <div class="time-field">
+
+                            <label>
+                                Start Time
+                            </label>
+
+                            ${buildTimeSelects(
+                                "start",
+                                startValue
+                            )}
+
+                        </div>
+
+
+                        <div class="time-separator">
+                            to
+                        </div>
+
+
+                        <div class="time-field">
+
+                            <label>
+                                End Time
+                            </label>
+
+                            ${buildTimeSelects(
+                                "end",
+                                endValue
+                            )}
+
+                        </div>
+
+
+                        <div
+                            class="hours-display"
+                            data-hours-display
+                        >
+
+                            <span class="hours-label">
+                                Duration
+                            </span>
+
+                            <strong>
+                                3 hrs
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+
+                dateTimeContainer.appendChild(
+                    row
+                );
+
+
+                const timeGroups =
+                    row.querySelectorAll(
+                        ".time-select-group select"
+                    );
+
+
+                timeGroups.forEach(
+                    select => {
+
+                        select.addEventListener(
+                            "change",
+                            () => {
+
+                                updateRowHours(
+                                    row
+                                );
+
+                                updateTotalHours();
+
+                            }
+                        );
+
+                    }
+                );
+
+
+                updateRowHours(
+                    row
+                );
+
+            }
+        );
+
+
+        updateTotalHours();
+
+    }
+
+
+    function normalizeDateValue(
+        dateValue
+    ) {
+
+        if (
+            !dateValue
+        ) {
+
+            return "";
+
+        }
+
+
+        if (
+            dateValue instanceof Date
+        ) {
+
+            if (
+                Number.isNaN(
+                    dateValue.getTime()
+                )
+            ) {
+
+                return "";
+
+            }
+
+
+            return [
+                dateValue.getFullYear(),
+                padTimePart(
+                    dateValue.getMonth() + 1
+                ),
+                padTimePart(
+                    dateValue.getDate()
+                )
+            ].join("-");
+
+        }
+
+
+        const stringValue =
+            String(
+                dateValue
+            );
+
+
+        /*
+         * Flatpickr date strings are normally YYYY-MM-DD
+         * when dateFormat is set accordingly.
+         */
+
+        if (
+            /^\d{4}-\d{2}-\d{2}$/.test(
+                stringValue
+            )
+        ) {
+
+            return stringValue;
+
+        }
+
+
+        const parsed =
+            new Date(
+                stringValue
+            );
+
+
+        if (
+            Number.isNaN(
+                parsed.getTime()
+            )
+        ) {
+
+            return "";
+
+        }
+
+
+        return [
+            parsed.getFullYear(),
+            padTimePart(
+                parsed.getMonth() + 1
+            ),
+            padTimePart(
+                parsed.getDate()
+            )
+        ].join("-");
+
+    }
+
+
+    function formatDateDisplay(
+        dateString
+    ) {
+
+        if (
+            !dateString
+        ) {
+
+            return "";
+
+        }
+
+
+        const parts =
+            dateString.split(
+                "-"
+            );
+
+
+        if (
+            parts.length !== 3
+        ) {
+
+            return dateString;
+
+        }
+
+
+        const year =
+            Number(
+                parts[0]
+            );
+
+        const month =
+            Number(
+                parts[1]
+            ) - 1;
+
+        const day =
+            Number(
+                parts[2]
+            );
+
+
+        const date =
+            new Date(
+                year,
+                month,
+                day
+            );
+
+
+        if (
+            Number.isNaN(
+                date.getTime()
+            )
+        ) {
+
+            return dateString;
+
+        }
+
+
+        return date.toLocaleDateString(
+            "en-IN",
+            {
+                weekday:
+                    "short",
+
+                day:
+                    "numeric",
+
+                month:
+                    "short",
+
+                year:
+                    "numeric"
+            }
+        );
+
+    }
+
+
+    function getSelectedDates() {
+
+        if (
+            !multiDate
+        ) {
+
+            return [];
+
+        }
+
+
+        if (
+            multiDate._flatpickr &&
+            Array.isArray(
+                multiDate._flatpickr.selectedDates
+            )
+        ) {
+
+            return multiDate._flatpickr.selectedDates
+                .map(
+                    normalizeDateValue
+                )
+                .filter(Boolean);
+
+        }
+
+
+        if (
+            !multiDate.value.trim()
+        ) {
+
+            return [];
+
+        }
+
+
+        return multiDate.value
+            .split(",")
+            .map(
+                value =>
+                    normalizeDateValue(
+                        value.trim()
+                    )
+            )
+            .filter(Boolean);
+
+    }
+
+
+    function getDateData() {
+
+        if (
+            !dateTimeContainer
+        ) {
+
+            return [];
+
+        }
+
+
+        return Array.from(
+            dateTimeContainer.querySelectorAll(
+                ".date-time-row"
+            )
+        )
+            .map(
+                row => {
+
+                    const start =
+                        readTimeSelects(
+                            row,
+                            "start"
+                        );
+
+                    const end =
+                        readTimeSelects(
+                            row,
+                            "end"
+                        );
+
+
+                    return {
+
+                        date:
+                            row.dataset.date ||
+                            "",
+
+                        startTime:
+                            start,
+
+                        endTime:
+                            end,
+
+                        hours:
+                            calculateHours(
+                                start,
+                                end
+                            )
+
+                    };
+
+                }
+            )
+            .filter(
+                item =>
+                    item.date
+            );
 
     }
 
@@ -2147,48 +2700,49 @@ document.addEventListener("DOMContentLoaded", () => {
         row
     ) {
 
-        if (!row) {
+        if (
+            !row
+        ) {
 
             return 0;
 
         }
 
 
-        const startInput =
-            row.querySelector(
-                ".start-time"
+        const start =
+            readTimeSelects(
+                row,
+                "start"
             );
 
-
-        const endInput =
-            row.querySelector(
-                ".end-time"
-            );
-
-
-        const hoursElement =
-            row.querySelector(
-                ".hours"
+        const end =
+            readTimeSelects(
+                row,
+                "end"
             );
 
 
         const hours =
             calculateHours(
-                startInput?.value,
-                endInput?.value
+                start,
+                end
             );
 
 
-        if (hoursElement) {
+        const display =
+            row.querySelector(
+                "[data-hours-display] strong"
+            );
 
-            hoursElement.textContent =
-                hours
-                    ? Number(
-                        hours.toFixed(
-                            2
-                        )
-                    )
-                    : "0";
+
+        if (
+            display
+        ) {
+
+            display.textContent =
+                formatHours(
+                    hours
+                );
 
         }
 
@@ -2210,38 +2764,35 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         const rows =
-            dateTimeContainer.querySelectorAll(
-                ".date-time-row"
-            );
-
-
-        let total = 0;
-
-
-        rows.forEach(
-            row => {
-
-                total +=
-                    updateRowHours(
-                        row
-                    );
-
-            }
-        );
-
-
-        total =
-            Number(
-                total.toFixed(
-                    2
+            Array.from(
+                dateTimeContainer.querySelectorAll(
+                    ".date-time-row"
                 )
             );
 
 
-        if (totalHoursInput) {
+        const total =
+            rows.reduce(
+                (
+                    sum,
+                    row
+                ) =>
+                    sum +
+                    updateRowHours(
+                        row
+                    ),
+                0
+            );
 
-            totalHoursInput.value =
-                total;
+
+        if (
+            totalHoursInput
+        ) {
+
+            totalHoursInput.textContent =
+                formatHours(
+                    total
+                );
 
         }
 
@@ -2252,361 +2803,53 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =========================================================
-       GET DATE DATA
+       FLATPICKR
        ========================================================= */
 
-    function getDateData() {
+    function initializeDatePicker() {
 
         if (
-            !dateTimeContainer
+            !multiDate ||
+            typeof flatpickr !==
+            "function"
         ) {
-
-            return [];
-
-        }
-
-
-        const rows =
-            dateTimeContainer.querySelectorAll(
-                ".date-time-row"
-            );
-
-
-        return Array.from(
-            rows
-        )
-            .map(
-                row => {
-
-                    const startInput =
-                        row.querySelector(
-                            ".start-time"
-                        );
-
-
-                    const endInput =
-                        row.querySelector(
-                            ".end-time"
-                        );
-
-
-                    const date =
-                        row.dataset.date ||
-                        "";
-
-
-                    const start =
-                        startInput?.value ||
-                        "";
-
-
-                    const end =
-                        endInput?.value ||
-                        "";
-
-
-                    const hours =
-                        calculateHours(
-                            start,
-                            end
-                        );
-
-
-                    return {
-
-                        date,
-
-                        start,
-
-                        end,
-
-                        time:
-                            start &&
-                            end
-                                ? `${start} - ${end}`
-                                : "",
-
-                        hours
-
-                    };
-
-                }
-            );
-
-    }
-
-
-    /* =========================================================
-       VALIDATION
-       ========================================================= */
-
-    function showFieldError(
-        element,
-        messageText
-    ) {
-
-        if (!element) {
 
             return;
 
         }
 
 
-        element.setCustomValidity(
-            messageText
+        flatpickr(
+            multiDate,
+            {
+
+                mode:
+                    "multiple",
+
+                dateFormat:
+                    "Y-m-d",
+
+                minDate:
+                    "today",
+
+                disableMobile:
+                    false,
+
+                onChange:
+                    selectedDates => {
+
+                        renderDateTimeRows(
+                            selectedDates
+                        );
+
+                        autosaveField(
+                            multiDate
+                        );
+
+                    }
+
+            }
         );
-
-
-        element.reportValidity();
-
-
-        element.focus();
-
-
-        setTimeout(
-            () => {
-
-                element.setCustomValidity(
-                    ""
-                );
-
-            },
-            50
-        );
-
-    }
-
-
-    function validateDates() {
-
-        const dateData =
-            getDateData();
-
-
-        if (
-            !dateData.length
-        ) {
-
-            if (multiDate) {
-
-                showFieldError(
-                    multiDate,
-                    "Please select at least one session date."
-                );
-
-            }
-
-
-            return false;
-
-        }
-
-
-        for (
-            let index = 0;
-            index < dateData.length;
-            index++
-        ) {
-
-            const item =
-                dateData[index];
-
-
-            const row =
-                dateTimeContainer
-                    .querySelectorAll(
-                        ".date-time-row"
-                    )[index];
-
-
-            const startInput =
-                row?.querySelector(
-                    ".start-time"
-                );
-
-
-            const endInput =
-                row?.querySelector(
-                    ".end-time"
-                );
-
-
-            if (!item.start) {
-
-                showFieldError(
-                    startInput,
-                    "Please select a start time."
-                );
-
-                return false;
-
-            }
-
-
-            if (!item.end) {
-
-                showFieldError(
-                    endInput,
-                    "Please select an end time."
-                );
-
-                return false;
-
-            }
-
-
-            const start =
-                timeToMinutes(
-                    item.start
-                );
-
-
-            const end =
-                timeToMinutes(
-                    item.end
-                );
-
-
-            if (
-                start === null ||
-                end === null
-            ) {
-
-                showFieldError(
-                    startInput,
-                    "Please enter a valid time."
-                );
-
-                return false;
-
-            }
-
-
-            if (
-                end <= start
-            ) {
-
-                showFieldError(
-                    endInput,
-                    "End time must be later than start time."
-                );
-
-                return false;
-
-            }
-
-
-            if (
-                item.hours <= 0
-            ) {
-
-                showFieldError(
-                    endInput,
-                    "Please select a valid session duration."
-                );
-
-                return false;
-
-            }
-
-        }
-
-
-        return true;
-
-    }
-
-
-    function validateClientDetails() {
-
-        const name =
-            fullName?.value.trim() ||
-            "";
-
-
-        if (!name) {
-
-            showFieldError(
-                fullName,
-                "Please enter your full name."
-            );
-
-            return false;
-
-        }
-
-
-        const emailValue =
-            email?.value.trim() ||
-            "";
-
-
-        const emailPattern =
-            /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-
-        if (
-            !emailValue ||
-            !emailPattern.test(
-                emailValue
-            )
-        ) {
-
-            showFieldError(
-                email,
-                "Please enter a valid email address."
-            );
-
-            return false;
-
-        }
-
-
-        const phoneValue =
-            phone?.value.trim() ||
-            "";
-
-
-        const phoneDigits =
-            phoneValue.replace(
-                /\D/g,
-                ""
-            );
-
-
-        if (
-            phoneDigits.length < 10 ||
-            phoneDigits.length > 15
-        ) {
-
-            showFieldError(
-                phone,
-                "Please enter a valid phone number."
-            );
-
-            return false;
-
-        }
-
-
-        const locationValue =
-            locationInput?.value.trim() ||
-            "";
-
-
-        if (!locationValue) {
-
-            showFieldError(
-                locationInput,
-                "Please enter the session location."
-            );
-
-            return false;
-
-        }
-
-
-        return true;
 
     }
 
@@ -2615,51 +2858,34 @@ document.addEventListener("DOMContentLoaded", () => {
        AUTOSAVE
        ========================================================= */
 
-    function autosaveField(
+    function getAutosaveKey(
         field
     ) {
 
-        if (!field) {
+        if (
+            !field
+        ) {
 
-            return;
+            return "";
 
         }
 
 
-        /*
-         * If the user obtained a GPS location and then
-         * manually changes the location text, the GPS
-         * coordinates are no longer treated as authoritative.
-         */
+        return `professionalStudio.bookingDraft.${field.id}`;
+
+    }
+
+
+    function autosaveField(
+        field
+    ) {
 
         if (
-            field === locationInput &&
-            capturedLocation.source ===
-                "gps"
+            !field ||
+            !field.id
         ) {
 
-            const value =
-                field.value.trim();
-
-
-            if (
-                !value.startsWith(
-                    "GPS coordinates:"
-                )
-            ) {
-
-                capturedLocation = {
-
-                    latitude:null,
-
-                    longitude:null,
-
-                    source:
-                        "manual"
-
-                };
-
-            }
+            return;
 
         }
 
@@ -2667,8 +2893,11 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
 
             localStorage.setItem(
-                `booking.${field.id}`,
-                field.value
+                getAutosaveKey(
+                    field
+                ),
+                field.value ??
+                ""
             );
 
         }
@@ -2685,22 +2914,33 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    function restoreAutosavedFields() {
+    function restoreAutosave() {
 
         AUTOSAVE_FIELDS.forEach(
             field => {
+
+                if (
+                    !field ||
+                    !field.id
+                ) {
+
+                    return;
+
+                }
+
 
                 try {
 
                     const saved =
                         localStorage.getItem(
-                            `booking.${field.id}`
+                            getAutosaveKey(
+                                field
+                            )
                         );
 
 
                     if (
-                        saved !== null &&
-                        !field.value
+                        saved !== null
                     ) {
 
                         field.value =
@@ -2725,332 +2965,505 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    function clearAutosavedFields() {
-
-        AUTOSAVE_FIELDS.forEach(
-            field => {
-
-                try {
-
-                    localStorage.removeItem(
-                        `booking.${field.id}`
-                    );
-
-                }
-
-                catch (error) {
-
-                    console.warn(
-                        "Unable to clear booking autosave:",
-                        error
-                    );
-
-                }
-
-            }
-        );
-
-    }
-
-
     AUTOSAVE_FIELDS.forEach(
         field => {
 
+            if (
+                !field
+            ) {
+
+                return;
+
+            }
+
+
             field.addEventListener(
                 "input",
-                () =>
+                () => {
+
                     autosaveField(
                         field
-                    )
+                    );
+
+                }
             );
 
 
             field.addEventListener(
                 "change",
-                () =>
+                () => {
+
                     autosaveField(
                         field
-                    )
+                    );
+
+                }
             );
 
         }
     );
 
 
-    restoreAutosavedFields();
-
-
     /* =========================================================
-       BUILD BOOKING
+       VALIDATION HELPERS
        ========================================================= */
 
-    function createBooking() {
+    function showFieldError(
+        element,
+        messageText
+    ) {
 
-        const dates =
-            getDateData();
+        if (
+            !element
+        ) {
 
+            return;
 
-        const firstDate =
-            dates[0] || {};
+        }
 
 
-        const packagePrice =
-            getPackagePrice(
-                selectedPackage
-            );
-
-
-        const paymentPlan =
-            normalizePaymentPlan(
-                getPaymentPlan(
-                    selectedPackage
-                ),
-                packagePrice
-            );
-
-
-        const bookingId =
-            `BK-${Date.now()}`;
-
-
-        const serviceName =
-            selectedService.name ??
-            selectedService.title ??
-            "Photography Service";
-
-
-        const packageName =
-            getPackageName(
-                selectedPackage
-            );
-
-
-        const totalHours =
-            Number(
-                dates
-                    .reduce(
-                        (
-                            sum,
-                            item
-                        ) =>
-                            sum +
-                            Number(
-                                item.hours ||
-                                0
-                            ),
-                        0
-                    )
-                    .toFixed(
-                        2
-                    )
-            );
-
-
-        const booking = {
-
-            /* ---------------------------------------------
-               Identity
-            --------------------------------------------- */
-
-            id:
-                bookingId,
-
-            bookingId:
-
-
-                bookingId,
-
-
-            /* ---------------------------------------------
-               Client
-            --------------------------------------------- */
-
-            client:
-                fullName?.value.trim() ||
-                "",
-
-            clientType:
-                "Photography Client",
-
-            email:
-                email?.value.trim() ||
-                "",
-
-            phone:
-                phone?.value.trim() ||
-                "",
-
-            instagram:
-                "-",
-
-
-            /* ---------------------------------------------
-               Service
-            --------------------------------------------- */
-
-            service:
-                serviceName,
-
-            serviceId:
-                getServiceId(
-                    selectedService
-                ),
-
-            serviceType:
-                getServiceId(
-                    selectedService
-                ),
-
-
-            /* ---------------------------------------------
-               Package
-            --------------------------------------------- */
-
-            package:
-                packageName,
-
-            packageId:
-                getPackageId(
-                    selectedPackage
-                ),
-
-            packageKey:
-                getPackageId(
-                    selectedPackage
-                ),
-
-            packagePrice,
-
-
-            /* ---------------------------------------------
-               Payment
-            --------------------------------------------- */
-
-            paymentPlan,
-
-            paymentRecords:
-                [],
-
-            amountPaid:
-                0,
-
-            remainingAmount:
-                packagePrice,
-
-            paymentStatus:
-                "Pending",
-
-            payment:
-                "Pending",
-
-            advance:
-                "₹0",
-
-            remaining:
-                formatPrice(
-                    packagePrice
-                ),
-
-
-            /* ---------------------------------------------
-               Session
-            --------------------------------------------- */
-
-            date:
-                firstDate.date ||
-                "",
-
-            time:
-                firstDate.time ||
-                "",
-
-            dates,
-
-            totalHours,
-
-
-            /*
-             * Existing location field remains the main
-             * human-readable/session-location value.
-             */
-
-            location:
-                locationInput?.value.trim() ||
-                "",
-
-
-            /*
-             * GPS information is stored separately.
-             */
-
-            locationLatitude:
-                capturedLocation.latitude,
-
-            locationLongitude:
-                capturedLocation.longitude,
-
-            locationSource:
-                capturedLocation.source,
-
-
-            guests:
-                "",
-
-
-            /* ---------------------------------------------
-               Booking status
-            --------------------------------------------- */
-
-            status:
-                "Pending",
-
-
-            /* ---------------------------------------------
-               Extra information
-            --------------------------------------------- */
-
-            image:
-                "images/profile.jpg",
-
-            equipment:
-                "",
-
-            notes:
-                message?.value.trim() ||
-                "",
-
-
-            /* ---------------------------------------------
-               Timestamps
-            --------------------------------------------- */
-
-            createdAt:
-                new Date().toISOString()
-
-        };
-
-
-        initializePaymentState(
-            booking,
-            paymentPlan
+        element.setCustomValidity(
+            messageText || ""
         );
 
 
-        return booking;
+        if (
+            messageText
+        ) {
+
+            element.reportValidity();
+
+        }
+
+    }
+
+
+    function clearFieldError(
+        element
+    ) {
+
+        if (
+            !element
+        ) {
+
+            return;
+
+        }
+
+
+        element.setCustomValidity(
+            ""
+        );
+
+    }
+
+
+    function validateClientDetails() {
+
+        let valid = true;
+
+
+        if (
+            fullName
+        ) {
+
+            clearFieldError(
+                fullName
+            );
+
+
+            if (
+                !fullName.value.trim()
+            ) {
+
+                showFieldError(
+                    fullName,
+                    "Please enter your full name."
+                );
+
+                valid = false;
+
+            }
+
+        }
+
+
+        if (
+            email
+        ) {
+
+            clearFieldError(
+                email
+            );
+
+
+            const emailValue =
+                email.value.trim();
+
+
+            if (
+                !emailValue
+            ) {
+
+                showFieldError(
+                    email,
+                    "Please enter your email address."
+                );
+
+                valid = false;
+
+            }
+
+            else if (
+                !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+                    emailValue
+                )
+            ) {
+
+                showFieldError(
+                    email,
+                    "Please enter a valid email address."
+                );
+
+                valid = false;
+
+            }
+
+        }
+
+
+        if (
+            phone
+        ) {
+
+            clearFieldError(
+                phone
+            );
+
+
+            const phoneValue =
+                phone.value.trim();
+
+
+            if (
+                !phoneValue
+            ) {
+
+                showFieldError(
+                    phone,
+                    "Please enter your phone number."
+                );
+
+                valid = false;
+
+            }
+
+            else if (
+                phoneValue.replace(
+                    /\D/g,
+                    ""
+                ).length < 7
+            ) {
+
+                showFieldError(
+                    phone,
+                    "Please enter a valid phone number."
+                );
+
+                valid = false;
+
+            }
+
+        }
+
+
+        if (
+            guestCount
+        ) {
+
+            clearFieldError(
+                guestCount
+            );
+
+
+            const guestValue =
+                guestCount.value.trim();
+
+
+            if (
+                guestValue
+            ) {
+
+                const numericGuests =
+                    Number(
+                        guestValue
+                    );
+
+
+                if (
+                    !Number.isInteger(
+                        numericGuests
+                    ) ||
+                    numericGuests < 1
+                ) {
+
+                    showFieldError(
+                        guestCount,
+                        "Guest count must be a positive whole number."
+                    );
+
+                    valid = false;
+
+                }
+
+            }
+
+        }
+
+
+        if (
+            locationInput
+        ) {
+
+            clearFieldError(
+                locationInput
+            );
+
+
+            if (
+                !locationInput.value.trim()
+            ) {
+
+                showFieldError(
+                    locationInput,
+                    "Please enter the session location."
+                );
+
+                valid = false;
+
+            }
+
+        }
+
+
+        return valid;
+
+    }
+
+
+    function validateDates() {
+
+        let valid = true;
+
+
+        const dates =
+            getSelectedDates();
+
+
+        if (
+            !dates.length
+        ) {
+
+            if (
+                multiDate
+            ) {
+
+                showFieldError(
+                    multiDate,
+                    "Please select at least one event date."
+                );
+
+            }
+
+            return false;
+
+        }
+
+
+        clearFieldError(
+            multiDate
+        );
+
+
+        const rows =
+            Array.from(
+                dateTimeContainer?.querySelectorAll(
+                    ".date-time-row"
+                ) || []
+            );
+
+
+        if (
+            rows.length !==
+            dates.length
+        ) {
+
+            showFieldError(
+                multiDate,
+                "Please select valid event dates."
+            );
+
+            return false;
+
+        }
+
+
+        rows.forEach(
+            row => {
+
+                const start =
+                    readTimeSelects(
+                        row,
+                        "start"
+                    );
+
+                const end =
+                    readTimeSelects(
+                        row,
+                        "end"
+                    );
+
+
+                const startGroup =
+                    row.querySelector(
+                        '[data-time-field="start"] select'
+                    );
+
+                const endGroup =
+                    row.querySelector(
+                        '[data-time-field="end"] select'
+                    );
+
+
+                if (
+                    !start ||
+                    !end
+                ) {
+
+                    if (
+                        startGroup
+                    ) {
+
+                        showFieldError(
+                            startGroup,
+                            "Please select a start time."
+                        );
+
+                    }
+
+                    valid = false;
+
+                    return;
+
+                }
+
+
+                const startMinutes =
+                    timeToMinutes(
+                        start
+                    );
+
+                const endMinutes =
+                    timeToMinutes(
+                        end
+                    );
+
+
+                if (
+                    startMinutes === null ||
+                    endMinutes === null
+                ) {
+
+                    if (
+                        startGroup
+                    ) {
+
+                        showFieldError(
+                            startGroup,
+                            "Please select a valid start time."
+                        );
+
+                    }
+
+                    valid = false;
+
+                    return;
+
+                }
+
+
+                clearFieldError(
+                    startGroup
+                );
+
+                clearFieldError(
+                    endGroup
+                );
+
+
+                /*
+                 * Equal times mean zero duration and are not
+                 * accepted. Earlier end times are allowed because
+                 * they represent overnight sessions.
+                 */
+
+                if (
+                    startMinutes ===
+                    endMinutes
+                ) {
+
+                    showFieldError(
+                        endGroup,
+                        "End time must be different from the start time."
+                    );
+
+                    valid = false;
+
+                }
+
+            }
+        );
+
+
+        return valid;
 
     }
 
 
     /* =========================================================
-       SAVE BOOKING
+       BOOKING ID
        ========================================================= */
 
-    function saveBooking(
-        booking
-    ) {
+    function generateBookingId() {
 
-        let bookings = [];
+        const timestamp =
+            Date.now().toString(
+                36
+            ).toUpperCase();
 
+
+        const random =
+            Math.random()
+                .toString(
+                    36
+                )
+                .slice(
+                    2,
+                    7
+                )
+                .toUpperCase();
+
+
+        return `BK-${timestamp}-${random}`;
+
+    }
+
+
+    /* =========================================================
+       STORAGE HELPERS
+       ========================================================= */
+
+    function getBookings() {
 
         try {
 
@@ -3060,43 +3473,46 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
 
 
-            if (stored) {
+            if (
+                !stored
+            ) {
 
-                const parsed =
-                    JSON.parse(
-                        stored
-                    );
-
-
-                if (
-                    Array.isArray(
-                        parsed
-                    )
-                ) {
-
-                    bookings =
-                        parsed;
-
-                }
+                return [];
 
             }
+
+
+            const parsed =
+                JSON.parse(
+                    stored
+                );
+
+
+            return Array.isArray(
+                parsed
+            )
+                ? parsed
+                : [];
 
         }
 
         catch (error) {
 
             console.error(
-                "Unable to read existing bookings:",
+                "Unable to load bookings:",
                 error
             );
 
+            return [];
+
         }
 
+    }
 
-        bookings.unshift(
-            booking
-        );
 
+    function saveBookings(
+        bookings
+    ) {
 
         try {
 
@@ -3119,7 +3535,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 error
             );
 
-
             return false;
 
         }
@@ -3128,56 +3543,214 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =========================================================
-       SUCCESS STATE
+       BOOKING CREATION
        ========================================================= */
 
-    function showSuccess(
-        bookingId
-    ) {
+    function createBooking() {
 
-        if (submitBtn) {
-
-            submitBtn.disabled =
-                true;
-
-            submitBtn.textContent =
-                "Booking Submitted ✓";
-
-        }
+        const dates =
+            getDateData();
 
 
-        if (successPopup) {
-
-            successPopup.classList.add(
-                "active"
+        const packagePrice =
+            getPackagePrice(
+                selectedPackage
             );
 
 
-            const popupBookingId =
-                successPopup.querySelector(
-                    "[data-booking-id]"
-                );
+        const paymentPlan =
+            normalizePaymentPlan(
+                getPaymentPlan(
+                    selectedPackage
+                ),
+                packagePrice
+            );
 
 
-            if (
-                popupBookingId
-            ) {
+        const booking = {
 
-                popupBookingId.textContent =
-                    bookingId;
+            id:
+                generateBookingId(),
 
-            }
+            serviceId:
+                getServiceId(
+                    selectedService
+                ),
 
-        }
+            serviceName:
+                selectedService?.name ??
+                selectedService?.title ??
+                "",
+
+            packageId:
+                getPackageId(
+                    selectedPackage
+                ),
+
+            packageName:
+                getPackageName(
+                    selectedPackage
+                ),
+
+            packagePrice,
+
+            paymentPlan,
+
+            totalAmount:
+                paymentPlan.totalAmount,
+
+            guests:
+                guestCount?.value.trim() ||
+                "",
+
+            client: {
+
+                name:
+                    fullName?.value.trim() ||
+                    "",
+
+                email:
+                    email?.value.trim() ||
+                    "",
+
+                phone:
+                    phone?.value.trim() ||
+                    ""
+
+            },
+
+            dates,
+
+            totalHours:
+                dates.reduce(
+                    (
+                        sum,
+                        item
+                    ) =>
+                        sum +
+                        (
+                            Number(
+                                item.hours
+                            ) || 0
+                        ),
+                    0
+                ),
+
+            location:
+                locationInput?.value.trim() ||
+                "",
+
+            locationCoordinates:
+                capturedLocation,
+
+            message:
+                message?.value.trim() ||
+                "",
+
+            status:
+                "Pending",
+
+            createdAt:
+                new Date().toISOString(),
+
+            updatedAt:
+                new Date().toISOString()
+
+        };
+
+
+        return booking;
 
     }
 
 
     /* =========================================================
-       SUBMIT
+       CLEAR AUTOSAVE
        ========================================================= */
 
-    if (bookingForm) {
+    function clearAutosave() {
+
+        AUTOSAVE_FIELDS.forEach(
+            field => {
+
+                if (
+                    !field ||
+                    !field.id
+                ) {
+
+                    return;
+
+                }
+
+
+                try {
+
+                    localStorage.removeItem(
+                        getAutosaveKey(
+                            field
+                        )
+                    );
+
+                }
+
+                catch (error) {
+
+                    console.warn(
+                        "Unable to clear autosave:",
+                        error
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       SUCCESS UI
+       ========================================================= */
+
+    function showSuccess() {
+
+        if (
+            !successPopup
+        ) {
+
+            return;
+
+        }
+
+
+        successPopup.textContent =
+            "Booking request submitted successfully.";
+
+
+        successPopup.style.display =
+            "block";
+
+
+        window.setTimeout(
+            () => {
+
+                successPopup.style.display =
+                    "none";
+
+            },
+            4500
+        );
+
+    }
+
+
+    /* =========================================================
+       FORM SUBMISSION
+       ========================================================= */
+
+    if (
+        bookingForm
+    ) {
 
         bookingForm.addEventListener(
             "submit",
@@ -3186,13 +3759,27 @@ document.addEventListener("DOMContentLoaded", () => {
                 event.preventDefault();
 
 
-                /*
-                 * Honeypot.
-                 */
-
                 if (
                     honeypot &&
                     honeypot.value.trim()
+                ) {
+
+                    return;
+
+                }
+
+
+                const clientValid =
+                    validateClientDetails();
+
+
+                const datesValid =
+                    validateDates();
+
+
+                if (
+                    !clientValid ||
+                    !datesValid
                 ) {
 
                     return;
@@ -3205,50 +3792,40 @@ document.addEventListener("DOMContentLoaded", () => {
                     !selectedPackage
                 ) {
 
-                    showSelectionError(
-                        "The selected service or package is unavailable."
+                    alert(
+                        "The selected service or package could not be found. Please return to the service page and try again."
                     );
 
                     return;
 
                 }
-
-
-                if (
-                    !validateClientDetails()
-                ) {
-
-                    return;
-
-                }
-
-
-                if (
-                    !validateDates()
-                ) {
-
-                    return;
-
-                }
-
-
-                updateTotalHours();
 
 
                 const booking =
                     createBooking();
 
 
+                const bookings =
+                    getBookings();
+
+
+                bookings.push(
+                    booking
+                );
+
+
                 const saved =
-                    saveBooking(
-                        booking
+                    saveBookings(
+                        bookings
                     );
 
 
-                if (!saved) {
+                if (
+                    !saved
+                ) {
 
                     alert(
-                        "Your booking could not be saved. Please try again."
+                        "Unable to save your booking request. Please try again."
                     );
 
                     return;
@@ -3256,25 +3833,71 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
 
-                clearAutosavedFields();
+                clearAutosave();
 
 
-                showSuccess(
-                    booking.id
-                );
+                showSuccess();
 
 
-                setTimeout(
+                if (
+                    submitBtn
+                ) {
+
+                    submitBtn.disabled =
+                        true;
+
+                    submitBtn.textContent =
+                        "Booking Submitted";
+
+                }
+
+
+                window.setTimeout(
                     () => {
 
                         window.location.href =
-                            `bookingStatus.html?id=${encodeURIComponent(
-                                booking.id
-                            )}`;
+                            "client.html";
 
                     },
-                    1200
+                    1800
                 );
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       BACK BUTTON
+       ========================================================= */
+
+    if (
+        backToService
+    ) {
+
+        backToService.addEventListener(
+            "click",
+            event => {
+
+                event.preventDefault();
+
+
+                if (
+                    serviceId
+                ) {
+
+                    window.location.href =
+                        `client.html?service=${encodeURIComponent(
+                            serviceId
+                        )}`;
+
+                    return;
+
+                }
+
+
+                window.history.back();
 
             }
         );
@@ -3286,14 +3909,52 @@ document.addEventListener("DOMContentLoaded", () => {
        INITIALIZATION
        ========================================================= */
 
-    const packageLoaded =
-        loadSelectedPackage();
+    selectedService =
+        findSelectedService();
 
 
-    if (packageLoaded) {
+    selectedPackage =
+        findSelectedPackage(
+            selectedService
+        );
 
-        initializeDatePicker();
+
+    renderSelectedPackage();
+
+
+    restoreAutosave();
+
+
+    initializeDatePicker();
+
+
+    /*
+     * Restore the date/time rows after Flatpickr has been
+     * initialized and the autosaved fields have been restored.
+     */
+
+    if (
+        multiDate &&
+        multiDate.value
+    ) {
+
+        const savedDates =
+            getSelectedDates();
+
+
+        if (
+            savedDates.length
+        ) {
+
+            renderDateTimeRows(
+                savedDates
+            );
+
+        }
 
     }
+
+
+    updateTotalHours();
 
 });

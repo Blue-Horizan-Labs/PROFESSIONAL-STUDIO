@@ -1010,3 +1010,151 @@ textarea:focus{
     }
 
 }
+
+
+/* ============================================================
+   BOOKING FORM READABILITY IMPROVEMENTS
+============================================================ */
+
+.guest-count-group{
+    max-width:320px;
+    margin-bottom:24px;
+}
+
+.guest-count-group input{
+    max-width:320px;
+}
+
+.date-time-row{
+    padding:20px;
+    border-color:#d9d9d9;
+}
+
+.date-heading{
+    margin-bottom:18px;
+}
+
+.date-heading > div:first-child{
+    min-width:0;
+}
+
+.date-heading h3{
+    margin-top:4px;
+    font-size:16px;
+    line-height:1.35;
+}
+
+.date-heading .date-label{
+    display:block;
+    margin-bottom:2px;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+}
+
+.date-time-fields{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 24px minmax(0,1fr) auto;
+    align-items:end;
+    gap:10px;
+}
+
+.time-field label{
+    margin-bottom:7px;
+    color:#333;
+    font-size:12px;
+    font-weight:700;
+}
+
+.time-select-group{
+    display:grid;
+    grid-template-columns:1fr 1fr .95fr;
+    gap:6px;
+}
+
+.time-select-group select{
+    width:100%;
+    min-height:44px;
+    padding:10px 8px;
+    border:1px solid #d8d8d8;
+    border-radius:9px;
+    background:#fff;
+    color:#111;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.time-select-group select:focus{
+    outline:none;
+    border-color:#111;
+    box-shadow:0 0 0 3px rgba(17,17,17,.07);
+}
+
+.time-separator{
+    align-self:center;
+    margin-top:25px;
+    color:#999;
+    font-size:12px;
+    text-align:center;
+}
+
+.hours-display{
+    min-width:92px;
+    min-height:44px;
+    padding:8px 10px;
+    border:1px solid #e1e1e1;
+    border-radius:9px;
+    background:#f6f6f6;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+}
+
+.hours-label{
+    color:#777;
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+}
+
+.hours-display strong{
+    margin-top:2px;
+    color:#111;
+    font-size:13px;
+}
+
+@media(max-width:650px){
+
+    .guest-count-group,
+    .guest-count-group input{
+        max-width:none;
+    }
+
+    .date-heading{
+        align-items:flex-start;
+        flex-direction:column;
+        gap:5px;
+    }
+
+    .date-time-fields{
+        grid-template-columns:1fr;
+        gap:12px;
+    }
+
+    .time-separator{
+        display:none;
+    }
+
+    .time-select-group{
+        grid-template-columns:1fr 1fr 1fr;
+    }
+
+    .hours-display{
+        width:100%;
+        min-width:0;
+        min-height:42px;
+    }
+
+}
