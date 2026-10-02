@@ -1,4 +1,3 @@
-
 /* =========================================================
    PROFESSIONAL STUDIO
    PUBLIC PHOTOGRAPHER PROFILE
@@ -18,6 +17,24 @@ var EQUIPMENT_STORAGE_KEY =
 
 var PROFILE_STORAGE_KEY =
     "professionalStudio.profile";
+
+var REVIEWS_STORAGE_KEY =
+    "professionalStudio.reviews";
+
+var REVIEW_EMAIL_STORAGE_KEY =
+    "professionalStudio.reviewEmail";
+
+var RECENT_WORK_STORAGE_KEY =
+    "professionalStudio.portfolioStorage";
+
+var RECENT_WORK_DB_NAME =
+    "ProfessionalStudioDB";
+
+var RECENT_WORK_DB_VERSION =
+    1;
+
+var RECENT_WORK_STORE =
+    "recentWorkPhotos";
 
 
 /* =========================================================
@@ -44,22 +61,21 @@ function readClientLocalStorage(
 
     } catch (error) {
 
+        console.warn(
+            "Could not parse localStorage:",
+            key,
+            error
+        );
+
         return fallback;
 
     }
 
 }
 
+
 /* =========================================================
    REVIEWS
-========================================================= */
-
-var REVIEWS_STORAGE_KEY =
-    "professionalStudio.reviews";
-
-
-/* =========================================================
-   GET STORED REVIEWS
 ========================================================= */
 
 function getClientReviews() {
@@ -70,21 +86,6 @@ function getClientReviews() {
             []
         );
 
-
-    /*
-       Support both:
-
-       [
-           {...},
-           {...}
-       ]
-
-       and:
-
-       {
-           reviews: [...]
-       }
-    */
 
     if (
         reviews &&
@@ -99,9 +100,7 @@ function getClientReviews() {
     }
 
 
-    if (
-        !Array.isArray(reviews)
-    ) {
+    if (!Array.isArray(reviews)) {
 
         return [];
 
@@ -317,9 +316,7 @@ function createReviewStars(
             0,
             Math.min(
                 5,
-                Math.round(
-                    safeRating
-                )
+                safeRating
             )
         );
 
@@ -336,10 +333,28 @@ function createReviewStars(
             );
 
 
-        star.className =
-            i <= safeRating
-                ? "fa-solid fa-star"
-                : "fa-regular fa-star";
+        var difference =
+            safeRating - (i - 1);
+
+
+        if (difference >= 1) {
+
+            star.className =
+                "fa-solid fa-star";
+
+        }
+        else if (difference >= 0.5) {
+
+            star.className =
+                "fa-solid fa-star-half-stroke";
+
+        }
+        else {
+
+            star.className =
+                "fa-regular fa-star";
+
+        }
 
 
         star.setAttribute(
@@ -530,9 +545,7 @@ function getClientAverageRating(
     reviews
 ) {
 
-    if (
-        !reviews.length
-    ) {
+    if (!reviews.length) {
 
         return 0;
 
@@ -541,7 +554,6 @@ function getClientAverageRating(
 
     var total =
         0;
-
 
     var validRatings =
         0;
@@ -581,8 +593,10 @@ function getClientAverageRating(
     }
 
 
-    return total /
-        validRatings;
+    return (
+        total /
+        validRatings
+    );
 
 }
 
@@ -612,9 +626,30 @@ function renderClientAverageStars(
         "";
 
 
-    var roundedRating =
-        Math.round(
+    var safeRating =
+        Number(
             rating
+        );
+
+
+    if (
+        !Number.isFinite(
+            safeRating
+        )
+    ) {
+
+        safeRating = 0;
+
+    }
+
+
+    safeRating =
+        Math.max(
+            0,
+            Math.min(
+                5,
+                safeRating
+            )
         );
 
 
@@ -630,10 +665,28 @@ function renderClientAverageStars(
             );
 
 
-        star.className =
-            i <= roundedRating
-                ? "fa-solid fa-star"
-                : "fa-regular fa-star";
+        var difference =
+            safeRating - (i - 1);
+
+
+        if (difference >= 1) {
+
+            star.className =
+                "fa-solid fa-star";
+
+        }
+        else if (difference >= 0.5) {
+
+            star.className =
+                "fa-solid fa-star-half-stroke";
+
+        }
+        else {
+
+            star.className =
+                "fa-regular fa-star";
+
+        }
 
 
         star.setAttribute(
@@ -647,6 +700,14 @@ function renderClientAverageStars(
         );
 
     }
+
+
+    container.setAttribute(
+        "aria-label",
+        "Average rating " +
+        safeRating.toFixed(1) +
+        " out of 5"
+    );
 
 }
 
@@ -759,10 +820,6 @@ function renderClientReviews() {
 
     }
 
-
-    /*
-       Newest reviews appear first.
-    */
 
     reviews
         .slice()
@@ -916,11 +973,10 @@ function resetReviewForm() {
                     "selected"
                 );
 
-                star
-                    .setAttribute(
-                        "aria-checked",
-                        "false"
-                    );
+                star.setAttribute(
+                    "aria-checked",
+                    "false"
+                );
 
                 var icon =
                     star.querySelector(
@@ -998,10 +1054,17 @@ function resetReviewForm() {
     }
 
 
-    if (elements.form) {
+    elements.form.hidden =
+        false;
 
-        elements.form.hidden =
+
+    if (elements.submitButton) {
+
+        elements.submitButton.disabled =
             false;
+
+        elements.submitButton.textContent =
+            "Submit Review";
 
     }
 
@@ -1011,6 +1074,9 @@ function resetReviewForm() {
 /* =========================================================
    OPEN REVIEW MODAL
 ========================================================= */
+
+var reviewLastFocusedElement = null;
+
 
 function openClientReviewModal() {
 
@@ -1023,6 +1089,10 @@ function openClientReviewModal() {
         return;
 
     }
+
+
+    reviewLastFocusedElement =
+        document.activeElement;
 
 
     resetReviewForm();
@@ -1043,16 +1113,30 @@ function openClientReviewModal() {
     );
 
 
+    var rememberedEmail = "";
+
+
+    try {
+
+        rememberedEmail =
+            localStorage.getItem(
+                REVIEW_EMAIL_STORAGE_KEY
+            ) || "";
+
+    }
+    catch (error) {
+
+        rememberedEmail = "";
+
+    }
+
+
     /*
-       If this browser has already submitted
-       a review, show the already-submitted state.
+       Do not immediately hide the form.
+
+       The client should still be able to see and
+       understand why the email cannot be reused.
     */
-
-    var rememberedEmail =
-        localStorage.getItem(
-            "professionalStudio.reviewEmail"
-        );
-
 
     if (
         rememberedEmail &&
@@ -1060,6 +1144,14 @@ function openClientReviewModal() {
             rememberedEmail
         )
     ) {
+
+        if (elements.emailInput) {
+
+            elements.emailInput.value =
+                rememberedEmail;
+
+        }
+
 
         showAlreadySubmittedState();
 
@@ -1113,6 +1205,30 @@ function closeClientReviewModal() {
         "review-modal-open"
     );
 
+
+    if (
+        reviewLastFocusedElement &&
+        typeof reviewLastFocusedElement.focus ===
+            "function"
+    ) {
+
+        try {
+
+            reviewLastFocusedElement.focus();
+
+        }
+        catch (error) {
+
+            /* Ignore focus restoration errors. */
+
+        }
+
+    }
+
+
+    reviewLastFocusedElement =
+        null;
+
 }
 
 
@@ -1142,6 +1258,26 @@ function showAlreadySubmittedState() {
 
     elements.alreadySubmitted.hidden =
         false;
+
+
+    var closeButton =
+        elements.alreadySubmitted.querySelector(
+            "[data-close-review-modal]"
+        );
+
+
+    if (closeButton) {
+
+        setTimeout(
+            function() {
+
+                closeButton.focus();
+
+            },
+            30
+        );
+
+    }
 
 }
 
@@ -1367,43 +1503,25 @@ function validateClientReviewForm() {
 
 
     if (nameError) {
-
-        nameError.textContent =
-            "";
-
+        nameError.textContent = "";
     }
-
 
     if (emailError) {
-
-        emailError.textContent =
-            "";
-
+        emailError.textContent = "";
     }
-
 
     if (ratingError) {
-
-        ratingError.textContent =
-            "";
-
+        ratingError.textContent = "";
     }
-
 
     if (reviewError) {
-
-        reviewError.textContent =
-            "";
-
+        reviewError.textContent = "";
     }
 
 
-    if (
-        name.length < 2
-    ) {
+    if (name.length < 2) {
 
-        valid =
-            false;
+        valid = false;
 
 
         if (elements.nameInput) {
@@ -1435,8 +1553,7 @@ function validateClientReviewForm() {
         )
     ) {
 
-        valid =
-            false;
+        valid = false;
 
 
         if (elements.emailInput) {
@@ -1466,8 +1583,7 @@ function validateClientReviewForm() {
         rating > 5
     ) {
 
-        valid =
-            false;
+        valid = false;
 
 
         if (ratingError) {
@@ -1480,12 +1596,9 @@ function validateClientReviewForm() {
     }
 
 
-    if (
-        reviewText.length < 10
-    ) {
+    if (reviewText.length < 10) {
 
-        valid =
-            false;
+        valid = false;
 
 
         if (elements.reviewInput) {
@@ -1507,12 +1620,9 @@ function validateClientReviewForm() {
     }
 
 
-    if (
-        reviewText.length > 1000
-    ) {
+    if (reviewText.length > 1000) {
 
-        valid =
-            false;
+        valid = false;
 
 
         if (elements.reviewInput) {
@@ -1534,12 +1644,6 @@ function validateClientReviewForm() {
     }
 
 
-    /*
-       Important duplicate check.
-
-       This happens before the review is written.
-    */
-
     if (
         valid &&
         hasClientAlreadyReviewed(
@@ -1547,8 +1651,7 @@ function validateClientReviewForm() {
         )
     ) {
 
-        valid =
-            false;
+        valid = false;
 
 
         if (emailError) {
@@ -1625,44 +1728,6 @@ function submitClientReview(
 
 
     /*
-       Create the review object.
-
-       This structure is intentionally compatible
-       with the Dashboard review renderer.
-    */
-
-    var review =
-        {
-
-            id:
-                generateReviewId(),
-
-            clientName:
-                result.name,
-
-            email:
-                result.email,
-
-            rating:
-                result.rating,
-
-            review:
-                result.review,
-
-            service:
-                "",
-
-            createdAt:
-                new Date().toISOString()
-
-        };
-
-
-    var reviews =
-        getClientReviews();
-
-
-    /*
        Final duplicate check immediately before
        writing to storage.
     */
@@ -1689,6 +1754,36 @@ function submitClientReview(
         return;
 
     }
+
+
+    var review = {
+
+        id:
+            generateReviewId(),
+
+        clientName:
+            result.name,
+
+        email:
+            result.email,
+
+        rating:
+            result.rating,
+
+        review:
+            result.review,
+
+        service:
+            "",
+
+        createdAt:
+            new Date().toISOString()
+
+    };
+
+
+    var reviews =
+        getClientReviews();
 
 
     reviews.push(
@@ -1725,15 +1820,10 @@ function submitClientReview(
     }
 
 
-    /*
-       Remember the email locally so the same browser
-       immediately knows this client has already reviewed.
-    */
-
     try {
 
         localStorage.setItem(
-            "professionalStudio.reviewEmail",
+            REVIEW_EMAIL_STORAGE_KEY,
             result.email
         );
 
@@ -1751,11 +1841,6 @@ function submitClientReview(
     renderClientReviews();
 
 
-    /*
-       Tell other Professional Studio modules in this
-       same page/application that reviews changed.
-    */
-
     window.dispatchEvent(
         new CustomEvent(
             "professionalStudioReviewsUpdated"
@@ -1763,29 +1848,22 @@ function submitClientReview(
     );
 
 
+    /*
+       IMPORTANT FIX:
+       The success message must not be placed inside
+       a hidden form.
+
+       Keep the form visible long enough for the user
+       to actually see confirmation.
+    */
+
     if (elements.submitButton) {
 
         elements.submitButton.disabled =
             false;
 
         elements.submitButton.textContent =
-            "Submit Review";
-
-    }
-
-
-    if (elements.form) {
-
-        elements.form.hidden =
-            true;
-
-    }
-
-
-    if (elements.alreadySubmitted) {
-
-        elements.alreadySubmitted.hidden =
-            true;
+            "Submitted";
 
     }
 
@@ -1795,12 +1873,6 @@ function submitClientReview(
         "success"
     );
 
-
-    /*
-       Show the success message briefly, then close
-       the modal and show the already-submitted state
-       next time the client opens it.
-    */
 
     setTimeout(
         function() {
@@ -1985,9 +2057,10 @@ function initializeReviewSystem() {
 
 
     /*
-       If the client enters an email that has already
-       reviewed, show the existing-review state before
-       submission.
+       Do not automatically hide the form on blur.
+
+       We only provide an inline warning. The client
+       can still correct the email address.
     */
 
     if (elements.emailInput) {
@@ -2002,6 +2075,12 @@ function initializeReviewSystem() {
                     );
 
 
+                var emailError =
+                    document.getElementById(
+                        "reviewClientEmailError"
+                    );
+
+
                 if (
                     email &&
                     hasClientAlreadyReviewed(
@@ -2009,7 +2088,17 @@ function initializeReviewSystem() {
                     )
                 ) {
 
-                    showAlreadySubmittedState();
+                    elements.emailInput.classList.add(
+                        "invalid"
+                    );
+
+
+                    if (emailError) {
+
+                        emailError.textContent =
+                            "A review has already been submitted using this email.";
+
+                    }
 
                 }
 
@@ -2060,6 +2149,7 @@ window.addEventListener(
 
     }
 );
+
 
 /* =========================================================
    PROFILE
@@ -2149,7 +2239,8 @@ function getProfileValue(
 
 
         if (
-            typeof value === "number"
+            typeof value === "number" &&
+            Number.isFinite(value)
         ) {
 
             return String(
@@ -2329,7 +2420,8 @@ function getClientSocialLinks() {
 
     if (
         !social ||
-        typeof social !== "object"
+        typeof social !== "object" ||
+        Array.isArray(social)
     ) {
 
         social = {};
@@ -2396,52 +2488,38 @@ function getSafeProfileUrl(
 
 
     if (!url) {
+
         return "";
-    }
-
-
-    if (
-        url.indexOf("https://") === 0 ||
-        url.indexOf("http://") === 0
-    ) {
-
-        return url;
 
     }
 
 
-    return "";
+    try {
 
-}
+        var parsed =
+            new URL(
+                url
+            );
 
 
-/* =========================================================
-   PROFILE ELEMENT HELPER
-========================================================= */
+        if (
+            parsed.protocol !== "https:" &&
+            parsed.protocol !== "http:"
+        ) {
 
-function setProfileText(
-    selector,
-    value
-) {
+            return "";
 
-    if (!value) {
-        return;
+        }
+
+
+        return parsed.href;
+
     }
+    catch (error) {
 
+        return "";
 
-    var element =
-        document.querySelector(
-            selector
-        );
-
-
-    if (!element) {
-        return;
     }
-
-
-    element.textContent =
-        value;
 
 }
 
@@ -2482,13 +2560,12 @@ function renderProfileDataAttributes() {
                     );
 
 
-                if (!value) {
-                    return;
+                if (value) {
+
+                    element.textContent =
+                        value;
+
                 }
-
-
-                element.textContent =
-                    value;
 
             }
         );
@@ -2519,20 +2596,6 @@ function renderClientPhotographerName() {
             }
         );
 
-
-    var heroName =
-        document.querySelector(
-            ".hero-content [data-profile-name]"
-        );
-
-
-    if (heroName) {
-
-        heroName.textContent =
-            name;
-
-    }
-
 }
 
 
@@ -2546,11 +2609,6 @@ function renderClientStudioName() {
         getClientStudioName();
 
 
-    if (!studioName) {
-        return;
-    }
-
-
     document
         .querySelectorAll(
             "[data-profile-studio], #studioName, #photographerStudio"
@@ -2559,7 +2617,8 @@ function renderClientStudioName() {
             function(element) {
 
                 element.textContent =
-                    studioName;
+                    studioName ||
+                    "Photographer Studio";
 
             }
         );
@@ -2577,11 +2636,6 @@ function renderClientAbout() {
         getClientAbout();
 
 
-    if (!about) {
-        return;
-    }
-
-
     document
         .querySelectorAll(
             "[data-profile-about], #profileAbout, #aboutText"
@@ -2589,8 +2643,12 @@ function renderClientAbout() {
         .forEach(
             function(element) {
 
-                element.textContent =
-                    about;
+                if (about) {
+
+                    element.textContent =
+                        about;
+
+                }
 
             }
         );
@@ -2623,12 +2681,9 @@ function renderClientContact() {
         .forEach(
             function(element) {
 
-                if (phone) {
-
-                    element.textContent =
-                        phone;
-
-                }
+                element.textContent =
+                    phone ||
+                    "+91 98765 *****";
 
             }
         );
@@ -2641,12 +2696,9 @@ function renderClientContact() {
         .forEach(
             function(element) {
 
-                if (email) {
-
-                    element.textContent =
-                        email;
-
-                }
+                element.textContent =
+                    email ||
+                    "contact@email.com";
 
             }
         );
@@ -2659,12 +2711,9 @@ function renderClientContact() {
         .forEach(
             function(element) {
 
-                if (location) {
-
-                    element.textContent =
-                        location;
-
-                }
+                element.textContent =
+                    location ||
+                    "Location not provided";
 
             }
         );
@@ -2704,15 +2753,24 @@ function renderClientSocialLinks() {
 
     document
         .querySelectorAll(
-            "[data-social='instagram']"
+            "[data-social]"
         )
         .forEach(
             function(element) {
 
-                if (links.instagram) {
+                var platform =
+                    element.dataset.social;
+
+
+                var url =
+                    links[platform] ||
+                    "";
+
+
+                if (url) {
 
                     element.href =
-                        links.instagram;
+                        url;
 
                     element.target =
                         "_blank";
@@ -2722,72 +2780,9 @@ function renderClientSocialLinks() {
 
                     element.hidden =
                         false;
-
-                } else {
-
-                    element.hidden =
-                        true;
 
                 }
-
-            }
-        );
-
-
-    document
-        .querySelectorAll(
-            "[data-social='facebook']"
-        )
-        .forEach(
-            function(element) {
-
-                if (links.facebook) {
-
-                    element.href =
-                        links.facebook;
-
-                    element.target =
-                        "_blank";
-
-                    element.rel =
-                        "noopener noreferrer";
-
-                    element.hidden =
-                        false;
-
-                } else {
-
-                    element.hidden =
-                        true;
-
-                }
-
-            }
-        );
-
-
-    document
-        .querySelectorAll(
-            "[data-social='youtube']"
-        )
-        .forEach(
-            function(element) {
-
-                if (links.youtube) {
-
-                    element.href =
-                        links.youtube;
-
-                    element.target =
-                        "_blank";
-
-                    element.rel =
-                        "noopener noreferrer";
-
-                    element.hidden =
-                        false;
-
-                } else {
+                else {
 
                     element.hidden =
                         true;
@@ -2861,7 +2856,9 @@ function initializeSmoothScrolling() {
 
 
                         if (!target) {
+
                             return;
+
                         }
 
 
@@ -2892,13 +2889,11 @@ function initializeRevealAnimations() {
 
     var elements =
         document.querySelectorAll(
-            ".portfolio-block, .work-card, .exp-box, .contact-info"
+            ".portfolio-block, .work-card, .exp-box, .contact-info, .equipment-category-card, .price-card"
         );
 
 
-    if (
-        !elements.length
-    ) {
+    if (!elements.length) {
 
         return;
 
@@ -2981,7 +2976,9 @@ function initializeExperienceMeters() {
 
 
     if (!meters.length) {
+
         return;
+
     }
 
 
@@ -3081,27 +3078,18 @@ function initializeNavbar() {
 
 
     if (!navbar) {
+
         return;
+
     }
 
 
     function updateNavbar() {
 
-        if (
+        navbar.classList.toggle(
+            "scrolled",
             window.scrollY > 20
-        ) {
-
-            navbar.classList.add(
-                "scrolled"
-            );
-
-        } else {
-
-            navbar.classList.remove(
-                "scrolled"
-            );
-
-        }
+        );
 
     }
 
@@ -3133,7 +3121,9 @@ function initializeActiveNavigation() {
 
 
     if (!links.length) {
+
         return;
+
     }
 
 
@@ -3159,10 +3149,23 @@ function initializeActiveNavigation() {
             }
 
 
-            var section =
-                document.querySelector(
-                    href
-                );
+            var section;
+
+
+            try {
+
+                section =
+                    document.querySelector(
+                        href
+                    );
+
+            }
+            catch (error) {
+
+                section =
+                    null;
+
+            }
 
 
             if (section) {
@@ -3181,7 +3184,9 @@ function initializeActiveNavigation() {
 
 
     if (!sections.length) {
+
         return;
+
     }
 
 
@@ -3195,12 +3200,13 @@ function initializeActiveNavigation() {
             function(item) {
 
                 var top =
-                    item.section.getBoundingClientRect()
+                    item.section
+                        .getBoundingClientRect()
                         .top;
 
 
                 if (
-                    top <= 140
+                    top <= 150
                 ) {
 
                     current =
@@ -3219,6 +3225,10 @@ function initializeActiveNavigation() {
                     "active"
                 );
 
+                link.removeAttribute(
+                    "aria-current"
+                );
+
             }
         );
 
@@ -3227,6 +3237,11 @@ function initializeActiveNavigation() {
 
             current.link.classList.add(
                 "active"
+            );
+
+            current.link.setAttribute(
+                "aria-current",
+                "page"
             );
 
         }
@@ -3270,7 +3285,7 @@ function initializeBookButtons() {
                         );
 
 
-                        setTimeout(
+                        window.setTimeout(
                             function() {
 
                                 button.classList.remove(
@@ -3374,6 +3389,7 @@ function getStartingPrice(
                 function(pkg) {
 
                     return Number(
+                        pkg &&
                         pkg.price
                     );
 
@@ -3630,6 +3646,12 @@ function createServiceCard(
 
     if (serviceId) {
 
+        var encodedId =
+            encodeURIComponent(
+                serviceId
+            );
+
+
         var viewLink =
             document.createElement(
                 "a"
@@ -3642,9 +3664,7 @@ function createServiceCard(
 
         viewLink.href =
             "service.html?id=" +
-            encodeURIComponent(
-                serviceId
-            );
+            encodedId;
 
 
         viewLink.textContent =
@@ -3668,9 +3688,7 @@ function createServiceCard(
 
         bookLink.href =
             "service.html?id=" +
-            encodeURIComponent(
-                serviceId
-            ) +
+            encodedId +
             "&action=book";
 
 
@@ -3764,7 +3782,9 @@ function loadClientServices() {
 
 
     if (!container) {
+
         return;
+
     }
 
 
@@ -3775,6 +3795,7 @@ function loadClientServices() {
 
                     return (
                         service &&
+                        typeof service === "object" &&
                         service.active !== false
                     );
 
@@ -3881,6 +3902,9 @@ function getEquipmentIcon(
     if (
         value.indexOf(
             "light"
+        ) !== -1 ||
+        value.indexOf(
+            "flash"
         ) !== -1
     ) {
 
@@ -3917,6 +3941,17 @@ function getEquipmentIcon(
     }
 
 
+    if (
+        value.indexOf(
+            "tripod"
+        ) !== -1
+    ) {
+
+        return "fa-camera-retro";
+
+    }
+
+
     return "fa-camera-retro";
 
 }
@@ -3935,7 +3970,9 @@ function loadClientEquipment() {
 
 
     if (!container) {
+
         return;
+
     }
 
 
@@ -3944,13 +3981,46 @@ function loadClientEquipment() {
             .filter(
                 function(category) {
 
-                    return (
-                        category &&
-                        category.name &&
-                        Array.isArray(
+                    if (
+                        !category ||
+                        typeof category !== "object"
+                    ) {
+
+                        return false;
+
+                    }
+
+
+                    if (
+                        typeof category.name !== "string" ||
+                        !category.name.trim()
+                    ) {
+
+                        return false;
+
+                    }
+
+
+                    if (
+                        !Array.isArray(
                             category.items
-                        ) &&
-                        category.items.length
+                        )
+                    ) {
+
+                        return false;
+
+                    }
+
+
+                    return category.items.some(
+                        function(item) {
+
+                            return (
+                                typeof item === "string" &&
+                                item.trim()
+                            );
+
+                        }
                     );
 
                 }
@@ -4041,7 +4111,7 @@ function loadClientEquipment() {
 
 
             title.textContent =
-                category.name;
+                category.name.trim();
 
 
             heading.appendChild(
@@ -4080,7 +4150,7 @@ function loadClientEquipment() {
 
 
                         li.textContent =
-                            item;
+                            item.trim();
 
 
                         list.appendChild(
@@ -4089,6 +4159,13 @@ function loadClientEquipment() {
 
                     }
                 );
+
+
+            if (!list.children.length) {
+
+                return;
+
+            }
 
 
             card.appendChild(
@@ -4112,24 +4189,7 @@ function loadClientEquipment() {
 
 
 /* =========================================================
-   RECENT WORK STORAGE
-========================================================= */
-
-var RECENT_WORK_STORAGE_KEY =
-    "professionalStudio.portfolioStorage";
-
-var RECENT_WORK_DB_NAME =
-    "ProfessionalStudioDB";
-
-var RECENT_WORK_DB_VERSION =
-    1;
-
-var RECENT_WORK_STORE =
-    "recentWorkPhotos";
-
-
-/* =========================================================
-   OPEN RECENT WORK DATABASE
+   RECENT WORK DATABASE
 ========================================================= */
 
 function openRecentWorkDatabase() {
@@ -4150,18 +4210,36 @@ function openRecentWorkDatabase() {
             }
 
 
-            var request =
-                window.indexedDB.open(
-                    RECENT_WORK_DB_NAME,
-                    RECENT_WORK_DB_VERSION
-                );
+            var request;
+
+
+            try {
+
+                request =
+                    window.indexedDB.open(
+                        RECENT_WORK_DB_NAME,
+                        RECENT_WORK_DB_VERSION
+                    );
+
+            }
+            catch (error) {
+
+                reject(error);
+
+                return;
+
+            }
 
 
             request.onsuccess =
                 function(event) {
 
+                    var db =
+                        event.target.result;
+
+
                     resolve(
-                        event.target.result
+                        db
                     );
 
                 };
@@ -4200,6 +4278,27 @@ function getRecentWorkPhoto(
                 return new Promise(
                     function(resolve, reject) {
 
+                        if (
+                            !db.objectStoreNames.contains(
+                                RECENT_WORK_STORE
+                            )
+                        ) {
+
+                            reject(
+                                new Error(
+                                    "Recent Work store does not exist."
+                                )
+                            );
+
+                            try {
+                                db.close();
+                            } catch (error) {}
+
+                            return;
+
+                        }
+
+
                         var transaction;
 
 
@@ -4211,7 +4310,8 @@ function getRecentWorkPhoto(
                                     "readonly"
                                 );
 
-                        } catch (error) {
+                        }
+                        catch (error) {
 
                             reject(error);
 
@@ -4294,6 +4394,19 @@ function getRecentWorkStorage() {
             );
 
 
+        if (
+            !parsed ||
+            typeof parsed !== "object"
+        ) {
+
+            return {
+                albums: [],
+                files: []
+            };
+
+        }
+
+
         return {
 
             albums:
@@ -4332,36 +4445,33 @@ function getRecentWorkStorage() {
 
 
 /* =========================================================
-   ESCAPE RECENT WORK HTML
+   RECENT WORK OBJECT URL TRACKING
 ========================================================= */
 
-function escapeRecentWorkHTML(
-    value
-) {
+var recentWorkObjectUrls =
+    [];
 
-    return String(
-        value || ""
-    )
-    .replace(
-        /&/g,
-        "&amp;"
-    )
-    .replace(
-        /</g,
-        "&lt;"
-    )
-    .replace(
-        />/g,
-        "&gt;"
-    )
-    .replace(
-        /"/g,
-        "&quot;"
-    )
-    .replace(
-        /'/g,
-        "&#039;"
+
+function cleanupRecentWorkObjectUrls() {
+
+    recentWorkObjectUrls.forEach(
+        function(url) {
+
+            try {
+
+                URL.revokeObjectURL(
+                    url
+                );
+
+            }
+            catch (error) {}
+
+        }
     );
+
+
+    recentWorkObjectUrls =
+        [];
 
 }
 
@@ -4424,25 +4534,17 @@ function renderPortfolioRecentWork() {
 
     if (!grid) {
 
-        console.warn(
-            "Recent Work preview container was not found."
-        );
-
         return;
 
     }
 
 
+    cleanupRecentWorkObjectUrls();
+
+
     var storage =
         getRecentWorkStorage();
 
-
-    /*
-       Only public albums are shown.
-
-       Missing isPublic is treated as public,
-       matching the main Recent Work module.
-    */
 
     var publicAlbums =
         storage.albums.filter(
@@ -4450,6 +4552,8 @@ function renderPortfolioRecentWork() {
 
                 return (
                     album &&
+                    typeof album === "object" &&
+                    album.id &&
                     album.isPublic !== false
                 );
 
@@ -4460,10 +4564,6 @@ function renderPortfolioRecentWork() {
     grid.innerHTML =
         "";
 
-
-    /*
-       Remove stale empty-state content.
-    */
 
     hideRecentWorkEmptyState();
 
@@ -4486,6 +4586,7 @@ function renderPortfolioRecentWork() {
 
                         return (
                             file &&
+                            typeof file === "object" &&
                             file.albumId ===
                             album.id
                         );
@@ -4493,11 +4594,6 @@ function renderPortfolioRecentWork() {
                     }
                 );
 
-
-            /*
-               Explicit cover first.
-               Otherwise use the first available file.
-            */
 
             var coverFile =
                 albumFiles.find(
@@ -4629,10 +4725,6 @@ function renderPortfolioRecentWork() {
             );
 
 
-            /*
-               No media in the album.
-            */
-
             if (!coverFile) {
 
                 placeholder.textContent =
@@ -4646,6 +4738,16 @@ function renderPortfolioRecentWork() {
             var blobKey =
                 coverFile.blobKey ||
                 coverFile.id;
+
+
+            if (!blobKey) {
+
+                placeholder.textContent =
+                    "Preview unavailable";
+
+                return;
+
+            }
 
 
             getRecentWorkPhoto(
@@ -4673,10 +4775,30 @@ function renderPortfolioRecentWork() {
                         );
 
 
-                    var objectURL =
-                        URL.createObjectURL(
-                            record.blob
-                        );
+                    var objectURL;
+
+
+                    try {
+
+                        objectURL =
+                            URL.createObjectURL(
+                                record.blob
+                            );
+
+                    }
+                    catch (error) {
+
+                        placeholder.textContent =
+                            "Preview unavailable";
+
+                        return;
+
+                    }
+
+
+                    recentWorkObjectUrls.push(
+                        objectURL
+                    );
 
 
                     image.src =
@@ -4714,14 +4836,10 @@ function renderPortfolioRecentWork() {
                     image.onerror =
                         function() {
 
-                            URL.revokeObjectURL(
-                                objectURL
-                            );
-
-                            image.remove();
-
                             placeholder.textContent =
                                 "Preview unavailable";
+
+                            image.remove();
 
                         };
 
@@ -4815,10 +4933,32 @@ window.addEventListener(
 
         }
 
+
+        if (
+            event.key ===
+            REVIEWS_STORAGE_KEY
+        ) {
+
+            renderClientReviews();
+
+        }
+
     }
 );
 
 
+/* =========================================================
+   CLEANUP
+========================================================= */
+
+window.addEventListener(
+    "beforeunload",
+    function() {
+
+        cleanupRecentWorkObjectUrls();
+
+    }
+);
 
 
 /* =========================================================
@@ -4849,7 +4989,7 @@ document.addEventListener(
 
         renderPortfolioRecentWork();
 
-         initializeReviewSystem();
+        initializeReviewSystem();
 
     }
 );
