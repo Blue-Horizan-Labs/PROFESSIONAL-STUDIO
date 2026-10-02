@@ -233,7 +233,7 @@ img {
 
     transition:
         transform 0.2s ease,
-        background 0.2s ease,
+        background-color 0.2s ease,
         color 0.2s ease,
         border-color 0.2s ease;
 }
@@ -2132,7 +2132,7 @@ textarea:disabled {
     font-weight: 600;
     cursor: pointer;
     transition:
-        background 0.2s ease,
+        background-color 0.2s ease,
         color 0.2s ease,
         border-color 0.2s ease;
 }
@@ -2407,6 +2407,513 @@ textarea:disabled {
 
     .payment-settings-button {
         width: 100%;
+    }
+
+}
+
+/* =========================================================
+   PROFESSIONAL STUDIO
+   EQUIPMENT SECTION POLISH
+========================================================= */
+
+.equipment-grid{
+    align-items:stretch;
+}
+
+.equipment-card{
+    position:relative;
+    min-width:0;
+    padding:22px;
+    border:1px solid #e7e7e7;
+    border-radius:16px;
+    background:#fff;
+    box-shadow:0 1px 2px rgba(0,0,0,.02);
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        border-color .2s ease;
+}
+
+.equipment-card:hover{
+    transform:translateY(-2px);
+    border-color:#d8d8d8;
+    box-shadow:0 12px 28px rgba(0,0,0,.07);
+}
+
+
+/* ==========================
+   CATEGORY HEADER
+========================== */
+
+.equipment-card-header{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:14px;
+    min-height:52px;
+    margin-bottom:14px;
+}
+
+.equipment-card-heading{
+    min-width:0;
+}
+
+.equipment-card-heading h3{
+    margin:0 0 6px;
+    color:#111;
+    font-size:18px;
+    line-height:1.25;
+    font-weight:650;
+    letter-spacing:-.2px;
+    overflow-wrap:anywhere;
+}
+
+.equipment-item-count{
+    display:inline-flex;
+    align-items:center;
+    min-height:22px;
+    padding:3px 8px;
+    border:1px solid #ededed;
+    border-radius:999px;
+    background:#fafafa;
+    color:#777;
+    font-size:11px;
+    font-weight:600;
+    line-height:1;
+}
+
+
+/* ==========================
+   DELETE CATEGORY
+========================== */
+
+.equipment-category-delete-btn{
+    flex:0 0 auto;
+    min-height:32px;
+    padding:0 10px;
+    border:1px solid #e3e3e3;
+    border-radius:7px;
+    background:#fff;
+    color:#777;
+    font:inherit;
+    font-size:11px;
+    font-weight:650;
+    cursor:pointer;
+    transition:
+        background-color .2s ease,
+        color .2s ease,
+        border-color .2s ease;
+}
+
+.equipment-category-delete-btn:hover{
+    border-color:#d7baba;
+    background:#fff7f7;
+    color:#a33;
+}
+
+
+/* ==========================
+   EQUIPMENT LIST
+========================== */
+
+.equipment-list{
+    display:flex;
+    flex-direction:column;
+    gap:0;
+    min-height:74px;
+    margin:0 0 16px;
+    padding:0;
+    list-style:none;
+}
+
+.equipment-list li{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    min-width:0;
+    min-height:39px;
+    padding:7px 0;
+    border-bottom:1px solid #f0f0f0;
+    color:#333;
+    font-size:13px;
+}
+
+.equipment-list li:last-child{
+    border-bottom:none;
+}
+
+.equipment-list li span{
+    flex:1;
+    min-width:0;
+    overflow-wrap:anywhere;
+}
+
+
+/* ==========================
+   EMPTY CATEGORY
+========================== */
+
+.equipment-empty{
+    justify-content:center;
+    min-height:74px!important;
+    padding:14px 8px!important;
+    border:1px dashed #e4e4e4!important;
+    border-radius:9px;
+    background:#fafafa;
+    color:#888!important;
+    text-align:center;
+    line-height:1.5;
+}
+
+
+/* ==========================
+   REMOVE ITEM
+========================== */
+
+.equipment-remove-btn{
+    width:27px;
+    height:27px;
+    min-width:27px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    margin-left:auto;
+    flex:0 0 auto;
+    padding:0;
+    border:1px solid #e1e1e1;
+    border-radius:6px;
+    background:#fff;
+    color:#888;
+    font:inherit;
+    font-size:16px;
+    line-height:1;
+    cursor:pointer;
+    transition:
+        background-color .2s ease,
+        color .2s ease,
+        border-color .2s ease;
+}
+
+.equipment-remove-btn:hover{
+    border-color:#111;
+    background:#111;
+    color:#fff;
+}
+
+
+/* ==========================
+   ADD ITEM
+========================== */
+
+.equipment-input{
+    display:flex;
+    align-items:stretch;
+    gap:8px;
+    margin-top:auto;
+}
+
+.equipment-input input{
+    min-width:0;
+    width:100%;
+    min-height:42px;
+    padding:0 12px;
+    border:1px solid #dedede;
+    border-radius:8px;
+    outline:none;
+    background:#fff;
+    color:#111;
+    font:inherit;
+    font-size:13px;
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease;
+}
+
+.equipment-input input::placeholder{
+    color:#aaa;
+}
+
+.equipment-input input:focus{
+    border-color:#111;
+    box-shadow:0 0 0 3px rgba(0,0,0,.06);
+}
+
+.add-item-btn{
+    flex:0 0 auto;
+    min-width:58px;
+    min-height:42px;
+    padding:0 13px;
+    border:1px solid #111;
+    border-radius:8px;
+    background:#111;
+    color:#fff;
+    font:inherit;
+    font-size:12px;
+    font-weight:700;
+    cursor:pointer;
+    transition:
+        background-color .2s ease,
+        transform .2s ease;
+}
+
+.add-item-btn:hover{
+    background:#292929;
+    transform:translateY(-1px);
+}
+
+
+/* ==========================
+   NO CATEGORIES STATE
+========================== */
+
+.equipment-section-empty{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    min-height:190px;
+    padding:28px;
+    border:1px dashed #d8d8d8;
+    border-radius:16px;
+    background:#fafafa;
+    text-align:center;
+}
+
+.equipment-section-empty strong{
+    margin-bottom:7px;
+    color:#222;
+    font-size:15px;
+}
+
+.equipment-section-empty span{
+    max-width:390px;
+    color:#777;
+    font-size:13px;
+    line-height:1.6;
+}
+
+
+/* ==========================
+   CREATE CATEGORY CARD
+========================== */
+
+.create-equipment-card{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+}
+
+.create-equipment-icon{
+    width:42px;
+    height:42px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:14px;
+    border:1px solid #dedede;
+    border-radius:10px;
+    background:#fafafa;
+    color:#222;
+    font-size:23px;
+    line-height:1;
+}
+
+.create-equipment-copy h3{
+    margin:4px 0 7px;
+}
+
+.create-equipment-copy p{
+    margin:0 0 17px;
+    color:#777;
+    font-size:13px;
+    line-height:1.55;
+}
+
+.equipment-eyebrow{
+    color:#888;
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:.12em;
+}
+
+.equipment-create-label{
+    margin:0 0 6px;
+    color:#444;
+    font-size:11px;
+    font-weight:650;
+}
+
+.create-equipment-card > input{
+    width:100%;
+    min-height:42px;
+    margin:0 0 12px;
+    padding:0 12px;
+    border:1px solid #dedede;
+    border-radius:8px;
+    outline:none;
+    background:#fff;
+    color:#111;
+    font:inherit;
+    font-size:13px;
+    box-sizing:border-box;
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease;
+}
+
+.create-equipment-card > input:focus{
+    border-color:#111;
+    box-shadow:0 0 0 3px rgba(0,0,0,.06);
+}
+
+.create-actions{
+    display:flex;
+    gap:8px;
+}
+
+.create-actions button{
+    min-height:40px;
+    padding:0 14px;
+    border-radius:8px;
+    font:inherit;
+    font-size:12px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.create-btn{
+    border:1px solid #111;
+    background:#111;
+    color:#fff;
+}
+
+.create-btn:hover{
+    background:#292929;
+}
+
+.cancel-btn{
+    border:1px solid #dedede;
+    background:#fff;
+    color:#222;
+}
+
+.cancel-btn:hover{
+    border-color:#bbb;
+    background:#fafafa;
+}
+
+
+/* ==========================
+   ADD CATEGORY CARD
+========================== */
+
+.add-equipment-card{
+    min-height:260px;
+    border:1px dashed #cfcfcf;
+    border-radius:16px;
+    background:#fff;
+    transition:
+        border-color .2s ease,
+        background-color .2s ease,
+        transform .2s ease;
+}
+
+.add-equipment-card:hover{
+    border-color:#111;
+    background:#fafafa;
+    transform:translateY(-2px);
+}
+
+.add-equipment-card .add-icon{
+    width:52px;
+    height:52px;
+    margin-bottom:14px;
+    border:1px solid #e0e0e0;
+    border-radius:12px;
+    background:#fafafa;
+    color:#222;
+    font-size:30px;
+    transition:
+        background-color .2s ease,
+        color .2s ease,
+        transform .2s ease;
+}
+
+.add-equipment-card:hover .add-icon{
+    background:#111;
+    color:#fff;
+    transform:none;
+}
+
+.add-equipment-card h3{
+    margin:0 0 7px;
+}
+
+.add-equipment-card p{
+    margin:0;
+    max-width:240px;
+    color:#777;
+    font-size:13px;
+    line-height:1.55;
+}
+
+
+/* ==========================
+   ACCESSIBILITY
+========================== */
+
+.equipment-category-delete-btn:focus-visible,
+.equipment-remove-btn:focus-visible,
+.add-item-btn:focus-visible,
+.create-btn:focus-visible,
+.cancel-btn:focus-visible{
+    outline:2px solid #111;
+    outline-offset:2px;
+}
+
+
+/* ==========================
+   MOBILE
+========================== */
+
+@media(max-width:700px){
+
+    .equipment-input{
+        flex-direction:column;
+    }
+
+    .add-item-btn{
+        width:100%;
+    }
+
+    .equipment-card-header{
+        gap:10px;
+    }
+
+    .equipment-category-delete-btn{
+        min-height:34px;
+    }
+
+    .create-actions{
+        flex-direction:column;
+    }
+
+    .create-actions button{
+        width:100%;
+    }
+
+}
+
+
+@media(max-width:380px){
+
+    .equipment-card{
+        padding:18px;
+        border-radius:13px;
+    }
+
+    .equipment-card-heading h3{
+        font-size:16px;
     }
 
 }

@@ -42,7 +42,6 @@ var REVIEW_STORAGE_KEY =
 
 /* =========================================================
    SUBSCRIPTION PLANS
-   Canonical subscription system
 ========================================================= */
 
 var STORAGE_PLANS = {
@@ -71,10 +70,6 @@ var STORAGE_PLANS = {
 };
 
 
-/* =========================================================
-   LEGACY SUBSCRIPTION COMPATIBILITY
-========================================================= */
-
 var LEGACY_SUBSCRIPTION_PLAN_MAP = {
 
     basic: "starter",
@@ -86,6 +81,10 @@ var LEGACY_SUBSCRIPTION_PLAN_MAP = {
 };
 
 
+/* =========================================================
+   GENERAL HELPERS
+========================================================= */
+
 function normalizeSubscriptionPlanId(
     planId
 ) {
@@ -93,60 +92,54 @@ function normalizeSubscriptionPlanId(
     if (
         typeof planId !== "string"
     ) {
-
         return null;
-
     }
-
 
     var normalized =
         planId.trim().toLowerCase();
 
-
     if (
         STORAGE_PLANS[normalized]
     ) {
-
         return normalized;
-
     }
-
 
     if (
         LEGACY_SUBSCRIPTION_PLAN_MAP[
             normalized
         ]
     ) {
-
         return LEGACY_SUBSCRIPTION_PLAN_MAP[
             normalized
         ];
-
     }
-
 
     return null;
 
 }
 
 
-/* =========================================================
-   SAFE JSON READER
-========================================================= */
-
 function readLocalStorage(
     key,
     fallback
 ) {
 
-    var saved =
-        localStorage.getItem(key);
+    var saved;
 
+    try {
+
+        saved =
+            localStorage.getItem(key);
+
+    } catch (error) {
+
+        return fallback;
+
+    }
 
     if (!saved) {
         return fallback;
     }
-
 
     try {
 
@@ -160,10 +153,6 @@ function readLocalStorage(
 
 }
 
-
-/* =========================================================
-   SAFE JSON WRITER
-========================================================= */
 
 function writeLocalStorage(
     key,
@@ -188,6 +177,53 @@ function writeLocalStorage(
 }
 
 
+function safeNumber(
+    value,
+    fallback
+) {
+
+    var number =
+        Number(value);
+
+    return Number.isFinite(number)
+        ? number
+        : (
+            fallback !== undefined
+                ? fallback
+                : 0
+        );
+
+}
+
+
+function safeDate(
+    value
+) {
+
+    if (
+        value === null ||
+        value === undefined ||
+        value === ""
+    ) {
+        return null;
+    }
+
+    var date =
+        new Date(value);
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+        return null;
+    }
+
+    return date;
+
+}
+
+
 /* =========================================================
    TOAST
 ========================================================= */
@@ -204,25 +240,20 @@ function showDashboardToast(
             "dashboardToast"
         );
 
-
     if (!toast) {
         return;
     }
 
-
     toast.textContent =
         message;
-
 
     toast.classList.add(
         "show"
     );
 
-
     clearTimeout(
         toastTimer
     );
-
 
     toastTimer =
         setTimeout(
@@ -251,7 +282,6 @@ function getProfileData() {
             null
         );
 
-
     if (
         profile &&
         typeof profile === "object"
@@ -261,18 +291,12 @@ function getProfileData() {
 
     }
 
-
-    /*
-       Support older profile keys.
-    */
-
     var possibleNameKeys = [
         "photographerName",
         "profileName",
         "name",
         "userName"
     ];
-
 
     for (
         var i = 0;
@@ -284,7 +308,6 @@ function getProfileData() {
             localStorage.getItem(
                 possibleNameKeys[i]
             );
-
 
         if (
             value &&
@@ -299,21 +322,15 @@ function getProfileData() {
 
     }
 
-
     return {};
 
 }
 
 
-/* =========================================================
-   GET PHOTOGRAPHER NAME
-========================================================= */
-
 function getPhotographerName() {
 
     var profile =
         getProfileData();
-
 
     var possibleNames = [
         profile.name,
@@ -321,7 +338,6 @@ function getPhotographerName() {
         profile.photographerName,
         profile.displayName
     ];
-
 
     for (
         var i = 0;
@@ -340,7 +356,6 @@ function getPhotographerName() {
 
     }
 
-
     return "Photographer";
 
 }
@@ -355,14 +370,12 @@ function getProfileLink() {
     var profile =
         getProfileData();
 
-
     var possibleLinks = [
         profile.profileUrl,
         profile.publicUrl,
         profile.profileLink,
         profile.slug
     ];
-
 
     for (
         var i = 0;
@@ -378,7 +391,6 @@ function getProfileLink() {
             var value =
                 possibleLinks[i].trim();
 
-
             if (
                 value.indexOf("http://") === 0 ||
                 value.indexOf("https://") === 0
@@ -387,12 +399,6 @@ function getProfileLink() {
                 return value;
 
             }
-
-
-            /*
-               If only a slug was stored,
-               create a local public profile URL.
-            */
 
             return (
                 window.location.origin +
@@ -404,20 +410,10 @@ function getProfileLink() {
 
     }
 
-
-    /*
-       Fallback profile URL.
-
-       This allows the button to work even
-       before the final public profile page
-       is connected.
-    */
-
     var slug =
         localStorage.getItem(
             "professionalStudio.profileSlug"
         );
-
 
     if (slug) {
 
@@ -429,7 +425,6 @@ function getProfileLink() {
 
     }
 
-
     return (
         window.location.origin +
         "/profile.html"
@@ -438,15 +433,10 @@ function getProfileLink() {
 }
 
 
-/* =========================================================
-   OPEN PUBLIC PROFILE
-========================================================= */
-
 function openPortfolio() {
 
     var link =
         getProfileLink();
-
 
     window.open(
         link,
@@ -457,15 +447,57 @@ function openPortfolio() {
 }
 
 
-/* =========================================================
-   COPY PROFILE LINK
-========================================================= */
+function fallbackCopyText(
+    text
+) {
+
+    var textarea =
+        document.createElement(
+            "textarea"
+        );
+
+    textarea.value =
+        text;
+
+    textarea.style.position =
+        "fixed";
+
+    textarea.style.left =
+        "-9999px";
+
+    document.body.appendChild(
+        textarea
+    );
+
+    textarea.select();
+
+    try {
+
+        document.execCommand(
+            "copy"
+        );
+
+        showDashboardToast(
+            "Profile link copied"
+        );
+
+    } catch (error) {
+
+        showDashboardToast(
+            "Copy failed"
+        );
+
+    }
+
+    textarea.remove();
+
+}
+
 
 function copyProfileLink() {
 
     var link =
         getProfileLink();
-
 
     if (
         navigator.clipboard &&
@@ -497,68 +529,9 @@ function copyProfileLink() {
 
     }
 
-
     fallbackCopyText(
         link
     );
-
-}
-
-
-/* =========================================================
-   FALLBACK COPY
-========================================================= */
-
-function fallbackCopyText(
-    text
-) {
-
-    var textarea =
-        document.createElement(
-            "textarea"
-        );
-
-
-    textarea.value =
-        text;
-
-
-    textarea.style.position =
-        "fixed";
-
-    textarea.style.left =
-        "-9999px";
-
-
-    document.body.appendChild(
-        textarea
-    );
-
-
-    textarea.select();
-
-
-    try {
-
-        document.execCommand(
-            "copy"
-        );
-
-
-        showDashboardToast(
-            "Profile link copied"
-        );
-
-    } catch (error) {
-
-        showDashboardToast(
-            "Copy failed. Link: " + text
-        );
-
-    }
-
-
-    textarea.remove();
 
 }
 
@@ -574,12 +547,10 @@ function getCurrentSubscriptionPlan() {
             SUBSCRIPTION_PLAN_KEY
         );
 
-
     var normalizedPlanId =
         normalizeSubscriptionPlanId(
             savedPlan
         );
-
 
     if (
         normalizedPlanId &&
@@ -591,12 +562,6 @@ function getCurrentSubscriptionPlan() {
         ];
 
     }
-
-
-    /*
-       Starter is the canonical default plan.
-       This also replaces the old Basic fallback.
-    */
 
     return STORAGE_PLANS.starter;
 
@@ -623,7 +588,6 @@ function getPortfolioStorage() {
             null
         );
 
-
     if (
         !storage ||
         typeof storage !== "object"
@@ -645,7 +609,6 @@ function getPortfolioStorage() {
 
     }
 
-
     if (
         !Array.isArray(
             storage.files
@@ -656,22 +619,14 @@ function getPortfolioStorage() {
 
     }
 
-
     storage.storageLimitMB =
         getPortfolioStorageLimitMB();
-
 
     storage.storagePlan =
         getCurrentSubscriptionPlan().id;
 
-
-    /*
-       Recalculate storage usage from
-       actual file records.
-    */
-
     if (
-        storage.files.length > 0
+        storage.files.length
     ) {
 
         storage.storageUsedMB =
@@ -679,10 +634,8 @@ function getPortfolioStorage() {
                 function(total, file) {
 
                     return total +
-                        (
-                            Number(
-                                file.sizeMB
-                            ) || 0
+                        safeNumber(
+                            file.sizeMB
                         );
 
                 },
@@ -692,21 +645,19 @@ function getPortfolioStorage() {
     } else {
 
         storage.storageUsedMB =
-            Number(
-                storage.storageUsedMB
-            ) || 0;
+            Math.max(
+                0,
+                safeNumber(
+                    storage.storageUsedMB
+                )
+            );
 
     }
-
 
     return storage;
 
 }
 
-
-/* =========================================================
-   SAVE PORTFOLIO STORAGE
-========================================================= */
 
 function savePortfolioStorage(
     storage
@@ -721,14 +672,11 @@ function savePortfolioStorage(
 
     }
 
-
     storage.storageLimitMB =
         getPortfolioStorageLimitMB();
 
-
     storage.storagePlan =
         getCurrentSubscriptionPlan().id;
-
 
     return writeLocalStorage(
         PORTFOLIO_STORAGE_KEY,
@@ -738,17 +686,15 @@ function savePortfolioStorage(
 }
 
 
-/* =========================================================
-   FORMAT STORAGE
-========================================================= */
-
 function formatPortfolioStorageMB(
     value
 ) {
 
     var mb =
-        Number(value) || 0;
-
+        Math.max(
+            0,
+            safeNumber(value)
+        );
 
     if (mb < 1024) {
 
@@ -760,10 +706,8 @@ function formatPortfolioStorageMB(
 
     }
 
-
     var gb =
         mb / 1024;
-
 
     if (gb < 10) {
 
@@ -775,7 +719,6 @@ function formatPortfolioStorageMB(
 
     }
 
-
     return (
         Math.round(
             gb * 10
@@ -785,10 +728,6 @@ function formatPortfolioStorageMB(
 }
 
 
-/* =========================================================
-   STORAGE PERCENTAGE
-========================================================= */
-
 function getPortfolioStoragePercentage(
     storage
 ) {
@@ -797,38 +736,36 @@ function getPortfolioStoragePercentage(
         return 0;
     }
 
-
     var limit =
-        Number(
+        safeNumber(
             storage.storageLimitMB
-        ) || 0;
-
+        );
 
     var used =
-        Number(
-            storage.storageUsedMB
-        ) || 0;
-
+        Math.max(
+            0,
+            safeNumber(
+                storage.storageUsedMB
+            )
+        );
 
     if (limit <= 0) {
         return 100;
     }
 
-
     return Math.min(
         100,
         Math.max(
             0,
-            (used / limit) * 100
+            (
+                used /
+                limit
+            ) * 100
         )
     );
 
 }
 
-
-/* =========================================================
-   STORAGE STATUS
-========================================================= */
 
 function getPortfolioStorageStatus(
     storage
@@ -838,7 +775,6 @@ function getPortfolioStorageStatus(
         getPortfolioStoragePercentage(
             storage
         );
-
 
     if (
         percentage >= 100
@@ -851,7 +787,6 @@ function getPortfolioStorageStatus(
 
     }
 
-
     if (
         percentage >= 80
     ) {
@@ -863,7 +798,6 @@ function getPortfolioStorageStatus(
 
     }
 
-
     return {
         label: "Available",
         className: ""
@@ -871,10 +805,6 @@ function getPortfolioStorageStatus(
 
 }
 
-
-/* =========================================================
-   RENDER PORTFOLIO STORAGE
-========================================================= */
 
 function renderPortfolioStorage() {
 
@@ -908,22 +838,21 @@ function renderPortfolioStorage() {
             "portfolioStorageWarning"
         );
 
-
     var storage =
         getPortfolioStorage();
 
-
     var limit =
-        Number(
+        safeNumber(
             storage.storageLimitMB
-        ) || 0;
-
+        );
 
     var used =
-        Number(
-            storage.storageUsedMB
-        ) || 0;
-
+        Math.max(
+            0,
+            safeNumber(
+                storage.storageUsedMB
+            )
+        );
 
     var available =
         Math.max(
@@ -931,22 +860,18 @@ function renderPortfolioStorage() {
             limit - used
         );
 
-
     var percentage =
         getPortfolioStoragePercentage(
             storage
         );
-
 
     var status =
         getPortfolioStorageStatus(
             storage
         );
 
-
     var plan =
         getCurrentSubscriptionPlan();
-
 
     if (sizeElement) {
 
@@ -961,7 +886,6 @@ function renderPortfolioStorage() {
 
     }
 
-
     if (usedElement) {
 
         usedElement.textContent =
@@ -971,7 +895,6 @@ function renderPortfolioStorage() {
             " used";
 
     }
-
 
     if (availableElement) {
 
@@ -983,7 +906,6 @@ function renderPortfolioStorage() {
 
     }
 
-
     if (progressElement) {
 
         progressElement.style.width =
@@ -991,18 +913,15 @@ function renderPortfolioStorage() {
 
     }
 
-
     if (badgeElement) {
 
         badgeElement.textContent =
             status.label;
 
-
         badgeElement.classList.remove(
             "warning",
             "full"
         );
-
 
         if (
             status.className
@@ -1016,7 +935,6 @@ function renderPortfolioStorage() {
 
     }
 
-
     if (warningElement) {
 
         var warningStrong =
@@ -1029,7 +947,6 @@ function renderPortfolioStorage() {
                 "span"
             );
 
-
         if (
             percentage >= 100
         ) {
@@ -1037,14 +954,12 @@ function renderPortfolioStorage() {
             warningElement.hidden =
                 false;
 
-
             if (warningStrong) {
 
                 warningStrong.textContent =
                     "Storage is full";
 
             }
-
 
             if (warningText) {
 
@@ -1062,7 +977,6 @@ function renderPortfolioStorage() {
 
     }
 
-
     document
         .querySelectorAll(
             "[data-portfolio-plan]"
@@ -1076,7 +990,6 @@ function renderPortfolioStorage() {
 
             }
         );
-
 
     document
         .querySelectorAll(
@@ -1096,10 +1009,6 @@ function renderPortfolioStorage() {
 }
 
 
-/* =========================================================
-   PORTFOLIO FILE FUNCTIONS
-========================================================= */
-
 function getPortfolioUploadCheck(
     fileSizeMB
 ) {
@@ -1107,29 +1016,33 @@ function getPortfolioUploadCheck(
     var storage =
         getPortfolioStorage();
 
-
     var size =
-        Number(fileSizeMB) || 0;
-
+        Math.max(
+            0,
+            safeNumber(fileSizeMB)
+        );
 
     var used =
-        Number(
-            storage.storageUsedMB
-        ) || 0;
-
+        Math.max(
+            0,
+            safeNumber(
+                storage.storageUsedMB
+            )
+        );
 
     var limit =
-        Number(
-            storage.storageLimitMB
-        ) || 0;
-
+        Math.max(
+            0,
+            safeNumber(
+                storage.storageLimitMB
+            )
+        );
 
     var available =
         Math.max(
             0,
             limit - used
         );
-
 
     return {
 
@@ -1189,18 +1102,18 @@ function addPortfolioFile(
 
     }
 
-
     var sizeMB =
-        Number(
-            fileData.sizeMB
-        ) || 0;
-
+        Math.max(
+            0,
+            safeNumber(
+                fileData.sizeMB
+            )
+        );
 
     var check =
         getPortfolioUploadCheck(
             sizeMB
         );
-
 
     if (!check.allowed) {
 
@@ -1220,10 +1133,8 @@ function addPortfolioFile(
 
     }
 
-
     var storage =
         getPortfolioStorage();
-
 
     if (!fileData.id) {
 
@@ -1237,44 +1148,35 @@ function addPortfolioFile(
 
     }
 
-
     fileData.sizeMB =
         sizeMB;
-
 
     fileData.createdAt =
         fileData.createdAt ||
         new Date().toISOString();
 
-
     storage.files.push(
         fileData
     );
-
 
     storage.storageUsedMB =
         storage.files.reduce(
             function(total, file) {
 
                 return total +
-                    (
-                        Number(
-                            file.sizeMB
-                        ) || 0
+                    safeNumber(
+                        file.sizeMB
                     );
 
             },
             0
         );
 
-
     savePortfolioStorage(
         storage
     );
 
-
     renderPortfolioStorage();
-
 
     return {
 
@@ -1298,10 +1200,8 @@ function deletePortfolioFile(
     var storage =
         getPortfolioStorage();
 
-
     var originalLength =
         storage.files.length;
-
 
     storage.files =
         storage.files.filter(
@@ -1317,7 +1217,6 @@ function deletePortfolioFile(
             }
         );
 
-
     if (
         storage.files.length ===
         originalLength
@@ -1327,39 +1226,29 @@ function deletePortfolioFile(
 
     }
 
-
     storage.storageUsedMB =
         storage.files.reduce(
             function(total, file) {
 
                 return total +
-                    (
-                        Number(
-                            file.sizeMB
-                        ) || 0
+                    safeNumber(
+                        file.sizeMB
                     );
 
             },
             0
         );
 
-
     savePortfolioStorage(
         storage
     );
 
-
     renderPortfolioStorage();
-
 
     return true;
 
 }
 
-
-/* =========================================================
-   CHANGE PORTFOLIO SUBSCRIPTION
-========================================================= */
 
 function setPortfolioSubscriptionPlan(
     planId
@@ -1369,7 +1258,6 @@ function setPortfolioSubscriptionPlan(
         normalizeSubscriptionPlanId(
             planId
         );
-
 
     if (
         !normalizedPlanId ||
@@ -1382,37 +1270,29 @@ function setPortfolioSubscriptionPlan(
 
     }
 
-
     localStorage.setItem(
         SUBSCRIPTION_PLAN_KEY,
         normalizedPlanId
     );
 
-
     var storage =
         getPortfolioStorage();
 
-
     storage.storagePlan =
         normalizedPlanId;
-
 
     storage.storageLimitMB =
         STORAGE_PLANS[
             normalizedPlanId
         ].storageMB;
 
-
     savePortfolioStorage(
         storage
     );
 
-
     renderPortfolioStorage();
 
-
     renderSubscription();
-
 
     return true;
 
@@ -1431,17 +1311,11 @@ function getStoredServices() {
             []
         );
 
-
-    if (
-        !Array.isArray(services)
-    ) {
-
-        return [];
-
-    }
-
-
-    return services;
+    return Array.isArray(
+        services
+    )
+        ? services
+        : [];
 
 }
 
@@ -1466,14 +1340,12 @@ function getServiceName(
         return "";
     }
 
-
     var names = [
         service.name,
         service.serviceName,
         service.title,
         service.type
     ];
-
 
     for (
         var i = 0;
@@ -1492,7 +1364,6 @@ function getServiceName(
 
     }
 
-
     return "";
 
 }
@@ -1507,11 +1378,9 @@ function updateActiveServiceCounter(
             "activeServicesCounter"
         );
 
-
     if (!counter) {
         return;
     }
-
 
     var activeCount =
         services.filter(
@@ -1522,20 +1391,14 @@ function updateActiveServiceCounter(
             }
         ).length;
 
-
     counter.textContent =
         activeCount;
-
 
     counter.dataset.target =
         activeCount;
 
 }
 
-
-/* =========================================================
-   RENDER SERVICES
-========================================================= */
 
 function renderDashboardServices() {
 
@@ -1544,19 +1407,15 @@ function renderDashboardServices() {
             "serviceGrid"
         );
 
-
     if (!serviceGrid) {
         return;
     }
 
-
     var services =
         getStoredServices();
 
-
     serviceGrid.innerHTML =
         "";
-
 
     if (!services.length) {
 
@@ -1565,29 +1424,23 @@ function renderDashboardServices() {
                 "div"
             );
 
-
         empty.className =
             "services-empty";
 
-
         empty.textContent =
             "No services have been created yet. Open Manage Services to add your services.";
-
 
         serviceGrid.appendChild(
             empty
         );
 
-
         updateActiveServiceCounter(
             services
         );
 
-
         return;
 
     }
-
 
     services.forEach(
         function(service) {
@@ -1597,63 +1450,50 @@ function renderDashboardServices() {
                     service
                 );
 
-
             if (!name) {
                 return;
             }
-
 
             var label =
                 document.createElement(
                     "label"
                 );
 
-
             label.className =
                 "service-card";
-
 
             var checkbox =
                 document.createElement(
                     "input"
                 );
 
-
             checkbox.type =
                 "checkbox";
-
 
             checkbox.checked =
                 service.active === true;
 
-
             checkbox.dataset.serviceId =
                 service.id || "";
 
-
             checkbox.dataset.serviceName =
                 name;
-
 
             var span =
                 document.createElement(
                     "span"
                 );
 
-
             span.textContent =
                 name;
-
 
             label.appendChild(
                 checkbox
             );
 
-
             label.appendChild(
                 span
             );
-
 
             serviceGrid.appendChild(
                 label
@@ -1662,109 +1502,93 @@ function renderDashboardServices() {
         }
     );
 
+    /*
+       One delegated listener instead of a new
+       listener on every checkbox every time
+       the grid is rendered.
+    */
 
-    attachServiceCheckboxEvents();
+    if (
+        !serviceGrid.dataset.eventsAttached
+    ) {
 
+        serviceGrid.addEventListener(
+            "change",
+            function(event) {
 
-    updateActiveServiceCounter(
-        services
-    );
+                if (
+                    !event.target.matches(
+                        "input[type='checkbox']"
+                    )
+                ) {
+                    return;
+                }
 
-}
+                var checkbox =
+                    event.target;
 
+                var services =
+                    getStoredServices();
 
-/* =========================================================
-   SERVICE CHECKBOX EVENTS
-========================================================= */
+                var serviceId =
+                    checkbox.dataset.serviceId;
 
-function attachServiceCheckboxEvents() {
+                var serviceName =
+                    checkbox.dataset.serviceName;
 
-    var serviceGrid =
-        document.getElementById(
-            "serviceGrid"
-        );
+                var service =
+                    services.find(
+                        function(item) {
 
+                            if (
+                                serviceId
+                            ) {
 
-    if (!serviceGrid) {
-        return;
-    }
+                                return String(
+                                    item.id
+                                ) ===
+                                String(
+                                    serviceId
+                                );
 
+                            }
 
-    serviceGrid
-        .querySelectorAll(
-            "input[type='checkbox']"
-        )
-        .forEach(
-            function(checkbox) {
-
-                checkbox.addEventListener(
-                    "change",
-                    function() {
-
-                        var services =
-                            getStoredServices();
-
-
-                        var serviceId =
-                            checkbox.dataset.serviceId;
-
-
-                        var serviceName =
-                            checkbox.dataset.serviceName;
-
-
-                        var service =
-                            services.find(
-                                function(item) {
-
-                                    if (
-                                        serviceId
-                                    ) {
-
-                                        return String(
-                                            item.id
-                                        ) ===
-                                        String(
-                                            serviceId
-                                        );
-
-                                    }
-
-
-                                    return (
-                                        getServiceName(
-                                            item
-                                        ).toLowerCase() ===
-                                        serviceName.toLowerCase()
-                                    );
-
-                                }
+                            return (
+                                getServiceName(
+                                    item
+                                ).toLowerCase() ===
+                                serviceName.toLowerCase()
                             );
 
-
-                        if (!service) {
-                            return;
                         }
+                    );
 
+                if (!service) {
+                    return;
+                }
 
-                        service.active =
-                            checkbox.checked;
+                service.active =
+                    checkbox.checked;
 
+                saveServices(
+                    services
+                );
 
-                        saveServices(
-                            services
-                        );
-
-
-                        updateActiveServiceCounter(
-                            services
-                        );
-
-                    }
+                updateActiveServiceCounter(
+                    services
                 );
 
             }
         );
+
+        serviceGrid.dataset.eventsAttached =
+            "true";
+
+    }
+
+    updateActiveServiceCounter(
+        services
+    );
 
 }
 
@@ -1782,11 +1606,87 @@ function getStoredEquipment() {
         );
 
 
-    return Array.isArray(
-        equipment
-    )
-        ? equipment
-        : [];
+    if (!Array.isArray(equipment)) {
+        return [];
+    }
+
+
+    var changed = false;
+
+
+    equipment = equipment.filter(
+        function(category, index) {
+
+            if (
+                !category ||
+                typeof category !== "object"
+            ) {
+
+                changed = true;
+
+                return false;
+
+            }
+
+
+            /*
+               Older equipment records may not have
+               an ID. Give them one without changing
+               their existing category or items.
+            */
+
+            if (!category.id) {
+
+                category.id =
+                    "equipment-" +
+                    index + "-" +
+                    Date.now();
+
+                changed = true;
+
+            }
+
+
+            /*
+               Protect against old or malformed data.
+            */
+
+            if (!Array.isArray(category.items)) {
+
+                category.items = [];
+
+                changed = true;
+
+            }
+
+
+            if (!category.name) {
+
+                category.name =
+                    "Equipment";
+
+                changed = true;
+
+            }
+
+
+            return true;
+
+        }
+    );
+
+
+    if (changed) {
+
+        writeLocalStorage(
+            EQUIPMENT_STORAGE_KEY,
+            equipment
+        );
+
+    }
+
+
+    return equipment;
 
 }
 
@@ -1804,6 +1704,83 @@ function saveEquipment(
 
 
 /* =========================================================
+   EQUIPMENT HELPERS
+========================================================= */
+
+function getEquipmentItemName(
+    item
+) {
+
+    /*
+       Current data normally stores equipment
+       items as strings.
+
+       These fallbacks also allow older/alternate
+       object-based records to continue displaying.
+    */
+
+    if (
+        item &&
+        typeof item === "object"
+    ) {
+
+        if (item.name) {
+
+            return String(
+                item.name
+            ).trim();
+
+        }
+
+
+        if (item.title) {
+
+            return String(
+                item.title
+            ).trim();
+
+        }
+
+
+        if (item.value) {
+
+            return String(
+                item.value
+            ).trim();
+
+        }
+
+    }
+
+
+    return String(
+        item || ""
+    ).trim();
+
+}
+
+
+function getEquipmentCategoryName(
+    category
+) {
+
+    if (!category) {
+
+        return "Equipment";
+
+    }
+
+
+    return String(
+        category.name ||
+        category.title ||
+        "Equipment"
+    ).trim();
+
+}
+
+
+/* =========================================================
    EQUIPMENT LIST ITEM
 ========================================================= */
 
@@ -1812,10 +1789,20 @@ function addEquipmentListItem(
     item
 ) {
 
-    if (
-        !list ||
-        !item
-    ) {
+    if (!list) {
+
+        return;
+
+    }
+
+
+    var itemName =
+        getEquipmentItemName(
+            item
+        );
+
+
+    if (!itemName) {
 
         return;
 
@@ -1835,7 +1822,7 @@ function addEquipmentListItem(
 
 
     text.textContent =
-        item;
+        itemName;
 
 
     var removeButton =
@@ -1858,8 +1845,14 @@ function addEquipmentListItem(
 
     removeButton.setAttribute(
         "aria-label",
-        "Remove " + item
+        "Remove " +
+        itemName
     );
+
+
+    removeButton.title =
+        "Remove " +
+        itemName;
 
 
     removeButton.addEventListener(
@@ -1873,7 +1866,9 @@ function addEquipmentListItem(
 
 
             if (!card) {
+
                 return;
+
             }
 
 
@@ -1901,19 +1896,54 @@ function addEquipmentListItem(
 
 
             if (!category) {
+
                 return;
+
             }
 
 
-            category.items =
-                category.items.filter(
+            if (
+                !Array.isArray(
+                    category.items
+                )
+            ) {
+
+                category.items = [];
+
+            }
+
+
+            /*
+               Find the current item again instead
+               of relying on a stale array index.
+            */
+
+            var removeIndex =
+                category.items.findIndex(
                     function(existingItem) {
 
-                        return existingItem !==
-                            item;
+                        return (
+                            getEquipmentItemName(
+                                existingItem
+                            ).toLowerCase() ===
+                            itemName.toLowerCase()
+                        );
 
                     }
                 );
+
+
+            if (removeIndex === -1) {
+
+                return;
+
+            }
+
+
+            category.items.splice(
+                removeIndex,
+                1
+            );
 
 
             if (
@@ -1922,7 +1952,8 @@ function addEquipmentListItem(
                 )
             ) {
 
-                li.remove();
+                renderDashboardEquipment();
+
 
                 showDashboardToast(
                     "Equipment removed"
@@ -1973,6 +2004,30 @@ function createEquipmentCard(
         category.id;
 
 
+    /* ==========================
+       HEADER
+    ========================== */
+
+    var header =
+        document.createElement(
+            "div"
+        );
+
+
+    header.className =
+        "equipment-card-header";
+
+
+    var headingWrap =
+        document.createElement(
+            "div"
+        );
+
+
+    headingWrap.className =
+        "equipment-card-heading";
+
+
     var heading =
         document.createElement(
             "h3"
@@ -1980,8 +2035,190 @@ function createEquipmentCard(
 
 
     heading.textContent =
-        category.name;
+        getEquipmentCategoryName(
+            category
+        );
 
+
+    var itemCount =
+        document.createElement(
+            "span"
+        );
+
+
+    itemCount.className =
+        "equipment-item-count";
+
+
+    var items =
+        Array.isArray(
+            category.items
+        )
+            ? category.items
+            : [];
+
+
+    var validItemCount =
+        items.filter(
+            function(item) {
+
+                return Boolean(
+                    getEquipmentItemName(
+                        item
+                    )
+                );
+
+            }
+        ).length;
+
+
+    itemCount.textContent =
+        validItemCount +
+        (
+            validItemCount === 1
+                ? " item"
+                : " items"
+        );
+
+
+    headingWrap.appendChild(
+        heading
+    );
+
+
+    headingWrap.appendChild(
+        itemCount
+    );
+
+
+    /* ==========================
+       DELETE CATEGORY BUTTON
+    ========================== */
+
+    var deleteButton =
+        document.createElement(
+            "button"
+        );
+
+
+    deleteButton.type =
+        "button";
+
+
+    deleteButton.className =
+        "equipment-category-delete-btn";
+
+
+    deleteButton.textContent =
+        "Delete";
+
+
+    deleteButton.setAttribute(
+        "aria-label",
+        "Delete " +
+        getEquipmentCategoryName(
+            category
+        ) +
+        " category"
+    );
+
+
+    deleteButton.title =
+        "Delete category";
+
+
+    deleteButton.addEventListener(
+        "click",
+        function(event) {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+
+            var categoryName =
+                getEquipmentCategoryName(
+                    category
+                );
+
+
+            var confirmed =
+                window.confirm(
+                    "Delete the \"" +
+                    categoryName +
+                    "\" category?\n\n" +
+                    "This will also remove all equipment listed inside it."
+                );
+
+
+            if (!confirmed) {
+
+                return;
+
+            }
+
+
+            var equipment =
+                getStoredEquipment();
+
+
+            var updatedEquipment =
+                equipment.filter(
+                    function(existing) {
+
+                        return String(
+                            existing.id
+                        ) !==
+                        String(
+                            category.id
+                        );
+
+                    }
+                );
+
+
+            if (
+                updatedEquipment.length ===
+                equipment.length
+            ) {
+
+                return;
+
+            }
+
+
+            if (
+                saveEquipment(
+                    updatedEquipment
+                )
+            ) {
+
+                renderDashboardEquipment();
+
+
+                showDashboardToast(
+                    "Equipment category deleted"
+                );
+
+            }
+
+        }
+    );
+
+
+    header.appendChild(
+        headingWrap
+    );
+
+
+    header.appendChild(
+        deleteButton
+    );
+
+
+    /* ==========================
+       EQUIPMENT LIST
+    ========================== */
 
     var list =
         document.createElement(
@@ -1993,13 +2230,9 @@ function createEquipmentCard(
         "equipment-list";
 
 
-    if (
-        Array.isArray(
-            category.items
-        )
-    ) {
+    if (items.length) {
 
-        category.items.forEach(
+        items.forEach(
             function(item) {
 
                 addEquipmentListItem(
@@ -2011,7 +2244,32 @@ function createEquipmentCard(
         );
 
     }
+    else {
 
+        var empty =
+            document.createElement(
+                "li"
+            );
+
+
+        empty.className =
+            "equipment-empty";
+
+
+        empty.textContent =
+            "No equipment added yet. Add your first item below.";
+
+
+        list.appendChild(
+            empty
+        );
+
+    }
+
+
+    /* ==========================
+       INPUT
+    ========================== */
 
     var inputWrapper =
         document.createElement(
@@ -2034,7 +2292,20 @@ function createEquipmentCard(
 
 
     input.placeholder =
-        "Add equipment";
+        "e.g. Sony A7 IV";
+
+
+    input.setAttribute(
+        "aria-label",
+        "Add equipment to " +
+        getEquipmentCategoryName(
+            category
+        )
+    );
+
+
+    input.autocomplete =
+        "off";
 
 
     var button =
@@ -2052,7 +2323,7 @@ function createEquipmentCard(
 
 
     button.textContent =
-        "ADD";
+        "Add";
 
 
     inputWrapper.appendChild(
@@ -2065,8 +2336,12 @@ function createEquipmentCard(
     );
 
 
+    /* ==========================
+       CARD
+    ========================== */
+
     card.appendChild(
-        heading
+        header
     );
 
 
@@ -2134,7 +2409,11 @@ function attachEquipmentEvents(
 
 
         if (!value) {
+
+            input.focus();
+
             return;
+
         }
 
 
@@ -2162,7 +2441,9 @@ function attachEquipmentEvents(
 
 
         if (!category) {
+
             return;
+
         }
 
 
@@ -2182,7 +2463,7 @@ function attachEquipmentEvents(
                 function(existingItem) {
 
                     return (
-                        String(
+                        getEquipmentItemName(
                             existingItem
                         ).toLowerCase() ===
                         value.toLowerCase()
@@ -2198,8 +2479,9 @@ function attachEquipmentEvents(
                 "This equipment is already added"
             );
 
-            input.value =
-                "";
+
+            input.select();
+
 
             return;
 
@@ -2217,23 +2499,65 @@ function attachEquipmentEvents(
             )
         ) {
 
-            addEquipmentListItem(
-                list,
-                value
-            );
+            renderDashboardEquipment();
 
 
             showDashboardToast(
                 "Equipment added"
             );
 
+
+            /*
+               Return focus to the same category's
+               input after the card is re-rendered.
+            */
+
+            var newCard = null;
+
+
+            document
+                .querySelectorAll(
+                    ".equipment-card"
+                )
+                .forEach(
+                    function(candidate) {
+
+                        if (
+                            !newCard &&
+                            String(
+                                candidate.dataset.categoryId
+                            ) ===
+                            String(
+                                categoryId
+                            )
+                        ) {
+
+                            newCard =
+                                candidate;
+
+                        }
+
+                    }
+                );
+
+
+            if (newCard) {
+
+                var newInput =
+                    newCard.querySelector(
+                        ".equipment-input input"
+                    );
+
+
+                if (newInput) {
+
+                    newInput.focus();
+
+                }
+
+            }
+
         }
-
-
-        input.value =
-            "";
-
-        input.focus();
 
     }
 
@@ -2254,6 +2578,7 @@ function attachEquipmentEvents(
             ) {
 
                 event.preventDefault();
+
 
                 addItem();
 
@@ -2293,6 +2618,11 @@ function renderDashboardEquipment() {
     }
 
 
+    /*
+       Remove rendered categories and the
+       empty state before rebuilding.
+    */
+
     equipmentGrid
         .querySelectorAll(
             ".equipment-card:not(#addEquipment)"
@@ -2306,16 +2636,64 @@ function renderDashboardEquipment() {
         );
 
 
+    equipmentGrid
+        .querySelectorAll(
+            ".equipment-section-empty"
+        )
+        .forEach(
+            function(emptyState) {
+
+                emptyState.remove();
+
+            }
+        );
+
+
     var equipment =
         getStoredEquipment();
 
+
+    /* ==========================
+       EMPTY STATE
+    ========================== */
+
+    if (!equipment.length) {
+
+        var emptyState =
+            document.createElement(
+                "div"
+            );
+
+
+        emptyState.className =
+            "equipment-section-empty";
+
+
+        emptyState.innerHTML =
+            "<strong>No equipment categories yet</strong>" +
+            "<span>Create a category to start organizing your cameras, lenses, lighting and other gear.</span>";
+
+
+        equipmentGrid.insertBefore(
+            emptyState,
+            addEquipment
+        );
+
+    }
+
+
+    /* ==========================
+       CATEGORIES
+    ========================== */
 
     equipment.forEach(
         function(category) {
 
             if (
                 !category ||
-                !category.name
+                !getEquipmentCategoryName(
+                    category
+                )
             ) {
 
                 return;
@@ -2372,6 +2750,10 @@ function initializeEquipmentCategoryCreation() {
         "click",
         function() {
 
+            /*
+               Prevent multiple creation cards.
+            */
+
             if (
                 document.querySelector(
                     ".create-equipment-card"
@@ -2379,6 +2761,19 @@ function initializeEquipmentCategoryCreation() {
             ) {
 
                 return;
+
+            }
+
+
+            var emptyState =
+                equipmentGrid.querySelector(
+                    ".equipment-section-empty"
+                );
+
+
+            if (emptyState) {
+
+                emptyState.remove();
 
             }
 
@@ -2394,11 +2789,17 @@ function initializeEquipmentCategoryCreation() {
 
 
             createCard.innerHTML =
-                "<h3>New Equipment Category</h3>" +
-                "<input type=\"text\" id=\"newEquipmentName\" placeholder=\"Category name\">" +
+                "<div class=\"create-equipment-icon\">+</div>" +
+                "<div class=\"create-equipment-copy\">" +
+                    "<span class=\"equipment-eyebrow\">NEW CATEGORY</span>" +
+                    "<h3>Organize your equipment</h3>" +
+                    "<p>Give this group a simple name, such as Cameras, Lenses or Studio Lighting.</p>" +
+                "</div>" +
+                "<label class=\"equipment-create-label\" for=\"newEquipmentName\">Category name</label>" +
+                "<input type=\"text\" id=\"newEquipmentName\" placeholder=\"e.g. Cameras\" maxlength=\"60\" autocomplete=\"off\">" +
                 "<div class=\"create-actions\">" +
-                "<button type=\"button\" class=\"create-btn\">Create</button>" +
-                "<button type=\"button\" class=\"cancel-btn\">Cancel</button>" +
+                    "<button type=\"button\" class=\"create-btn\">Create Category</button>" +
+                    "<button type=\"button\" class=\"cancel-btn\">Cancel</button>" +
                 "</div>";
 
 
@@ -2441,8 +2842,8 @@ function initializeEquipmentCategoryCreation() {
                         function(category) {
 
                             return (
-                                String(
-                                    category.name
+                                getEquipmentCategoryName(
+                                    category
                                 ).toLowerCase() ===
                                 categoryName.toLowerCase()
                             );
@@ -2457,7 +2858,9 @@ function initializeEquipmentCategoryCreation() {
                         "This category already exists"
                     );
 
+
                     input.select();
+
 
                     return;
 
@@ -2489,19 +2892,7 @@ function initializeEquipmentCategoryCreation() {
                     )
                 ) {
 
-                    var card =
-                        createEquipmentCard(
-                            category
-                        );
-
-
-                    equipmentGrid.insertBefore(
-                        card,
-                        createCard
-                    );
-
-
-                    createCard.remove();
+                    renderDashboardEquipment();
 
 
                     showDashboardToast(
@@ -2534,6 +2925,7 @@ function initializeEquipmentCategoryCreation() {
 
                         event.preventDefault();
 
+
                         createCategory();
 
                     }
@@ -2562,6 +2954,14 @@ function initializeEquipmentCategoryCreation() {
 
 
 /* =========================================================
+   INITIALIZE EQUIPMENT
+========================================================= */
+
+renderDashboardEquipment();
+
+initializeEquipmentCategoryCreation();
+
+/* =========================================================
    GALLERIES
 ========================================================= */
 
@@ -2572,12 +2972,6 @@ function getStoredGalleries() {
             GALLERY_STORAGE_KEY,
             []
         );
-
-
-    /*
-       Some versions of the gallery system
-       may store an object instead of an array.
-    */
 
     if (
         galleries &&
@@ -2602,7 +2996,6 @@ function getStoredGalleries() {
 
     }
 
-
     return Array.isArray(
         galleries
     )
@@ -2612,10 +3005,6 @@ function getStoredGalleries() {
 }
 
 
-/* =========================================================
-   GALLERY DATE HELPERS
-========================================================= */
-
 function getGalleryExpiryDate(
     gallery
 ) {
@@ -2624,7 +3013,6 @@ function getGalleryExpiryDate(
         return null;
     }
 
-
     var possibleDates = [
         gallery.expiresAt,
         gallery.expiryDate,
@@ -2632,37 +3020,22 @@ function getGalleryExpiryDate(
         gallery.endDate
     ];
 
-
     for (
         var i = 0;
         i < possibleDates.length;
         i++
     ) {
 
-        if (
-            possibleDates[i]
-        ) {
+        var date =
+            safeDate(
+                possibleDates[i]
+            );
 
-            var date =
-                new Date(
-                    possibleDates[i]
-                );
-
-
-            if (
-                !Number.isNaN(
-                    date.getTime()
-                )
-            ) {
-
-                return date;
-
-            }
-
+        if (date) {
+            return date;
         }
 
     }
-
 
     if (
         gallery.durationMonths &&
@@ -2670,30 +3043,23 @@ function getGalleryExpiryDate(
     ) {
 
         var created =
-            new Date(
+            safeDate(
                 gallery.createdAt
             );
 
-
-        if (
-            !Number.isNaN(
-                created.getTime()
-            )
-        ) {
+        if (created) {
 
             var expiry =
                 new Date(
-                    created
+                    created.getTime()
                 );
-
 
             expiry.setMonth(
                 expiry.getMonth() +
-                Number(
+                safeNumber(
                     gallery.durationMonths
                 )
             );
-
 
             return expiry;
 
@@ -2701,15 +3067,10 @@ function getGalleryExpiryDate(
 
     }
 
-
     return null;
 
 }
 
-
-/* =========================================================
-   GALLERY STATUS
-========================================================= */
 
 function getGalleryStatus(
     gallery
@@ -2720,7 +3081,6 @@ function getGalleryStatus(
             gallery
         );
 
-
     if (!expiry) {
 
         return {
@@ -2730,10 +3090,8 @@ function getGalleryStatus(
 
     }
 
-
     var now =
         new Date();
-
 
     if (
         expiry.getTime() <=
@@ -2746,7 +3104,6 @@ function getGalleryStatus(
         };
 
     }
-
 
     var days =
         Math.ceil(
@@ -2761,7 +3118,6 @@ function getGalleryStatus(
                 24
             )
         );
-
 
     if (
         days <= 14
@@ -2784,7 +3140,6 @@ function getGalleryStatus(
 
     }
 
-
     return {
         label: "Active",
         className: "active"
@@ -2793,20 +3148,19 @@ function getGalleryStatus(
 }
 
 
-/* =========================================================
-   GALLERY FILE COUNT
-========================================================= */
-
 function getGalleryPhotoCount(
     gallery
 ) {
+
+    if (!gallery) {
+        return 0;
+    }
 
     var possibleValues = [
         gallery.photoCount,
         gallery.photosCount,
         gallery.totalPhotos
     ];
-
 
     for (
         var i = 0;
@@ -2815,28 +3169,29 @@ function getGalleryPhotoCount(
     ) {
 
         var value =
-            Number(
-                possibleValues[i]
+            safeNumber(
+                possibleValues[i],
+                NaN
             );
-
 
         if (
             Number.isFinite(value)
         ) {
 
-            return value;
+            return Math.max(
+                0,
+                value
+            );
 
         }
 
     }
-
 
     var arrays = [
         gallery.photos,
         gallery.media,
         gallery.files
     ];
-
 
     for (
         var j = 0;
@@ -2856,26 +3211,24 @@ function getGalleryPhotoCount(
 
     }
 
-
     return 0;
 
 }
 
 
-/* =========================================================
-   GALLERY STORAGE COUNT
-========================================================= */
-
 function getGalleryStorageMB(
     gallery
 ) {
+
+    if (!gallery) {
+        return 0;
+    }
 
     var possibleValues = [
         gallery.storageUsedMB,
         gallery.usedMB,
         gallery.storageMB
     ];
-
 
     for (
         var i = 0;
@@ -2884,10 +3237,10 @@ function getGalleryStorageMB(
     ) {
 
         var value =
-            Number(
-                possibleValues[i]
+            safeNumber(
+                possibleValues[i],
+                NaN
             );
-
 
         if (
             Number.isFinite(value) &&
@@ -2900,15 +3253,13 @@ function getGalleryStorageMB(
 
     }
 
-
     var bytes =
-        Number(
-            gallery.storageUsedBytes
+        safeNumber(
+            gallery.storageUsedBytes,
+            0
         );
 
-
     if (
-        Number.isFinite(bytes) &&
         bytes > 0
     ) {
 
@@ -2920,19 +3271,18 @@ function getGalleryStorageMB(
 
     }
 
-
     return 0;
 
 }
 
 
-/* =========================================================
-   GALLERY TITLE
-========================================================= */
-
 function getGalleryName(
     gallery
 ) {
+
+    if (!gallery) {
+        return "Untitled Gallery";
+    }
 
     return (
         gallery.name ||
@@ -2945,13 +3295,13 @@ function getGalleryName(
 }
 
 
-/* =========================================================
-   GALLERY COVER
-========================================================= */
-
 function getGalleryCover(
     gallery
 ) {
+
+    if (!gallery) {
+        return "";
+    }
 
     return (
         gallery.coverImage ||
@@ -2964,15 +3314,10 @@ function getGalleryCover(
 }
 
 
-/* =========================================================
-   RENDER GALLERIES
-========================================================= */
-
 function renderDashboardGalleries() {
 
     var galleries =
         getStoredGalleries();
-
 
     var totalElement =
         document.getElementById(
@@ -3004,16 +3349,9 @@ function renderDashboardGalleries() {
             "galleryEmptyState"
         );
 
-
-    var activeCount =
-        0;
-
-    var expiringCount =
-        0;
-
-    var totalStorageMB =
-        0;
-
+    var activeCount = 0;
+    var expiringCount = 0;
+    var totalStorageMB = 0;
 
     galleries.forEach(
         function(gallery) {
@@ -3022,7 +3360,6 @@ function renderDashboardGalleries() {
                 getGalleryStatus(
                     gallery
                 );
-
 
             if (
                 status.className ===
@@ -3033,7 +3370,6 @@ function renderDashboardGalleries() {
 
             }
 
-
             if (
                 status.className ===
                 "expiring"
@@ -3043,7 +3379,6 @@ function renderDashboardGalleries() {
 
             }
 
-
             totalStorageMB +=
                 getGalleryStorageMB(
                     gallery
@@ -3052,7 +3387,6 @@ function renderDashboardGalleries() {
         }
     );
 
-
     if (totalElement) {
 
         totalElement.textContent =
@@ -3060,14 +3394,12 @@ function renderDashboardGalleries() {
 
     }
 
-
     if (activeElement) {
 
         activeElement.textContent =
             activeCount;
 
     }
-
 
     if (storageElement) {
 
@@ -3078,7 +3410,6 @@ function renderDashboardGalleries() {
 
     }
 
-
     if (expiringElement) {
 
         expiringElement.textContent =
@@ -3086,69 +3417,64 @@ function renderDashboardGalleries() {
 
     }
 
-
     if (!listElement) {
         return;
     }
 
-
     listElement.innerHTML =
         "";
-
 
     if (!galleries.length) {
 
         if (emptyElement) {
-
-            emptyElement.hidden =
-                false;
-
+            emptyElement.hidden = false;
         }
 
         return;
 
     }
 
-
     if (emptyElement) {
-
-        emptyElement.hidden =
-            true;
-
+        emptyElement.hidden = true;
     }
 
-
-    /*
-       Show latest galleries first.
-    */
-
     var sorted =
-        galleries.slice()
+        galleries
+            .slice()
             .sort(
                 function(a, b) {
 
                     var aDate =
-                        new Date(
+                        safeDate(
                             a.createdAt ||
-                            a.updatedAt ||
-                            0
-                        ).getTime();
-
+                            a.updatedAt
+                        );
 
                     var bDate =
-                        new Date(
+                        safeDate(
                             b.createdAt ||
-                            b.updatedAt ||
-                            0
-                        ).getTime();
+                            b.updatedAt
+                        );
 
-
-                    return bDate - aDate;
+                    return (
+                        (
+                            bDate
+                                ? bDate.getTime()
+                                : 0
+                        ) -
+                        (
+                            aDate
+                                ? aDate.getTime()
+                                : 0
+                        )
+                    );
 
                 }
             )
-            .slice(0, 6);
-
+            .slice(
+                0,
+                6
+            );
 
     sorted.forEach(
         function(gallery) {
@@ -3165,10 +3491,6 @@ function renderDashboardGalleries() {
 }
 
 
-/* =========================================================
-   CREATE GALLERY CARD
-========================================================= */
-
 function createDashboardGalleryCard(
     gallery
 ) {
@@ -3178,26 +3500,21 @@ function createDashboardGalleryCard(
             "article"
         );
 
-
     card.className =
         "gallery-card";
-
 
     var imageWrapper =
         document.createElement(
             "div"
         );
 
-
     imageWrapper.className =
         "gallery-card-image";
-
 
     var cover =
         getGalleryCover(
             gallery
         );
-
 
     if (cover) {
 
@@ -3206,20 +3523,16 @@ function createDashboardGalleryCard(
                 "img"
             );
 
-
         image.src =
             cover;
-
 
         image.alt =
             getGalleryName(
                 gallery
             );
 
-
         image.loading =
             "lazy";
-
 
         image.onerror =
             function() {
@@ -3231,10 +3544,8 @@ function createDashboardGalleryCard(
                         "span"
                     );
 
-
                 placeholder.className =
                     "gallery-placeholder";
-
 
                 placeholder.textContent =
                     "Gallery";
@@ -3244,7 +3555,6 @@ function createDashboardGalleryCard(
                 );
 
             };
-
 
         imageWrapper.appendChild(
             image
@@ -3257,14 +3567,11 @@ function createDashboardGalleryCard(
                 "span"
             );
 
-
         placeholder.className =
             "gallery-placeholder";
 
-
         placeholder.textContent =
             "Gallery";
-
 
         imageWrapper.appendChild(
             placeholder
@@ -3272,44 +3579,36 @@ function createDashboardGalleryCard(
 
     }
 
-
     var content =
         document.createElement(
             "div"
         );
 
-
     content.className =
         "gallery-card-content";
-
 
     var title =
         document.createElement(
             "h4"
         );
 
-
     title.textContent =
         getGalleryName(
             gallery
         );
-
 
     var meta =
         document.createElement(
             "div"
         );
 
-
     meta.className =
         "gallery-card-meta";
-
 
     var photos =
         document.createElement(
             "span"
         );
-
 
     photos.textContent =
         getGalleryPhotoCount(
@@ -3317,12 +3616,10 @@ function createDashboardGalleryCard(
         ) +
         " photos";
 
-
     var storage =
         document.createElement(
             "span"
         );
-
 
     storage.textContent =
         formatPortfolioStorageMB(
@@ -3331,62 +3628,50 @@ function createDashboardGalleryCard(
             )
         );
 
-
     meta.appendChild(
         photos
     );
 
-
     meta.appendChild(
         storage
     );
-
 
     var status =
         getGalleryStatus(
             gallery
         );
 
-
     var statusElement =
         document.createElement(
             "div"
         );
 
-
     statusElement.className =
         "gallery-status " +
         status.className;
 
-
     statusElement.textContent =
         status.label;
-
 
     content.appendChild(
         title
     );
 
-
     content.appendChild(
         meta
     );
-
 
     content.appendChild(
         statusElement
     );
 
-
     card.appendChild(
         imageWrapper
     );
 
-
     card.appendChild(
         content
     );
-
 
     return card;
 
@@ -3405,24 +3690,14 @@ function getStoredBookings() {
             []
         );
 
-
-    if (
-        !Array.isArray(bookings)
-    ) {
-
-        return [];
-
-    }
-
-
-    return bookings;
+    return Array.isArray(
+        bookings
+    )
+        ? bookings
+        : [];
 
 }
 
-
-/* =========================================================
-   BOOKING HELPERS
-========================================================= */
 
 function getBookingClientName(
     booking
@@ -3481,6 +3756,274 @@ function getBookingStatus(
 }
 
 
+/* =========================================================
+   BOOKING TIME
+========================================================= */
+
+function normalizeTimeValue(
+    timeValue
+) {
+
+    if (
+        timeValue === null ||
+        timeValue === undefined ||
+        timeValue === ""
+    ) {
+
+        return "";
+
+    }
+
+    var value =
+        String(timeValue)
+            .trim();
+
+    /*
+       Already formatted 12-hour time.
+    */
+
+    var twelveHour =
+        value.match(
+            /^(\d{1,2}):(\d{2})\s*(AM|PM)$/i
+        );
+
+    if (twelveHour) {
+
+        var twelveHourNumber =
+            Number(
+                twelveHour[1]
+            );
+
+        var minute =
+            twelveHour[2];
+
+        var period =
+            twelveHour[3]
+                .toUpperCase();
+
+        if (
+            twelveHourNumber >= 1 &&
+            twelveHourNumber <= 12
+        ) {
+
+            return (
+                twelveHourNumber +
+                ":" +
+                minute +
+                " " +
+                period
+            );
+
+        }
+
+    }
+
+    /*
+       Existing frontend storage normally uses HH:mm.
+    */
+
+    var twentyFourHour =
+        value.match(
+            /^(\d{1,2}):(\d{2})$/
+        );
+
+    if (
+        twentyFourHour
+    ) {
+
+        var hour =
+            Number(
+                twentyFourHour[1]
+            );
+
+        var minutes =
+            twentyFourHour[2];
+
+        if (
+            hour >= 0 &&
+            hour <= 23
+        ) {
+
+            var suffix =
+                hour >= 12
+                    ? "PM"
+                    : "AM";
+
+            var displayHour =
+                hour % 12;
+
+            if (
+                displayHour === 0
+            ) {
+
+                displayHour =
+                    12;
+
+            }
+
+            return (
+                displayHour +
+                ":" +
+                minutes +
+                " " +
+                suffix
+            );
+
+        }
+
+    }
+
+    return value;
+
+}
+
+
+function getBookingStartTime(
+    booking
+) {
+
+    if (!booking) {
+        return "";
+    }
+
+    return (
+        booking.startTime ||
+        booking.time ||
+        booking.fromTime ||
+        booking.eventTime ||
+        ""
+    );
+
+}
+
+
+function getBookingEndTime(
+    booking
+) {
+
+    if (!booking) {
+        return "";
+    }
+
+    return (
+        booking.endTime ||
+        booking.toTime ||
+        booking.untilTime ||
+        ""
+    );
+
+}
+
+
+function formatBookingTimeRange(
+    booking
+) {
+
+    var start =
+        normalizeTimeValue(
+            getBookingStartTime(
+                booking
+            )
+        );
+
+    var end =
+        normalizeTimeValue(
+            getBookingEndTime(
+                booking
+            )
+        );
+
+    if (
+        start &&
+        end
+    ) {
+
+        return (
+            start +
+            " - " +
+            end
+        );
+
+    }
+
+    return (
+        start ||
+        end ||
+        ""
+    );
+
+}
+
+
+/* =========================================================
+   BOOKING DATE
+========================================================= */
+
+function parseBookingDate(
+    dateValue
+) {
+
+    if (!dateValue) {
+        return null;
+    }
+
+    var value =
+        String(
+            dateValue
+        ).trim();
+
+    /*
+       DD-MM-YYYY
+    */
+
+    var indian =
+        value.match(
+            /^(\d{2})-(\d{2})-(\d{4})$/
+        );
+
+    if (indian) {
+
+        var day =
+            Number(
+                indian[1]
+            );
+
+        var month =
+            Number(
+                indian[2]
+            ) - 1;
+
+        var year =
+            Number(
+                indian[3]
+            );
+
+        var localDate =
+            new Date(
+                year,
+                month,
+                day
+            );
+
+        if (
+            localDate.getFullYear() === year &&
+            localDate.getMonth() === month &&
+            localDate.getDate() === day
+        ) {
+
+            return localDate;
+
+        }
+
+    }
+
+    return safeDate(
+        value
+    );
+
+}
+
+
 function formatBookingDate(
     dateValue
 ) {
@@ -3489,25 +4032,18 @@ function formatBookingDate(
         return "—";
     }
 
-
     var date =
-        new Date(
+        parseBookingDate(
             dateValue
         );
 
-
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
+    if (!date) {
 
         return String(
             dateValue
         );
 
     }
-
 
     return date.toLocaleDateString(
         "en-IN",
@@ -3539,23 +4075,19 @@ function renderDashboardBookings(
             "bookingEmptyState"
         );
 
-
     if (!table) {
         return;
     }
 
-
     var bookings =
         getStoredBookings();
-
 
     var query =
         String(
             searchTerm || ""
         )
-        .trim()
-        .toLowerCase();
-
+            .trim()
+            .toLowerCase();
 
     if (query) {
 
@@ -3579,51 +4111,53 @@ function renderDashboardBookings(
 
                             getBookingStatus(
                                 booking
+                            ),
+
+                            getBookingStartTime(
+                                booking
+                            ),
+
+                            getBookingEndTime(
+                                booking
                             )
 
                         ]
-                        .join(" ")
-                        .toLowerCase();
+                            .join(" ")
+                            .toLowerCase();
 
-
-                    return searchable
-                        .indexOf(query) !== -1;
+                    return (
+                        searchable.indexOf(
+                            query
+                        ) !== -1
+                    );
 
                 }
             );
 
     }
 
-
     table.innerHTML =
         "";
-
 
     if (!bookings.length) {
 
         if (empty) {
-
-            empty.hidden =
-                false;
-
+            empty.hidden = false;
         }
-
 
         return;
 
     }
 
-
     if (empty) {
-
-        empty.hidden =
-            true;
-
+        empty.hidden = true;
     }
 
-
     bookings
-        .slice(0, 8)
+        .slice(
+            0,
+            8
+        )
         .forEach(
             function(booking) {
 
@@ -3632,36 +4166,30 @@ function renderDashboardBookings(
                         "tr"
                     );
 
-
                 var client =
                     document.createElement(
                         "td"
                     );
-
 
                 client.textContent =
                     getBookingClientName(
                         booking
                     );
 
-
                 var service =
                     document.createElement(
                         "td"
                     );
-
 
                 service.textContent =
                     getBookingServiceName(
                         booking
                     );
 
-
                 var date =
                     document.createElement(
                         "td"
                     );
-
 
                 date.textContent =
                     formatBookingDate(
@@ -3670,35 +4198,65 @@ function renderDashboardBookings(
                         )
                     );
 
+                /*
+                   Add time into the date cell only
+                   when booking time exists, preserving
+                   the existing table structure.
+                */
+
+                var time =
+                    formatBookingTimeRange(
+                        booking
+                    );
+
+                if (time) {
+
+                    var timeElement =
+                        document.createElement(
+                            "small"
+                        );
+
+                    timeElement.className =
+                        "booking-time";
+
+                    timeElement.textContent =
+                        time;
+
+                    date.appendChild(
+                        document.createElement(
+                            "br"
+                        )
+                    );
+
+                    date.appendChild(
+                        timeElement
+                    );
+
+                }
 
                 var statusCell =
                     document.createElement(
                         "td"
                     );
 
-
                 var status =
                     getBookingStatus(
                         booking
                     );
-
 
                 var statusElement =
                     document.createElement(
                         "span"
                     );
 
-
                 var statusClass =
                     String(
                         status
                     )
-                    .toLowerCase();
-
+                        .toLowerCase();
 
                 statusElement.className =
                     "booking-status";
-
 
                 if (
                     statusClass.indexOf(
@@ -3722,6 +4280,17 @@ function renderDashboardBookings(
                     );
 
                 }
+                else if (
+                    statusClass.indexOf(
+                        "complete"
+                    ) !== -1
+                ) {
+
+                    statusElement.classList.add(
+                        "completed"
+                    );
+
+                }
                 else {
 
                     statusElement.classList.add(
@@ -3730,15 +4299,12 @@ function renderDashboardBookings(
 
                 }
 
-
                 statusElement.textContent =
                     status;
-
 
                 statusCell.appendChild(
                     statusElement
                 );
-
 
                 row.appendChild(
                     client
@@ -3756,7 +4322,6 @@ function renderDashboardBookings(
                     statusCell
                 );
 
-
                 table.appendChild(
                     row
                 );
@@ -3771,61 +4336,74 @@ function renderDashboardBookings(
    TODAY'S BOOKINGS
 ========================================================= */
 
+function getLocalDateKey(
+    date
+) {
+
+    if (
+        !(date instanceof Date) ||
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return "";
+
+    }
+
+    return (
+        date.getFullYear() +
+        "-" +
+        String(
+            date.getMonth() + 1
+        ).padStart(
+            2,
+            "0"
+        ) +
+        "-" +
+        String(
+            date.getDate()
+        ).padStart(
+            2,
+            "0"
+        )
+    );
+
+}
+
+
 function countTodaysBookings() {
 
     var bookings =
         getStoredBookings();
 
-
     var today =
         new Date();
 
-
-    var todayString =
-        today.toISOString()
-            .split("T")[0];
-
+    var todayKey =
+        getLocalDateKey(
+            today
+        );
 
     return bookings.filter(
         function(booking) {
 
-            var date =
-                getBookingDate(
-                    booking
+            var parsed =
+                parseBookingDate(
+                    getBookingDate(
+                        booking
+                    )
                 );
 
-
-            if (!date) {
+            if (!parsed) {
                 return false;
             }
 
-
-            var parsed =
-                new Date(
-                    date
-                );
-
-
-            if (
-                Number.isNaN(
-                    parsed.getTime()
-                )
-            ) {
-
-                return (
-                    String(date)
-                    .indexOf(
-                        todayString
-                    ) !== -1
-                );
-
-            }
-
-
             return (
-                parsed.toISOString()
-                    .split("T")[0] ===
-                todayString
+                getLocalDateKey(
+                    parsed
+                ) ===
+                todayKey
             );
 
         }
@@ -3850,7 +4428,6 @@ function getBookingRevenue(
         booking.total
     ];
 
-
     for (
         var i = 0;
         i < values.length;
@@ -3862,9 +4439,10 @@ function getBookingRevenue(
                 values[i]
             );
 
-
         if (
-            Number.isFinite(value)
+            Number.isFinite(
+                value
+            )
         ) {
 
             return value;
@@ -3872,7 +4450,6 @@ function getBookingRevenue(
         }
 
     }
-
 
     return 0;
 
@@ -3886,7 +4463,6 @@ function formatCurrency(
     var value =
         Number(amount) || 0;
 
-
     return "₹" +
         value.toLocaleString(
             "en-IN",
@@ -3899,7 +4475,7 @@ function formatCurrency(
 
 
 /* =========================================================
-   UPDATE DASHBOARD STATS
+   DASHBOARD STATS
 ========================================================= */
 
 function updateDashboardStats() {
@@ -3907,50 +4483,41 @@ function updateDashboardStats() {
     var bookings =
         getStoredBookings();
 
-
     var galleries =
         getStoredGalleries();
 
-
     var services =
         getStoredServices();
-
 
     var todayCounter =
         document.getElementById(
             "todayBookingsCounter"
         );
 
-
     var photosCounter =
         document.getElementById(
             "galleryPhotosCounter"
         );
-
 
     var revenueElement =
         document.getElementById(
             "dashboardRevenue"
         );
 
-
     var totalBookingsElement =
         document.getElementById(
             "totalBookings"
         );
-
 
     var totalRevenueElement =
         document.getElementById(
             "totalRevenue"
         );
 
-
     var albumsElement =
         document.getElementById(
             "totalAlbums"
         );
-
 
     var totalPhotos =
         galleries.reduce(
@@ -3965,7 +4532,6 @@ function updateDashboardStats() {
             0
         );
 
-
     var totalRevenue =
         bookings.reduce(
             function(total, booking) {
@@ -3979,14 +4545,12 @@ function updateDashboardStats() {
             0
         );
 
-
     if (todayCounter) {
 
         todayCounter.textContent =
             countTodaysBookings();
 
     }
-
 
     if (photosCounter) {
 
@@ -3997,7 +4561,6 @@ function updateDashboardStats() {
 
     }
 
-
     if (revenueElement) {
 
         revenueElement.textContent =
@@ -4006,7 +4569,6 @@ function updateDashboardStats() {
             );
 
     }
-
 
     if (totalBookingsElement) {
 
@@ -4017,7 +4579,6 @@ function updateDashboardStats() {
 
     }
 
-
     if (totalRevenueElement) {
 
         totalRevenueElement.textContent =
@@ -4027,7 +4588,6 @@ function updateDashboardStats() {
 
     }
 
-
     if (albumsElement) {
 
         albumsElement.textContent =
@@ -4036,7 +4596,6 @@ function updateDashboardStats() {
             );
 
     }
-
 
     updateActiveServiceCounter(
         services
@@ -4049,28 +4608,6 @@ function updateDashboardStats() {
    REVIEWS
 ========================================================= */
 
-/*
-   Reviews are now read only from the real review
-   data source used by the frontend.
-
-   Expected storage key:
-
-       professionalStudio.reviews
-
-   Expected value:
-
-       [
-           {
-               name: "Client Name",
-               review: "Review text",
-               service: "Wedding Photography",
-               rating: 5
-           }
-       ]
-
-   No demo/fallback reviews are created here.
-*/
-
 function getStoredReviews() {
 
     var reviews =
@@ -4078,16 +4615,6 @@ function getStoredReviews() {
             REVIEW_STORAGE_KEY,
             []
         );
-
-
-    /*
-       Support a wrapped review object in case
-       another frontend module stores:
-
-       {
-           reviews: [...]
-       }
-    */
 
     if (
         reviews &&
@@ -4112,7 +4639,6 @@ function getStoredReviews() {
 
     }
 
-
     if (
         !Array.isArray(
             reviews
@@ -4122,13 +4648,6 @@ function getStoredReviews() {
         return [];
 
     }
-
-
-    /*
-       Only return valid review objects.
-       This prevents malformed storage data
-       from creating broken dashboard cards.
-    */
 
     return reviews.filter(
         function(review) {
@@ -4144,10 +4663,6 @@ function getStoredReviews() {
 }
 
 
-/* =========================================================
-   REVIEW HELPERS
-========================================================= */
-
 function getReviewText(
     review
 ) {
@@ -4156,14 +4671,12 @@ function getReviewText(
         return "";
     }
 
-
     var values = [
         review.review,
         review.text,
         review.comment,
         review.message
     ];
-
 
     for (
         var i = 0;
@@ -4181,7 +4694,6 @@ function getReviewText(
         }
 
     }
-
 
     return "";
 
@@ -4196,7 +4708,6 @@ function getReviewAuthor(
         return "Client";
     }
 
-
     var values = [
         review.name,
         review.clientName,
@@ -4204,7 +4715,6 @@ function getReviewAuthor(
         review.author,
         review.client
     ];
-
 
     for (
         var i = 0;
@@ -4222,7 +4732,6 @@ function getReviewAuthor(
         }
 
     }
-
 
     return "Client";
 
@@ -4237,14 +4746,12 @@ function getReviewService(
         return "";
     }
 
-
     var values = [
         review.service,
         review.serviceName,
         review.packageName,
         review.package
     ];
-
 
     for (
         var i = 0;
@@ -4263,7 +4770,6 @@ function getReviewService(
 
     }
 
-
     return "";
 
 }
@@ -4277,12 +4783,10 @@ function getReviewRating(
         return 0;
     }
 
-
     var rating =
         Number(
             review.rating
         );
-
 
     if (
         !Number.isFinite(
@@ -4293,7 +4797,6 @@ function getReviewRating(
         return 0;
 
     }
-
 
     return Math.min(
         5,
@@ -4307,9 +4810,37 @@ function getReviewRating(
 
 }
 
-/* =========================================================
-   DELETE REVIEW
-========================================================= */
+
+function getReviewIdentifier(
+    review
+) {
+
+    if (
+        review &&
+        review.id
+    ) {
+
+        return String(
+            review.id
+        );
+
+    }
+
+    /*
+       Stable fallback for older reviews without IDs.
+    */
+
+    return [
+        getReviewAuthor(review),
+        getReviewText(review),
+        getReviewService(review),
+        getReviewRating(review)
+    ]
+        .join("|")
+        .toLowerCase();
+
+}
+
 
 function deleteDashboardReview(
     review
@@ -4319,58 +4850,27 @@ function deleteDashboardReview(
         return;
     }
 
-
     var reviews =
         getStoredReviews();
 
-
-    /*
-       Prefer the unique review ID when available.
-    */
-
-    var reviewId =
-        review.id;
-
+    var identifier =
+        getReviewIdentifier(
+            review
+        );
 
     var reviewIndex =
-        -1;
+        reviews.findIndex(
+            function(existingReview) {
 
-
-    if (reviewId) {
-
-        reviewIndex =
-            reviews.findIndex(
-                function(existingReview) {
-
-                    return String(
-                        existingReview.id
+                return (
+                    getReviewIdentifier(
+                        existingReview
                     ) ===
-                    String(
-                        reviewId
-                    );
+                    identifier
+                );
 
-                }
-            );
-
-    }
-
-
-    /*
-       Fallback for older reviews that may not
-       have an ID.
-    */
-
-    if (
-        reviewIndex === -1
-    ) {
-
-        reviewIndex =
-            reviews.indexOf(
-                review
-            );
-
-    }
-
+            }
+        );
 
     if (
         reviewIndex === -1
@@ -4384,23 +4884,19 @@ function deleteDashboardReview(
 
     }
 
-
     var confirmed =
         window.confirm(
             "Delete this client review? This action cannot be undone."
         );
 
-
     if (!confirmed) {
         return;
     }
-
 
     reviews.splice(
         reviewIndex,
         1
     );
-
 
     if (
         !writeLocalStorage(
@@ -4417,19 +4913,11 @@ function deleteDashboardReview(
 
     }
 
-
     renderDashboardReviews();
-
 
     showDashboardToast(
         "Review deleted"
     );
-
-
-    /*
-       Notify other frontend modules in the
-       same browser tab.
-    */
 
     window.dispatchEvent(
         new CustomEvent(
@@ -4438,9 +4926,7 @@ function deleteDashboardReview(
     );
 
 }
-/* =========================================================
-   REVIEW EMPTY STATE
-========================================================= */
+
 
 function renderReviewsEmptyState(
     grid
@@ -4451,40 +4937,32 @@ function renderReviewsEmptyState(
             "div"
         );
 
-
     empty.className =
         "reviews-empty";
-
 
     var title =
         document.createElement(
             "h3"
         );
 
-
     title.textContent =
         "No client reviews yet";
-
 
     var text =
         document.createElement(
             "p"
         );
 
-
     text.textContent =
         "Reviews from your clients will appear here once they submit feedback.";
-
 
     empty.appendChild(
         title
     );
 
-
     empty.appendChild(
         text
     );
-
 
     grid.appendChild(
         empty
@@ -4492,10 +4970,6 @@ function renderReviewsEmptyState(
 
 }
 
-
-/* =========================================================
-   CREATE REVIEW CARD
-========================================================= */
 
 function createDashboardReviewCard(
     review
@@ -4506,16 +4980,13 @@ function createDashboardReviewCard(
             "article"
         );
 
-
     card.className =
         "review-card";
-
 
     var rating =
         getReviewRating(
             review
         );
-
 
     if (rating > 0) {
 
@@ -4524,10 +4995,8 @@ function createDashboardReviewCard(
                 "div"
             );
 
-
         stars.className =
             "review-stars";
-
 
         stars.setAttribute(
             "aria-label",
@@ -4535,12 +5004,10 @@ function createDashboardReviewCard(
             " out of 5 stars"
         );
 
-
         stars.textContent =
             "★".repeat(
                 rating
             );
-
 
         card.appendChild(
             stars
@@ -4548,12 +5015,10 @@ function createDashboardReviewCard(
 
     }
 
-
     var reviewText =
         getReviewText(
             review
         );
-
 
     if (reviewText) {
 
@@ -4562,14 +5027,11 @@ function createDashboardReviewCard(
                 "p"
             );
 
-
         text.className =
             "review-text";
 
-
         text.textContent =
             reviewText;
-
 
         card.appendChild(
             text
@@ -4577,33 +5039,27 @@ function createDashboardReviewCard(
 
     }
 
-
     var author =
         document.createElement(
             "div"
         );
 
-
     author.className =
         "review-author";
-
 
     author.textContent =
         getReviewAuthor(
             review
         );
 
-
     card.appendChild(
         author
     );
-
 
     var service =
         getReviewService(
             review
         );
-
 
     if (service) {
 
@@ -4612,14 +5068,11 @@ function createDashboardReviewCard(
                 "div"
             );
 
-
         serviceElement.className =
             "review-service";
 
-
         serviceElement.textContent =
             service;
-
 
         card.appendChild(
             serviceElement
@@ -4627,38 +5080,27 @@ function createDashboardReviewCard(
 
     }
 
-
-    /*
-       Review actions
-    */
-
     var actions =
         document.createElement(
             "div"
         );
 
-
     actions.className =
         "review-actions";
-
 
     var deleteButton =
         document.createElement(
             "button"
         );
 
-
     deleteButton.type =
         "button";
-
 
     deleteButton.className =
         "review-delete-btn";
 
-
     deleteButton.textContent =
         "Delete Review";
-
 
     deleteButton.setAttribute(
         "aria-label",
@@ -4667,7 +5109,6 @@ function createDashboardReviewCard(
             review
         )
     );
-
 
     deleteButton.addEventListener(
         "click",
@@ -4680,23 +5121,18 @@ function createDashboardReviewCard(
         }
     );
 
-
     actions.appendChild(
         deleteButton
     );
-
 
     card.appendChild(
         actions
     );
 
-
     return card;
 
 }
-/* =========================================================
-   RENDER REVIEWS
-========================================================= */
+
 
 function renderDashboardReviews() {
 
@@ -4705,24 +5141,15 @@ function renderDashboardReviews() {
             "reviewsGrid"
         );
 
-
     if (!grid) {
         return;
     }
 
-
     var reviews =
         getStoredReviews();
 
-
     grid.innerHTML =
         "";
-
-
-    /*
-       Do not display fake or placeholder reviews.
-       Show a proper empty state instead.
-    */
 
     if (!reviews.length) {
 
@@ -4734,43 +5161,25 @@ function renderDashboardReviews() {
 
     }
 
-
-    /*
-       Only show the latest six reviews on
-       the dashboard.
-
-       If the review system stores createdAt,
-       submittedAt or date, use that to determine
-       the newest reviews.
-    */
-
     var sortedReviews =
-        reviews.slice()
+        reviews
+            .slice()
             .sort(
                 function(a, b) {
 
                     var aDate =
-                        new Date(
+                        safeDate(
                             a.createdAt ||
                             a.submittedAt ||
-                            a.date ||
-                            0
-                        ).getTime();
-
+                            a.date
+                        );
 
                     var bDate =
-                        new Date(
+                        safeDate(
                             b.createdAt ||
                             b.submittedAt ||
-                            b.date ||
-                            0
-                        ).getTime();
-
-
-                    /*
-                       If no dates exist, preserve
-                       the existing storage order.
-                    */
+                            b.date
+                        );
 
                     if (
                         !aDate &&
@@ -4781,8 +5190,18 @@ function renderDashboardReviews() {
 
                     }
 
-
-                    return bDate - aDate;
+                    return (
+                        (
+                            bDate
+                                ? bDate.getTime()
+                                : 0
+                        ) -
+                        (
+                            aDate
+                                ? aDate.getTime()
+                                : 0
+                        )
+                    );
 
                 }
             )
@@ -4791,13 +5210,8 @@ function renderDashboardReviews() {
                 6
             );
 
-
     sortedReviews.forEach(
         function(review) {
-
-            /*
-               Ignore completely empty review records.
-            */
 
             var hasText =
                 Boolean(
@@ -4811,7 +5225,6 @@ function renderDashboardReviews() {
                     review
                 ) > 0;
 
-
             if (
                 !hasText &&
                 !hasRating
@@ -4821,7 +5234,6 @@ function renderDashboardReviews() {
 
             }
 
-
             grid.appendChild(
                 createDashboardReviewCard(
                     review
@@ -4830,12 +5242,6 @@ function renderDashboardReviews() {
 
         }
     );
-
-
-    /*
-       If storage contained only malformed
-       review records, still show the empty state.
-    */
 
     if (
         !grid.children.length
@@ -4851,8 +5257,34 @@ function renderDashboardReviews() {
 
 
 /* =========================================================
-   ANALYTICS
+   DYNAMIC ACTIVITY CHART
 ========================================================= */
+
+function getDateKeyOffset(
+    daysAgo
+) {
+
+    var date =
+        new Date();
+
+    date.setHours(
+        0,
+        0,
+        0,
+        0
+    );
+
+    date.setDate(
+        date.getDate() -
+        daysAgo
+    );
+
+    return getLocalDateKey(
+        date
+    );
+
+}
+
 
 function renderActivityChart() {
 
@@ -4861,50 +5293,95 @@ function renderActivityChart() {
             "activityChart"
         );
 
-
     if (!chart) {
         return;
     }
 
-
     chart.innerHTML =
         "";
 
+    var bookings =
+        getStoredBookings();
 
-    /*
-       Frontend visualization only.
+    var counts = [];
 
-       This deliberately avoids pretending these
-       values are backend analytics.
-    */
+    for (
+        var i = 6;
+        i >= 0;
+        i--
+    ) {
 
-    var values = [
-        35,
-        58,
-        44,
-        72,
-        61,
-        85,
-        67
-    ];
+        var key =
+            getDateKeyOffset(
+                i
+            );
 
+        var count =
+            bookings.filter(
+                function(booking) {
 
-    values.forEach(
-        function(value) {
+                    var date =
+                        parseBookingDate(
+                            getBookingDate(
+                                booking
+                            )
+                        );
+
+                    return (
+                        date &&
+                        getLocalDateKey(
+                            date
+                        ) ===
+                        key
+                    );
+
+                }
+            ).length;
+
+        counts.push(
+            count
+        );
+
+    }
+
+    var maximum =
+        Math.max(
+            1,
+            ...counts
+        );
+
+    counts.forEach(
+        function(count) {
 
             var bar =
                 document.createElement(
                     "div"
                 );
 
-
             bar.className =
                 "chart-bar";
 
+            var percentage =
+                Math.max(
+                    8,
+                    (
+                        count /
+                        maximum
+                    ) * 100
+                );
 
             bar.style.height =
-                value + "%";
+                percentage + "%";
 
+            bar.setAttribute(
+                "title",
+                count +
+                (
+                    count === 1
+                        ? " booking"
+                        : " bookings"
+                )
+            );
 
             chart.appendChild(
                 bar
@@ -4912,6 +5389,207 @@ function renderActivityChart() {
 
         }
     );
+
+}
+
+
+/* =========================================================
+   NOTIFICATIONS
+========================================================= */
+
+function getDashboardNotifications() {
+
+    var notifications = [];
+
+    var storage =
+        getPortfolioStorage();
+
+    var storagePercentage =
+        getPortfolioStoragePercentage(
+            storage
+        );
+
+    if (
+        storagePercentage >= 100
+    ) {
+
+        notifications.push({
+            type: "warning",
+            message:
+                "Your portfolio storage is full."
+        });
+
+    }
+    else if (
+        storagePercentage >= 80
+    ) {
+
+        notifications.push({
+            type: "warning",
+            message:
+                "Your portfolio storage is almost full."
+        });
+
+    }
+
+    var galleries =
+        getStoredGalleries();
+
+    galleries.forEach(
+        function(gallery) {
+
+            var status =
+                getGalleryStatus(
+                    gallery
+                );
+
+            if (
+                status.className ===
+                "expired"
+            ) {
+
+                notifications.push({
+                    type: "warning",
+                    message:
+                        getGalleryName(
+                            gallery
+                        ) +
+                        " has expired."
+                });
+
+            }
+            else if (
+                status.className ===
+                "expiring"
+            ) {
+
+                notifications.push({
+                    type: "warning",
+                    message:
+                        getGalleryName(
+                            gallery
+                        ) +
+                        " " +
+                        status.label.toLowerCase() +
+                        "."
+                });
+
+            }
+
+        }
+    );
+
+    var bookings =
+        getStoredBookings();
+
+    var pendingBookings =
+        bookings.filter(
+            function(booking) {
+
+                var status =
+                    String(
+                        getBookingStatus(
+                            booking
+                        )
+                    )
+                        .toLowerCase();
+
+                return (
+                    status.indexOf(
+                        "pending"
+                    ) !== -1
+                );
+
+            }
+        ).length;
+
+    if (
+        pendingBookings > 0
+    ) {
+
+        notifications.push({
+            type: "info",
+            message:
+                pendingBookings +
+                (
+                    pendingBookings === 1
+                        ? " booking is"
+                        : " bookings are"
+                ) +
+                " waiting for your response."
+        });
+
+    }
+
+    return notifications;
+
+}
+
+
+function renderDashboardNotifications() {
+
+    var container =
+        document.getElementById(
+            "dashboardNotifications"
+        );
+
+    if (!container) {
+        return;
+    }
+
+    var notifications =
+        getDashboardNotifications();
+
+    container.innerHTML =
+        "";
+
+    if (!notifications.length) {
+
+        var empty =
+            document.createElement(
+                "div"
+            );
+
+        empty.className =
+            "dashboard-notification-empty";
+
+        empty.textContent =
+            "You're all caught up.";
+
+        container.appendChild(
+            empty
+        );
+
+        return;
+
+    }
+
+    notifications
+        .slice(
+            0,
+            8
+        )
+        .forEach(
+            function(notification) {
+
+                var item =
+                    document.createElement(
+                        "div"
+                    );
+
+                item.className =
+                    "dashboard-notification " +
+                    notification.type;
+
+                item.textContent =
+                    notification.message;
+
+                container.appendChild(
+                    item
+                );
+
+            }
+        );
 
 }
 
@@ -4927,20 +5605,14 @@ function getSubscriptionRenewal() {
             SUBSCRIPTION_RENEWAL_KEY
         );
 
-
     if (saved) {
 
         var date =
-            new Date(
+            safeDate(
                 saved
             );
 
-
-        if (
-            !Number.isNaN(
-                date.getTime()
-            )
-        ) {
+        if (date) {
 
             return date.toLocaleDateString(
                 "en-IN",
@@ -4953,12 +5625,6 @@ function getSubscriptionRenewal() {
 
         }
 
-
-        /*
-           Preserve an already formatted date if
-           another frontend module stored one.
-        */
-
         if (
             typeof saved === "string" &&
             saved.trim()
@@ -4970,7 +5636,6 @@ function getSubscriptionRenewal() {
 
     }
 
-
     return "Not available";
 
 }
@@ -4981,24 +5646,20 @@ function renderSubscription() {
     var plan =
         getCurrentSubscriptionPlan();
 
-
     var planName =
         document.getElementById(
             "subscriptionPlanName"
         );
-
 
     var storageText =
         document.getElementById(
             "subscriptionStorageText"
         );
 
-
     var renewal =
         document.getElementById(
             "subscriptionRenewal"
         );
-
 
     if (planName) {
 
@@ -5006,7 +5667,6 @@ function renderSubscription() {
             plan.name;
 
     }
-
 
     if (storageText) {
 
@@ -5017,7 +5677,6 @@ function renderSubscription() {
             " portfolio storage";
 
     }
-
 
     if (renewal) {
 
@@ -5039,18 +5698,20 @@ function renderGreeting() {
         new Date()
             .getHours();
 
-
     var greeting =
         "Welcome";
 
-
-    if (hour < 12) {
+    if (
+        hour < 12
+    ) {
 
         greeting =
             "Good Morning";
 
     }
-    else if (hour < 17) {
+    else if (
+        hour < 17
+    ) {
 
         greeting =
             "Good Afternoon";
@@ -5062,7 +5723,6 @@ function renderGreeting() {
             "Good Evening";
 
     }
-
 
     document
         .querySelectorAll(
@@ -5081,7 +5741,7 @@ function renderGreeting() {
 
 
 /* =========================================================
-   RENDER PHOTOGRAPHER NAME
+   PHOTOGRAPHER NAME
 ========================================================= */
 
 function renderPhotographerName() {
@@ -5091,11 +5751,9 @@ function renderPhotographerName() {
             "name"
         );
 
-
     if (!nameElement) {
         return;
     }
-
 
     nameElement.textContent =
         getPhotographerName();
@@ -5104,7 +5762,7 @@ function renderPhotographerName() {
 
 
 /* =========================================================
-   SEARCH BOOKINGS
+   BOOKING SEARCH
 ========================================================= */
 
 function initializeBookingSearch() {
@@ -5114,11 +5772,20 @@ function initializeBookingSearch() {
             "searchBooking"
         );
 
-
     if (!input) {
         return;
     }
 
+    if (
+        input.dataset.eventsAttached
+    ) {
+
+        return;
+
+    }
+
+    input.dataset.eventsAttached =
+        "true";
 
     input.addEventListener(
         "input",
@@ -5166,7 +5833,6 @@ window.addEventListener(
 
         ];
 
-
         if (
             relevantKeys.indexOf(
                 event.key
@@ -5176,6 +5842,20 @@ window.addEventListener(
             refreshDashboard();
 
         }
+
+    }
+);
+
+
+/* =========================================================
+   REVIEW UPDATE EVENT
+========================================================= */
+
+window.addEventListener(
+    "professionalStudioReviewsUpdated",
+    function() {
+
+        renderDashboardReviews();
 
     }
 );
@@ -5199,10 +5879,15 @@ function refreshDashboard() {
 
     renderDashboardGalleries();
 
-    renderDashboardBookings(
+    var searchInput =
         document.getElementById(
             "searchBooking"
-        )?.value || ""
+        );
+
+    renderDashboardBookings(
+        searchInput
+            ? searchInput.value
+            : ""
     );
 
     renderDashboardReviews();
@@ -5210,6 +5895,10 @@ function refreshDashboard() {
     updateDashboardStats();
 
     renderSubscription();
+
+    renderActivityChart();
+
+    renderDashboardNotifications();
 
 }
 
@@ -5223,15 +5912,12 @@ function initializePortfolioStorage() {
     var storage =
         getPortfolioStorage();
 
-
     storage.storagePlan =
         getCurrentSubscriptionPlan()
             .id;
 
-
     storage.storageLimitMB =
         getPortfolioStorageLimitMB();
-
 
     savePortfolioStorage(
         storage
@@ -5269,6 +5955,8 @@ document.addEventListener(
         renderDashboardReviews();
 
         renderActivityChart();
+
+        renderDashboardNotifications();
 
         updateDashboardStats();
 
