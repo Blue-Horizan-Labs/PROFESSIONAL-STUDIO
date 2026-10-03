@@ -2196,3 +2196,373 @@ body.review-modal-open {
     }
 
 }
+
+/* =========================================================
+   FINAL CENTER ALIGNMENT FIX
+   Keeps all major portfolio content properly centered
+========================================================= */
+
+/* ===============================
+   GLOBAL SECTION CONTENT
+=============================== */
+
+.section,
+.equipment-section {
+    width: 100%;
+}
+
+.section > *,
+.equipment-section > * {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+/* ===============================
+   SECTION HEADINGS
+=============================== */
+
+.center {
+    width: 100%;
+    text-align: center;
+}
+
+.center h2,
+.center p {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+/* ===============================
+   EXPERIENCE
+=============================== */
+
+.experience {
+    width: 100%;
+    justify-content: center;
+    align-items: flex-start;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.exp-box {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.exp-box .meter {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+/* ===============================
+   PORTFOLIO BLOCKS
+=============================== */
+
+.portfolio-block,
+.portfolio-block.reverse {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.portfolio-text {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.portfolio-block:not(.reverse) .portfolio-text,
+.portfolio-block.reverse .portfolio-text {
+    text-align: center;
+}
+
+
+/* ===============================
+   EQUIPMENT
+=============================== */
+
+.equipment-container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.equipment-container > h2,
+.equipment-container > p {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.equipment-grid {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.equipment-category-card {
+    width: 100%;
+}
+
+.equipment-category-heading {
+    justify-content: center;
+    text-align: center;
+}
+
+.equipment-category-heading h3 {
+    text-align: center;
+}
+
+.equipment-items {
+    width: 100%;
+}
+
+
+/* ===============================
+   PRICING
+=============================== */
+
+.pricing-subtitle {
+    width: 100%;
+    max-width: 650px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.pricing-tabs {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.pricing-grid {
+    width: 100%;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.price-card {
+    text-align: center;
+}
+
+.price-card ul {
+    text-align: left;
+}
+
+.price-card .book-btn {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+/* ===============================
+   PREVIOUS WORK
+=============================== */
+
+.work-grid {
+    width: 100%;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.work-card {
+    text-align: center;
+}
+
+.work-card h3,
+.work-card p {
+    text-align: center;
+}
+
+.cta-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/* ===============================
+   CONTACT
+=============================== */
+
+.contact-info {
+    width: 100%;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+
+/* ===============================
+   SOCIAL LINKS
+=============================== */
+
+.social-links {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/* ===============================
+   REVIEWS
+=============================== */
+
+.reviews-container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.reviews-summary {
+    justify-content: center;
+    text-align: center;
+}
+
+.reviews-rating {
+    justify-content: center;
+}
+
+.reviews-action {
+    display: flex;
+    justify-content: center;
+}
+
+.reviews-list {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.review-card {
+    text-align: center;
+}
+
+.review-card-header {
+    align-items: center;
+}
+
+.review-author {
+    width: 100%;
+    text-align: center;
+}
+
+.review-card-rating {
+    justify-content: center;
+}
+
+.review-card-text {
+    text-align: center;
+}
+
+.review-date {
+    text-align: center;
+}
+
+
+/* ===============================
+   SERVICE PREVIEW
+=============================== */
+
+.service-preview-actions {
+    justify-content: center;
+    align-items: center;
+}
+
+.service-preview-description {
+    text-align: center;
+}
+
+.service-empty-state {
+    text-align: center;
+}
+
+.service-empty-state h3,
+.service-empty-state p {
+    text-align: center;
+}
+
+
+/* ===============================
+   FOOTER
+=============================== */
+
+footer {
+    width: 100%;
+    text-align: center;
+}
+
+
+/* =========================================================
+   DESKTOP CENTERING
+========================================================= */
+
+@media (min-width: 901px) {
+
+    .portfolio-block,
+    .portfolio-block.reverse {
+        text-align: center;
+    }
+
+    .portfolio-text {
+        text-align: center;
+    }
+
+    .portfolio-text h2,
+    .portfolio-text p {
+        text-align: center;
+    }
+
+    .experience {
+        justify-content: center;
+    }
+
+    .equipment-category-heading {
+        justify-content: center;
+    }
+
+    .reviews-summary {
+        justify-content: center;
+    }
+}
+
+
+/* =========================================================
+   MOBILE CENTERING
+========================================================= */
+
+@media (max-width: 599px) {
+
+    .portfolio-block,
+    .portfolio-block.reverse {
+        text-align: center;
+    }
+
+    .portfolio-text,
+    .portfolio-text h2,
+    .portfolio-text p {
+        text-align: center;
+    }
+
+    .experience {
+        justify-content: center;
+    }
+
+    .equipment-category-heading {
+        justify-content: center;
+    }
+
+    .service-preview-actions {
+        justify-content: center;
+    }
+}
