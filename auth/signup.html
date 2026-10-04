@@ -505,6 +505,8 @@
         font-size: 0.68rem;
     }
 
+
+.form-message{display:none;margin:-10px 0 18px;padding:11px 12px;border:1px solid #343434;border-radius:8px;background:#1b1b1b;color:#bdbdbd;font-size:12px;line-height:1.45}.form-message.show{display:block}.form-message.error{border-color:#5a3030;color:#f0b0b0;background:#211616}.form-message.success{border-color:#304a38;color:#b9d9c1;background:#162019}.form-message.info{border-color:#3b3b3b;color:#bdbdbd}.input-invalid{border-color:#6a3636!important;box-shadow:0 0 0 3px rgba(170,60,60,.06)!important}.password-strength{margin-top:8px;height:3px;background:#282828;border-radius:999px;overflow:hidden}.password-strength span{display:block;width:0;height:100%;transition:width .2s,background .2s}.password-hint{margin-top:6px;color:#666;font-size:10px;line-height:1.4}.auth-page button{font-family:inherit}
 </style>
 
 
@@ -548,6 +550,7 @@
             <div class="card-heading">
                 <h2 id="signupCardTitle">Create your account</h2>
                 <p>Start building your professional studio workspace.</p>
+<div class="form-message" id="signupMessage" role="alert" aria-live="polite"></div>
             </div>
 
             <form id="signupForm">
@@ -762,478 +765,96 @@
 </div>
 
 <script>
+(function(){
+    const form=document.getElementById("signupForm");
+    const signupBtn=document.getElementById("signupBtn");
+    const email=document.getElementById("email");
+    const password=document.getElementById("password");
+    const confirmPassword=document.getElementById("confirmPassword");
+    const referralCode=document.getElementById("referralCode");
+    const message=document.getElementById("signupMessage");
 
-    const form =
-        document.getElementById("signupForm");
+    const strength=document.createElement("div");
+    strength.className="password-strength";
+    strength.innerHTML="<span></span>";
+    password.parentElement.insertAdjacentElement("afterend",strength);
+    const hint=document.createElement("div");
+    hint.className="password-hint";
+    hint.textContent="Use at least 8 characters with a mix of letters and numbers.";
+    strength.insertAdjacentElement("afterend",hint);
 
-    const signupBtn =
-        document.getElementById("signupBtn");
+    function showMessage(text,type="info"){message.textContent=text;message.className="form-message show "+type;}
+    function clearMessage(){message.textContent="";message.className="form-message";}
+    function setLoading(loading){signupBtn.disabled=loading;signupBtn.textContent=loading?"Creating Account...":"Create Account";}
+    function markInvalid(input){input.classList.add("input-invalid");}
+    function clearInvalid(){[email,password,confirmPassword,referralCode].forEach(i=>i.classList.remove("input-invalid"));}
 
-
-    /* =========================================================
-       PASSWORD VISIBILITY TOGGLE
-    ========================================================= */
-
-    const passwordToggles =
-        document.querySelectorAll(".password-toggle");
-
-
-    passwordToggles.forEach(function(toggle){
-
-        toggle.addEventListener(
-            "click",
-            function(){
-
-                const targetId =
-                    toggle.getAttribute("data-target");
-
-                const passwordInput =
-                    document.getElementById(targetId);
-
-
-                if(!passwordInput){
-                    return;
-                }
-
-
-                const isPassword =
-                    passwordInput.type === "password";
-
-
-                if(isPassword){
-
-                    passwordInput.type = "text";
-
-                    toggle.setAttribute(
-                        "aria-label",
-                        "Hide password"
-                    );
-
-                    toggle.setAttribute(
-                        "title",
-                        "Hide password"
-                    );
-
-
-                    toggle.innerHTML = `
-
-                        <svg
-                            class="eye-icon"
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                        >
-
-                            <path d="M3 3l18 18"></path>
-
-                            <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"></path>
-
-                            <path d="M9.9 5.1A10.9 10.9 0 0 1 12 5c6.5 0 10 7 10 7a17.2 17.2 0 0 1-3.1 3.9"></path>
-
-                            <path d="M6.1 6.1C3.6 8 2 12 2 12s3.5 7 10 7c1.7 0 3.2-.4 4.5-1"></path>
-
-                        </svg>
-
-                    `;
-
-                }else{
-
-                    passwordInput.type = "password";
-
-                    toggle.setAttribute(
-                        "aria-label",
-                        "Show password"
-                    );
-
-                    toggle.setAttribute(
-                        "title",
-                        "Show password"
-                    );
-
-
-                    toggle.innerHTML = `
-
-                        <svg
-                            class="eye-icon"
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                        >
-
-                            <path
-                                d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"
-                            ></path>
-
-                            <circle
-                                cx="12"
-                                cy="12"
-                                r="3"
-                            ></circle>
-
-                        </svg>
-
-                    `;
-
-                }
-
-            }
-        );
-
+    document.querySelectorAll(".password-toggle").forEach(toggle=>{
+        toggle.addEventListener("click",()=>{
+            const input=document.getElementById(toggle.dataset.target);
+            if(!input)return;
+            const hidden=input.type==="password";
+            input.type=hidden?"text":"password";
+            toggle.setAttribute("aria-label",hidden?"Hide password":"Show password");
+            toggle.title=hidden?"Hide password":"Show password";
+            toggle.innerHTML=hidden
+              ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"></path><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"></path><path d="M9.9 5.1A10.9 10.9 0 0 1 12 5c6.5 0 10 7 10 7a17.2 17.2 0 0 1-3.1 3.9"></path><path d="M6.1 6.1C3.6 8 2 12 2 12s3.5 7 10 7c1.7 0 3.2-.4 4.5-1"></path></svg>'
+              : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+        });
     });
 
+    function passwordScore(value){
+        let score=0;
+        if(value.length>=8)score++;
+        if(value.length>=12)score++;
+        if(/[A-Z]/.test(value)&&/[a-z]/.test(value))score++;
+        if(/\d/.test(value))score++;
+        if(/[^A-Za-z0-9]/.test(value))score++;
+        return score;
+    }
+    password.addEventListener("input",()=>{
+        const score=passwordScore(password.value);
+        const bar=strength.querySelector("span");
+        bar.style.width=(score/5*100)+"%";
+        hint.textContent=password.value?(["Too weak","Weak","Fair","Good","Strong","Very strong"][score]):"Use at least 8 characters with a mix of letters and numbers.";
+    });
 
-    /* =========================================================
-       GET A USEFUL ERROR MESSAGE FROM ANY API RESPONSE
-    ========================================================= */
+    [email,password,confirmPassword,referralCode].forEach(input=>input.addEventListener("input",()=>input.classList.remove("input-invalid")));
 
-    function getErrorMessage(data){
+    function validate(){
+        clearMessage();clearInvalid();
+        const emailValue=email.value.trim().toLowerCase();
+        if(!emailValue){markInvalid(email);showMessage("Enter your email address.","error");email.focus();return null;}
+        if(!email.validity.valid){markInvalid(email);showMessage("Enter a valid email address.","error");email.focus();return null;}
+        if(password.value.length<8){markInvalid(password);showMessage("Password must contain at least 8 characters.","error");password.focus();return null;}
+        if(password.value!==confirmPassword.value){markInvalid(confirmPassword);showMessage("Passwords do not match.","error");confirmPassword.focus();return null;}
+        return {email:emailValue,password:password.value,referralCode:referralCode.value.trim()};
+    }
 
-        if(!data){
-            return "Unable to create account.";
-        }
-
-
-        /* Direct string response */
-
-        if(typeof data === "string"){
-            return data;
-        }
-
-
-        /* Normal API response */
-
-        if(
-            typeof data.message === "string" &&
-            data.message.trim()
-        ){
-            return data.message;
-        }
-
-
-        /* Nested message */
-
-        if(
-            data.message &&
-            typeof data.message === "object" &&
-            typeof data.message.message === "string"
-        ){
-            return data.message.message;
-        }
-
-
-        /* Common error format */
-
-        if(
-            typeof data.error === "string" &&
-            data.error.trim()
-        ){
-            return data.error;
-        }
-
-
-        /* Nested error */
-
-        if(
-            data.error &&
-            typeof data.error === "object" &&
-            typeof data.error.message === "string"
-        ){
-            return data.error.message;
-        }
-
-
-        /* Supabase-style nested error */
-
-        if(
-            data.error &&
-            typeof data.error === "object" &&
-            typeof data.error.error_description === "string"
-        ){
-            return data.error.error_description;
-        }
-
-
-        /* Details field */
-
-        if(
-            typeof data.details === "string" &&
-            data.details.trim()
-        ){
-            return data.details;
-        }
-
-
-        /* Description field */
-
-        if(
-            typeof data.error_description === "string" &&
-            data.error_description.trim()
-        ){
-            return data.error_description;
-        }
-
-
-        /* Last resort */
-
+    form.addEventListener("submit",async function(event){
+        event.preventDefault();
+        const payload=validate();
+        if(!payload)return;
+        setLoading(true);
+        showMessage("Creating your workspace...","info");
         try{
-
-            return JSON.stringify(data);
-
-        }catch(e){
-
-            return "Unable to create account.";
-
+            const response=await fetch("/api/signup",{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},credentials:"include",body:JSON.stringify(payload)});
+            const contentType=response.headers.get("content-type")||"";
+            let data=null;
+            if(contentType.includes("application/json")){data=await response.json();}else{data=await response.text();}
+            if(!response.ok){
+                const msg=typeof data==="string"?data:(data?.message||data?.error||"Unable to create your account.");
+                throw new Error(msg);
+            }
+            showMessage("Account created successfully. Setting up your studio...","success");
+            setTimeout(()=>{window.location.href="/setup.html";},300);
+        }catch(error){
+            console.error("Signup request failed:",error);
+            showMessage(error?.message||"Unable to connect to the server. Please try again.","error");
+            setLoading(false);
         }
-
-    }
-
-
-    /* =========================================================
-       RESET BUTTON
-    ========================================================= */
-
-    function resetSignupButton(){
-
-        signupBtn.disabled = false;
-
-        signupBtn.textContent =
-            "Create Account";
-
-    }
-
-
-    /* =========================================================
-       SIGNUP
-    ========================================================= */
-
-    form.addEventListener(
-        "submit",
-        async function(e){
-
-            e.preventDefault();
-
-
-            const email =
-                document
-                    .getElementById("email")
-                    .value
-                    .trim();
-
-
-            const password =
-                document
-                    .getElementById("password")
-                    .value;
-
-
-            const confirmPassword =
-                document
-                    .getElementById("confirmPassword")
-                    .value;
-
-
-            const referralCode =
-                document
-                    .getElementById("referralCode")
-                    .value
-                    .trim();
-
-
-            /* ================= VALIDATION ================= */
-
-            if(
-                !email ||
-                !password ||
-                !confirmPassword
-            ){
-
-                alert(
-                    "Please fill in all required fields."
-                );
-
-                return;
-
-            }
-
-
-            if(
-                password !== confirmPassword
-            ){
-
-                alert(
-                    "Passwords do not match."
-                );
-
-                return;
-
-            }
-
-
-            /* ================= BUTTON STATE ================= */
-
-            signupBtn.disabled = true;
-
-            signupBtn.textContent =
-                "Creating Account...";
-
-
-            try{
-
-                const response =
-                    await fetch(
-                        "/api/signup",
-                        {
-                            method:"POST",
-
-                            headers:{
-                                "Content-Type":
-                                    "application/json"
-                            },
-
-                            body:JSON.stringify({
-
-                                email:email,
-
-                                password:password,
-
-                                referralCode:
-                                    referralCode
-
-                            })
-
-                        }
-                    );
-
-
-                /* =================================================
-                   READ RESPONSE SAFELY
-                ================================================= */
-
-                const contentType =
-                    response.headers
-                        .get("content-type") || "";
-
-
-                let data;
-
-
-                if(
-                    contentType.includes(
-                        "application/json"
-                    )
-                ){
-
-                    data =
-                        await response.json();
-
-                }else{
-
-                    const text =
-                        await response.text();
-
-                    data =
-                        text || null;
-
-                }
-
-
-                console.log(
-                    "Signup HTTP status:",
-                    response.status
-                );
-
-
-                console.log(
-                    "Signup response:",
-                    data
-                );
-
-
-                /* =================================================
-                   SUCCESS
-                ================================================= */
-
-                if(response.ok){
-
-                    const message =
-                        typeof data === "object" &&
-                        data !== null
-                            ? data.message
-                            : data;
-
-
-                    if(
-                        message === "200" ||
-                        data?.success === true ||
-                        data?.status === "success" ||
-                        data?.status === 200
-                    ){
-
-                        window.location.href =
-                            "/setup.html";
-
-                        return;
-
-                    }
-
-
-                    /* =================
-                       OTHER SUCCESS RESPONSE
-                    ================= */
-
-                    if(
-                        typeof data === "string" &&
-                        (
-                            data
-                                .toLowerCase()
-                                .includes("success") ||
-
-                            data === "200"
-                        )
-                    ){
-
-                        window.location.href =
-                            "/setup.html";
-
-                        return;
-
-                    }
-
-                }
-
-
-                /* =================================================
-                   ERROR
-                ================================================= */
-
-                const errorMessage =
-                    getErrorMessage(data);
-
-
-                alert(errorMessage);
-
-                resetSignupButton();
-
-
-            }catch(error){
-
-                console.error(
-                    "Signup request failed:",
-                    error
-                );
-
-
-                resetSignupButton();
-
-
-                alert(
-                    error?.message ||
-                    "Unable to connect to the server. Please try again."
-                );
-
-            }
-
-        }
-    );
-
+    });
+})();
 </script>
 
 

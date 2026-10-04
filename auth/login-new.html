@@ -1,460 +1,831 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Studio | Login</title>
 
-<title>Professional Studio | Login</title>
+    <link
+        rel="icon"
+        type="image/png"
+        href="https://i.ibb.co/8g0LT3jZ/logo1-2.png"
+    >
 
-<link
-    rel="icon"
-    type="image/png"
-    href="https://i.ibb.co/8g0LT3jZ/logo1-2.png"
->
+    <style>
+        :root {
+            --bg: #0b0b0b;
+            --bg-soft: #141414;
+            --panel: #1b1b1b;
+            --panel-2: #1d1d1d;
+            --border: #303030;
+            --text: #ffffff;
+            --muted: #929292;
+            --subtle: #777777;
+            --heading: #d7d7d7;
+            --error: #f0b0b0;
+            --error-bg: #211616;
+            --success: #b9d9c1;
+            --success-bg: #162019;
+        }
 
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI",sans-serif}
-html,body{width:100%;min-height:100%}
-body{background:#0b0b0b;color:#fff;min-height:100vh;padding:28px 42px;overflow-x:hidden}
-.auth-page{width:100%;min-height:calc(100vh - 56px);max-width:1240px;margin:0 auto;display:flex;flex-direction:column}
-.auth-header{display:flex;align-items:center;justify-content:space-between;min-height:42px}
-.brand{display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none;font-size:15px;font-weight:600;letter-spacing:-.2px}
-.brand-mark{width:24px;height:24px;display:grid;place-items:center;font-size:16px}
-.header-link{color:#b5b5b5;text-decoration:none;font-size:14px;transition:color .2s}
-.header-link:hover{color:#fff}
-.auth-main{flex:1;display:grid;grid-template-columns:minmax(0,1fr) 410px;align-items:center;gap:90px;padding:55px 7% 45px}
-.intro{max-width:570px}
-.intro h1{font-size:clamp(40px,4.3vw,58px);line-height:1.03;letter-spacing:-2.6px;font-weight:600;margin-bottom:20px}
-.intro h1 span{display:block;color:#a3a3a3}
-.intro-copy{max-width:510px;color:#929292;font-size:16px;line-height:1.65}
-.intro-copy strong{color:#d6d6d6;font-weight:500}
-.product-points{display:flex;flex-wrap:wrap;gap:10px 28px;margin-top:36px;color:#777;font-size:12px;letter-spacing:.9px;text-transform:uppercase}
-.product-points span{position:relative}
-.product-points span:not(:last-child)::after{content:"";position:absolute;width:3px;height:3px;border-radius:50%;background:#4b4b4b;right:-16px;top:50%;transform:translateY(-50%)}
-.login-card{width:100%;background:#141414;border:1px solid #292929;border-radius:12px;padding:34px;box-shadow:0 18px 55px rgba(0,0,0,.22)}
-.card-heading{margin-bottom:27px}
-.card-heading h2{font-size:21px;font-weight:600;letter-spacing:-.4px;margin-bottom:7px}
-.card-heading p{color:#777;font-size:13px;line-height:1.45}
-.form-group{margin-bottom:19px}
-label{display:block;margin-bottom:8px;font-size:13px;color:#d5d5d5}
-input[type="email"],input[type="password"],input[type="text"]{width:100%;background:#1b1b1b;border:1px solid #303030;color:#fff;padding:13px 14px;border-radius:8px;outline:none;font-size:14px;transition:border-color .2s,box-shadow .2s,background .2s}
-input::placeholder{color:#686868}
-input:focus{border-color:#555;background:#1d1d1d;box-shadow:0 0 0 3px rgba(255,255,255,.035)}
-.password-wrapper{position:relative}
-.password-wrapper input{padding-right:52px}
-.password-toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:32px;height:32px;padding:0;margin:0;border:none;border-radius:50%;background:transparent;color:#777;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:none;transition:color .2s,background .2s}
-.password-toggle:hover{transform:translateY(-50%);color:#fff;background:#252525;box-shadow:none}
-.password-toggle:active{transform:translateY(-50%)}
-.password-toggle:focus{outline:none;box-shadow:0 0 0 3px rgba(255,255,255,.06)}
-.password-toggle svg{width:18px;height:18px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
-.options{display:flex;justify-content:space-between;align-items:center;margin-top:-1px;margin-bottom:23px;font-size:12px}
-.remember{display:flex;align-items:center;gap:8px;color:#777;cursor:pointer;user-select:none;margin:0}
-.remember input{width:14px;height:14px;margin:0;cursor:pointer;accent-color:#fff}
-.options a{color:#777;text-decoration:none;transition:color .2s}
-.options a:hover{color:#fff}
-#loginBtn{width:100%;padding:13px 14px;border:1px solid #fff;border-radius:8px;background:#fff;color:#111;font-size:14px;font-weight:600;cursor:pointer;transition:background .2s,color .2s,transform .2s}
-#loginBtn:hover{background:#e8e8e8}
-#loginBtn:active{transform:translateY(1px)}
-#loginBtn:disabled{opacity:.55;cursor:not-allowed;transform:none}
-.signup{text-align:center;margin-top:21px;color:#777;font-size:13px}
-.signup a{color:#d7d7d7;font-weight:500;text-decoration:none;transition:color .2s}
-.signup a:hover{color:#fff}
-.auth-footer{display:flex;justify-content:center;align-items:center;gap:28px;min-height:38px;color:#5e5e5e;font-size:11px;letter-spacing:.8px;text-transform:uppercase}
-.auth-footer span{position:relative}
-.auth-footer span:not(:last-child)::after{content:"";position:absolute;width:3px;height:3px;border-radius:50%;background:#3f3f3f;right:-16px;top:50%;transform:translateY(-50%)}
-@media(max-width:900px){
- body{padding:24px}.auth-page{min-height:calc(100vh - 48px)}
- .auth-main{grid-template-columns:1fr;gap:42px;padding:60px 0 45px;max-width:620px;width:100%;margin:0 auto}
- .intro{max-width:620px}.intro h1{font-size:clamp(38px,8vw,52px)}
- .login-card{max-width:450px}.auth-footer{padding-bottom:8px}
-}
-@media(max-width:500px){
- body{padding:20px}.auth-page{min-height:calc(100vh - 40px)}
- .auth-main{gap:34px;padding:48px 0 35px}.intro h1{font-size:38px;letter-spacing:-1.8px;margin-bottom:16px}
- .intro-copy{font-size:14px;line-height:1.6}.product-points{margin-top:25px;gap:9px 22px;font-size:10px}
- .product-points span:not(:last-child)::after{right:-13px}.login-card{padding:25px;border-radius:10px}
- .card-heading{margin-bottom:24px}.card-heading h2{font-size:20px}.form-group{margin-bottom:18px}
- .auth-footer{gap:20px;font-size:9px;flex-wrap:wrap;line-height:1.5}.auth-footer span:not(:last-child)::after{right:-12px}
-}
-@media(max-width:360px){.intro h1{font-size:34px}.login-card{padding:21px}.auth-footer{display:none}}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", sans-serif;
+        }
 
-.footer-bottom {
-        margin-top: 35px;
-        padding-top: 18px;
-        flex-direction: column;
-        text-align: center;
-        gap: 12px;
-    }
+        html,
+        body {
+            width: 100%;
+            min-height: 100%;
+        }
 
-    .footer-bottom p,
-    .footer-links a {
-        font-size: 0.68rem;
-    }
-    
-</style>
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 28px 42px;
+            overflow-x: hidden;
+        }
 
+        a {
+            text-decoration: none;
+        }
 
+        button,
+        input {
+            font: inherit;
+        }
+
+        .auth-page {
+            width: 100%;
+            min-height: calc(100vh - 56px);
+            max-width: 1240px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .auth-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 42px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text);
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: -0.2px;
+        }
+
+        .brand-mark {
+            width: 24px;
+            height: 24px;
+            display: grid;
+            place-items: center;
+            font-size: 16px;
+        }
+
+        .header-link {
+            color: #b5b5b5;
+            font-size: 14px;
+            transition: color 0.2s ease;
+        }
+
+        .header-link:hover {
+            color: var(--text);
+        }
+
+        .auth-main {
+            flex: 1;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 410px;
+            align-items: center;
+            gap: 90px;
+            padding: 55px 7% 45px;
+        }
+
+        .intro {
+            max-width: 570px;
+        }
+
+        .intro h1 {
+            font-size: clamp(40px, 4.3vw, 58px);
+            line-height: 1.03;
+            letter-spacing: -2.6px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .intro h1 span {
+            display: block;
+            color: #a3a3a3;
+        }
+
+        .intro-copy {
+            max-width: 510px;
+            color: var(--muted);
+            font-size: 16px;
+            line-height: 1.65;
+        }
+
+        .intro-copy strong {
+            color: #d6d6d6;
+            font-weight: 500;
+        }
+
+        .product-points {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 28px;
+            margin-top: 36px;
+            color: var(--subtle);
+            font-size: 12px;
+            letter-spacing: 0.9px;
+            text-transform: uppercase;
+        }
+
+        .product-points span {
+            position: relative;
+        }
+
+        .product-points span:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            background: #4b4b4b;
+            right: -16px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .login-card {
+            width: 100%;
+            background: var(--bg-soft);
+            border: 1px solid #292929;
+            border-radius: 12px;
+            padding: 34px;
+            box-shadow: 0 18px 55px rgba(0, 0, 0, 0.22);
+        }
+
+        .card-heading {
+            margin-bottom: 27px;
+        }
+
+        .card-heading h2 {
+            font-size: 21px;
+            font-weight: 600;
+            letter-spacing: -0.4px;
+            margin-bottom: 7px;
+        }
+
+        .card-heading p {
+            color: var(--subtle);
+            font-size: 13px;
+            line-height: 1.45;
+        }
+
+        .form-group {
+            margin-bottom: 19px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: #d5d5d5;
+        }
+
+        input[type="email"],
+        input[type="password"],
+        input[type="text"] {
+            width: 100%;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 13px 14px;
+            border-radius: 8px;
+            outline: none;
+            font-size: 14px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+
+        input::placeholder {
+            color: #686868;
+        }
+
+        input:focus {
+            border-color: #555;
+            background: var(--panel-2);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.035);
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-wrapper input {
+            padding-right: 52px;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            margin: 0;
+            border: none;
+            border-radius: 50%;
+            background: transparent;
+            color: #777;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: none;
+            transition: color 0.2s ease, background 0.2s ease;
+        }
+
+        .password-toggle:hover {
+            transform: translateY(-50%);
+            color: var(--text);
+            background: #252525;
+            box-shadow: none;
+        }
+
+        .password-toggle:active {
+            transform: translateY(-50%);
+        }
+
+        .password-toggle:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.06);
+        }
+
+        .password-toggle svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            pointer-events: none;
+        }
+
+        .options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: -1px;
+            margin-bottom: 23px;
+            font-size: 12px;
+        }
+
+        .remember {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--subtle);
+            cursor: pointer;
+            user-select: none;
+            margin: 0;
+        }
+
+        .remember input {
+            width: 14px;
+            height: 14px;
+            margin: 0;
+            cursor: pointer;
+            accent-color: var(--text);
+        }
+
+        .options a {
+            color: var(--subtle);
+            transition: color 0.2s ease;
+        }
+
+        .options a:hover {
+            color: var(--text);
+        }
+
+        #loginBtn {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid var(--text);
+            border-radius: 8px;
+            background: var(--text);
+            color: #111;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+        }
+
+        #loginBtn:hover {
+            background: #e8e8e8;
+        }
+
+        #loginBtn:active {
+            transform: translateY(1px);
+        }
+
+        #loginBtn:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .signup {
+            text-align: center;
+            margin-top: 21px;
+            color: var(--subtle);
+            font-size: 13px;
+        }
+
+        .signup a {
+            color: var(--heading);
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .signup a:hover {
+            color: var(--text);
+        }
+
+        .auth-footer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 28px;
+            min-height: 38px;
+            color: #5e5e5e;
+            font-size: 11px;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        .auth-footer span {
+            position: relative;
+        }
+
+        .auth-footer span:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            background: #3f3f3f;
+            right: -16px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .auth-footer a {
+            color: #8a8a8a;
+        }
+
+        .auth-footer a:hover {
+            color: var(--text);
+        }
+
+        .form-message {
+            display: none;
+            margin: -10px 0 18px;
+            padding: 11px 12px;
+            border: 1px solid #343434;
+            border-radius: 8px;
+            background: #1b1b1b;
+            color: #bdbdbd;
+            font-size: 12px;
+            line-height: 1.45;
+        }
+
+        .form-message.show {
+            display: block;
+        }
+
+        .form-message.error {
+            border-color: #5a3030;
+            color: var(--error);
+            background: var(--error-bg);
+        }
+
+        .form-message.success {
+            border-color: #304a38;
+            color: var(--success);
+            background: var(--success-bg);
+        }
+
+        .form-message.info {
+            border-color: #3b3b3b;
+            color: #bdbdbd;
+        }
+
+        .field-error {
+            display: none;
+            margin-top: 7px;
+            color: #e3a4a4;
+            font-size: 11px;
+        }
+
+        .field-error.show {
+            display: block;
+        }
+
+        .input-invalid {
+            border-color: #6a3636 !important;
+            box-shadow: 0 0 0 3px rgba(170, 60, 60, 0.06) !important;
+        }
+
+        .password-toggle:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .footer-bottom {
+            margin-top: 35px;
+            padding-top: 18px;
+            flex-direction: column;
+            text-align: center;
+            gap: 12px;
+        }
+
+        .footer-bottom p,
+        .footer-links a {
+            font-size: 0.68rem;
+        }
+
+        @media (max-width: 900px) {
+            body {
+                padding: 24px;
+            }
+
+            .auth-page {
+                min-height: calc(100vh - 48px);
+            }
+
+            .auth-main {
+                grid-template-columns: 1fr;
+                gap: 42px;
+                padding: 60px 0 45px;
+                max-width: 620px;
+                width: 100%;
+                margin: 0 auto;
+            }
+
+            .intro {
+                max-width: 620px;
+            }
+
+            .intro h1 {
+                font-size: clamp(38px, 8vw, 52px);
+            }
+
+            .login-card {
+                max-width: 450px;
+            }
+
+            .auth-footer {
+                padding-bottom: 8px;
+            }
+        }
+
+        @media (max-width: 500px) {
+            body {
+                padding: 20px;
+            }
+
+            .auth-page {
+                min-height: calc(100vh - 40px);
+            }
+
+            .auth-main {
+                gap: 34px;
+                padding: 48px 0 35px;
+            }
+
+            .intro h1 {
+                font-size: 38px;
+                letter-spacing: -1.8px;
+                margin-bottom: 16px;
+            }
+
+            .intro-copy {
+                font-size: 14px;
+                line-height: 1.6;
+            }
+
+            .product-points {
+                margin-top: 25px;
+                gap: 9px 22px;
+                font-size: 10px;
+            }
+
+            .product-points span:not(:last-child)::after {
+                right: -13px;
+            }
+
+            .login-card {
+                padding: 25px;
+                border-radius: 10px;
+            }
+
+            .card-heading {
+                margin-bottom: 24px;
+            }
+
+            .card-heading h2 {
+                font-size: 20px;
+            }
+
+            .form-group {
+                margin-bottom: 18px;
+            }
+
+            .auth-footer {
+                gap: 20px;
+                font-size: 9px;
+                flex-wrap: wrap;
+                line-height: 1.5;
+            }
+
+            .auth-footer span:not(:last-child)::after {
+                right: -12px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .intro h1 {
+                font-size: 34px;
+            }
+
+            .login-card {
+                padding: 21px;
+            }
+
+            .auth-footer {
+                display: none;
+            }
+        }
+    </style>
 </head>
 
 <body>
-<div class="auth-page">
+    <div class="auth-page">
+        <header class="auth-header">
+            <a href="/" class="brand" aria-label="Professional Studio home">
+                <span class="brand-mark">◇</span>
+                <span>Professional Studio</span>
+            </a>
+            <a href="signup.html" class="header-link">Create account</a>
+        </header>
 
-    <header class="auth-header">
-        <a href="/" class="brand" aria-label="Professional Studio home">
-            <span class="brand-mark">◇</span>
-            <span>Professional Studio</span>
-        </a>
-        <a href="signup.html" class="header-link">Create account</a>
-    </header>
+        <main class="auth-main">
+            <section class="intro" aria-labelledby="loginIntroTitle">
+                <h1 id="loginIntroTitle">
+                    Welcome back.
+                    <span>Your studio is ready.</span>
+                </h1>
 
-    <main class="auth-main">
+                <p class="intro-copy">
+                    Pick up where you left off.
+                    Manage <strong>clients, bookings, galleries, services</strong>
+                    and your studio workflow from one professional workspace.
+                </p>
 
-        <section class="intro" aria-labelledby="loginIntroTitle">
-            <h1 id="loginIntroTitle">
-                Welcome back.
-                <span>Your studio is ready.</span>
-            </h1>
+                <div class="product-points" aria-label="Professional Studio features">
+                    <span>Clients</span>
+                    <span>Galleries</span>
+                    <span>Bookings</span>
+                    <span>Studio</span>
+                </div>
+            </section>
 
-            <p class="intro-copy">
-                Pick up where you left off.
-                Manage <strong>clients, bookings, galleries, services</strong>
-                and your studio workflow from one professional workspace.
-            </p>
-
-            <div class="product-points" aria-label="Professional Studio features">
-                <span>Clients</span>
-                <span>Galleries</span>
-                <span>Bookings</span>
-                <span>Studio</span>
-            </div>
-        </section>
-
-        <section class="login-card" aria-labelledby="loginCardTitle">
-            <div class="card-heading">
-                <h2 id="loginCardTitle">Sign in to your account</h2>
-                <p>Continue managing your professional studio.</p>
-            </div>
-
-            <form id="loginForm">
-
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        placeholder="Enter your email"
-                        autocomplete="email"
-                        required
-                    >
+            <section class="login-card" aria-labelledby="loginCardTitle">
+                <div class="card-heading">
+                    <h2 id="loginCardTitle">Sign in to your account</h2>
+                    <p>Continue managing your professional studio.</p>
+                    <div class="form-message" id="loginMessage" role="alert" aria-live="polite"></div>
                 </div>
 
-                <div class="form-group">
-                    <label for="password">Password</label>
-
-                    <div class="password-wrapper">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="email">Email</label>
                         <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            placeholder="Enter your password"
-                            autocomplete="current-password"
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="Enter your email"
+                            autocomplete="email"
                             required
                         >
-
-                        <button
-                            type="button"
-                            class="password-toggle"
-                            id="passwordToggle"
-                            aria-label="Show password"
-                            title="Show password"
-                        >
-                            <svg class="eye-icon" viewBox="0 0 24 24" aria-hidden="true">
-                                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"></path>
-                                <circle cx="12" cy="12" r="3"></circle>
-                            </svg>
-                        </button>
                     </div>
-                </div>
 
-                <div class="options">
-                    <label class="remember">
-                        <input type="checkbox" id="rememberMe">
-                        Remember me
-                    </label>
+                    <div class="form-group">
+                        <label for="password">Password</label>
 
-                    <a href="/auth/forget.html">
-                        Forgot Password?
-                    </a>
-                </div>
+                        <div class="password-wrapper">
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Enter your password"
+                                autocomplete="current-password"
+                                required
+                            >
 
-                <button type="submit" id="loginBtn">
-                    Sign In
-                </button>
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                id="passwordToggle"
+                                aria-label="Show password"
+                                title="Show password"
+                            >
+                                <svg class="eye-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
 
-                <div class="signup">
-                    Don't have an account?
-                    <a href="signup.html">
-                        Create Account
-                    </a>
-                </div>
+                    <div class="options">
+                        <label class="remember">
+                            <input type="checkbox" id="rememberMe" name="rememberMe">
+                            Remember me
+                        </label>
 
-            </form>
-        </section>
+                        <a href="/auth/forget.html">Forgot Password?</a>
+                    </div>
 
-    </main>
+                    <button type="submit" id="loginBtn">Sign In</button>
 
-    <footer class="auth-footer" aria-label="Professional Studio features">
-        
+                    <div class="signup">
+                        Don't have an account?
+                        <a href="signup.html">Create Account</a>
+                    </div>
+                </form>
+            </section>
+        </main>
 
+        <footer class="auth-footer" aria-label="Professional Studio features">
+            <p>© 2026 Professional Studio. All Rights Reserved.</p>
             <p>
-
-                © 2026 Professional Studio. All Rights Reserved.
-
+                Powered by
+                <a href="https://bluehorizanlabs.vercel.app/" target="_blank">Bluehorizanlabs</a>
             </p>
+        </footer>
+    </div>
 
+    <script>
+        (function () {
+            const form = document.getElementById("loginForm");
+            const loginBtn = document.getElementById("loginBtn");
+            const emailInput = document.getElementById("email");
+            const passwordInput = document.getElementById("password");
+            const passwordToggle = document.getElementById("passwordToggle");
+            const rememberMe = document.getElementById("rememberMe");
+            const message = document.getElementById("loginMessage");
+            const rememberedEmail = localStorage.getItem("professionalStudio.rememberedEmail");
 
-        <p>
-            Powered by <a href="https://bluehorizanlabs.vercel.app/" target="_blank"> Bluehorizanlabs</a> 
-        </p>
-
-
-
-    </footer>
-
-</div>
-
-<script>
-
-    const form =
-        document.getElementById("loginForm");
-
-    const loginBtn =
-        document.getElementById("loginBtn");
-
-    const passwordInput =
-        document.getElementById("password");
-
-    const passwordToggle =
-        document.getElementById("passwordToggle");
-
-
-    /* =========================================================
-       PASSWORD VISIBILITY TOGGLE
-    ========================================================= */
-
-    passwordToggle.addEventListener(
-        "click",
-        function(){
-
-            const isPassword =
-                passwordInput.type === "password";
-
-
-            if(isPassword){
-
-                passwordInput.type = "text";
-
-                passwordToggle.setAttribute(
-                    "aria-label",
-                    "Hide password"
-                );
-
-                passwordToggle.setAttribute(
-                    "title",
-                    "Hide password"
-                );
-
-                passwordToggle.innerHTML = `
-
-                    <svg
-                        class="eye-icon"
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                    >
-
-                        <path d="M3 3l18 18"></path>
-
-                        <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"></path>
-
-                        <path d="M9.9 5.1A10.9 10.9 0 0 1 12 5c6.5 0 10 7 10 7a17.2 17.2 0 0 1-3.1 3.9"></path>
-
-                        <path d="M6.1 6.1C3.6 8 2 12 2 12s3.5 7 10 7c1.7 0 3.2-.4 4.5-1"></path>
-
-                    </svg>
-
-                `;
-
-            }else{
-
-                passwordInput.type = "password";
-
-                passwordToggle.setAttribute(
-                    "aria-label",
-                    "Show password"
-                );
-
-                passwordToggle.setAttribute(
-                    "title",
-                    "Show password"
-                );
-
-                passwordToggle.innerHTML = `
-
-                    <svg
-                        class="eye-icon"
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                    >
-
-                        <path
-                            d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"
-                        ></path>
-
-                        <circle
-                            cx="12"
-                            cy="12"
-                            r="3"
-                        ></circle>
-
-                    </svg>
-
-                `;
-
+            if (rememberedEmail) {
+                emailInput.value = rememberedEmail;
+                rememberMe.checked = true;
             }
 
-        }
-    );
-
-
-    /* =========================================================
-       LOGIN
-    ========================================================= */
-
-    form.addEventListener(
-        "submit",
-        function(event){
-
-            event.preventDefault();
-
-
-            const email =
-                document
-                    .getElementById("email")
-                    .value
-                    .trim();
-
-
-            const password =
-                document
-                    .getElementById("password")
-                    .value;
-
-
-            /* ================= VALIDATION ================= */
-
-            if(!email || !password){
-
-                alert(
-                    "Please fill in both fields."
-                );
-
-                return;
-
+            function showMessage(text, type = "info") {
+                message.textContent = text;
+                message.className = "form-message show " + type;
             }
 
+            function clearMessage() {
+                message.textContent = "";
+                message.className = "form-message";
+            }
 
-            /* ================= BUTTON STATE ================= */
+            function setLoading(loading) {
+                loginBtn.disabled = loading;
+                loginBtn.textContent = loading ? "Signing In..." : "Sign In";
+            }
 
-            loginBtn.disabled = true;
+            function togglePassword() {
+                const hidden = passwordInput.type === "password";
+                passwordInput.type = hidden ? "text" : "password";
+                passwordToggle.setAttribute("aria-label", hidden ? "Hide password" : "Show password");
+                passwordToggle.title = hidden ? "Hide password" : "Show password";
+                passwordToggle.innerHTML = hidden
+                    ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"></path><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"></path><path d="M9.9 5.1A10.9 10.9 0 0 1 12 5c6.5 0 10 7 10 7a17.2 17.2 0 0 1-3.1 3.9"></path><path d="M6.1 6.1C3.6 8 2 12 2 12s3.5 7 10 7c1.7 0 3.2-.4 4.5-1"></path></svg>'
+                    : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+            }
 
-            loginBtn.textContent =
-                "Signing In...";
+            passwordToggle.addEventListener("click", togglePassword);
 
+            function validate() {
+                clearMessage();
+                emailInput.classList.remove("input-invalid");
+                passwordInput.classList.remove("input-invalid");
 
-            /* ================= LOGIN REQUEST ================= */
+                const email = emailInput.value.trim();
+                const password = passwordInput.value;
 
-            fetch(
-                "/api/login",
-                {
-                    method:"POST",
-
-                    headers:{
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body:JSON.stringify({
-                        email,
-                        password
-                    })
-
+                if (!email) {
+                    emailInput.classList.add("input-invalid");
+                    showMessage("Enter the email address for your Professional Studio account.", "error");
+                    emailInput.focus();
+                    return false;
                 }
-            )
 
-            .then(
-                response =>
-                    response.json()
-            )
+                if (!emailInput.validity.valid) {
+                    emailInput.classList.add("input-invalid");
+                    showMessage("Enter a valid email address.", "error");
+                    emailInput.focus();
+                    return false;
+                }
 
-            .then(
-                data => {
+                if (!password) {
+                    passwordInput.classList.add("input-invalid");
+                    showMessage("Enter your password.", "error");
+                    passwordInput.focus();
+                    return false;
+                }
 
-                    loginBtn.disabled =
-                        false;
+                return true;
+            }
 
-                    loginBtn.textContent =
-                        "Sign In";
+            form.addEventListener("submit", async function (event) {
+                event.preventDefault();
 
+                if (!validate()) return;
 
-                    if(
-                        data.message ===
-                        "Login successful"
-                    ){
+                const email = emailInput.value.trim().toLowerCase();
+                const password = passwordInput.value;
 
-                        window.location.href =
-                            "/user.html";
+                setLoading(true);
+                showMessage("Signing you in...", "info");
 
-                    }else{
+                try {
+                    const response = await fetch("/api/login", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Accept: "application/json"
+                        },
+                        credentials: "include",
+                        body: JSON.stringify({
+                            email,
+                            password,
+                            rememberMe: rememberMe.checked
+                        })
+                    });
 
-                        alert(
-                            data.message ||
-                            "Invalid email or password."
-                        );
+                    const contentType = response.headers.get("content-type") || "";
+                    let data = null;
 
+                    if (contentType.includes("application/json")) {
+                        data = await response.json();
+                    } else {
+                        data = await response.text();
                     }
 
+                    if (!response.ok) {
+                        const msg = typeof data === "string" ? data : (data?.message || data?.error || "Invalid email or password.");
+                        throw new Error(msg);
+                    }
+
+                    if (rememberMe.checked) {
+                        localStorage.setItem("professionalStudio.rememberedEmail", email);
+                    } else {
+                        localStorage.removeItem("professionalStudio.rememberedEmail");
+                    }
+
+                    showMessage("Login successful. Opening your studio...", "success");
+                    setTimeout(() => {
+                        window.location.href = "/user.html";
+                    }, 250);
+                } catch (error) {
+                    console.error("Login request failed:", error);
+                    showMessage(error?.message || "Unable to connect to the server. Please try again.", "error");
+                    setLoading(false);
                 }
-            )
+            });
 
-            .catch(
-                error => {
-
-                    console.error(error);
-
-                    loginBtn.disabled =
-                        false;
-
-                    loginBtn.textContent =
-                        "Sign In";
-
-
-                    alert(
-                        "Unable to connect to the server. Please try again."
-                    );
-
-                }
-            );
-
-        }
-    );
-
-</script>
-
-
+            [emailInput, passwordInput].forEach((input) => {
+                input.addEventListener("input", () => input.classList.remove("input-invalid"));
+            });
+        })();
+    </script>
 </body>
-
 </html>
