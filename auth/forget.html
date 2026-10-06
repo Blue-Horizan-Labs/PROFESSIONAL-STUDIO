@@ -1,1171 +1,1456 @@
-
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Forgot Password | Professional Studio</title>
-
-<link
-    rel="icon"
-    type="image/png"
-    href="https://i.ibb.co/8g0LT3jZ/logo1-2.png"
->
-
-<style>
-
-    /* =========================================================
-       GLOBAL
-    ========================================================= */
-
-    *{
-        margin:0;
-        padding:0;
-        box-sizing:border-box;
-        font-family:"Segoe UI",sans-serif;
-    }
-
-    html,
-    body{
-        width:100%;
-        min-height:100%;
-    }
-
-    body{
-        background:#0b0b0b;
-        color:#fff;
-
-        min-height:100vh;
-
-        padding:28px 42px;
-
-        overflow-x:hidden;
-        overflow-y:auto;
-    }
-
-    a{
-        text-decoration:none;
-        color:inherit;
-    }
-
-    button,
-    input{
-        font:inherit;
-    }
-
-
-    /* =========================================================
-       AUTH PAGE
-    ========================================================= */
-
-    .auth-page{
-        width:100%;
-        min-height:calc(100vh - 56px);
-
-        max-width:1240px;
-
-        margin:0 auto;
-
-        display:flex;
-        flex-direction:column;
-    }
-
-
-    /* =========================================================
-       HEADER
-    ========================================================= */
-
-    .auth-header{
-        display:flex;
-        align-items:center;
-        justify-content:space-between;
-
-        min-height:42px;
-    }
-
-    .brand{
-        display:flex;
-        align-items:center;
-
-        gap:10px;
-
-        color:#fff;
-
-        text-decoration:none;
-
-        font-size:15px;
-        font-weight:600;
-
-        letter-spacing:-.2px;
-    }
-
-    .brand-mark{
-        width:24px;
-        height:24px;
-
-        display:grid;
-        place-items:center;
-
-        font-size:16px;
-
-        color:#fff;
-    }
-
-    .header-login{
-        color:#b5b5b5;
-
-        text-decoration:none;
-
-        font-size:14px;
-
-        transition:color .2s ease;
-    }
-
-    .header-login:hover{
-        color:#fff;
-    }
-
-
-    /* =========================================================
-       MAIN
-    ========================================================= */
-
-    .auth-main{
-        flex:1;
-
-        display:grid;
-
-        grid-template-columns:minmax(0,1fr) 410px;
-
-        align-items:center;
-
-        gap:90px;
-
-        padding:55px 7% 45px;
-    }
-
-
-    /* =========================================================
-       INTRO
-    ========================================================= */
-
-    .intro{
-        max-width:570px;
-    }
-
-    .intro h1{
-        font-size:clamp(38px,4.3vw,58px);
-
-        line-height:1.03;
-
-        letter-spacing:-2.6px;
-
-        font-weight:600;
-
-        margin-bottom:20px;
-    }
-
-    .intro h1 span{
-        display:block;
-
-        color:#a3a3a3;
-    }
-
-    .intro-copy{
-        max-width:510px;
-
-        color:#929292;
-
-        font-size:16px;
-
-        line-height:1.65;
-    }
-
-    .intro-copy strong{
-        color:#d6d6d6;
-
-        font-weight:500;
-    }
-
-    .product-points{
-        display:flex;
-        flex-wrap:wrap;
-
-        gap:10px 28px;
-
-        margin-top:36px;
-
-        color:#777;
-
-        font-size:12px;
-
-        letter-spacing:.9px;
-
-        text-transform:uppercase;
-    }
-
-    .product-points span{
-        position:relative;
-    }
-
-    .product-points span:not(:last-child)::after{
-        content:"";
-
-        position:absolute;
-
-        width:3px;
-        height:3px;
-
-        border-radius:50%;
-
-        background:#4b4b4b;
-
-        right:-16px;
-        top:50%;
-
-        transform:translateY(-50%);
-    }
-
-
-    /* =========================================================
-       FORGOT PASSWORD CARD
-    ========================================================= */
-
-    .forgot-card{
-        width:100%;
-
-        background:#141414;
-
-        border:1px solid #292929;
-
-        border-radius:12px;
-
-        padding:34px;
-
-        box-shadow:0 18px 55px rgba(0,0,0,.22);
-    }
-
-
-    /* =========================================================
-       CARD ICON
-    ========================================================= */
-
-    .card-icon{
-        width:42px;
-        height:42px;
-
-        display:grid;
-        place-items:center;
-
-        margin-bottom:20px;
-
-        color:#bdbdbd;
-
-        background:#1b1b1b;
-
-        border:1px solid #303030;
-
-        border-radius:9px;
-    }
-
-    .card-icon svg{
-        width:19px;
-        height:19px;
-
-        stroke:currentColor;
-
-        stroke-width:1.8;
-
-        fill:none;
-
-        stroke-linecap:round;
-        stroke-linejoin:round;
-    }
-
-
-    /* =========================================================
-       CARD HEADING
-    ========================================================= */
-
-    .card-heading{
-        margin-bottom:27px;
-    }
-
-    .card-heading h2{
-        font-size:21px;
-
-        font-weight:600;
-
-        letter-spacing:-.4px;
-
-        margin-bottom:7px;
-    }
-
-    .card-heading p{
-        color:#777;
-
-        font-size:13px;
-
-        line-height:1.5;
-    }
-
-
-    /* =========================================================
-       FORM
-    ========================================================= */
-
-    .form-group{
-        margin-bottom:19px;
-    }
-
-    label{
-        display:block;
-
-        margin-bottom:8px;
-
-        font-size:13px;
-
-        color:#d5d5d5;
-    }
-
-    .input{
-        width:100%;
-
-        background:#1b1b1b;
-
-        border:1px solid #303030;
-
-        color:#fff;
-
-        padding:13px 14px;
-
-        border-radius:8px;
-
-        outline:none;
-
-        font-size:14px;
-
-        transition:
-            border-color .2s,
-            box-shadow .2s,
-            background .2s;
-    }
-
-    .input::placeholder{
-        color:#686868;
-    }
-
-    .input:focus{
-        border-color:#555;
-
-        background:#1d1d1d;
-
-        box-shadow:
-            0 0 0 3px
-            rgba(255,255,255,.035);
-    }
-
-    .input.error{
-        border-color:#8f3a3a;
-    }
-
-
-    /* =========================================================
-       ERROR
-    ========================================================= */
-
-    .error-message{
-        display:none;
-
-        margin-top:7px;
-
-        color:#ff8f8f;
-
-        font-size:11px;
-
-        line-height:1.4;
-    }
-
-    .error-message.show{
-        display:block;
-    }
-
-
-    /* =========================================================
-       SUBMIT BUTTON
-    ========================================================= */
-
-    .submit-btn{
-        width:100%;
-
-        padding:13px 14px;
-
-        margin-top:2px;
-
-        border:1px solid #fff;
-
-        border-radius:8px;
-
-        background:#fff;
-
-        color:#111;
-
-        font-size:14px;
-
-        font-weight:600;
-
-        cursor:pointer;
-
-        transition:
-            background .2s,
-            color .2s,
-            transform .2s,
-            opacity .2s;
-    }
-
-    .submit-btn:hover{
-        background:#e8e8e8;
-    }
-
-    .submit-btn:active{
-        transform:translateY(1px);
-    }
-
-    .submit-btn:disabled{
-        opacity:.55;
-
-        cursor:not-allowed;
-
-        transform:none;
-    }
-
-
-    /* =========================================================
-       SUCCESS
-    ========================================================= */
-
-    .success{
-        display:none;
-
-        margin-top:18px;
-
-        padding:12px 14px;
-
-        border-radius:8px;
-
-        background:#191919;
-
-        border:1px solid #303030;
-
-        color:#bdbdbd;
-
-        font-size:12px;
-
-        line-height:1.5;
-    }
-
-    .success.show{
-        display:block;
-    }
-
-
-    /* =========================================================
-       BACK TO LOGIN
-    ========================================================= */
-
-    .login-link{
-        text-align:center;
-
-        margin-top:21px;
-
-        color:#777;
-
-        font-size:13px;
-    }
-
-    .login-link a{
-        color:#d7d7d7;
-
-        font-weight:500;
-
-        text-decoration:none;
-
-        transition:color .2s;
-    }
-
-    .login-link a:hover{
-        color:#fff;
-    }
-
-
-    /* =========================================================
-       FOOTER
-    ========================================================= */
-
-    .auth-footer{
-        display:flex;
-
-        justify-content:center;
-        align-items:center;
-
-        gap:28px;
-
-        min-height:38px;
-
-        color:#5e5e5e;
-
-        font-size:11px;
-
-        letter-spacing:.8px;
-
-        text-transform:uppercase;
-    }
-
-    .auth-footer span{
-        position:relative;
-    }
-
-    .auth-footer span:not(:last-child)::after{
-        content:"";
-
-        position:absolute;
-
-        width:3px;
-        height:3px;
-
-        border-radius:50%;
-
-        background:#3f3f3f;
-
-        right:-16px;
-        top:50%;
-
-        transform:translateY(-50%);
-    }
-
-    .auth-footer a{
-        transition:color .2s ease;
-    }
-
-    .auth-footer a:hover{
-        color:#aaa;
-    }
-
-
-    /* =========================================================
-       TABLET
-    ========================================================= */
-
-    @media(max-width:900px){
-
-        body{
-            padding:24px;
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Reset your Professional Studio account password."
+    >
+
+    <meta
+        name="theme-color"
+        content="#0b0b0b"
+    >
+
+    <title>Forgot Password | Professional Studio</title>
+
+    <link
+        rel="icon"
+        type="image/png"
+        href="https://i.ibb.co/8g0LT3jZ/logo1-2.png"
+    >
+
+    <style>
+        /* =========================================================
+           ROOT
+        ========================================================= */
+
+        :root {
+            --bg: #0b0b0b;
+            --surface: #141414;
+            --surface-soft: #1b1b1b;
+            --surface-hover: #1d1d1d;
+
+            --border: #292929;
+            --border-soft: #303030;
+
+            --text: #ffffff;
+            --text-primary: #d7d7d7;
+            --text-secondary: #929292;
+            --text-muted: #777777;
+            --text-faint: #5e5e5e;
+
+            --danger: #ff8f8f;
+            --danger-border: #8f3a3a;
+
+            --success: #a8d8b0;
+            --success-border: #315c39;
+
+            --focus-ring: rgba(255, 255, 255, 0.055);
         }
 
-        .auth-page{
-            min-height:calc(100vh - 48px);
+
+        /* =========================================================
+           GLOBAL
+        ========================================================= */
+
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        .auth-main{
-            grid-template-columns:1fr;
-
-            gap:42px;
-
-            padding:60px 0 45px;
-
-            max-width:620px;
-
-            width:100%;
-
-            margin:0 auto;
+        html {
+            width: 100%;
+            min-height: 100%;
         }
 
-        .intro{
-            max-width:620px;
+        body {
+            width: 100%;
+            min-height: 100vh;
+
+            background: var(--bg);
+            color: var(--text);
+
+            font-family:
+                "Segoe UI",
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                sans-serif;
+
+            padding: 28px 42px;
+
+            overflow-x: hidden;
         }
 
-        .intro h1{
-            font-size:clamp(38px,8vw,52px);
+        a {
+            color: inherit;
+            text-decoration: none;
         }
 
-        .forgot-card{
-            max-width:450px;
+        button,
+        input {
+            font: inherit;
         }
 
-        .auth-footer{
-            padding-bottom:8px;
-        }
-    }
-
-    
-    .footer-bottom {
-        margin-top: 35px;
-        padding-top: 18px;
-        flex-direction: column;
-        text-align: center;
-        gap: 12px;
-    }
-
-    .footer-bottom p,
-    .footer-links a {
-        font-size: 0.68rem;
-    }
-
-
-    /* =========================================================
-       MOBILE
-    ========================================================= */
-
-    @media(max-width:500px){
-
-        body{
-            padding:20px;
+        button {
+            border: 0;
         }
 
-        .auth-page{
-            min-height:calc(100vh - 40px);
+
+        /* =========================================================
+           AUTH PAGE
+        ========================================================= */
+
+        .auth-page {
+            width: 100%;
+            min-height: calc(100vh - 56px);
+
+            max-width: 1240px;
+
+            margin: 0 auto;
+
+            display: flex;
+            flex-direction: column;
         }
 
-        .auth-header{
-            min-height:35px;
+
+        /* =========================================================
+           HEADER
+        ========================================================= */
+
+        .auth-header {
+            min-height: 42px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
-        .brand{
-            font-size:14px;
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+
+            color: var(--text);
+
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: -0.2px;
         }
 
-        .header-login{
-            font-size:13px;
+        .brand-mark {
+            width: 24px;
+            height: 24px;
+
+            display: grid;
+            place-items: center;
+
+            color: var(--text);
+
+            font-size: 16px;
         }
 
-        .auth-main{
-            gap:34px;
+        .header-login {
+            color: #b5b5b5;
 
-            padding:48px 0 35px;
+            font-size: 14px;
+
+            transition:
+                color 0.2s ease;
         }
 
-        .intro h1{
-            font-size:38px;
-
-            letter-spacing:-1.8px;
-
-            margin-bottom:16px;
+        .header-login:hover {
+            color: #ffffff;
         }
 
-        .intro-copy{
-            font-size:14px;
+        .header-login:focus-visible,
+        .brand:focus-visible {
+            outline: none;
 
-            line-height:1.6;
+            border-radius: 4px;
+
+            box-shadow:
+                0 0 0 3px var(--focus-ring);
         }
 
-        .product-points{
-            margin-top:25px;
 
-            gap:9px 22px;
+        /* =========================================================
+           MAIN
+        ========================================================= */
 
-            font-size:10px;
+        .auth-main {
+            flex: 1;
+
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 410px;
+
+            align-items: center;
+
+            gap: 90px;
+
+            padding: 55px 7% 45px;
         }
 
-        .product-points span:not(:last-child)::after{
-            right:-13px;
+
+        /* =========================================================
+           INTRO
+        ========================================================= */
+
+        .intro {
+            max-width: 570px;
         }
 
-        .forgot-card{
-            padding:25px;
+        .intro h1 {
+            margin-bottom: 20px;
 
-            border-radius:10px;
+            font-size: clamp(38px, 4.3vw, 58px);
+            line-height: 1.03;
+
+            letter-spacing: -2.6px;
+
+            font-weight: 600;
         }
 
-        .card-icon{
-            width:40px;
-            height:40px;
-
-            margin-bottom:18px;
+        .intro h1 span {
+            display: block;
+            color: #a3a3a3;
         }
 
-        .card-heading{
-            margin-bottom:24px;
+        .intro-copy {
+            max-width: 510px;
+
+            color: var(--text-secondary);
+
+            font-size: 16px;
+            line-height: 1.65;
         }
 
-        .card-heading h2{
-            font-size:20px;
+        .intro-copy strong {
+            color: #d6d6d6;
+            font-weight: 500;
         }
 
-        .form-group{
-            margin-bottom:18px;
+        .product-points {
+            display: flex;
+            flex-wrap: wrap;
+
+            gap: 10px 28px;
+
+            margin-top: 36px;
+
+            color: var(--text-muted);
+
+            font-size: 12px;
+            letter-spacing: 0.9px;
+
+            text-transform: uppercase;
         }
 
-        .auth-footer{
-            gap:20px;
-
-            font-size:9px;
-
-            flex-wrap:wrap;
-
-            line-height:1.5;
+        .product-points span {
+            position: relative;
         }
 
-        .auth-footer span:not(:last-child)::after{
-            right:-12px;
-        }
-    }
+        .product-points span:not(:last-child)::after {
+            content: "";
 
+            position: absolute;
 
-    /* =========================================================
-       VERY SMALL SCREENS
-    ========================================================= */
+            width: 3px;
+            height: 3px;
 
-    @media(max-width:360px){
+            border-radius: 50%;
 
-        .intro h1{
-            font-size:34px;
-        }
+            background: #4b4b4b;
 
-        .forgot-card{
-            padding:21px;
+            right: -16px;
+            top: 50%;
+
+            transform: translateY(-50%);
         }
 
-        .auth-footer{
-            display:none;
+
+        /* =========================================================
+           FORGOT PASSWORD CARD
+        ========================================================= */
+
+        .forgot-card {
+            width: 100%;
+
+            background: var(--surface);
+
+            border: 1px solid var(--border);
+
+            border-radius: 12px;
+
+            padding: 34px;
+
+            box-shadow:
+                0 18px 55px rgba(0, 0, 0, 0.22);
         }
-    }
 
-</style>
 
+        /* =========================================================
+           CARD ICON
+        ========================================================= */
+
+        .card-icon {
+            width: 42px;
+            height: 42px;
+
+            display: grid;
+            place-items: center;
+
+            margin-bottom: 20px;
+
+            color: #bdbdbd;
+
+            background: var(--surface-soft);
+
+            border: 1px solid var(--border-soft);
+
+            border-radius: 9px;
+        }
+
+        .card-icon svg {
+            width: 19px;
+            height: 19px;
+
+            fill: none;
+
+            stroke: currentColor;
+            stroke-width: 1.8;
+
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+
+        /* =========================================================
+           CARD HEADING
+        ========================================================= */
+
+        .card-heading {
+            margin-bottom: 27px;
+        }
+
+        .card-heading h2 {
+            margin-bottom: 7px;
+
+            font-size: 21px;
+
+            font-weight: 600;
+
+            letter-spacing: -0.4px;
+        }
+
+        .card-heading p {
+            color: var(--text-muted);
+
+            font-size: 13px;
+
+            line-height: 1.5;
+        }
+
+
+        /* =========================================================
+           FORM
+        ========================================================= */
+
+        .form-group {
+            margin-bottom: 19px;
+        }
+
+        label {
+            display: block;
+
+            margin-bottom: 8px;
+
+            color: #d5d5d5;
+
+            font-size: 13px;
+        }
+
+        .input {
+            width: 100%;
+
+            background: var(--surface-soft);
+
+            border: 1px solid var(--border-soft);
+
+            border-radius: 8px;
+
+            color: var(--text);
+
+            padding: 13px 14px;
+
+            outline: none;
+
+            font-size: 14px;
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease,
+                background 0.2s ease;
+        }
+
+        .input::placeholder {
+            color: #686868;
+        }
+
+        .input:hover {
+            border-color: #3a3a3a;
+        }
+
+        .input:focus {
+            background: var(--surface-hover);
+
+            border-color: #555555;
+
+            box-shadow:
+                0 0 0 3px var(--focus-ring);
+        }
+
+        .input.error {
+            border-color: var(--danger-border);
+        }
+
+        .input.error:focus {
+            box-shadow:
+                0 0 0 3px rgba(143, 58, 58, 0.12);
+        }
+
+
+        /* =========================================================
+           ERROR MESSAGE
+        ========================================================= */
+
+        .error-message {
+            display: none;
+
+            margin-top: 7px;
+
+            color: var(--danger);
+
+            font-size: 11px;
+
+            line-height: 1.4;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+
+        /* =========================================================
+           GLOBAL FORM MESSAGE
+        ========================================================= */
+
+        .form-message {
+            display: none;
+
+            margin-top: 15px;
+
+            padding: 12px 14px;
+
+            border-radius: 8px;
+
+            font-size: 12px;
+
+            line-height: 1.5;
+        }
+
+        .form-message.show {
+            display: block;
+        }
+
+        .form-message.error-state {
+            color: var(--danger);
+
+            background: rgba(143, 58, 58, 0.08);
+
+            border: 1px solid rgba(143, 58, 58, 0.35);
+        }
+
+        .form-message.success-state {
+            color: var(--success);
+
+            background: rgba(49, 92, 57, 0.08);
+
+            border: 1px solid rgba(49, 92, 57, 0.35);
+        }
+
+
+        /* =========================================================
+           SUBMIT BUTTON
+        ========================================================= */
+
+        .submit-btn {
+            width: 100%;
+
+            padding: 13px 14px;
+
+            margin-top: 2px;
+
+            border: 1px solid #ffffff;
+
+            border-radius: 8px;
+
+            background: #ffffff;
+            color: #111111;
+
+            font-size: 14px;
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition:
+                background 0.2s ease,
+                color 0.2s ease,
+                transform 0.2s ease,
+                opacity 0.2s ease;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            background: #e8e8e8;
+        }
+
+        .submit-btn:active:not(:disabled) {
+            transform: translateY(1px);
+        }
+
+        .submit-btn:focus-visible {
+            outline: none;
+
+            box-shadow:
+                0 0 0 3px rgba(255, 255, 255, 0.08);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.55;
+
+            cursor: not-allowed;
+
+            transform: none;
+        }
+
+
+        /* =========================================================
+           BACK TO LOGIN
+        ========================================================= */
+
+        .login-link {
+            margin-top: 21px;
+
+            color: var(--text-muted);
+
+            font-size: 13px;
+
+            text-align: center;
+        }
+
+        .login-link a {
+            color: #d7d7d7;
+
+            font-weight: 500;
+
+            transition:
+                color 0.2s ease;
+        }
+
+        .login-link a:hover {
+            color: #ffffff;
+        }
+
+        .login-link a:focus-visible {
+            outline: none;
+
+            border-radius: 3px;
+
+            box-shadow:
+                0 0 0 3px var(--focus-ring);
+        }
+
+
+        /* =========================================================
+           FOOTER
+        ========================================================= */
+
+        .auth-footer {
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            flex-wrap: wrap;
+
+            gap: 14px 28px;
+
+            min-height: 38px;
+
+            padding-bottom: 4px;
+
+            color: var(--text-faint);
+
+            font-size: 11px;
+
+            letter-spacing: 0.6px;
+
+            text-align: center;
+        }
+
+        .auth-footer p {
+            line-height: 1.5;
+        }
+
+        .auth-footer a {
+            color: #777777;
+
+            transition:
+                color 0.2s ease;
+        }
+
+        .auth-footer a:hover {
+            color: #aaaaaa;
+        }
+
+        .auth-footer a:focus-visible {
+            outline: none;
+
+            border-radius: 3px;
+
+            box-shadow:
+                0 0 0 3px var(--focus-ring);
+        }
+
+
+        /* =========================================================
+           TABLET
+        ========================================================= */
+
+        @media (max-width: 900px) {
+            body {
+                padding: 24px;
+            }
+
+            .auth-page {
+                min-height: calc(100vh - 48px);
+            }
+
+            .auth-main {
+                grid-template-columns: 1fr;
+
+                gap: 42px;
+
+                max-width: 620px;
+
+                width: 100%;
+
+                margin: 0 auto;
+
+                padding: 60px 0 45px;
+            }
+
+            .intro {
+                max-width: 620px;
+            }
+
+            .intro h1 {
+                font-size: clamp(38px, 8vw, 52px);
+            }
+
+            .forgot-card {
+                max-width: 450px;
+            }
+        }
+
+
+        /* =========================================================
+           MOBILE
+        ========================================================= */
+
+        @media (max-width: 500px) {
+            body {
+                padding: 20px;
+            }
+
+            .auth-page {
+                min-height: calc(100vh - 40px);
+            }
+
+            .auth-header {
+                min-height: 35px;
+            }
+
+            .brand {
+                font-size: 14px;
+            }
+
+            .header-login {
+                font-size: 13px;
+            }
+
+            .auth-main {
+                gap: 34px;
+
+                padding: 48px 0 35px;
+            }
+
+            .intro h1 {
+                margin-bottom: 16px;
+
+                font-size: 38px;
+
+                letter-spacing: -1.8px;
+            }
+
+            .intro-copy {
+                font-size: 14px;
+
+                line-height: 1.6;
+            }
+
+            .product-points {
+                gap: 9px 22px;
+
+                margin-top: 25px;
+
+                font-size: 10px;
+            }
+
+            .product-points span:not(:last-child)::after {
+                right: -13px;
+            }
+
+            .forgot-card {
+                padding: 25px;
+
+                border-radius: 10px;
+            }
+
+            .card-icon {
+                width: 40px;
+                height: 40px;
+
+                margin-bottom: 18px;
+            }
+
+            .card-heading {
+                margin-bottom: 24px;
+            }
+
+            .card-heading h2 {
+                font-size: 20px;
+            }
+
+            .form-group {
+                margin-bottom: 18px;
+            }
+
+            .auth-footer {
+                gap: 8px 18px;
+
+                padding-bottom: 5px;
+
+                font-size: 9px;
+            }
+        }
+
+
+        /* =========================================================
+           VERY SMALL SCREENS
+        ========================================================= */
+
+        @media (max-width: 360px) {
+            .intro h1 {
+                font-size: 34px;
+            }
+
+            .forgot-card {
+                padding: 21px;
+            }
+
+            .auth-footer {
+                flex-direction: column;
+
+                gap: 7px;
+            }
+        }
+
+
+        /* =========================================================
+           REDUCED MOTION
+        ========================================================= */
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+
+                transition-duration: 0.01ms !important;
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+            }
+        }
+    </style>
 </head>
+
 
 <body>
 
-<div class="auth-page">
+    <div class="auth-page">
 
-    <!-- =====================================================
-         HEADER
-    ====================================================== -->
+        <!-- =====================================================
+             HEADER
+        ====================================================== -->
 
-    <header class="auth-header">
+        <header class="auth-header">
 
-        <a
-            href="/"
-            class="brand"
-            aria-label="Professional Studio home"
-        >
-            <span class="brand-mark">◇</span>
-
-            <span>
-                Professional Studio
-            </span>
-        </a>
-
-        <a
-            href="/auth/login-new.html"
-            class="header-login"
-        >
-            Log in
-        </a>
-
-    </header>
-
-
-    <!-- =====================================================
-         MAIN
-    ====================================================== -->
-
-    <main class="auth-main">
-
-
-        <!-- =================================================
-             INTRO
-        ================================================== -->
-
-        <section
-            class="intro"
-            aria-labelledby="forgotIntroTitle"
-        >
-
-            <h1 id="forgotIntroTitle">
-
-                Get back into your studio.
-
-                <span>
-                    Your workspace is waiting.
+            <a
+                href="/"
+                class="brand"
+                aria-label="Professional Studio home"
+            >
+                <span
+                    class="brand-mark"
+                    aria-hidden="true"
+                >
+                    ◇
                 </span>
 
-            </h1>
+                <span>
+                    Professional Studio
+                </span>
+            </a>
+
+            <a
+                href="/auth/login.html"
+                class="header-login"
+            >
+                Log in
+            </a>
+
+        </header>
 
 
-            <p class="intro-copy">
+        <!-- =====================================================
+             MAIN
+        ====================================================== -->
 
-                Forgot your password?
+        <main class="auth-main">
 
-                Enter the email associated with your
-                <strong>Professional Studio</strong>
-                account and we'll send you instructions
-                to reset it securely.
+            <!-- =================================================
+                 INTRO
+            ================================================== -->
 
-            </p>
+            <section
+                class="intro"
+                aria-labelledby="forgotIntroTitle"
+            >
 
+                <h1 id="forgotIntroTitle">
+                    Get back into your studio.
 
-          
-        </section>
+                    <span>
+                        Your workspace is waiting.
+                    </span>
+                </h1>
 
-
-        <!-- =================================================
-             FORGOT PASSWORD CARD
-        ================================================== -->
-
-        <section
-            class="forgot-card"
-            aria-labelledby="forgotCardTitle"
-        >
-
-            <div class="card-icon" aria-hidden="true">
-
-                <svg
-                    viewBox="0 0 24 24"
-                >
-
-                    <rect
-                        x="3"
-                        y="10"
-                        width="18"
-                        height="11"
-                        rx="2"
-                    ></rect>
-
-                    <path
-                        d="M7 10V7a5 5 0 0 1 10 0v3"
-                    ></path>
-
-                    <circle
-                        cx="12"
-                        cy="15"
-                        r="1"
-                    ></circle>
-
-                    <path
-                        d="M12 16v2"
-                    ></path>
-
-                </svg>
-
-            </div>
-
-
-            <div class="card-heading">
-
-                <h2 id="forgotCardTitle">
-                    Reset your password
-                </h2>
-
-                <p>
-                    Enter your account email to receive
-                    a password reset link.
+                <p class="intro-copy">
+                    Forgot your password?
+                    Enter the email associated with your
+                    <strong>Professional Studio</strong>
+                    account and we'll send you instructions
+                    to reset it securely.
                 </p>
 
-            </div>
+                <div
+                    class="product-points"
+                    aria-label="Professional Studio capabilities"
+                >
+                    <span>Secure access</span>
+                    <span>Private workspace</span>
+                    <span>Studio management</span>
+                </div>
+
+            </section>
 
 
-            <form id="forgotForm">
+            <!-- =================================================
+                 FORGOT PASSWORD CARD
+            ================================================== -->
 
+            <section
+                class="forgot-card"
+                aria-labelledby="forgotCardTitle"
+            >
 
-                <!-- =========================================
-                     EMAIL
-                ========================================== -->
-
-                <div class="form-group">
-
-                    <label for="email">
-                        Email
-                    </label>
-
-                    <input
-                        type="email"
-                        id="email"
-                        class="input"
-                        placeholder="Enter your email"
-                        autocomplete="email"
-                        required
+                <div
+                    class="card-icon"
+                    aria-hidden="true"
+                >
+                    <svg
+                        viewBox="0 0 24 24"
                     >
+                        <rect
+                            x="3"
+                            y="10"
+                            width="18"
+                            height="11"
+                            rx="2"
+                        ></rect>
 
-                    <div
-                        class="error-message"
-                        id="errorMessage"
-                    >
-                        Please enter a valid email address.
+                        <path
+                            d="M7 10V7a5 5 0 0 1 10 0v3"
+                        ></path>
+
+                        <circle
+                            cx="12"
+                            cy="15"
+                            r="1"
+                        ></circle>
+
+                        <path
+                            d="M12 16v2"
+                        ></path>
+                    </svg>
+                </div>
+
+
+                <div class="card-heading">
+
+                    <h2 id="forgotCardTitle">
+                        Reset your password
+                    </h2>
+
+                    <p>
+                        Enter your account email to receive
+                        a password reset link.
+                    </p>
+
+                </div>
+
+
+                <!-- =================================================
+                     FORM
+                ================================================== -->
+
+                <form
+                    id="forgotForm"
+                    novalidate
+                >
+
+                    <!-- =========================================
+                         EMAIL
+                    ========================================== -->
+
+                    <div class="form-group">
+
+                        <label for="email">
+                            Email
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            class="input"
+                            placeholder="Enter your email"
+                            autocomplete="email"
+                            inputmode="email"
+                            spellcheck="false"
+                            aria-describedby="emailError"
+                            aria-invalid="false"
+                            required
+                        >
+
+                        <div
+                            class="error-message"
+                            id="emailError"
+                            role="alert"
+                        >
+                            Please enter a valid email address.
+                        </div>
+
                     </div>
 
-                </div>
+
+                    <!-- =========================================
+                         SUBMIT
+                    ========================================== -->
+
+                    <button
+                        type="submit"
+                        class="submit-btn"
+                        id="submitBtn"
+                    >
+                        Send Reset Link
+                    </button>
 
 
-                <!-- =========================================
-                     SUBMIT
-                ========================================== -->
+                    <!-- =========================================
+                         FORM MESSAGE
+                    ========================================== -->
 
-                <button
-                    type="submit"
-                    class="submit-btn"
-                    id="submitBtn"
-                >
-                    Send Reset Link
-                </button>
-
-
-                <!-- =========================================
-                     LOGIN
-                ========================================== -->
-
-                <div class="login-link">
-
-                    Remember your password?
-
-                    <a href="/auth/login-new.html">
-                        Sign In
-                    </a>
-
-                </div>
-
-            </form>
+                    <div
+                        class="form-message"
+                        id="formMessage"
+                        role="status"
+                        aria-live="polite"
+                    ></div>
 
 
-            <!-- =============================================
-                 SUCCESS MESSAGE
-            ============================================== -->
+                    <!-- =========================================
+                         LOGIN
+                    ========================================== -->
 
-            <div
-                class="success"
-                id="successMessage"
-            >
-                Reset link sent. Please check your email
-                and follow the instructions.
-            </div>
+                    <div class="login-link">
 
-        </section>
+                        Remember your password?
 
-    </main>
+                        <a href="/auth/login.html">
+                            Sign In
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </section>
+
+        </main>
 
 
-    <!-- =====================================================
-         FOOTER
-    ====================================================== -->
+        <!-- =====================================================
+             FOOTER
+        ====================================================== -->
 
-    <footer
-        class="auth-footer"
-        aria-label="Professional Studio features"
-    >
-   <div class="footer-bottom">
+        <footer
+            class="auth-footer"
+            aria-label="Professional Studio footer"
+        >
 
             <p>
-
                 © 2026 Professional Studio. All Rights Reserved.
-
             </p>
 
+            <p>
+                Powered by
+                <a
+                    href="https://bluehorizanlabs.vercel.app/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Bluehorizanlabs
+                </a>
+            </p>
 
-        <p>
-            Powered by <a href="https://bluehorizanlabs.vercel.app/" target="_blank"> Bluehorizanlabs</a> 
-        </p>
+        </footer>
 
-
-    </footer>
-
-</div>
-
-
-<script>
-
-    /* =========================================================
-       ELEMENTS
-    ========================================================= */
-
-    const form =
-        document.getElementById("forgotForm");
-
-    const email =
-        document.getElementById("email");
-
-    const errorMessage =
-        document.getElementById("errorMessage");
-
-    const submitBtn =
-        document.getElementById("submitBtn");
-
-    const successMessage =
-        document.getElementById("successMessage");
+    </div>
 
 
-    /* =========================================================
-       EMAIL VALIDATION
-    ========================================================= */
+    <script>
+        /* =========================================================
+           ELEMENTS
+        ========================================================= */
 
-    function validEmail(value){
+        const form =
+            document.getElementById("forgotForm");
 
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-            .test(value);
+        const email =
+            document.getElementById("email");
 
-    }
+        const emailError =
+            document.getElementById("emailError");
 
+        const submitBtn =
+            document.getElementById("submitBtn");
 
-    /* =========================================================
-       FORM SUBMIT
-    ========================================================= */
-
-    form.addEventListener(
-        "submit",
-        async function(event){
-
-            event.preventDefault();
+        const formMessage =
+            document.getElementById("formMessage");
 
 
-            const emailValue =
-                email.value.trim();
+        /* =========================================================
+           STATE
+        ========================================================= */
+
+        let isSubmitting = false;
 
 
-            /* =================================================
-               VALIDATION
-            ================================================= */
+        /* =========================================================
+           EMAIL VALIDATION
+        ========================================================= */
 
-            if(
-                !emailValue ||
-                !validEmail(emailValue)
-            ){
-
-                email.classList.add("error");
-
-                errorMessage.classList.add("show");
-
-                return;
-
-            }
+        function isValidEmail(value) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+        }
 
 
+        /* =========================================================
+           FIELD ERROR
+        ========================================================= */
+
+        function showEmailError(message) {
+            email.classList.add("error");
+
+            email.setAttribute(
+                "aria-invalid",
+                "true"
+            );
+
+            emailError.textContent = message;
+
+            emailError.classList.add("show");
+        }
+
+
+        function clearEmailError() {
             email.classList.remove("error");
 
-            errorMessage.classList.remove("show");
+            email.setAttribute(
+                "aria-invalid",
+                "false"
+            );
+
+            emailError.classList.remove("show");
+        }
 
 
-            /* =================================================
-               LOADING
-            ================================================= */
+        /* =========================================================
+           FORM MESSAGE
+        ========================================================= */
 
+        function showFormMessage(
+            message,
+            type
+        ) {
+            formMessage.textContent = message;
+
+            formMessage.classList.remove(
+                "error-state",
+                "success-state"
+            );
+
+            formMessage.classList.add(
+                "show",
+                type === "success"
+                    ? "success-state"
+                    : "error-state"
+            );
+        }
+
+
+        function clearFormMessage() {
+            formMessage.textContent = "";
+
+            formMessage.classList.remove(
+                "show",
+                "error-state",
+                "success-state"
+            );
+        }
+
+
+        /* =========================================================
+           LOADING STATE
+        ========================================================= */
+
+        function setLoadingState(isLoading) {
+            submitBtn.disabled = isLoading;
+
+            submitBtn.textContent = isLoading
+                ? "Sending..."
+                : "Send Reset Link";
+
+            email.disabled = isLoading;
+        }
+
+
+        /* =========================================================
+           SUCCESS STATE
+        ========================================================= */
+
+        function setSuccessState() {
             submitBtn.disabled = true;
 
             submitBtn.textContent =
-                "Sending...";
+                "Reset Link Sent ✓";
+
+            email.disabled = true;
+        }
 
 
-            try{
+        /* =========================================================
+           FORM SUBMIT
+        ========================================================= */
 
-                /*
-                 * =================================================
-                 * CONNECT YOUR BACKEND HERE
-                 * =================================================
-                 *
-                 * Example:
-                 *
-                 * const response = await fetch(
-                 *     "/api/auth/forgot-password",
-                 *     {
-                 *         method:"POST",
-                 *         headers:{
-                 *             "Content-Type":
-                 *                 "application/json"
-                 *         },
-                 *         body:JSON.stringify({
-                 *             email:emailValue
-                 *         })
-                 *     }
-                 * );
-                 *
-                 * if(!response.ok){
-                 *
-                 *     throw new Error(
-                 *         "Unable to send reset link"
-                 *     );
-                 *
-                 * }
-                 */
+        form.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+                if (isSubmitting) {
+                    return;
+                }
 
 
-                /* Temporary demo delay */
+                /* =============================================
+                   RESET PREVIOUS STATES
+                ============================================== */
 
-                await new Promise(
-                    resolve =>
-                        setTimeout(
-                            resolve,
-                            1000
+                clearEmailError();
+                clearFormMessage();
+
+
+                /* =============================================
+                   READ INPUT
+                ============================================== */
+
+                const emailValue =
+                    email.value.trim().toLowerCase();
+
+
+                /* =============================================
+                   VALIDATION
+                ============================================== */
+
+                if (!emailValue) {
+
+                    showEmailError(
+                        "Please enter your email address."
+                    );
+
+                    email.focus();
+
+                    return;
+                }
+
+
+                if (!isValidEmail(emailValue)) {
+
+                    showEmailError(
+                        "Please enter a valid email address."
+                    );
+
+                    email.focus();
+
+                    return;
+                }
+
+
+                /* =============================================
+                   START REQUEST
+                ============================================== */
+
+                isSubmitting = true;
+
+                setLoadingState(true);
+
+
+                try {
+
+                    /*
+                     * Backend endpoint:
+                     *
+                     * POST /api/auth/forgot-password
+                     *
+                     * Expected request:
+                     *
+                     * {
+                     *     "email": "user@example.com"
+                     * }
+                     *
+                     * The backend should return a generic
+                     * success response regardless of whether
+                     * the email exists. This prevents account
+                     * enumeration.
+                     */
+
+                    const response = await fetch(
+                        "/api/auth/forgot-password",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json",
+
+                                "Accept":
+                                    "application/json"
+                            },
+
+                            credentials: "include",
+
+                            body: JSON.stringify({
+                                email: emailValue
+                            })
+                        }
+                    );
+
+
+                    /* =========================================
+                       RESPONSE PARSING
+                    ========================================== */
+
+                    let data = null;
+
+                    const contentType =
+                        response.headers.get(
+                            "content-type"
+                        ) || "";
+
+                    if (
+                        contentType.includes(
+                            "application/json"
                         )
-                );
+                    ) {
+                        data = await response.json();
+                    } else {
+                        const text =
+                            await response.text();
+
+                        data = text
+                            ? { message: text }
+                            : null;
+                    }
 
 
-                /* =================================================
-                   SUCCESS
-                ================================================= */
+                    /* =========================================
+                       REQUEST FAILURE
+                    ========================================== */
 
-                successMessage.classList.add(
-                    "show"
-                );
+                    if (!response.ok) {
 
-                submitBtn.textContent =
-                    "Reset Link Sent ✓";
+                        throw new Error(
+                            data?.message ||
+                            "Unable to process your request."
+                        );
+                    }
 
 
-            }catch(error){
+                    /* =========================================
+                       SUCCESS
+                    ========================================== */
 
-                console.error(
-                    "Password reset request failed:",
-                    error
-                );
+                    /*
+                     * Do not display an account-specific
+                     * message such as:
+                     *
+                     * "This email exists."
+                     *
+                     * or
+                     *
+                     * "No account was found."
+                     *
+                     * The backend should use the same generic
+                     * response for both cases.
+                     */
 
-                submitBtn.textContent =
-                    "Try Again";
+                    showFormMessage(
+                        "If an account is associated with this email, " +
+                        "you'll receive password reset instructions shortly. " +
+                        "Please check your inbox and spam folder.",
+                        "success"
+                    );
 
-                alert(
-                    "Something went wrong. Please try again."
-                );
+                    setSuccessState();
 
-            }finally{
+                } catch (error) {
 
-                setTimeout(
-                    () => {
+                    console.error(
+                        "Password reset request failed:",
+                        error
+                    );
 
-                        submitBtn.disabled =
-                            false;
+                    showFormMessage(
+                        "We couldn't process your request right now. " +
+                        "Please try again in a moment.",
+                        "error"
+                    );
 
-                    },
-                    1500
-                );
+                    setLoadingState(false);
+
+                    email.focus();
+
+                } finally {
+
+                    isSubmitting = false;
+
+                }
 
             }
-
-        }
-    );
+        );
 
 
-    /* =========================================================
-       REMOVE ERROR WHILE TYPING
-    ========================================================= */
+        /* =========================================================
+           INPUT CLEANUP
+        ========================================================= */
 
-    email.addEventListener(
-        "input",
-        function(){
+        email.addEventListener(
+            "input",
+            function () {
 
-            email.classList.remove(
-                "error"
-            );
+                if (
+                    email.classList.contains(
+                        "error"
+                    )
+                ) {
+                    clearEmailError();
+                }
 
-            errorMessage.classList.remove(
-                "show"
-            );
+                if (
+                    formMessage.classList.contains(
+                        "show"
+                    )
+                ) {
+                    clearFormMessage();
+                }
 
-        }
-    );
+            }
+        );
 
-</script>
+
+        /* =========================================================
+           BLUR VALIDATION
+        ========================================================= */
+
+        email.addEventListener(
+            "blur",
+            function () {
+
+                const value =
+                    email.value.trim();
+
+                if (!value) {
+                    return;
+                }
+
+                if (!isValidEmail(value)) {
+
+                    showEmailError(
+                        "Please enter a valid email address."
+                    );
+
+                } else {
+
+                    clearEmailError();
+
+                }
+
+            }
+        );
+    </script>
 
 </body>
-
 </html>
