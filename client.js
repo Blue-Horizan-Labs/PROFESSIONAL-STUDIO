@@ -1,76 +1,520 @@
+"use strict";
+
 /* =========================================================
    PROFESSIONAL STUDIO
-   PUBLIC PHOTOGRAPHER PROFILE
-   FRONTEND JAVASCRIPT
+   PUBLIC CLIENT PROFILE
 ========================================================= */
+
+const STORAGE_KEYS = Object.freeze({
+    services: "professionalStudio.services",
+    equipment: "professionalStudio.equipment",
+    profile: "professionalStudio.profile",
+    reviews: "professionalStudio.reviews",
+    reviewEmail: "professionalStudio.reviewEmail",
+    portfolioStorage: "professionalStudio.portfolioStorage"
+});
+
+const RECENT_WORK_DB_NAME = "ProfessionalStudioDB";
+const RECENT_WORK_DB_VERSION = 1;
+const RECENT_WORK_STORE_NAME = "recentWorkPhotos";
+
+let recentWorkObjectUrls = [];
+let recentWorkRenderToken = 0;
+
+let reviewModal = null;
+let reviewForm = null;
+let reviewPreviouslyFocusedElement = null;
 
 
 /* =========================================================
-   STORAGE KEYS
+   GENERAL HELPERS
 ========================================================= */
 
-var SERVICES_STORAGE_KEY =
-    "professionalStudio.services";
+function readClientLocalStorage(key, fallback = null) {
+    try {
+        const value = localStorage.getItem(key);
 
-var EQUIPMENT_STORAGE_KEY =
-    "professionalStudio.equipment";
+        if (value === null) {
+            return fallback;
+        }
 
-var PROFILE_STORAGE_KEY =
-    "professionalStudio.profile";
-
-var REVIEWS_STORAGE_KEY =
-    "professionalStudio.reviews";
-
-var REVIEW_EMAIL_STORAGE_KEY =
-    "professionalStudio.reviewEmail";
-
-var RECENT_WORK_STORAGE_KEY =
-    "professionalStudio.portfolioStorage";
-
-var RECENT_WORK_DB_NAME =
-    "ProfessionalStudioDB";
-
-var RECENT_WORK_DB_VERSION =
-    1;
-
-var RECENT_WORK_STORE =
-    "recentWorkPhotos";
-
-
-/* =========================================================
-   SAFE JSON READER
-========================================================= */
-
-function readClientLocalStorage(
-    key,
-    fallback
-) {
-
-    var saved =
-        localStorage.getItem(key);
-
-
-    if (!saved) {
+        return JSON.parse(value);
+    } catch (error) {
+        console.warn(`Unable to read localStorage key "${key}".`, error);
         return fallback;
     }
+}
 
+function writeClientLocalStorage(key, value) {
+    try {
+        localStorage.setItem(key, JSON.stringify(value));
+        return true;
+    } catch (error) {
+        console.warn(`Unable to write localStorage key "${key}".`, error);
+        return false;
+    }
+}
+
+function normalizeText(value) {
+    if (value === null || value === undefined) {
+        return "";
+    }
+
+    return String(value).trim();
+}
+
+function normalizeEmail(value) {
+    return normalizeText(value).toLowerCase();
+}
+
+function escapeHtml(value) {
+    return normalizeText(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
+}
+
+function getNumericValue(value) {
+    if (value === null || value === undefined || value === "") {
+        return null;
+    }
+
+    const number = Number(value);
+
+    return Number.isFinite(number) ? number : null;
+}
+
+function isReducedMotion() {
+    return window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+
+/* =========================================================
+   PROFILE
+========================================================= */
+
+function getClientProfile() {
+    const profile = readClientLocalStorage(
+        STORAGE_KEYS.profile,
+        {}
+    );
+
+    return profile && typeof profile === "object"
+        ? profile
+        : {};
+}
+
+function getProfileValue(profile, aliases = []) {
+    for (const alias of aliases) {
+        const value = profile?.[alias];
+
+        if (
+            value !== null &&
+            value !== undefined &&
+            normalizeText(value)
+        ) {
+            return value;
+        }
+    }
+
+    return "";
+}
+
+function getNestedProfileValue(profile, parentAliases = [], aliases = []) {
+    for (const parentAlias of parentAliases) {
+        const parent = profile?.[parentAlias];
+
+        if (!parent || typeof parent !== "object") {
+            continue;
+        }
+
+        for (const alias of aliases) {
+            const value = parent?.[alias];
+
+            if (
+                value !== null &&
+                value !== undefined &&
+                normalizeText(value)
+            ) {
+                return value;
+            }
+        }
+    }
+
+    return "";
+}
+
+function getSafeProfileUrl(value) {
+    const rawValue = normalizeText(value);
+
+    if (!rawValue) {
+        return "";
+    }
 
     try {
+        const url = new URL(rawValue);
 
-        return JSON.parse(saved);
+        if (
+            url.protocol !== "https:" &&
+            url.protocol !== "http:"
+        ) {
+            return "";
+        }
 
-    } catch (error) {
+        return url.href;
+    } catch {
+        return "";
+    }
+}
 
-        console.warn(
-            "Could not parse localStorage:",
-            key,
-            error
-        );
+function getProfileName(profile) {
+    return normalizeText(
+        getProfileValue(profile, [
+            "name",
+            "fullName",
+            "photographerName",
+            "displayName"
+        ])
+    ) || "Photographer";
+}
 
-        return fallback;
+function getProfileStudio(profile) {
+    return normalizeText(
+        getProfileValue(profile, [
+            "studioName",
+            "businessName",
+            "companyName",
+            "brandName"
+        ])
+    );
+}
 
+function getProfileAbout(profile) {
+    return normalizeText(
+        getProfileValue(profile, [
+            "about",
+            "aboutMe",
+            "bio",
+            "description",
+            "profileDescription"
+        ])
+    );
+}
+
+function getProfileLocation(profile) {
+    return normalizeText(
+        getProfileValue(profile, [
+            "location",
+            "city",
+            "address",
+            "locationName"
+        ])
+    );
+}
+
+function getProfilePhone(profile) {
+    return normalizeText(
+        getProfileValue(profile, [
+            "phone",
+            "phoneNumber",
+            "mobile",
+            "contactNumber"
+        ])
+    );
+}
+
+function getProfileEmail(profile) {
+    return normalizeText(
+        getProfileValue(profile, [
+            "email",
+            "emailAddress",
+            "contactEmail"
+        ])
+    );
+}
+
+function renderProfileDataAttributes(profile) {
+    document
+        .querySelectorAll("[data-profile-field]")
+        .forEach((element) => {
+
+            const field = element.dataset.profileField;
+
+            if (!field) {
+                return;
+            }
+
+            const value = getProfileValue(profile, [field]);
+
+            if (value) {
+                element.textContent = value;
+            }
+        });
+}
+
+function renderClientPhotographerName(profile) {
+    const name = getProfileName(profile);
+
+    document
+        .querySelectorAll("[data-profile-name], #profileName, #photographerName")
+        .forEach((element) => {
+            element.textContent = name;
+        });
+}
+
+function renderClientStudioName(profile) {
+    const studio = getProfileStudio(profile);
+
+    const element = document.getElementById("photographerStudio");
+
+    if (!element) {
+        return;
     }
 
+    element.textContent =
+        studio || "Studio name not provided";
+}
+
+function renderClientAbout(profile) {
+    const element = document.getElementById("aboutText");
+
+    if (!element) {
+        return;
+    }
+
+    const about = getProfileAbout(profile);
+
+    element.textContent =
+        about || "No profile description has been added yet.";
+}
+
+function renderClientContact(profile) {
+    const values = {
+        profilePhone: getProfilePhone(profile) || "Phone not provided",
+        profileEmail: getProfileEmail(profile) || "Email not provided",
+        profileLocation: getProfileLocation(profile) || "Location not provided"
+    };
+
+    Object.entries(values).forEach(([id, value]) => {
+
+        const element = document.getElementById(id);
+
+        if (element) {
+            element.textContent = value;
+        }
+    });
+}
+
+function renderClientSocialLinks(profile) {
+    const socialLinks = document.querySelectorAll(
+        "[data-social]"
+    );
+
+    socialLinks.forEach((link) => {
+
+        const platform = link.dataset.social;
+
+        const url = getSafeProfileUrl(
+            getNestedProfileValue(
+                profile,
+                ["social", "socialLinks", "socialMedia"],
+                [platform]
+            )
+        );
+
+        if (url) {
+            link.href = url;
+            link.hidden = false;
+            link.setAttribute("aria-hidden", "false");
+        } else {
+            link.hidden = true;
+            link.setAttribute("aria-hidden", "true");
+            link.removeAttribute("href");
+        }
+    });
+}
+
+function getProfileExperienceValue(profile, aliases) {
+    return getNumericValue(
+        getProfileValue(profile, aliases)
+    );
+}
+
+function getProfileMeterValue(profile, aliases) {
+    const value = getNumericValue(
+        getProfileValue(profile, aliases)
+    );
+
+    if (value === null) {
+        return null;
+    }
+
+    return clamp(value, 0, 100);
+}
+
+function renderExperience(profile) {
+
+    const section = document.getElementById(
+        "experienceSection"
+    );
+
+    const sessionsBox = document.getElementById(
+        "sessionsExperience"
+    );
+
+    const yearsBox = document.getElementById(
+        "yearsExperience"
+    );
+
+    const sessionsText = document.getElementById(
+        "sessionsExperienceText"
+    );
+
+    const yearsText = document.getElementById(
+        "yearsExperienceText"
+    );
+
+    const sessionsMeter = document.querySelector(
+        '[data-meter="sessions"]'
+    );
+
+    const experienceMeter = document.querySelector(
+        '[data-meter="experience"]'
+    );
+
+    if (
+        !section ||
+        !sessionsBox ||
+        !yearsBox ||
+        !sessionsText ||
+        !yearsText ||
+        !sessionsMeter ||
+        !experienceMeter
+    ) {
+        return;
+    }
+
+    const sessions = getProfileExperienceValue(
+        profile,
+        [
+            "sessionsCompleted",
+            "completedSessions",
+            "totalSessions",
+            "sessions"
+        ]
+    );
+
+    const years = getProfileExperienceValue(
+        profile,
+        [
+            "yearsExperience",
+            "experienceYears",
+            "yearsOfExperience"
+        ]
+    );
+
+    const sessionsMeterValue = getProfileMeterValue(
+        profile,
+        [
+            "sessionsMeter",
+            "sessionsProgress",
+            "sessionsPercentage"
+        ]
+    );
+
+    const experienceMeterValue = getProfileMeterValue(
+        profile,
+        [
+            "experienceMeter",
+            "experienceProgress",
+            "experiencePercentage"
+        ]
+    );
+
+    let visibleCards = 0;
+
+    if (sessions !== null) {
+
+        sessionsBox.hidden = false;
+        visibleCards += 1;
+
+        sessionsText.textContent =
+            `${sessions.toLocaleString()} Sessions`;
+
+        const meterValue =
+            sessionsMeterValue !== null
+                ? sessionsMeterValue
+                : 0;
+
+        sessionsMeter.style.width = `${meterValue}%`;
+
+        const meter =
+            sessionsMeter.closest(".meter");
+
+        meter?.setAttribute(
+            "aria-valuenow",
+            String(meterValue)
+        );
+    } else {
+        sessionsBox.hidden = true;
+    }
+
+    if (years !== null) {
+
+        yearsBox.hidden = false;
+        visibleCards += 1;
+
+        yearsText.textContent =
+            `${years} ${years === 1 ? "Year" : "Years"} Experience`;
+
+        const meterValue =
+            experienceMeterValue !== null
+                ? experienceMeterValue
+                : 0;
+
+        experienceMeter.style.width = `${meterValue}%`;
+
+        const meter =
+            experienceMeter.closest(".meter");
+
+        meter?.setAttribute(
+            "aria-valuenow",
+            String(meterValue)
+        );
+    } else {
+        yearsBox.hidden = true;
+    }
+
+    section.hidden = visibleCards === 0;
+
+    if (!section.hidden) {
+        requestAnimationFrame(() => {
+            section.querySelectorAll(".exp-box").forEach((box) => {
+                if (!box.hidden) {
+                    box.classList.add("visible");
+                }
+            });
+        });
+    }
+}
+
+function renderPublicProfile() {
+    const profile = getClientProfile();
+
+    renderProfileDataAttributes(profile);
+    renderClientPhotographerName(profile);
+    renderClientStudioName(profile);
+    renderClientAbout(profile);
+    renderClientContact(profile);
+    renderClientSocialLinks(profile);
+    renderExperience(profile);
 }
 
 
@@ -79,1858 +523,303 @@ function readClientLocalStorage(
 ========================================================= */
 
 function getClientReviews() {
-
-    var reviews =
-        readClientLocalStorage(
-            REVIEWS_STORAGE_KEY,
-            []
-        );
-
-
-    if (
-        reviews &&
-        typeof reviews === "object" &&
-        !Array.isArray(reviews) &&
-        Array.isArray(reviews.reviews)
-    ) {
-
-        reviews =
-            reviews.reviews;
-
-    }
-
-
-    if (!Array.isArray(reviews)) {
-
-        return [];
-
-    }
-
-
-    return reviews.filter(
-        function(review) {
-
-            return (
-                review &&
-                typeof review === "object"
-            );
-
-        }
+    const reviews = readClientLocalStorage(
+        STORAGE_KEYS.reviews,
+        []
     );
 
+    return Array.isArray(reviews)
+        ? reviews
+        : [];
 }
 
+function saveClientReviews(reviews) {
+    return writeClientLocalStorage(
+        STORAGE_KEYS.reviews,
+        reviews
+    );
+}
 
-/* =========================================================
-   SAVE REVIEWS
-========================================================= */
-
-function saveClientReviews(
-    reviews
-) {
-
+function getStoredReviewEmail() {
     try {
-
-        localStorage.setItem(
-            REVIEWS_STORAGE_KEY,
-            JSON.stringify(
-                reviews
+        return normalizeEmail(
+            localStorage.getItem(
+                STORAGE_KEYS.reviewEmail
             )
         );
-
-        return true;
-
+    } catch {
+        return "";
     }
-    catch (error) {
+}
 
-        console.error(
-            "Could not save reviews:",
+function setStoredReviewEmail(email) {
+    try {
+        localStorage.setItem(
+            STORAGE_KEYS.reviewEmail,
+            normalizeEmail(email)
+        );
+    } catch (error) {
+        console.warn(
+            "Unable to remember review email.",
             error
         );
-
-        return false;
-
     }
-
 }
-
-
-/* =========================================================
-   NORMALIZE REVIEW EMAIL
-========================================================= */
-
-function normalizeReviewEmail(
-    email
-) {
-
-    return String(
-        email || ""
-    )
-    .trim()
-    .toLowerCase();
-
-}
-
-
-/* =========================================================
-   CHECK WHETHER EMAIL ALREADY REVIEWED
-========================================================= */
-
-function hasClientAlreadyReviewed(
-    email
-) {
-
-    var normalizedEmail =
-        normalizeReviewEmail(
-            email
-        );
-
-
-    if (!normalizedEmail) {
-
-        return false;
-
-    }
-
-
-    var reviews =
-        getClientReviews();
-
-
-    return reviews.some(
-        function(review) {
-
-            return (
-                normalizeReviewEmail(
-                    review.email ||
-                    review.clientEmail ||
-                    ""
-                ) === normalizedEmail
-            );
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   GENERATE REVIEW ID
-========================================================= */
 
 function generateReviewId() {
-
-    return (
-        "review-" +
-        Date.now() +
-        "-" +
-        Math.random()
-            .toString(36)
-            .slice(2, 10)
-    );
-
+    return `review_${Date.now()}_${Math.random()
+        .toString(36)
+        .slice(2, 10)}`;
 }
 
-
-/* =========================================================
-   FORMAT REVIEW DATE
-========================================================= */
-
-function formatClientReviewDate(
-    value
-) {
-
+function formatReviewDate(value) {
     if (!value) {
-
-        return "";
-
+        return "Date unavailable";
     }
 
+    const date = new Date(value);
 
-    var date =
-        new Date(
-            value
-        );
-
-
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return "";
-
+    if (Number.isNaN(date.getTime())) {
+        return "Date unavailable";
     }
 
-
-    return date.toLocaleDateString(
-        "en-IN",
+    return new Intl.DateTimeFormat(
+        undefined,
         {
-            day: "numeric",
+            year: "numeric",
             month: "short",
-            year: "numeric"
+            day: "numeric"
         }
-    );
-
+    ).format(date);
 }
 
+function createReviewStars(rating) {
 
-/* =========================================================
-   CREATE REVIEW STARS
-========================================================= */
+    const safeRating = clamp(
+        Number(rating) || 0,
+        0,
+        5
+    );
 
-function createReviewStars(
-    rating
-) {
+    const fragment = document.createDocumentFragment();
 
-    var wrapper =
-        document.createElement(
-            "div"
-        );
+    for (let index = 1; index <= 5; index += 1) {
 
+        const icon = document.createElement("i");
 
-    wrapper.className =
-        "review-card-rating";
+        icon.className =
+            index <= safeRating
+                ? "fa-solid fa-star"
+                : "fa-regular fa-star";
 
-
-    var safeRating =
-        Number(
-            rating
-        );
-
-
-    if (
-        !Number.isFinite(
-            safeRating
-        )
-    ) {
-
-        safeRating = 0;
-
-    }
-
-
-    safeRating =
-        Math.max(
-            0,
-            Math.min(
-                5,
-                safeRating
-            )
-        );
-
-
-    for (
-        var i = 1;
-        i <= 5;
-        i++
-    ) {
-
-        var star =
-            document.createElement(
-                "i"
-            );
-
-
-        var difference =
-            safeRating - (i - 1);
-
-
-        if (difference >= 1) {
-
-            star.className =
-                "fa-solid fa-star";
-
-        }
-        else if (difference >= 0.5) {
-
-            star.className =
-                "fa-solid fa-star-half-stroke";
-
-        }
-        else {
-
-            star.className =
-                "fa-regular fa-star";
-
-        }
-
-
-        star.setAttribute(
+        icon.setAttribute(
             "aria-hidden",
             "true"
         );
 
-
-        wrapper.appendChild(
-            star
-        );
-
+        fragment.appendChild(icon);
     }
 
-
-    return wrapper;
-
+    return fragment;
 }
 
+function createReviewCard(review) {
 
-/* =========================================================
-   CREATE REVIEW CARD
-========================================================= */
+    const article = document.createElement("article");
 
-function createClientReviewCard(
-    review
-) {
+    article.className = "review-card";
 
-    var card =
-        document.createElement(
-            "article"
-        );
+    const header = document.createElement("div");
 
+    header.className = "review-card-header";
 
-    card.className =
-        "review-card";
+    const author = document.createElement("div");
 
+    author.className = "review-author";
 
-    var header =
-        document.createElement(
-            "div"
-        );
+    const name = document.createElement("h3");
 
+    name.className = "review-author-name";
+    name.textContent =
+        normalizeText(review.name) ||
+        "Anonymous Client";
 
-    header.className =
-        "review-card-header";
+    author.appendChild(name);
 
+    if (normalizeText(review.service)) {
 
-    var author =
-        document.createElement(
-            "div"
-        );
+        const service = document.createElement("div");
 
-
-    author.className =
-        "review-author";
-
-
-    var authorName =
-        document.createElement(
-            "h3"
-        );
-
-
-    authorName.className =
-        "review-author-name";
-
-
-    authorName.textContent =
-        review.clientName ||
-        review.name ||
-        "Client";
-
-
-    author.appendChild(
-        authorName
-    );
-
-
-    var serviceName =
-        review.service ||
-        review.serviceName ||
-        "";
-
-
-    if (serviceName) {
-
-        var service =
-            document.createElement(
-                "span"
-            );
-
-
-        service.className =
-            "review-service";
-
-
+        service.className = "review-service";
         service.textContent =
-            serviceName;
+            normalizeText(review.service);
 
-
-        author.appendChild(
-            service
-        );
-
+        author.appendChild(service);
     }
 
+    const rating = document.createElement("div");
 
-    header.appendChild(
-        author
+    rating.className = "review-card-rating";
+    rating.setAttribute(
+        "aria-label",
+        `${clamp(Number(review.rating) || 0, 0, 5)} out of 5 stars`
     );
 
-
-    header.appendChild(
-        createReviewStars(
-            review.rating
-        )
+    rating.appendChild(
+        createReviewStars(review.rating)
     );
 
+    header.appendChild(author);
+    header.appendChild(rating);
 
-    var reviewText =
-        document.createElement(
-            "p"
-        );
+    const text = document.createElement("p");
 
+    text.className = "review-card-text";
+    text.textContent =
+        normalizeText(review.text) ||
+        "No review text provided.";
 
-    reviewText.className =
-        "review-card-text";
+    const date = document.createElement("div");
 
+    date.className = "review-date";
+    date.textContent =
+        formatReviewDate(review.createdAt);
 
-    reviewText.textContent =
-        review.review ||
-        review.text ||
-        review.comment ||
-        "";
+    article.appendChild(header);
+    article.appendChild(text);
+    article.appendChild(date);
 
-
-    card.appendChild(
-        header
-    );
-
-
-    card.appendChild(
-        reviewText
-    );
-
-
-    var date =
-        formatClientReviewDate(
-            review.createdAt ||
-            review.date
-        );
-
-
-    if (date) {
-
-        var dateElement =
-            document.createElement(
-                "div"
-            );
-
-
-        dateElement.className =
-            "review-date";
-
-
-        dateElement.textContent =
-            date;
-
-
-        card.appendChild(
-            dateElement
-        );
-
-    }
-
-
-    return card;
-
+    return article;
 }
 
+function renderReviewStars(rating) {
 
-/* =========================================================
-   CALCULATE AVERAGE RATING
-========================================================= */
-
-function getClientAverageRating(
-    reviews
-) {
-
-    if (!reviews.length) {
-
-        return 0;
-
-    }
-
-
-    var total =
-        0;
-
-    var validRatings =
-        0;
-
-
-    reviews.forEach(
-        function(review) {
-
-            var rating =
-                Number(
-                    review.rating
-                );
-
-
-            if (
-                Number.isFinite(
-                    rating
-                ) &&
-                rating >= 1 &&
-                rating <= 5
-            ) {
-
-                total += rating;
-
-                validRatings++;
-
-            }
-
-        }
+    const container = document.getElementById(
+        "reviewsAverageStars"
     );
-
-
-    if (!validRatings) {
-
-        return 0;
-
-    }
-
-
-    return (
-        total /
-        validRatings
-    );
-
-}
-
-
-/* =========================================================
-   RENDER AVERAGE STARS
-========================================================= */
-
-function renderClientAverageStars(
-    rating
-) {
-
-    var container =
-        document.getElementById(
-            "reviewsAverageStars"
-        );
-
 
     if (!container) {
-
         return;
-
     }
 
+    const safeRating = clamp(
+        Number(rating) || 0,
+        0,
+        5
+    );
 
-    container.innerHTML =
-        "";
-
-
-    var safeRating =
-        Number(
-            rating
-        );
-
-
-    if (
-        !Number.isFinite(
-            safeRating
-        )
-    ) {
-
-        safeRating = 0;
-
-    }
-
-
-    safeRating =
-        Math.max(
-            0,
-            Math.min(
-                5,
-                safeRating
-            )
-        );
-
-
-    for (
-        var i = 1;
-        i <= 5;
-        i++
-    ) {
-
-        var star =
-            document.createElement(
-                "i"
-            );
-
-
-        var difference =
-            safeRating - (i - 1);
-
-
-        if (difference >= 1) {
-
-            star.className =
-                "fa-solid fa-star";
-
-        }
-        else if (difference >= 0.5) {
-
-            star.className =
-                "fa-solid fa-star-half-stroke";
-
-        }
-        else {
-
-            star.className =
-                "fa-regular fa-star";
-
-        }
-
-
-        star.setAttribute(
-            "aria-hidden",
-            "true"
-        );
-
-
-        container.appendChild(
-            star
-        );
-
-    }
-
+    container.replaceChildren(
+        createReviewStars(safeRating)
+    );
 
     container.setAttribute(
         "aria-label",
-        "Average rating " +
-        safeRating.toFixed(1) +
-        " out of 5"
+        safeRating > 0
+            ? `Average rating ${safeRating.toFixed(1)} out of 5`
+            : "No reviews yet"
     );
-
 }
-
-
-/* =========================================================
-   RENDER REVIEWS
-========================================================= */
 
 function renderClientReviews() {
 
-    var list =
-        document.getElementById(
-            "reviewsList"
-        );
+    const reviews = getClientReviews();
 
-
-    if (!list) {
-
-        return;
-
-    }
-
-
-    var emptyState =
-        document.getElementById(
-            "reviewsEmptyState"
-        );
-
-
-    var averageElement =
-        document.getElementById(
-            "reviewsAverageRating"
-        );
-
-
-    var countElement =
-        document.getElementById(
-            "reviewsCount"
-        );
-
-
-    var reviews =
-        getClientReviews();
-
-
-    list.innerHTML =
-        "";
-
-
-    var average =
-        getClientAverageRating(
-            reviews
-        );
-
-
-    if (averageElement) {
-
-        averageElement.textContent =
-            average.toFixed(1);
-
-    }
-
-
-    renderClientAverageStars(
-        average
+    const list = document.getElementById(
+        "reviewsList"
     );
 
+    const emptyState = document.getElementById(
+        "reviewsEmptyState"
+    );
 
-    if (countElement) {
+    const averageElement = document.getElementById(
+        "reviewsAverageRating"
+    );
 
-        if (!reviews.length) {
+    const countElement = document.getElementById(
+        "reviewsCount"
+    );
 
-            countElement.textContent =
-                "No reviews yet";
-
-        }
-        else {
-
-            countElement.textContent =
-                reviews.length +
-                (
-                    reviews.length === 1
-                        ? " client review"
-                        : " client reviews"
-                );
-
-        }
-
+    if (
+        !list ||
+        !emptyState ||
+        !averageElement ||
+        !countElement
+    ) {
+        return;
     }
 
+    list.replaceChildren();
 
     if (!reviews.length) {
 
-        if (emptyState) {
+        averageElement.textContent = "0.0";
+        countElement.textContent =
+            "No reviews yet";
 
-            emptyState.hidden =
-                false;
+        renderReviewStars(0);
 
-        }
+        emptyState.hidden = false;
 
         return;
-
     }
 
+    const validReviews = reviews.filter((review) => {
 
-    if (emptyState) {
+        const rating = Number(review?.rating);
 
-        emptyState.hidden =
-            true;
+        return (
+            Number.isFinite(rating) &&
+            rating >= 1 &&
+            rating <= 5
+        );
+    });
 
+    if (!validReviews.length) {
+
+        averageElement.textContent = "0.0";
+        countElement.textContent =
+            "No reviews yet";
+
+        renderReviewStars(0);
+
+        emptyState.hidden = false;
+
+        return;
     }
 
+    const average =
+        validReviews.reduce(
+            (sum, review) =>
+                sum + Number(review.rating),
+            0
+        ) / validReviews.length;
 
-    reviews
+    averageElement.textContent =
+        average.toFixed(1);
+
+    countElement.textContent =
+        validReviews.length === 1
+            ? "1 review"
+            : `${validReviews.length} reviews`;
+
+    renderReviewStars(average);
+
+    validReviews
         .slice()
         .sort(
-            function(a, b) {
-
-                var dateA =
-                    new Date(
-                        a.createdAt ||
-                        a.date ||
-                        0
-                    ).getTime();
-
-
-                var dateB =
-                    new Date(
-                        b.createdAt ||
-                        b.date ||
-                        0
-                    ).getTime();
-
-
-                return dateB - dateA;
-
-            }
+            (a, b) =>
+                new Date(b.createdAt || 0) -
+                new Date(a.createdAt || 0)
         )
-        .forEach(
-            function(review) {
+        .forEach((review) => {
 
-                list.appendChild(
-                    createClientReviewCard(
-                        review
-                    )
-                );
-
-            }
-        );
-
-}
-
-
-/* =========================================================
-   REVIEW MODAL ELEMENTS
-========================================================= */
-
-function getReviewModalElements() {
-
-    return {
-
-        modal:
-            document.getElementById(
-                "reviewModal"
-            ),
-
-        form:
-            document.getElementById(
-                "reviewForm"
-            ),
-
-        alreadySubmitted:
-            document.getElementById(
-                "reviewAlreadySubmitted"
-            ),
-
-        openButton:
-            document.getElementById(
-                "openReviewModalBtn"
-            ),
-
-        closeButton:
-            document.getElementById(
-                "closeReviewModalBtn"
-            ),
-
-        nameInput:
-            document.getElementById(
-                "reviewClientName"
-            ),
-
-        emailInput:
-            document.getElementById(
-                "reviewClientEmail"
-            ),
-
-        ratingInput:
-            document.getElementById(
-                "reviewRatingValue"
-            ),
-
-        reviewInput:
-            document.getElementById(
-                "reviewText"
-            ),
-
-        submitButton:
-            document.getElementById(
-                "submitReviewBtn"
-            ),
-
-        message:
-            document.getElementById(
-                "reviewFormMessage"
-            ),
-
-        characterCount:
-            document.getElementById(
-                "reviewCharacterCount"
-            )
-
-    };
-
-}
-
-
-/* =========================================================
-   RESET REVIEW FORM
-========================================================= */
-
-function resetReviewForm() {
-
-    var elements =
-        getReviewModalElements();
-
-
-    if (!elements.form) {
-
-        return;
-
-    }
-
-
-    elements.form.reset();
-
-
-    if (elements.ratingInput) {
-
-        elements.ratingInput.value =
-            "";
-
-    }
-
-
-    document
-        .querySelectorAll(
-            ".rating-star"
-        )
-        .forEach(
-            function(star) {
-
-                star.classList.remove(
-                    "selected"
-                );
-
-                star.setAttribute(
-                    "aria-checked",
-                    "false"
-                );
-
-                var icon =
-                    star.querySelector(
-                        "i"
-                    );
-
-
-                if (icon) {
-
-                    icon.className =
-                        "fa-regular fa-star";
-
-                }
-
-            }
-        );
-
-
-    document
-        .querySelectorAll(
-            ".review-field-error"
-        )
-        .forEach(
-            function(errorElement) {
-
-                errorElement.textContent =
-                    "";
-
-            }
-        );
-
-
-    document
-        .querySelectorAll(
-            ".review-form-group input.invalid, .review-form-group textarea.invalid"
-        )
-        .forEach(
-            function(element) {
-
-                element.classList.remove(
-                    "invalid"
-                );
-
-            }
-        );
-
-
-    if (elements.message) {
-
-        elements.message.hidden =
-            true;
-
-        elements.message.textContent =
-            "";
-
-        elements.message.className =
-            "review-form-message";
-
-    }
-
-
-    if (elements.characterCount) {
-
-        elements.characterCount.textContent =
-            "0 / 1000";
-
-    }
-
-
-    if (elements.alreadySubmitted) {
-
-        elements.alreadySubmitted.hidden =
-            true;
-
-    }
-
-
-    elements.form.hidden =
-        false;
-
-
-    if (elements.submitButton) {
-
-        elements.submitButton.disabled =
-            false;
-
-        elements.submitButton.textContent =
-            "Submit Review";
-
-    }
-
-}
-
-
-/* =========================================================
-   OPEN REVIEW MODAL
-========================================================= */
-
-var reviewLastFocusedElement = null;
-
-
-function openClientReviewModal() {
-
-    var elements =
-        getReviewModalElements();
-
-
-    if (!elements.modal) {
-
-        return;
-
-    }
-
-
-    reviewLastFocusedElement =
-        document.activeElement;
-
-
-    resetReviewForm();
-
-
-    elements.modal.hidden =
-        false;
-
-
-    elements.modal.setAttribute(
-        "aria-hidden",
-        "false"
-    );
-
-
-    document.body.classList.add(
-        "review-modal-open"
-    );
-
-
-    var rememberedEmail = "";
-
-
-    try {
-
-        rememberedEmail =
-            localStorage.getItem(
-                REVIEW_EMAIL_STORAGE_KEY
-            ) || "";
-
-    }
-    catch (error) {
-
-        rememberedEmail = "";
-
-    }
-
-
-    /*
-       Do not immediately hide the form.
-
-       The client should still be able to see and
-       understand why the email cannot be reused.
-    */
-
-    if (
-        rememberedEmail &&
-        hasClientAlreadyReviewed(
-            rememberedEmail
-        )
-    ) {
-
-        if (elements.emailInput) {
-
-            elements.emailInput.value =
-                rememberedEmail;
-
-        }
-
-
-        showAlreadySubmittedState();
-
-    }
-    else if (
-        elements.nameInput
-    ) {
-
-        setTimeout(
-            function() {
-
-                elements.nameInput.focus();
-
-            },
-            50
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   CLOSE REVIEW MODAL
-========================================================= */
-
-function closeClientReviewModal() {
-
-    var elements =
-        getReviewModalElements();
-
-
-    if (!elements.modal) {
-
-        return;
-
-    }
-
-
-    elements.modal.hidden =
-        true;
-
-
-    elements.modal.setAttribute(
-        "aria-hidden",
-        "true"
-    );
-
-
-    document.body.classList.remove(
-        "review-modal-open"
-    );
-
-
-    if (
-        reviewLastFocusedElement &&
-        typeof reviewLastFocusedElement.focus ===
-            "function"
-    ) {
-
-        try {
-
-            reviewLastFocusedElement.focus();
-
-        }
-        catch (error) {
-
-            /* Ignore focus restoration errors. */
-
-        }
-
-    }
-
-
-    reviewLastFocusedElement =
-        null;
-
-}
-
-
-/* =========================================================
-   SHOW ALREADY SUBMITTED STATE
-========================================================= */
-
-function showAlreadySubmittedState() {
-
-    var elements =
-        getReviewModalElements();
-
-
-    if (
-        !elements.form ||
-        !elements.alreadySubmitted
-    ) {
-
-        return;
-
-    }
-
-
-    elements.form.hidden =
-        true;
-
-
-    elements.alreadySubmitted.hidden =
-        false;
-
-
-    var closeButton =
-        elements.alreadySubmitted.querySelector(
-            "[data-close-review-modal]"
-        );
-
-
-    if (closeButton) {
-
-        setTimeout(
-            function() {
-
-                closeButton.focus();
-
-            },
-            30
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   RATING SELECTION
-========================================================= */
-
-function setClientReviewRating(
-    rating
-) {
-
-    var elements =
-        getReviewModalElements();
-
-
-    var safeRating =
-        Number(
-            rating
-        );
-
-
-    if (
-        !Number.isInteger(
-            safeRating
-        ) ||
-        safeRating < 1 ||
-        safeRating > 5
-    ) {
-
-        return;
-
-    }
-
-
-    if (elements.ratingInput) {
-
-        elements.ratingInput.value =
-            String(
-                safeRating
+            list.appendChild(
+                createReviewCard(review)
             );
+        });
 
-    }
-
-
-    document
-        .querySelectorAll(
-            ".rating-star"
-        )
-        .forEach(
-            function(star) {
-
-                var starRating =
-                    Number(
-                        star.dataset.rating
-                    );
-
-
-                var selected =
-                    starRating <= safeRating;
-
-
-                star.classList.toggle(
-                    "selected",
-                    selected
-                );
-
-
-                star.setAttribute(
-                    "aria-checked",
-                    starRating === safeRating
-                        ? "true"
-                        : "false"
-                );
-
-
-                var icon =
-                    star.querySelector(
-                        "i"
-                    );
-
-
-                if (icon) {
-
-                    icon.className =
-                        selected
-                            ? "fa-solid fa-star"
-                            : "fa-regular fa-star";
-
-                }
-
-            }
-        );
-
-}
-
-
-/* =========================================================
-   REVIEW FORM MESSAGE
-========================================================= */
-
-function showReviewFormMessage(
-    message,
-    type
-) {
-
-    var messageElement =
-        document.getElementById(
-            "reviewFormMessage"
-        );
-
-
-    if (!messageElement) {
-
-        return;
-
-    }
-
-
-    messageElement.textContent =
-        message;
-
-
-    messageElement.className =
-        "review-form-message " +
-        (
-            type === "success"
-                ? "success"
-                : "error"
-        );
-
-
-    messageElement.hidden =
-        false;
-
-}
-
-
-/* =========================================================
-   REVIEW VALIDATION
-========================================================= */
-
-function validateClientReviewForm() {
-
-    var elements =
-        getReviewModalElements();
-
-
-    var valid =
-        true;
-
-
-    var name =
-        elements.nameInput
-            ? elements.nameInput.value.trim()
-            : "";
-
-
-    var email =
-        elements.emailInput
-            ? normalizeReviewEmail(
-                elements.emailInput.value
-            )
-            : "";
-
-
-    var rating =
-        elements.ratingInput
-            ? Number(
-                elements.ratingInput.value
-            )
-            : 0;
-
-
-    var reviewText =
-        elements.reviewInput
-            ? elements.reviewInput.value.trim()
-            : "";
-
-
-    var nameError =
-        document.getElementById(
-            "reviewClientNameError"
-        );
-
-
-    var emailError =
-        document.getElementById(
-            "reviewClientEmailError"
-        );
-
-
-    var ratingError =
-        document.getElementById(
-            "reviewRatingError"
-        );
-
-
-    var reviewError =
-        document.getElementById(
-            "reviewTextError"
-        );
-
-
-    [
-        elements.nameInput,
-        elements.emailInput,
-        elements.reviewInput
-    ]
-    .forEach(
-        function(element) {
-
-            if (element) {
-
-                element.classList.remove(
-                    "invalid"
-                );
-
-            }
-
-        }
-    );
-
-
-    if (nameError) {
-        nameError.textContent = "";
-    }
-
-    if (emailError) {
-        emailError.textContent = "";
-    }
-
-    if (ratingError) {
-        ratingError.textContent = "";
-    }
-
-    if (reviewError) {
-        reviewError.textContent = "";
-    }
-
-
-    if (name.length < 2) {
-
-        valid = false;
-
-
-        if (elements.nameInput) {
-
-            elements.nameInput.classList.add(
-                "invalid"
-            );
-
-        }
-
-
-        if (nameError) {
-
-            nameError.textContent =
-                "Please enter your name.";
-
-        }
-
-    }
-
-
-    var emailPattern =
-        /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-
-    if (
-        !emailPattern.test(
-            email
-        )
-    ) {
-
-        valid = false;
-
-
-        if (elements.emailInput) {
-
-            elements.emailInput.classList.add(
-                "invalid"
-            );
-
-        }
-
-
-        if (emailError) {
-
-            emailError.textContent =
-                "Please enter a valid email address.";
-
-        }
-
-    }
-
-
-    if (
-        !Number.isInteger(
-            rating
-        ) ||
-        rating < 1 ||
-        rating > 5
-    ) {
-
-        valid = false;
-
-
-        if (ratingError) {
-
-            ratingError.textContent =
-                "Please select a rating.";
-
-        }
-
-    }
-
-
-    if (reviewText.length < 10) {
-
-        valid = false;
-
-
-        if (elements.reviewInput) {
-
-            elements.reviewInput.classList.add(
-                "invalid"
-            );
-
-        }
-
-
-        if (reviewError) {
-
-            reviewError.textContent =
-                "Please write at least 10 characters.";
-
-        }
-
-    }
-
-
-    if (reviewText.length > 1000) {
-
-        valid = false;
-
-
-        if (elements.reviewInput) {
-
-            elements.reviewInput.classList.add(
-                "invalid"
-            );
-
-        }
-
-
-        if (reviewError) {
-
-            reviewError.textContent =
-                "Your review cannot exceed 1000 characters.";
-
-        }
-
-    }
-
-
-    if (
-        valid &&
-        hasClientAlreadyReviewed(
-            email
-        )
-    ) {
-
-        valid = false;
-
-
-        if (emailError) {
-
-            emailError.textContent =
-                "A review has already been submitted using this email.";
-
-        }
-
-
-        if (elements.emailInput) {
-
-            elements.emailInput.classList.add(
-                "invalid"
-            );
-
-        }
-
-    }
-
-
-    return {
-
-        valid: valid,
-
-        name: name,
-
-        email: email,
-
-        rating: rating,
-
-        review: reviewText
-
-    };
-
-}
-
-
-/* =========================================================
-   SUBMIT REVIEW
-========================================================= */
-
-function submitClientReview(
-    event
-) {
-
-    event.preventDefault();
-
-
-    var elements =
-        getReviewModalElements();
-
-
-    var result =
-        validateClientReviewForm();
-
-
-    if (!result.valid) {
-
-        return;
-
-    }
-
-
-    if (elements.submitButton) {
-
-        elements.submitButton.disabled =
-            true;
-
-        elements.submitButton.textContent =
-            "Submitting...";
-
-    }
-
-
-    /*
-       Final duplicate check immediately before
-       writing to storage.
-    */
-
-    if (
-        hasClientAlreadyReviewed(
-            result.email
-        )
-    ) {
-
-        if (elements.submitButton) {
-
-            elements.submitButton.disabled =
-                false;
-
-            elements.submitButton.textContent =
-                "Submit Review";
-
-        }
-
-
-        showAlreadySubmittedState();
-
-        return;
-
-    }
-
-
-    var review = {
-
-        id:
-            generateReviewId(),
-
-        clientName:
-            result.name,
-
-        email:
-            result.email,
-
-        rating:
-            result.rating,
-
-        review:
-            result.review,
-
-        service:
-            "",
-
-        createdAt:
-            new Date().toISOString()
-
-    };
-
-
-    var reviews =
-        getClientReviews();
-
-
-    reviews.push(
-        review
-    );
-
-
-    var saved =
-        saveClientReviews(
-            reviews
-        );
-
-
-    if (!saved) {
-
-        if (elements.submitButton) {
-
-            elements.submitButton.disabled =
-                false;
-
-            elements.submitButton.textContent =
-                "Submit Review";
-
-        }
-
-
-        showReviewFormMessage(
-            "The review could not be saved. Please try again.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    try {
-
-        localStorage.setItem(
-            REVIEW_EMAIL_STORAGE_KEY,
-            result.email
-        );
-
-    }
-    catch (error) {
-
-        console.warn(
-            "Could not remember review email:",
-            error
-        );
-
-    }
-
-
-    renderClientReviews();
-
-
-    window.dispatchEvent(
-        new CustomEvent(
-            "professionalStudioReviewsUpdated"
-        )
-    );
-
-
-    /*
-       IMPORTANT FIX:
-       The success message must not be placed inside
-       a hidden form.
-
-       Keep the form visible long enough for the user
-       to actually see confirmation.
-    */
-
-    if (elements.submitButton) {
-
-        elements.submitButton.disabled =
-            false;
-
-        elements.submitButton.textContent =
-            "Submitted";
-
-    }
-
-
-    showReviewFormMessage(
-        "Your review has been submitted successfully.",
-        "success"
-    );
-
-
-    setTimeout(
-        function() {
-
-            closeClientReviewModal();
-
-        },
-        1400
-    );
-
-}
-
-
-/* =========================================================
-   REVIEW CHARACTER COUNTER
-========================================================= */
-
-function initializeReviewCharacterCounter() {
-
-    var input =
-        document.getElementById(
-            "reviewText"
-        );
-
-
-    var counter =
-        document.getElementById(
-            "reviewCharacterCount"
-        );
-
-
-    if (
-        !input ||
-        !counter
-    ) {
-
-        return;
-
-    }
-
-
-    function updateCounter() {
-
-        counter.textContent =
-            input.value.length +
-            " / 1000";
-
-    }
-
-
-    updateCounter();
-
-
-    input.addEventListener(
-        "input",
-        updateCounter
-    );
-
+    emptyState.hidden = true;
 }
 
 
@@ -1938,881 +827,1612 @@ function initializeReviewCharacterCounter() {
    REVIEW MODAL
 ========================================================= */
 
-function initializeReviewSystem() {
+function getReviewFocusableElements() {
 
-    var elements =
-        getReviewModalElements();
+    if (!reviewModal) {
+        return [];
+    }
 
+    return Array.from(
+        reviewModal.querySelectorAll(
+            'button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
+        )
+    ).filter(
+        (element) =>
+            !element.hidden &&
+            element.offsetParent !== null
+    );
+}
+
+function resetReviewRating() {
+
+    document
+        .querySelectorAll(".rating-star")
+        .forEach((button) => {
+
+            button.classList.remove("selected");
+
+            button.setAttribute(
+                "aria-checked",
+                "false"
+            );
+
+            const icon =
+                button.querySelector("i");
+
+            if (icon) {
+                icon.className =
+                    "fa-regular fa-star";
+            }
+        });
+
+    const ratingValue =
+        document.getElementById(
+            "reviewRatingValue"
+        );
+
+    if (ratingValue) {
+        ratingValue.value = "";
+    }
+}
+
+function clearReviewFieldErrors() {
+
+    const fields = [
+        "reviewClientName",
+        "reviewClientEmail",
+        "reviewText"
+    ];
+
+    fields.forEach((id) => {
+
+        const element =
+            document.getElementById(id);
+
+        if (element) {
+            element.classList.remove("invalid");
+            element.removeAttribute("aria-invalid");
+        }
+    });
+
+    [
+        "reviewClientNameError",
+        "reviewClientEmailError",
+        "reviewRatingError",
+        "reviewTextError"
+    ].forEach((id) => {
+
+        const element =
+            document.getElementById(id);
+
+        if (element) {
+            element.textContent = "";
+        }
+    });
+}
+
+function showReviewFormMessage(message, type) {
+
+    const element =
+        document.getElementById(
+            "reviewFormMessage"
+        );
+
+    if (!element) {
+        return;
+    }
+
+    element.textContent = message;
+    element.className =
+        `review-form-message ${type}`;
+
+    element.hidden = false;
+}
+
+function hideReviewFormMessage() {
+
+    const element =
+        document.getElementById(
+            "reviewFormMessage"
+        );
+
+    if (!element) {
+        return;
+    }
+
+    element.hidden = true;
+    element.textContent = "";
+    element.className =
+        "review-form-message";
+}
+
+function resetReviewForm() {
+
+    reviewForm?.reset();
+
+    clearReviewFieldErrors();
+    hideReviewFormMessage();
+    resetReviewRating();
+
+    updateReviewCharacterCount();
+
+    const submitButton =
+        document.getElementById(
+            "submitReviewBtn"
+        );
+
+    if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent =
+            "Submit Review";
+    }
+
+    const alreadySubmitted =
+        document.getElementById(
+            "reviewAlreadySubmitted"
+        );
+
+    if (alreadySubmitted) {
+        alreadySubmitted.hidden = true;
+    }
+
+    reviewForm?.removeAttribute("hidden");
+}
+
+function openReviewModal() {
+
+    if (!reviewModal) {
+        return;
+    }
+
+    reviewPreviouslyFocusedElement =
+        document.activeElement;
+
+    resetReviewForm();
+
+    reviewModal.hidden = false;
+    reviewModal.setAttribute(
+        "aria-hidden",
+        "false"
+    );
+
+    document.body.classList.add(
+        "review-modal-open"
+    );
+
+    requestAnimationFrame(() => {
+
+        const nameInput =
+            document.getElementById(
+                "reviewClientName"
+            );
+
+        if (nameInput && !nameInput.disabled) {
+            nameInput.focus();
+            return;
+        }
+
+        const focusable =
+            getReviewFocusableElements();
+
+        focusable[0]?.focus();
+    });
+}
+
+function closeReviewModal() {
+
+    if (!reviewModal) {
+        return;
+    }
+
+    reviewModal.hidden = true;
+
+    reviewModal.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+    document.body.classList.remove(
+        "review-modal-open"
+    );
+
+    resetReviewForm();
 
     if (
-        !elements.modal ||
-        !elements.form
+        reviewPreviouslyFocusedElement &&
+        typeof reviewPreviouslyFocusedElement.focus === "function"
+    ) {
+        reviewPreviouslyFocusedElement.focus();
+    }
+
+    reviewPreviouslyFocusedElement = null;
+}
+
+function setReviewRating(value) {
+
+    const rating =
+        clamp(Number(value) || 0, 0, 5);
+
+    const hiddenInput =
+        document.getElementById(
+            "reviewRatingValue"
+        );
+
+    if (hiddenInput) {
+        hiddenInput.value =
+            rating ? String(rating) : "";
+    }
+
+    document
+        .querySelectorAll(".rating-star")
+        .forEach((button) => {
+
+            const buttonRating =
+                Number(button.dataset.rating);
+
+            const selected =
+                buttonRating <= rating;
+
+            button.classList.toggle(
+                "selected",
+                selected
+            );
+
+            button.setAttribute(
+                "aria-checked",
+                buttonRating === rating
+                    ? "true"
+                    : "false"
+            );
+
+            const icon =
+                button.querySelector("i");
+
+            if (icon) {
+                icon.className =
+                    selected
+                        ? "fa-solid fa-star"
+                        : "fa-regular fa-star";
+            }
+        });
+}
+
+function updateReviewCharacterCount() {
+
+    const textarea =
+        document.getElementById(
+            "reviewText"
+        );
+
+    const counter =
+        document.getElementById(
+            "reviewCharacterCount"
+        );
+
+    if (!textarea || !counter) {
+        return;
+    }
+
+    counter.textContent =
+        `${textarea.value.length} / 1000`;
+}
+
+function setFieldError(
+    fieldId,
+    errorId,
+    message
+) {
+
+    const field =
+        document.getElementById(fieldId);
+
+    const error =
+        document.getElementById(errorId);
+
+    if (field) {
+
+        field.classList.toggle(
+            "invalid",
+            Boolean(message)
+        );
+
+        if (message) {
+            field.setAttribute(
+                "aria-invalid",
+                "true"
+            );
+        } else {
+            field.removeAttribute(
+                "aria-invalid"
+            );
+        }
+    }
+
+    if (error) {
+        error.textContent = message || "";
+    }
+}
+
+function validateReviewForm() {
+
+    clearReviewFieldErrors();
+
+    const name =
+        normalizeText(
+            document.getElementById(
+                "reviewClientName"
+            )?.value
+        );
+
+    const email =
+        normalizeEmail(
+            document.getElementById(
+                "reviewClientEmail"
+            )?.value
+        );
+
+    const rating =
+        Number(
+            document.getElementById(
+                "reviewRatingValue"
+            )?.value
+        );
+
+    const text =
+        normalizeText(
+            document.getElementById(
+                "reviewText"
+            )?.value
+        );
+
+    let valid = true;
+    let firstInvalid = null;
+
+    if (name.length < 2) {
+
+        setFieldError(
+            "reviewClientName",
+            "reviewClientNameError",
+            "Please enter your name."
+        );
+
+        firstInvalid ??=
+            document.getElementById(
+                "reviewClientName"
+            );
+
+        valid = false;
+    }
+
+    if (
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
     ) {
 
+        setFieldError(
+            "reviewClientEmail",
+            "reviewClientEmailError",
+            "Please enter a valid email address."
+        );
+
+        firstInvalid ??=
+            document.getElementById(
+                "reviewClientEmail"
+            );
+
+        valid = false;
+    }
+
+    if (
+        !Number.isInteger(rating) ||
+        rating < 1 ||
+        rating > 5
+    ) {
+
+        const error =
+            document.getElementById(
+                "reviewRatingError"
+            );
+
+        if (error) {
+            error.textContent =
+                "Please choose a rating.";
+        }
+
+        firstInvalid ??=
+            document.querySelector(
+                ".rating-star"
+            );
+
+        valid = false;
+    }
+
+    if (text.length < 5) {
+
+        setFieldError(
+            "reviewText",
+            "reviewTextError",
+            "Please enter at least 5 characters."
+        );
+
+        firstInvalid ??=
+            document.getElementById(
+                "reviewText"
+            );
+
+        valid = false;
+    }
+
+    if (text.length > 1000) {
+
+        setFieldError(
+            "reviewText",
+            "reviewTextError",
+            "Your review cannot exceed 1000 characters."
+        );
+
+        firstInvalid ??=
+            document.getElementById(
+                "reviewText"
+            );
+
+        valid = false;
+    }
+
+    if (!valid) {
+        firstInvalid?.focus();
+    }
+
+    return {
+        valid,
+        name,
+        email,
+        rating,
+        text
+    };
+}
+
+function handleReviewSubmit(event) {
+
+    event.preventDefault();
+
+    const result =
+        validateReviewForm();
+
+    if (!result.valid) {
+        showReviewFormMessage(
+            "Please correct the highlighted fields.",
+            "error"
+        );
+
         return;
-
     }
 
+    const existingReviews =
+        getClientReviews();
 
-    if (elements.openButton) {
-
-        elements.openButton.addEventListener(
-            "click",
-            openClientReviewModal
+    const duplicate =
+        existingReviews.some(
+            (review) =>
+                normalizeEmail(review.email) ===
+                result.email
         );
 
-    }
+    if (duplicate) {
 
-
-    if (elements.closeButton) {
-
-        elements.closeButton.addEventListener(
-            "click",
-            closeClientReviewModal
+        setStoredReviewEmail(
+            result.email
         );
 
+        reviewForm.hidden = true;
+
+        const alreadySubmitted =
+            document.getElementById(
+                "reviewAlreadySubmitted"
+            );
+
+        if (alreadySubmitted) {
+            alreadySubmitted.hidden = false;
+        }
+
+        return;
     }
 
+    const submitButton =
+        document.getElementById(
+            "submitReviewBtn"
+        );
+
+    if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent =
+            "Submitting...";
+    }
+
+    const newReview = {
+        id: generateReviewId(),
+        name: result.name,
+        email: result.email,
+        rating: result.rating,
+        text: result.text,
+        createdAt: new Date().toISOString()
+    };
+
+    const saved =
+        saveClientReviews([
+            ...existingReviews,
+            newReview
+        ]);
+
+    if (!saved) {
+
+        if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent =
+                "Submit Review";
+        }
+
+        showReviewFormMessage(
+            "Your review could not be saved on this device. Please try again.",
+            "error"
+        );
+
+        return;
+    }
+
+    setStoredReviewEmail(
+        result.email
+    );
+
+    renderClientReviews();
+
+    showReviewFormMessage(
+        "Your review has been added successfully.",
+        "success"
+    );
+
+    if (submitButton) {
+        submitButton.textContent =
+            "Review Added";
+    }
+
+    document.dispatchEvent(
+        new CustomEvent(
+            "professionalStudioReviewsUpdated"
+        )
+    );
+
+    setTimeout(() => {
+        closeReviewModal();
+    }, 900);
+}
+
+function initializeReviewSystem() {
+
+    reviewModal =
+        document.getElementById(
+            "reviewModal"
+        );
+
+    reviewForm =
+        document.getElementById(
+            "reviewForm"
+        );
+
+    if (!reviewModal || !reviewForm) {
+        return;
+    }
+
+    const openButton =
+        document.getElementById(
+            "openReviewModalBtn"
+        );
+
+    openButton?.addEventListener(
+        "click",
+        openReviewModal
+    );
 
     document
         .querySelectorAll(
             "[data-close-review-modal]"
         )
-        .forEach(
-            function(element) {
+        .forEach((element) => {
 
-                element.addEventListener(
-                    "click",
-                    closeClientReviewModal
-                );
-
-            }
-        );
-
-
-    document.addEventListener(
-        "keydown",
-        function(event) {
-
-            if (
-                event.key === "Escape" &&
-                !elements.modal.hidden
-            ) {
-
-                closeClientReviewModal();
-
-            }
-
-        }
-    );
-
+            element.addEventListener(
+                "click",
+                closeReviewModal
+            );
+        });
 
     document
-        .querySelectorAll(
-            ".rating-star"
+        .getElementById(
+            "closeReviewModalBtn"
         )
-        .forEach(
-            function(star) {
-
-                star.addEventListener(
-                    "click",
-                    function() {
-
-                        setClientReviewRating(
-                            star.dataset.rating
-                        );
-
-                    }
-                );
-
-
-                star.addEventListener(
-                    "keydown",
-                    function(event) {
-
-                        if (
-                            event.key === "Enter" ||
-                            event.key === " "
-                        ) {
-
-                            event.preventDefault();
-
-                            setClientReviewRating(
-                                star.dataset.rating
-                            );
-
-                        }
-
-                    }
-                );
-
-            }
+        ?.addEventListener(
+            "click",
+            closeReviewModal
         );
 
+    document
+        .querySelectorAll(".rating-star")
+        .forEach((button) => {
 
-    elements.form.addEventListener(
-        "submit",
-        submitClientReview
-    );
+            button.addEventListener(
+                "click",
+                () => {
+                    setReviewRating(
+                        button.dataset.rating
+                    );
+                }
+            );
+        });
 
+    document
+        .getElementById("reviewRating")
+        ?.addEventListener(
+            "keydown",
+            (event) => {
 
-    /*
-       Do not automatically hide the form on blur.
-
-       We only provide an inline warning. The client
-       can still correct the email address.
-    */
-
-    if (elements.emailInput) {
-
-        elements.emailInput.addEventListener(
-            "blur",
-            function() {
-
-                var email =
-                    normalizeReviewEmail(
-                        elements.emailInput.value
+                const buttons =
+                    Array.from(
+                        document.querySelectorAll(
+                            ".rating-star"
+                        )
                     );
 
-
-                var emailError =
-                    document.getElementById(
-                        "reviewClientEmailError"
+                const currentIndex =
+                    buttons.indexOf(
+                        document.activeElement
                     );
-
 
                 if (
-                    email &&
-                    hasClientAlreadyReviewed(
-                        email
-                    )
+                    event.key === "ArrowRight" ||
+                    event.key === "ArrowDown"
                 ) {
+                    event.preventDefault();
 
-                    elements.emailInput.classList.add(
-                        "invalid"
+                    const nextIndex =
+                        currentIndex < 0
+                            ? 0
+                            : Math.min(
+                                currentIndex + 1,
+                                buttons.length - 1
+                            );
+
+                    buttons[nextIndex]?.focus();
+                    setReviewRating(
+                        buttons[nextIndex]?.dataset.rating
                     );
-
-
-                    if (emailError) {
-
-                        emailError.textContent =
-                            "A review has already been submitted using this email.";
-
-                    }
-
                 }
 
+                if (
+                    event.key === "ArrowLeft" ||
+                    event.key === "ArrowUp"
+                ) {
+                    event.preventDefault();
+
+                    const previousIndex =
+                        currentIndex < 0
+                            ? buttons.length - 1
+                            : Math.max(
+                                currentIndex - 1,
+                                0
+                            );
+
+                    buttons[previousIndex]?.focus();
+                    setReviewRating(
+                        buttons[previousIndex]?.dataset.rating
+                    );
+                }
             }
         );
 
-    }
+    document
+        .getElementById("reviewText")
+        ?.addEventListener(
+            "input",
+            updateReviewCharacterCount
+        );
 
+    reviewForm.addEventListener(
+        "submit",
+        handleReviewSubmit
+    );
 
-    initializeReviewCharacterCounter();
+    reviewModal.addEventListener(
+        "keydown",
+        (event) => {
 
+            if (event.key === "Escape") {
+                event.preventDefault();
+                closeReviewModal();
+                return;
+            }
+
+            if (event.key !== "Tab") {
+                return;
+            }
+
+            const focusable =
+                getReviewFocusableElements();
+
+            if (!focusable.length) {
+                event.preventDefault();
+                return;
+            }
+
+            const first =
+                focusable[0];
+
+            const last =
+                focusable[focusable.length - 1];
+
+            if (
+                event.shiftKey &&
+                document.activeElement === first
+            ) {
+                event.preventDefault();
+                last.focus();
+            } else if (
+                !event.shiftKey &&
+                document.activeElement === last
+            ) {
+                event.preventDefault();
+                first.focus();
+            }
+        }
+    );
 
     renderClientReviews();
-
 }
 
 
 /* =========================================================
-   REVIEW STORAGE EVENT
+   SERVICES
 ========================================================= */
 
-window.addEventListener(
-    "storage",
-    function(event) {
+function getClientServices() {
 
-        if (
-            event.key ===
-            REVIEWS_STORAGE_KEY
-        ) {
-
-            renderClientReviews();
-
-        }
-
-    }
-);
-
-
-/* =========================================================
-   SAME-PAGE REVIEW UPDATE EVENT
-========================================================= */
-
-window.addEventListener(
-    "professionalStudioReviewsUpdated",
-    function() {
-
-        renderClientReviews();
-
-    }
-);
-
-
-/* =========================================================
-   PROFILE
-========================================================= */
-
-function getClientProfile() {
-
-    var profile =
+    const services =
         readClientLocalStorage(
-            PROFILE_STORAGE_KEY,
-            null
+            STORAGE_KEYS.services,
+            []
         );
 
-
-    if (
-        profile &&
-        typeof profile === "object" &&
-        !Array.isArray(profile)
-    ) {
-
-        return profile;
-
-    }
-
-
-    var name =
-        localStorage.getItem(
-            "photographerName"
-        );
-
-
-    if (
-        name &&
-        name.trim()
-    ) {
-
-        return {
-            name: name.trim()
-        };
-
-    }
-
-
-    return {};
-
+    return Array.isArray(services)
+        ? services
+        : [];
 }
 
+function loadClientServices() {
 
-/* =========================================================
-   PROFILE VALUE HELPER
-========================================================= */
+    const container =
+        document.getElementById(
+            "servicesContainer"
+        );
 
-function getProfileValue(
-    profile,
-    keys,
-    fallback
-) {
-
-    if (
-        !profile ||
-        typeof profile !== "object"
-    ) {
-
-        return fallback || "";
-
+    if (!container) {
+        return;
     }
 
+    container.replaceChildren();
 
-    for (
-        var i = 0;
-        i < keys.length;
-        i++
-    ) {
-
-        var value =
-            profile[keys[i]];
-
-
-        if (
-            typeof value === "string" &&
-            value.trim()
-        ) {
-
-            return value.trim();
-
-        }
-
-
-        if (
-            typeof value === "number" &&
-            Number.isFinite(value)
-        ) {
-
-            return String(
-                value
+    const services =
+        getClientServices()
+            .filter(
+                (service) =>
+                    service &&
+                    service.active !== false
             );
 
+    if (!services.length) {
+
+        const empty =
+            document.createElement("div");
+
+        empty.className =
+            "service-empty-state";
+
+        empty.innerHTML = `
+            <h3>No Services Available Yet</h3>
+            <p>
+                Photography services will appear here once they have been published.
+            </p>
+        `;
+
+        container.appendChild(empty);
+
+        return;
+    }
+
+    services.forEach((service) => {
+
+        const card =
+            document.createElement("article");
+
+        card.className =
+            "price-card";
+
+        const name =
+            normalizeText(
+                service.name ||
+                service.title
+            ) || "Photography Service";
+
+        const description =
+            normalizeText(
+                service.description
+            );
+
+        const price =
+            normalizeText(
+                service.price ??
+                service.startingPrice
+            );
+
+        const coverage =
+            normalizeText(
+                service.coverage
+            );
+
+        const delivery =
+            normalizeText(
+                service.delivery
+            );
+
+        const packageCount =
+            Array.isArray(service.packages)
+                ? service.packages.length
+                : getNumericValue(
+                    service.packageCount
+                );
+
+        const serviceId =
+            normalizeText(
+                service.id ||
+                service.serviceId ||
+                service.slug
+            );
+
+        const title =
+            document.createElement("h3");
+
+        title.textContent = name;
+
+        card.appendChild(title);
+
+        if (price) {
+
+            const priceElement =
+                document.createElement("div");
+
+            priceElement.className =
+                "price";
+
+            priceElement.textContent =
+                price;
+
+            card.appendChild(priceElement);
         }
 
-    }
+        if (description) {
 
+            const descriptionElement =
+                document.createElement("p");
 
-    return fallback || "";
+            descriptionElement.className =
+                "service-preview-description";
 
+            descriptionElement.textContent =
+                description;
+
+            card.appendChild(
+                descriptionElement
+            );
+        }
+
+        const details = [];
+
+        if (packageCount !== null) {
+            details.push(
+                `${packageCount} package${packageCount === 1 ? "" : "s"}`
+            );
+        }
+
+        if (coverage) {
+            details.push(coverage);
+        }
+
+        if (delivery) {
+            details.push(delivery);
+        }
+
+        if (details.length) {
+
+            const list =
+                document.createElement("ul");
+
+            details.forEach((detail) => {
+
+                const item =
+                    document.createElement("li");
+
+                item.textContent = detail;
+
+                list.appendChild(item);
+            });
+
+            card.appendChild(list);
+        }
+
+        if (serviceId) {
+
+            const actions =
+                document.createElement("div");
+
+            actions.className =
+                "service-preview-actions";
+
+            const viewLink =
+                document.createElement("a");
+
+            viewLink.className =
+                "book-btn";
+
+            viewLink.href =
+                `service.html?id=${encodeURIComponent(serviceId)}`;
+
+            viewLink.textContent =
+                "View Service";
+
+            const bookLink =
+                document.createElement("a");
+
+            bookLink.className =
+                "book-btn";
+
+            bookLink.href =
+                `service.html?id=${encodeURIComponent(serviceId)}&action=book`;
+
+            bookLink.textContent =
+                "Book Service";
+
+            actions.appendChild(viewLink);
+            actions.appendChild(bookLink);
+
+            card.appendChild(actions);
+        }
+
+        container.appendChild(card);
+    });
 }
 
 
 /* =========================================================
-   PROFILE NAME
+   EQUIPMENT
 ========================================================= */
 
-function getClientPhotographerName() {
+function getClientEquipment() {
 
-    var profile =
-        getClientProfile();
+    const equipment =
+        readClientLocalStorage(
+            STORAGE_KEYS.equipment,
+            []
+        );
 
-
-    return getProfileValue(
-        profile,
-        [
-            "name",
-            "fullName",
-            "photographerName",
-            "displayName"
-        ],
-        "Photographer"
-    );
-
+    return Array.isArray(equipment)
+        ? equipment
+        : [];
 }
 
+function getEquipmentIcon(category) {
 
-/* =========================================================
-   PROFILE STUDIO NAME
-========================================================= */
-
-function getClientStudioName() {
-
-    var profile =
-        getClientProfile();
-
-
-    return getProfileValue(
-        profile,
-        [
-            "studioName",
-            "businessName",
-            "companyName",
-            "brandName"
-        ],
-        ""
-    );
-
-}
-
-
-/* =========================================================
-   PROFILE ABOUT
-========================================================= */
-
-function getClientAbout() {
-
-    var profile =
-        getClientProfile();
-
-
-    return getProfileValue(
-        profile,
-        [
-            "about",
-            "aboutMe",
-            "bio",
-            "description",
-            "profileDescription"
-        ],
-        ""
-    );
-
-}
-
-
-/* =========================================================
-   PROFILE LOCATION
-========================================================= */
-
-function getClientLocation() {
-
-    var profile =
-        getClientProfile();
-
-
-    return getProfileValue(
-        profile,
-        [
-            "location",
-            "city",
-            "address",
-            "locationName"
-        ],
-        ""
-    );
-
-}
-
-
-/* =========================================================
-   PROFILE PHONE
-========================================================= */
-
-function getClientPhone() {
-
-    var profile =
-        getClientProfile();
-
-
-    return getProfileValue(
-        profile,
-        [
-            "phone",
-            "phoneNumber",
-            "mobile",
-            "contactNumber"
-        ],
-        ""
-    );
-
-}
-
-
-/* =========================================================
-   PROFILE EMAIL
-========================================================= */
-
-function getClientEmail() {
-
-    var profile =
-        getClientProfile();
-
-
-    return getProfileValue(
-        profile,
-        [
-            "email",
-            "emailAddress",
-            "contactEmail"
-        ],
-        ""
-    );
-
-}
-
-
-/* =========================================================
-   PROFILE SOCIAL LINKS
-========================================================= */
-
-function getClientSocialLinks() {
-
-    var profile =
-        getClientProfile();
-
-
-    var social =
-        profile.social ||
-        profile.socialLinks ||
-        profile.socialMedia ||
-        {};
-
+    const value =
+        normalizeText(category)
+            .toLowerCase();
 
     if (
-        !social ||
-        typeof social !== "object" ||
-        Array.isArray(social)
+        value.includes("camera") ||
+        value.includes("body")
     ) {
-
-        social = {};
-
+        return "fa-camera";
     }
 
+    if (
+        value.includes("lens") ||
+        value.includes("optics")
+    ) {
+        return "fa-camera-retro";
+    }
 
-    return {
+    if (
+        value.includes("light") ||
+        value.includes("lighting")
+    ) {
+        return "fa-lightbulb";
+    }
 
-        instagram:
-            getProfileValue(
-                social,
-                [
-                    "instagram",
-                    "instagramUrl"
-                ],
-                ""
-            ),
+    if (
+        value.includes("audio") ||
+        value.includes("microphone")
+    ) {
+        return "fa-microphone";
+    }
 
-        facebook:
-            getProfileValue(
-                social,
-                [
-                    "facebook",
-                    "facebookUrl"
-                ],
-                ""
-            ),
+    if (
+        value.includes("drone")
+    ) {
+        return "fa-helicopter";
+    }
 
-        youtube:
-            getProfileValue(
-                social,
-                [
-                    "youtube",
-                    "youtubeUrl"
-                ],
-                ""
-            )
+    if (
+        value.includes("tripod") ||
+        value.includes("support")
+    ) {
+        return "fa-photo-film";
+    }
 
-    };
+    return "fa-camera";
+}
 
+function loadClientEquipment() {
+
+    const grid =
+        document.getElementById(
+            "equipmentGrid"
+        );
+
+    if (!grid) {
+        return;
+    }
+
+    grid.replaceChildren();
+
+    const equipment =
+        getClientEquipment();
+
+    const validCategories =
+        equipment.filter((category) => {
+
+            if (!category) {
+                return false;
+            }
+
+            const name =
+                normalizeText(
+                    category.name ||
+                    category.category ||
+                    category.title
+                );
+
+            const items =
+                Array.isArray(category.items)
+                    ? category.items
+                    : [];
+
+            return Boolean(
+                name &&
+                items.length
+            );
+        });
+
+    if (!validCategories.length) {
+
+        const empty =
+            document.createElement("div");
+
+        empty.className =
+            "equipment-empty-state";
+
+        empty.textContent =
+            "Equipment information will appear here once it has been added.";
+
+        grid.appendChild(empty);
+
+        return;
+    }
+
+    validCategories.forEach((category) => {
+
+        const card =
+            document.createElement("article");
+
+        card.className =
+            "equipment-category-card";
+
+        const heading =
+            document.createElement("div");
+
+        heading.className =
+            "equipment-category-heading";
+
+        const icon =
+            document.createElement("i");
+
+        icon.className =
+            `fa-solid ${getEquipmentIcon(
+                category.name ||
+                category.category ||
+                category.title
+            )}`;
+
+        icon.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+        const title =
+            document.createElement("h3");
+
+        title.textContent =
+            normalizeText(
+                category.name ||
+                category.category ||
+                category.title
+            );
+
+        heading.appendChild(icon);
+        heading.appendChild(title);
+
+        const list =
+            document.createElement("ul");
+
+        list.className =
+            "equipment-items";
+
+        category.items.forEach((item) => {
+
+            const itemText =
+                typeof item === "string"
+                    ? item
+                    : item?.name ||
+                      item?.title ||
+                      item?.model;
+
+            const cleanItem =
+                normalizeText(itemText);
+
+            if (!cleanItem) {
+                return;
+            }
+
+            const listItem =
+                document.createElement("li");
+
+            listItem.textContent =
+                cleanItem;
+
+            list.appendChild(listItem);
+        });
+
+        if (!list.children.length) {
+            return;
+        }
+
+        card.appendChild(heading);
+        card.appendChild(list);
+
+        grid.appendChild(card);
+    });
 }
 
 
 /* =========================================================
-   SAFE URL
+   RECENT WORK / INDEXED DB
 ========================================================= */
 
-function getSafeProfileUrl(
-    value
-) {
+function openRecentWorkDatabase() {
 
-    if (
-        typeof value !== "string"
-    ) {
+    return new Promise((resolve, reject) => {
 
-        return "";
+        if (!("indexedDB" in window)) {
+            reject(
+                new Error(
+                    "IndexedDB is not supported."
+                )
+            );
 
+            return;
+        }
+
+        const request =
+            indexedDB.open(
+                RECENT_WORK_DB_NAME,
+                RECENT_WORK_DB_VERSION
+            );
+
+        request.onerror = () => {
+            reject(
+                request.error ||
+                new Error(
+                    "Unable to open recent work database."
+                )
+            );
+        };
+
+        request.onsuccess = () => {
+            resolve(request.result);
+        };
+    });
+}
+
+async function getRecentWorkPhoto(photoId) {
+
+    if (!photoId) {
+        return null;
     }
 
-
-    var url =
-        value.trim();
-
-
-    if (!url) {
-
-        return "";
-
-    }
-
+    let db = null;
 
     try {
 
-        var parsed =
-            new URL(
-                url
-            );
-
+        db =
+            await openRecentWorkDatabase();
 
         if (
-            parsed.protocol !== "https:" &&
-            parsed.protocol !== "http:"
+            !db.objectStoreNames.contains(
+                RECENT_WORK_STORE_NAME
+            )
         ) {
-
-            return "";
-
+            db.close();
+            return null;
         }
 
+        return await new Promise(
+            (resolve, reject) => {
 
-        return parsed.href;
-
-    }
-    catch (error) {
-
-        return "";
-
-    }
-
-}
-
-
-/* =========================================================
-   PROFILE DATA ATTRIBUTES
-========================================================= */
-
-function renderProfileDataAttributes() {
-
-    var profile =
-        getClientProfile();
-
-
-    document
-        .querySelectorAll(
-            "[data-profile-field]"
-        )
-        .forEach(
-            function(element) {
-
-                var field =
-                    element.dataset.profileField;
-
-
-                if (!field) {
-                    return;
-                }
-
-
-                var value =
-                    getProfileValue(
-                        profile,
-                        [
-                            field
-                        ],
-                        ""
+                const transaction =
+                    db.transaction(
+                        RECENT_WORK_STORE_NAME,
+                        "readonly"
                     );
 
+                const store =
+                    transaction.objectStore(
+                        RECENT_WORK_STORE_NAME
+                    );
 
-                if (value) {
+                const request =
+                    store.get(photoId);
 
-                    element.textContent =
-                        value;
+                request.onsuccess = () => {
+                    resolve(
+                        request.result || null
+                    );
+                };
 
-                }
-
+                request.onerror = () => {
+                    reject(
+                        request.error ||
+                        new Error(
+                            "Unable to read portfolio image."
+                        )
+                    );
+                };
             }
         );
 
+    } catch (error) {
+
+        console.warn(
+            "Unable to load recent work image.",
+            error
+        );
+
+        return null;
+
+    } finally {
+
+        if (db) {
+            db.close();
+        }
+    }
 }
 
+function cleanupRecentWorkObjectUrls() {
 
-/* =========================================================
-   PHOTOGRAPHER NAME
-========================================================= */
+    recentWorkObjectUrls.forEach((url) => {
 
-function renderClientPhotographerName() {
+        try {
+            URL.revokeObjectURL(url);
+        } catch {
+            /* Ignore cleanup errors. */
+        }
+    });
 
-    var name =
-        getClientPhotographerName();
-
-
-    document
-        .querySelectorAll(
-            "[data-profile-name], #profileName, #photographerName"
-        )
-        .forEach(
-            function(element) {
-
-                element.textContent =
-                    name;
-
-            }
-        );
-
+    recentWorkObjectUrls = [];
 }
 
+function getRecentWorkAlbums() {
 
-/* =========================================================
-   STUDIO NAME
-========================================================= */
-
-function renderClientStudioName() {
-
-    var studioName =
-        getClientStudioName();
-
-
-    document
-        .querySelectorAll(
-            "[data-profile-studio], #studioName, #photographerStudio"
-        )
-        .forEach(
-            function(element) {
-
-                element.textContent =
-                    studioName ||
-                    "Photographer Studio";
-
-            }
+    const storage =
+        readClientLocalStorage(
+            STORAGE_KEYS.portfolioStorage,
+            {}
         );
 
+    if (!storage || typeof storage !== "object") {
+        return [];
+    }
+
+    if (Array.isArray(storage)) {
+        return storage;
+    }
+
+    if (Array.isArray(storage.albums)) {
+        return storage.albums;
+    }
+
+    if (Array.isArray(storage.recentWork)) {
+        return storage.recentWork;
+    }
+
+    return [];
 }
 
+function getAlbumId(album) {
 
-/* =========================================================
-   ABOUT
-========================================================= */
-
-function renderClientAbout() {
-
-    var about =
-        getClientAbout();
-
-
-    document
-        .querySelectorAll(
-            "[data-profile-about], #profileAbout, #aboutText"
-        )
-        .forEach(
-            function(element) {
-
-                if (about) {
-
-                    element.textContent =
-                        about;
-
-                }
-
-            }
-        );
-
+    return normalizeText(
+        album?.id ||
+        album?.albumId ||
+        album?.slug
+    );
 }
 
+function getAlbumTitle(album) {
 
-/* =========================================================
-   CONTACT INFORMATION
-========================================================= */
-
-function renderClientContact() {
-
-    var phone =
-        getClientPhone();
-
-
-    var email =
-        getClientEmail();
-
-
-    var location =
-        getClientLocation();
-
-
-    document
-        .querySelectorAll(
-            "[data-profile-phone], #profilePhone"
-        )
-        .forEach(
-            function(element) {
-
-                element.textContent =
-                    phone ||
-                    "+91 98765 *****";
-
-            }
-        );
-
-
-    document
-        .querySelectorAll(
-            "[data-profile-email], #profileEmail"
-        )
-        .forEach(
-            function(element) {
-
-                element.textContent =
-                    email ||
-                    "contact@email.com";
-
-            }
-        );
-
-
-    document
-        .querySelectorAll(
-            "[data-profile-location], #profileLocation"
-        )
-        .forEach(
-            function(element) {
-
-                element.textContent =
-                    location ||
-                    "Location not provided";
-
-            }
-        );
-
+    return normalizeText(
+        album?.title ||
+        album?.name ||
+        album?.albumName
+    ) || "Untitled Album";
 }
 
+function getAlbumDescription(album) {
 
-/* =========================================================
-   SOCIAL LINKS
-========================================================= */
-
-function renderClientSocialLinks() {
-
-    var social =
-        getClientSocialLinks();
-
-
-    var links = {
-
-        instagram:
-            getSafeProfileUrl(
-                social.instagram
-            ),
-
-        facebook:
-            getSafeProfileUrl(
-                social.facebook
-            ),
-
-        youtube:
-            getSafeProfileUrl(
-                social.youtube
-            )
-
-    };
-
-
-    document
-        .querySelectorAll(
-            "[data-social]"
-        )
-        .forEach(
-            function(element) {
-
-                var platform =
-                    element.dataset.social;
-
-
-                var url =
-                    links[platform] ||
-                    "";
-
-
-                if (url) {
-
-                    element.href =
-                        url;
-
-                    element.target =
-                        "_blank";
-
-                    element.rel =
-                        "noopener noreferrer";
-
-                    element.hidden =
-                        false;
-
-                }
-                else {
-
-                    element.hidden =
-                        true;
-
-                }
-
-            }
-        );
-
+    return normalizeText(
+        album?.description ||
+        album?.caption
+    );
 }
 
+function getAlbumImageId(album) {
 
-/* =========================================================
-   PUBLIC PROFILE RENDER
-========================================================= */
+    return normalizeText(
+        album?.coverPhotoId ||
+        album?.coverImageId ||
+        album?.thumbnailId
+    );
+}
 
-function renderPublicProfile() {
+function getAlbumImageUrl(album) {
 
-    renderClientPhotographerName();
+    const candidates = [
+        album?.coverUrl,
+        album?.coverImage,
+        album?.thumbnail,
+        album?.imageUrl
+    ];
 
-    renderClientStudioName();
+    for (const candidate of candidates) {
 
-    renderClientAbout();
+        const safeUrl =
+            getSafeProfileUrl(candidate);
 
-    renderClientContact();
+        if (safeUrl) {
+            return safeUrl;
+        }
+    }
 
-    renderClientSocialLinks();
+    return "";
+}
 
-    renderProfileDataAttributes();
+async function renderPortfolioRecentWork() {
 
+    const grid =
+        document.getElementById(
+            "recentWorkPreview"
+        );
+
+    const emptyState =
+        document.getElementById(
+            "recentWorkEmpty"
+        );
+
+    if (!grid || !emptyState) {
+        return;
+    }
+
+    const currentToken =
+        ++recentWorkRenderToken;
+
+    cleanupRecentWorkObjectUrls();
+
+    grid.replaceChildren();
+    emptyState.hidden = true;
+
+    const albums =
+        getRecentWorkAlbums()
+            .filter(Boolean)
+            .slice(0, 6);
+
+    if (!albums.length) {
+        emptyState.hidden = false;
+        return;
+    }
+
+    for (const album of albums) {
+
+        if (
+            currentToken !==
+            recentWorkRenderToken
+        ) {
+            return;
+        }
+
+        const card =
+            document.createElement("article");
+
+        card.className =
+            "work-card";
+
+        const albumId =
+            getAlbumId(album);
+
+        const title =
+            getAlbumTitle(album);
+
+        const description =
+            getAlbumDescription(album);
+
+        const imageUrl =
+            getAlbumImageUrl(album);
+
+        const imageId =
+            getAlbumImageId(album);
+
+        const link =
+            document.createElement("a");
+
+        link.href =
+            albumId
+                ? `gallery.html?album=${encodeURIComponent(albumId)}`
+                : "gallery.html";
+
+        link.setAttribute(
+            "aria-label",
+            `View ${title}`
+        );
+
+        let imageElement = null;
+
+        if (imageUrl) {
+
+            imageElement =
+                document.createElement("img");
+
+            imageElement.src = imageUrl;
+            imageElement.alt =
+                `${title} portfolio`;
+            imageElement.loading = "lazy";
+            imageElement.decoding = "async";
+
+        } else if (imageId) {
+
+            const imageRecord =
+                await getRecentWorkPhoto(
+                    imageId
+                );
+
+            if (
+                currentToken !==
+                recentWorkRenderToken
+            ) {
+                return;
+            }
+
+            if (
+                imageRecord?.blob instanceof Blob
+            ) {
+
+                const objectUrl =
+                    URL.createObjectURL(
+                        imageRecord.blob
+                    );
+
+                recentWorkObjectUrls.push(
+                    objectUrl
+                );
+
+                imageElement =
+                    document.createElement("img");
+
+                imageElement.src =
+                    objectUrl;
+
+                imageElement.alt =
+                    `${title} portfolio`;
+
+                imageElement.loading =
+                    "lazy";
+
+                imageElement.decoding =
+                    "async";
+            }
+        }
+
+        if (imageElement) {
+
+            imageElement.addEventListener(
+                "error",
+                () => {
+
+                    const placeholder =
+                        document.createElement(
+                            "div"
+                        );
+
+                    placeholder.className =
+                        "work-card-placeholder";
+
+                    placeholder.innerHTML =
+                        '<i class="fa-regular fa-image" aria-hidden="true"></i>';
+
+                    imageElement.replaceWith(
+                        placeholder
+                    );
+                },
+                { once: true }
+            );
+
+            link.appendChild(
+                imageElement
+            );
+
+        } else {
+
+            const placeholder =
+                document.createElement(
+                    "div"
+                );
+
+            placeholder.className =
+                "work-card-placeholder";
+
+            placeholder.innerHTML =
+                '<i class="fa-regular fa-images" aria-hidden="true"></i>';
+
+            link.appendChild(
+                placeholder
+            );
+        }
+
+        const heading =
+            document.createElement("h3");
+
+        heading.textContent =
+            title;
+
+        const descriptionElement =
+            document.createElement("p");
+
+        descriptionElement.textContent =
+            description ||
+            "View this published portfolio collection.";
+
+        card.appendChild(link);
+        card.appendChild(heading);
+        card.appendChild(descriptionElement);
+
+        grid.appendChild(card);
+
+        requestAnimationFrame(() => {
+            card.classList.add("visible");
+        });
+    }
+
+    emptyState.hidden =
+        grid.children.length === 0;
 }
 
 
@@ -2823,143 +2443,107 @@ function renderPublicProfile() {
 function initializeSmoothScrolling() {
 
     document
-        .querySelectorAll(
-            'a[href^="#"]'
-        )
-        .forEach(
-            function(link) {
+        .querySelectorAll('a[href^="#"]')
+        .forEach((link) => {
 
-                link.addEventListener(
-                    "click",
-                    function(event) {
+            link.addEventListener(
+                "click",
+                (event) => {
 
-                        var targetId =
-                            link.getAttribute(
-                                "href"
-                            );
+                    const targetId =
+                        link.getAttribute("href");
 
+                    if (
+                        !targetId ||
+                        targetId === "#"
+                    ) {
+                        return;
+                    }
 
-                        if (
-                            !targetId ||
-                            targetId === "#"
-                        ) {
-
-                            return;
-
-                        }
-
-
-                        var target =
-                            document.querySelector(
-                                targetId
-                            );
-
-
-                        if (!target) {
-
-                            return;
-
-                        }
-
-
-                        event.preventDefault();
-
-
-                        target.scrollIntoView(
-                            {
-                                behavior: "smooth",
-                                block: "start"
-                            }
+                    const target =
+                        document.querySelector(
+                            targetId
                         );
 
+                    if (!target) {
+                        return;
                     }
-                );
 
-            }
-        );
+                    event.preventDefault();
 
+                    target.scrollIntoView({
+                        behavior:
+                            isReducedMotion()
+                                ? "auto"
+                                : "smooth",
+                        block: "start"
+                    });
+
+                    if (
+                        history.replaceState
+                    ) {
+                        history.replaceState(
+                            null,
+                            "",
+                            targetId
+                        );
+                    }
+                }
+            );
+        });
 }
 
 
 /* =========================================================
-   INTERSECTION OBSERVER
+   REVEAL ANIMATIONS
 ========================================================= */
 
 function initializeRevealAnimations() {
 
-    var elements =
+    const elements =
         document.querySelectorAll(
             ".portfolio-block, .work-card, .exp-box, .contact-info, .equipment-category-card, .price-card"
         );
 
-
-    if (!elements.length) {
-
-        return;
-
-    }
-
-
     if (
+        isReducedMotion() ||
         !("IntersectionObserver" in window)
     ) {
-
-        elements.forEach(
-            function(element) {
-
-                element.classList.add(
-                    "visible"
-                );
-
-            }
-        );
+        elements.forEach((element) => {
+            element.classList.add("visible");
+        });
 
         return;
-
     }
 
-
-    var observer =
+    const observer =
         new IntersectionObserver(
-            function(entries) {
+            (entries, instance) => {
 
-                entries.forEach(
-                    function(entry) {
+                entries.forEach((entry) => {
 
-                        if (
-                            entry.isIntersecting
-                        ) {
-
-                            entry.target.classList.add(
-                                "visible"
-                            );
-
-                            observer.unobserve(
-                                entry.target
-                            );
-
-                        }
-
+                    if (!entry.isIntersecting) {
+                        return;
                     }
-                );
 
+                    entry.target.classList.add(
+                        "visible"
+                    );
+
+                    instance.unobserve(
+                        entry.target
+                    );
+                });
             },
             {
-                threshold: 0.12
+                threshold: 0.08,
+                rootMargin: "0px 0px -30px 0px"
             }
         );
 
-
-    elements.forEach(
-        function(element) {
-
-            observer.observe(
-                element
-            );
-
-        }
-    );
-
+    elements.forEach((element) => {
+        observer.observe(element);
+    });
 }
 
 
@@ -2969,302 +2553,210 @@ function initializeRevealAnimations() {
 
 function initializeExperienceMeters() {
 
-    var meters =
+    const meters =
         document.querySelectorAll(
             ".meter-fill"
         );
 
-
     if (!meters.length) {
-
         return;
-
     }
-
-
-    function animateMeter(
-        element
-    ) {
-
-        var value =
-            Number(
-                element.dataset.value
-            ) || 0;
-
-
-        value =
-            Math.min(
-                100,
-                Math.max(
-                    0,
-                    value
-                )
-            );
-
-
-        element.style.width =
-            value + "%";
-
-    }
-
 
     if (
+        isReducedMotion() ||
         !("IntersectionObserver" in window)
     ) {
+        meters.forEach((meter) => {
 
-        meters.forEach(
-            animateMeter
-        );
-
-        return;
-
-    }
-
-
-    var observer =
-        new IntersectionObserver(
-            function(entries) {
-
-                entries.forEach(
-                    function(entry) {
-
-                        if (
-                            entry.isIntersecting
-                        ) {
-
-                            animateMeter(
-                                entry.target
-                            );
-
-                            observer.unobserve(
-                                entry.target
-                            );
-
-                        }
-
-                    }
+            const value =
+                Number(
+                    meter.dataset.value
                 );
 
+            if (
+                Number.isFinite(value)
+            ) {
+                meter.style.width =
+                    `${clamp(value, 0, 100)}%`;
+            }
+        });
+
+        return;
+    }
+
+    const observer =
+        new IntersectionObserver(
+            (entries, instance) => {
+
+                entries.forEach((entry) => {
+
+                    if (!entry.isIntersecting) {
+                        return;
+                    }
+
+                    const meter =
+                        entry.target;
+
+                    const value =
+                        Number(
+                            meter.dataset.value
+                        );
+
+                    if (
+                        Number.isFinite(value)
+                    ) {
+                        meter.style.width =
+                            `${clamp(value, 0, 100)}%`;
+                    }
+
+                    instance.unobserve(
+                        meter
+                    );
+                });
             },
             {
-                threshold: 0.3
+                threshold: 0.5
             }
         );
 
-
-    meters.forEach(
-        function(meter) {
-
-            observer.observe(
-                meter
-            );
-
-        }
-    );
-
+    meters.forEach((meter) => {
+        observer.observe(meter);
+    });
 }
 
 
 /* =========================================================
-   NAVBAR
-========================================================= */
-
-function initializeNavbar() {
-
-    var navbar =
-        document.querySelector(
-            ".navbar"
-        );
-
-
-    if (!navbar) {
-
-        return;
-
-    }
-
-
-    function updateNavbar() {
-
-        navbar.classList.toggle(
-            "scrolled",
-            window.scrollY > 20
-        );
-
-    }
-
-
-    updateNavbar();
-
-
-    window.addEventListener(
-        "scroll",
-        updateNavbar,
-        {
-            passive: true
-        }
-    );
-
-}
-
-
-/* =========================================================
-   ACTIVE NAVIGATION
+   NAVIGATION STATE
 ========================================================= */
 
 function initializeActiveNavigation() {
 
-    var links =
-        document.querySelectorAll(
-            ".navbar a[href^='#']"
+    const navLinks =
+        Array.from(
+            document.querySelectorAll(
+                '.navbar nav a[href^="#"]'
+            )
         );
 
+    const sections =
+        navLinks
+            .map((link) => {
 
-    if (!links.length) {
+                const id =
+                    link.getAttribute("href");
 
-        return;
-
-    }
-
-
-    var sections = [];
-
-
-    links.forEach(
-        function(link) {
-
-            var href =
-                link.getAttribute(
-                    "href"
-                );
-
-
-            if (
-                !href ||
-                href === "#"
-            ) {
-
-                return;
-
-            }
-
-
-            var section;
-
-
-            try {
-
-                section =
-                    document.querySelector(
-                        href
-                    );
-
-            }
-            catch (error) {
-
-                section =
-                    null;
-
-            }
-
-
-            if (section) {
-
-                sections.push(
-                    {
-                        link: link,
-                        section: section
-                    }
-                );
-
-            }
-
-        }
-    );
-
+                return document.querySelector(id);
+            })
+            .filter(Boolean);
 
     if (!sections.length) {
-
         return;
-
     }
 
+    function updateNavigation() {
 
-    function updateActiveLink() {
+        const scrollPosition =
+            window.scrollY + 150;
 
-        var current =
-            null;
+        let activeSection = null;
 
+        sections.forEach((section) => {
 
-        sections.forEach(
-            function(item) {
-
-                var top =
-                    item.section
-                        .getBoundingClientRect()
-                        .top;
-
-
-                if (
-                    top <= 150
-                ) {
-
-                    current =
-                        item;
-
-                }
-
+            if (
+                section.offsetTop <=
+                scrollPosition
+            ) {
+                activeSection = section;
             }
-        );
+        });
 
+        navLinks.forEach((link) => {
 
-        links.forEach(
-            function(link) {
-
-                link.classList.remove(
-                    "active"
+            const target =
+                document.querySelector(
+                    link.getAttribute("href")
                 );
 
+            const active =
+                target === activeSection;
+
+            link.classList.toggle(
+                "active",
+                active
+            );
+
+            if (active) {
+                link.setAttribute(
+                    "aria-current",
+                    "location"
+                );
+            } else {
                 link.removeAttribute(
                     "aria-current"
                 );
-
             }
-        );
-
-
-        if (current) {
-
-            current.link.classList.add(
-                "active"
-            );
-
-            current.link.setAttribute(
-                "aria-current",
-                "page"
-            );
-
-        }
-
+        });
     }
 
-
-    updateActiveLink();
-
+    let ticking = false;
 
     window.addEventListener(
         "scroll",
-        updateActiveLink,
-        {
-            passive: true
-        }
+        () => {
+
+            if (ticking) {
+                return;
+            }
+
+            ticking = true;
+
+            requestAnimationFrame(() => {
+                updateNavigation();
+                ticking = false;
+            });
+        },
+        { passive: true }
     );
 
+    updateNavigation();
 }
 
 
 /* =========================================================
-   BOOK BUTTON EFFECT
+   NAVBAR SCROLL STATE
+========================================================= */
+
+function initializeNavbarScrollState() {
+
+    const navbar =
+        document.querySelector(
+            ".navbar"
+        );
+
+    if (!navbar) {
+        return;
+    }
+
+    function update() {
+
+        navbar.classList.toggle(
+            "scrolled",
+            window.scrollY > 10
+        );
+    }
+
+    window.addEventListener(
+        "scroll",
+        update,
+        { passive: true }
+    );
+
+    update();
+}
+
+
+/* =========================================================
+   BUTTON INTERACTION
 ========================================================= */
 
 function initializeBookButtons() {
@@ -3273,1678 +2765,102 @@ function initializeBookButtons() {
         .querySelectorAll(
             ".book-btn"
         )
-        .forEach(
-            function(button) {
+        .forEach((button) => {
 
-                button.addEventListener(
-                    "click",
-                    function() {
+            button.addEventListener(
+                "click",
+                () => {
 
-                        button.classList.add(
-                            "clicked"
-                        );
-
-
-                        window.setTimeout(
-                            function() {
-
-                                button.classList.remove(
-                                    "clicked"
-                                );
-
-                            },
-                            160
-                        );
-
-                    }
-                );
-
-            }
-        );
-
-}
-
-
-/* =========================================================
-   SERVICES
-========================================================= */
-
-function getClientServices() {
-
-    var services =
-        readClientLocalStorage(
-            SERVICES_STORAGE_KEY,
-            []
-        );
-
-
-    if (
-        !Array.isArray(
-            services
-        )
-    ) {
-
-        return [];
-
-    }
-
-
-    return services;
-
-}
-
-
-/* =========================================================
-   FORMAT SERVICE PRICE
-========================================================= */
-
-function formatServicePrice(
-    value
-) {
-
-    var price =
-        Number(value);
-
-
-    if (
-        !Number.isFinite(price)
-    ) {
-
-        return "";
-
-    }
-
-
-    return "₹" +
-        price.toLocaleString(
-            "en-IN"
-        );
-
-}
-
-
-/* =========================================================
-   GET STARTING PRICE
-========================================================= */
-
-function getStartingPrice(
-    service
-) {
-
-    if (
-        !service ||
-        !Array.isArray(
-            service.packages
-        )
-    ) {
-
-        return null;
-
-    }
-
-
-    var prices =
-        service.packages
-            .map(
-                function(pkg) {
-
-                    return Number(
-                        pkg &&
-                        pkg.price
+                    button.classList.add(
+                        "clicked"
                     );
 
-                }
-            )
-            .filter(
-                function(price) {
-
-                    return Number.isFinite(
-                        price
+                    window.setTimeout(
+                        () => {
+                            button.classList.remove(
+                                "clicked"
+                            );
+                        },
+                        250
                     );
-
                 }
             );
-
-
-    if (!prices.length) {
-
-        return null;
-
-    }
-
-
-    return Math.min.apply(
-        null,
-        prices
-    );
-
+        });
 }
 
 
 /* =========================================================
-   CREATE SERVICE CARD
+   STORAGE UPDATES
 ========================================================= */
 
-function createServiceCard(
-    service
-) {
-
-    var card =
-        document.createElement(
-            "article"
-        );
-
-
-    card.className =
-        "price-card service-preview-card";
-
-
-    var name =
-        service.name ||
-        service.serviceName ||
-        service.title ||
-        "Photography Service";
-
-
-    var description =
-        service.description ||
-        service.shortDescription ||
-        "";
-
-
-    var startingPrice =
-        getStartingPrice(
-            service
-        );
-
-
-    var packageCount =
-        Array.isArray(
-            service.packages
-        )
-            ? service.packages.length
-            : 0;
-
-
-    var details =
-        document.createElement(
-            "div"
-        );
-
-
-    details.className =
-        "service-preview-content";
-
-
-    var heading =
-        document.createElement(
-            "h3"
-        );
-
-
-    heading.textContent =
-        name;
-
-
-    details.appendChild(
-        heading
-    );
-
-
-    if (startingPrice !== null) {
-
-        var price =
-            document.createElement(
-                "div"
-            );
-
-
-        price.className =
-            "service-preview-price";
-
-
-        price.textContent =
-            "From " +
-            formatServicePrice(
-                startingPrice
-            );
-
-
-        details.appendChild(
-            price
-        );
-
-    }
-
-
-    if (description) {
-
-        var descriptionElement =
-            document.createElement(
-                "p"
-            );
-
-
-        descriptionElement.className =
-            "service-preview-description";
-
-
-        descriptionElement.textContent =
-            description;
-
-
-        details.appendChild(
-            descriptionElement
-        );
-
-    }
-
-
-    var meta =
-        document.createElement(
-            "div"
-        );
-
-
-    meta.className =
-        "service-preview-meta";
-
-
-    if (packageCount) {
-
-        var packages =
-            document.createElement(
-                "span"
-            );
-
-
-        packages.textContent =
-            packageCount +
-            (
-                packageCount === 1
-                    ? " Package"
-                    : " Packages"
-            );
-
-
-        meta.appendChild(
-            packages
-        );
-
-    }
-
-
-    if (
-        service.coverageDuration
-    ) {
-
-        var coverage =
-            document.createElement(
-                "span"
-            );
-
-
-        coverage.textContent =
-            service.coverageDuration;
-
-
-        meta.appendChild(
-            coverage
-        );
-
-    }
-
-
-    if (
-        service.deliveryTime
-    ) {
-
-        var delivery =
-            document.createElement(
-                "span"
-            );
-
-
-        delivery.textContent =
-            service.deliveryTime;
-
-
-        meta.appendChild(
-            delivery
-        );
-
-    }
-
-
-    if (
-        meta.children.length
-    ) {
-
-        details.appendChild(
-            meta
-        );
-
-    }
-
-
-    var actions =
-        document.createElement(
-            "div"
-        );
-
-
-    actions.className =
-        "service-preview-actions";
-
-
-    var serviceId =
-        service.id ||
-        service.serviceId ||
-        service.slug ||
-        "";
-
-
-    if (serviceId) {
-
-        var encodedId =
-            encodeURIComponent(
-                serviceId
-            );
-
-
-        var viewLink =
-            document.createElement(
-                "a"
-            );
-
-
-        viewLink.className =
-            "book-btn";
-
-
-        viewLink.href =
-            "service.html?id=" +
-            encodedId;
-
-
-        viewLink.textContent =
-            "View Service";
-
-
-        actions.appendChild(
-            viewLink
-        );
-
-
-        var bookLink =
-            document.createElement(
-                "a"
-            );
-
-
-        bookLink.className =
-            "book-btn";
-
-
-        bookLink.href =
-            "service.html?id=" +
-            encodedId +
-            "&action=book";
-
-
-        bookLink.textContent =
-            "Book Service";
-
-
-        actions.appendChild(
-            bookLink
-        );
-
-    }
-
-
-    card.appendChild(
-        details
-    );
-
-
-    card.appendChild(
-        actions
-    );
-
-
-    return card;
-
-}
-
-
-/* =========================================================
-   SERVICE EMPTY STATE
-========================================================= */
-
-function createServiceEmptyState() {
-
-    var empty =
-        document.createElement(
-            "div"
-        );
-
-
-    empty.className =
-        "service-empty-state";
-
-
-    var heading =
-        document.createElement(
-            "h3"
-        );
-
-
-    heading.textContent =
-        "Services Coming Soon";
-
-
-    var text =
-        document.createElement(
-            "p"
-        );
-
-
-    text.textContent =
-        "Photography services will appear here once they are available.";
-
-
-    empty.appendChild(
-        heading
-    );
-
-
-    empty.appendChild(
-        text
-    );
-
-
-    return empty;
-
-}
-
-
-/* =========================================================
-   LOAD SERVICES
-========================================================= */
-
-function loadClientServices() {
-
-    var container =
-        document.getElementById(
-            "servicesContainer"
-        );
-
-
-    if (!container) {
-
-        return;
-
-    }
-
-
-    var services =
-        getClientServices()
-            .filter(
-                function(service) {
-
-                    return (
-                        service &&
-                        typeof service === "object" &&
-                        service.active !== false
-                    );
-
-                }
-            );
-
-
-    container.innerHTML =
-        "";
-
-
-    if (!services.length) {
-
-        container.appendChild(
-            createServiceEmptyState()
-        );
-
-        return;
-
-    }
-
-
-    services.forEach(
-        function(service) {
-
-            container.appendChild(
-                createServiceCard(
-                    service
-                )
-            );
-
+function initializeStorageListeners() {
+
+    window.addEventListener(
+        "storage",
+        (event) => {
+
+            if (
+                event.key ===
+                STORAGE_KEYS.profile
+            ) {
+                renderPublicProfile();
+            }
+
+            if (
+                event.key ===
+                STORAGE_KEYS.services
+            ) {
+                loadClientServices();
+            }
+
+            if (
+                event.key ===
+                STORAGE_KEYS.equipment
+            ) {
+                loadClientEquipment();
+            }
+
+            if (
+                event.key ===
+                STORAGE_KEYS.portfolioStorage
+            ) {
+                renderPortfolioRecentWork();
+            }
+
+            if (
+                event.key ===
+                STORAGE_KEYS.reviews
+            ) {
+                renderClientReviews();
+            }
         }
     );
 
-}
-
-
-/* =========================================================
-   EQUIPMENT
-========================================================= */
-
-function getClientEquipment() {
-
-    var equipment =
-        readClientLocalStorage(
-            EQUIPMENT_STORAGE_KEY,
-            []
-        );
-
-
-    if (
-        !Array.isArray(
-            equipment
-        )
-    ) {
-
-        return [];
-
-    }
-
-
-    return equipment;
-
-}
-
-
-/* =========================================================
-   EQUIPMENT ICON
-========================================================= */
-
-function getEquipmentIcon(
-    category
-) {
-
-    var value =
-        String(
-            category || ""
-        )
-        .toLowerCase();
-
-
-    if (
-        value.indexOf(
-            "camera"
-        ) !== -1
-    ) {
-
-        return "fa-camera";
-
-    }
-
-
-    if (
-        value.indexOf(
-            "lens"
-        ) !== -1
-    ) {
-
-        return "fa-circle-dot";
-
-    }
-
-
-    if (
-        value.indexOf(
-            "light"
-        ) !== -1 ||
-        value.indexOf(
-            "flash"
-        ) !== -1
-    ) {
-
-        return "fa-lightbulb";
-
-    }
-
-
-    if (
-        value.indexOf(
-            "drone"
-        ) !== -1
-    ) {
-
-        return "fa-video";
-
-    }
-
-
-    if (
-        value.indexOf(
-            "audio"
-        ) !== -1 ||
-        value.indexOf(
-            "sound"
-        ) !== -1 ||
-        value.indexOf(
-            "microphone"
-        ) !== -1
-    ) {
-
-        return "fa-microphone";
-
-    }
-
-
-    if (
-        value.indexOf(
-            "tripod"
-        ) !== -1
-    ) {
-
-        return "fa-camera-retro";
-
-    }
-
-
-    return "fa-camera-retro";
-
-}
-
-
-/* =========================================================
-   LOAD EQUIPMENT
-========================================================= */
-
-function loadClientEquipment() {
-
-    var container =
-        document.getElementById(
-            "equipmentGrid"
-        );
-
-
-    if (!container) {
-
-        return;
-
-    }
-
-
-    var equipment =
-        getClientEquipment()
-            .filter(
-                function(category) {
-
-                    if (
-                        !category ||
-                        typeof category !== "object"
-                    ) {
-
-                        return false;
-
-                    }
-
-
-                    if (
-                        typeof category.name !== "string" ||
-                        !category.name.trim()
-                    ) {
-
-                        return false;
-
-                    }
-
-
-                    if (
-                        !Array.isArray(
-                            category.items
-                        )
-                    ) {
-
-                        return false;
-
-                    }
-
-
-                    return category.items.some(
-                        function(item) {
-
-                            return (
-                                typeof item === "string" &&
-                                item.trim()
-                            );
-
-                        }
-                    );
-
-                }
-            );
-
-
-    container.innerHTML =
-        "";
-
-
-    if (!equipment.length) {
-
-        var empty =
-            document.createElement(
-                "div"
-            );
-
-
-        empty.className =
-            "equipment-empty-state";
-
-
-        empty.textContent =
-            "Equipment information will appear here once it has been added.";
-
-
-        container.appendChild(
-            empty
-        );
-
-
-        return;
-
-    }
-
-
-    equipment.forEach(
-        function(category) {
-
-            var card =
-                document.createElement(
-                    "article"
-                );
-
-
-            card.className =
-                "equipment-category-card";
-
-
-            var heading =
-                document.createElement(
-                    "div"
-                );
-
-
-            heading.className =
-                "equipment-category-heading";
-
-
-            var icon =
-                document.createElement(
-                    "i"
-                );
-
-
-            icon.className =
-                "fa-solid " +
-                getEquipmentIcon(
-                    category.name
-                );
-
-
-            icon.setAttribute(
-                "aria-hidden",
-                "true"
-            );
-
-
-            heading.appendChild(
-                icon
-            );
-
-
-            var title =
-                document.createElement(
-                    "h3"
-                );
-
-
-            title.textContent =
-                category.name.trim();
-
-
-            heading.appendChild(
-                title
-            );
-
-
-            var list =
-                document.createElement(
-                    "ul"
-                );
-
-
-            list.className =
-                "equipment-items";
-
-
-            category.items
-                .filter(
-                    function(item) {
-
-                        return (
-                            typeof item === "string" &&
-                            item.trim()
-                        );
-
-                    }
-                )
-                .forEach(
-                    function(item) {
-
-                        var li =
-                            document.createElement(
-                                "li"
-                            );
-
-
-                        li.textContent =
-                            item.trim();
-
-
-                        list.appendChild(
-                            li
-                        );
-
-                    }
-                );
-
-
-            if (!list.children.length) {
-
-                return;
-
-            }
-
-
-            card.appendChild(
-                heading
-            );
-
-
-            card.appendChild(
-                list
-            );
-
-
-            container.appendChild(
-                card
-            );
-
-        }
+    document.addEventListener(
+        "professionalStudioReviewsUpdated",
+        renderClientReviews
     );
-
 }
 
 
 /* =========================================================
-   RECENT WORK DATABASE
+   PAGE VISIBILITY / BF CACHE
 ========================================================= */
 
-function openRecentWorkDatabase() {
-
-    return new Promise(
-        function(resolve, reject) {
-
-            if (!window.indexedDB) {
-
-                reject(
-                    new Error(
-                        "IndexedDB is not supported."
-                    )
-                );
-
-                return;
-
-            }
-
-
-            var request;
-
-
-            try {
-
-                request =
-                    window.indexedDB.open(
-                        RECENT_WORK_DB_NAME,
-                        RECENT_WORK_DB_VERSION
-                    );
-
-            }
-            catch (error) {
-
-                reject(error);
-
-                return;
-
-            }
-
-
-            request.onsuccess =
-                function(event) {
-
-                    var db =
-                        event.target.result;
-
-
-                    resolve(
-                        db
-                    );
-
-                };
-
-
-            request.onerror =
-                function() {
-
-                    reject(
-                        request.error ||
-                        new Error(
-                            "Could not open Recent Work database."
-                        )
-                    );
-
-                };
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   GET RECENT WORK PHOTO
-========================================================= */
-
-function getRecentWorkPhoto(
-    blobKey
-) {
-
-    return openRecentWorkDatabase()
-        .then(
-            function(db) {
-
-                return new Promise(
-                    function(resolve, reject) {
-
-                        if (
-                            !db.objectStoreNames.contains(
-                                RECENT_WORK_STORE
-                            )
-                        ) {
-
-                            reject(
-                                new Error(
-                                    "Recent Work store does not exist."
-                                )
-                            );
-
-                            try {
-                                db.close();
-                            } catch (error) {}
-
-                            return;
-
-                        }
-
-
-                        var transaction;
-
-
-                        try {
-
-                            transaction =
-                                db.transaction(
-                                    RECENT_WORK_STORE,
-                                    "readonly"
-                                );
-
-                        }
-                        catch (error) {
-
-                            reject(error);
-
-                            return;
-
-                        }
-
-
-                        var store =
-                            transaction.objectStore(
-                                RECENT_WORK_STORE
-                            );
-
-
-                        var request =
-                            store.get(
-                                blobKey
-                            );
-
-
-                        request.onsuccess =
-                            function() {
-
-                                resolve(
-                                    request.result ||
-                                    null
-                                );
-
-                            };
-
-
-                        request.onerror =
-                            function() {
-
-                                reject(
-                                    request.error ||
-                                    new Error(
-                                        "Could not read Recent Work image."
-                                    )
-                                );
-
-                            };
-
-                    }
-                );
-
-            }
-        );
-
-}
-
-
-/* =========================================================
-   READ RECENT WORK STORAGE
-========================================================= */
-
-function getRecentWorkStorage() {
-
-    try {
-
-        var raw =
-            localStorage.getItem(
-                RECENT_WORK_STORAGE_KEY
-            );
-
-
-        if (!raw) {
-
-            return {
-                albums: [],
-                files: []
-            };
-
-        }
-
-
-        var parsed =
-            JSON.parse(
-                raw
-            );
-
-
-        if (
-            !parsed ||
-            typeof parsed !== "object"
-        ) {
-
-            return {
-                albums: [],
-                files: []
-            };
-
-        }
-
-
-        return {
-
-            albums:
-                Array.isArray(
-                    parsed.albums
-                )
-                    ? parsed.albums
-                    : [],
-
-            files:
-                Array.isArray(
-                    parsed.files
-                )
-                    ? parsed.files
-                    : []
-
-        };
-
-    }
-    catch (error) {
-
-        console.warn(
-            "Could not read Recent Work:",
-            error
-        );
-
-
-        return {
-            albums: [],
-            files: []
-        };
-
-    }
-
-}
-
-
-/* =========================================================
-   RECENT WORK OBJECT URL TRACKING
-========================================================= */
-
-var recentWorkObjectUrls =
-    [];
-
-
-function cleanupRecentWorkObjectUrls() {
-
-    recentWorkObjectUrls.forEach(
-        function(url) {
-
-            try {
-
-                URL.revokeObjectURL(
-                    url
-                );
-
-            }
-            catch (error) {}
-
-        }
-    );
-
-
-    recentWorkObjectUrls =
-        [];
-
-}
-
-
-/* =========================================================
-   RECENT WORK EMPTY STATE
-========================================================= */
-
-function showRecentWorkEmptyState() {
-
-    var empty =
-        document.getElementById(
-            "recentWorkEmpty"
-        );
-
-
-    if (empty) {
-
-        empty.hidden =
-            false;
-
-    }
-
-}
-
-
-/* =========================================================
-   HIDE RECENT WORK EMPTY STATE
-========================================================= */
-
-function hideRecentWorkEmptyState() {
-
-    var empty =
-        document.getElementById(
-            "recentWorkEmpty"
-        );
-
-
-    if (empty) {
-
-        empty.hidden =
-            true;
-
-    }
-
-}
-
-
-/* =========================================================
-   RENDER RECENT WORK
-========================================================= */
-
-function renderPortfolioRecentWork() {
-
-    var grid =
-        document.getElementById(
-            "recentWorkPreview"
-        );
-
-
-    if (!grid) {
-
-        return;
-
-    }
-
-
-    cleanupRecentWorkObjectUrls();
-
-
-    var storage =
-        getRecentWorkStorage();
-
-
-    var publicAlbums =
-        storage.albums.filter(
-            function(album) {
-
-                return (
-                    album &&
-                    typeof album === "object" &&
-                    album.id &&
-                    album.isPublic !== false
-                );
-
-            }
-        );
-
-
-    grid.innerHTML =
-        "";
-
-
-    hideRecentWorkEmptyState();
-
-
-    if (!publicAlbums.length) {
-
-        showRecentWorkEmptyState();
-
-        return;
-
-    }
-
-
-    publicAlbums.forEach(
-        function(album) {
-
-            var albumFiles =
-                storage.files.filter(
-                    function(file) {
-
-                        return (
-                            file &&
-                            typeof file === "object" &&
-                            file.albumId ===
-                            album.id
-                        );
-
-                    }
-                );
-
-
-            var coverFile =
-                albumFiles.find(
-                    function(file) {
-
-                        return (
-                            file &&
-                            file.id ===
-                            album.coverFileId
-                        );
-
-                    }
-                );
-
-
-            if (!coverFile) {
-
-                coverFile =
-                    albumFiles[0] ||
-                    null;
-
-            }
-
-
-            var card =
-                document.createElement(
-                    "a"
-                );
-
-
-            card.className =
-                "work-card recent-work-card";
-
-
-            card.href =
-                "gallery.html?album=" +
-                encodeURIComponent(
-                    album.id
-                );
-
-
-            var imageContainer =
-                document.createElement(
-                    "div"
-                );
-
-
-            imageContainer.className =
-                "work-image";
-
-
-            var placeholder =
-                document.createElement(
-                    "div"
-                );
-
-
-            placeholder.className =
-                "recent-work-image-placeholder";
-
-
-            placeholder.textContent =
-                "Loading...";
-
-
-            imageContainer.appendChild(
-                placeholder
-            );
-
-
-            var content =
-                document.createElement(
-                    "div"
-                );
-
-
-            content.className =
-                "work-content";
-
-
-            var heading =
-                document.createElement(
-                    "h3"
-                );
-
-
-            heading.textContent =
-                album.name ||
-                "Untitled Album";
-
-
-            var count =
-                document.createElement(
-                    "p"
-                );
-
-
-            count.textContent =
-                albumFiles.length +
-                (
-                    albumFiles.length === 1
-                        ? " photo"
-                        : " photos"
-                );
-
-
-            content.appendChild(
-                heading
-            );
-
-
-            content.appendChild(
-                count
-            );
-
-
-            card.appendChild(
-                imageContainer
-            );
-
-
-            card.appendChild(
-                content
-            );
-
-
-            grid.appendChild(
-                card
-            );
-
-
-            if (!coverFile) {
-
-                placeholder.textContent =
-                    "No preview image";
-
-                return;
-
-            }
-
-
-            var blobKey =
-                coverFile.blobKey ||
-                coverFile.id;
-
-
-            if (!blobKey) {
-
-                placeholder.textContent =
-                    "Preview unavailable";
-
-                return;
-
-            }
-
-
-            getRecentWorkPhoto(
-                blobKey
-            )
-            .then(
-                function(record) {
-
-                    if (
-                        !record ||
-                        !record.blob
-                    ) {
-
-                        placeholder.textContent =
-                            "Preview unavailable";
-
-                        return;
-
-                    }
-
-
-                    var image =
-                        document.createElement(
-                            "img"
-                        );
-
-
-                    var objectURL;
-
-
-                    try {
-
-                        objectURL =
-                            URL.createObjectURL(
-                                record.blob
-                            );
-
-                    }
-                    catch (error) {
-
-                        placeholder.textContent =
-                            "Preview unavailable";
-
-                        return;
-
-                    }
-
-
-                    recentWorkObjectUrls.push(
-                        objectURL
-                    );
-
-
-                    image.src =
-                        objectURL;
-
-
-                    image.alt =
-                        album.name ||
-                        "Recent Work";
-
-
-                    image.loading =
-                        "lazy";
-
-
-                    image.decoding =
-                        "async";
-
-
-                    image.onload =
-                        function() {
-
-                            if (
-                                placeholder &&
-                                placeholder.parentNode
-                            ) {
-
-                                placeholder.remove();
-
-                            }
-
-                        };
-
-
-                    image.onerror =
-                        function() {
-
-                            placeholder.textContent =
-                                "Preview unavailable";
-
-                            image.remove();
-
-                        };
-
-
-                    imageContainer.insertBefore(
-                        image,
-                        imageContainer.firstChild
-                    );
-
-                }
-            )
-            .catch(
-                function(error) {
-
-                    console.warn(
-                        "Could not load Recent Work cover:",
-                        error
-                    );
-
-
-                    placeholder.textContent =
-                        "Preview unavailable";
-
-                }
-            );
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   RECENT WORK UPDATES
-========================================================= */
-
-window.addEventListener(
-    "professionalStudioRecentWorkUpdated",
-    function() {
-
-        renderPortfolioRecentWork();
-
-    }
-);
-
-
-/* =========================================================
-   STORAGE EVENT
-========================================================= */
-
-window.addEventListener(
-    "storage",
-    function(event) {
-
-        if (
-            event.key ===
-            PROFILE_STORAGE_KEY
-        ) {
+function initializePageRefreshHandling() {
+
+    window.addEventListener(
+        "pageshow",
+        () => {
 
             renderPublicProfile();
-
-        }
-
-
-        if (
-            event.key ===
-            SERVICES_STORAGE_KEY
-        ) {
-
             loadClientServices();
-
-        }
-
-
-        if (
-            event.key ===
-            EQUIPMENT_STORAGE_KEY
-        ) {
-
             loadClientEquipment();
-
-        }
-
-
-        if (
-            event.key ===
-            RECENT_WORK_STORAGE_KEY
-        ) {
-
             renderPortfolioRecentWork();
-
-        }
-
-
-        if (
-            event.key ===
-            REVIEWS_STORAGE_KEY
-        ) {
-
             renderClientReviews();
-
         }
-
-    }
-);
+    );
+}
 
 
 /* =========================================================
@@ -4953,35 +2869,19 @@ window.addEventListener(
 
 window.addEventListener(
     "beforeunload",
-    function() {
-
-        cleanupRecentWorkObjectUrls();
-
-    }
+    cleanupRecentWorkObjectUrls
 );
 
 
 /* =========================================================
-   INITIALIZE
+   INITIALIZATION
 ========================================================= */
 
 document.addEventListener(
     "DOMContentLoaded",
-    function() {
+    () => {
 
         renderPublicProfile();
-
-        initializeExperienceMeters();
-
-        initializeSmoothScrolling();
-
-        initializeRevealAnimations();
-
-        initializeNavbar();
-
-        initializeActiveNavigation();
-
-        initializeBookButtons();
 
         loadClientServices();
 
@@ -4989,7 +2889,24 @@ document.addEventListener(
 
         renderPortfolioRecentWork();
 
+        renderClientReviews();
+
         initializeReviewSystem();
 
+        initializeSmoothScrolling();
+
+        initializeRevealAnimations();
+
+        initializeExperienceMeters();
+
+        initializeActiveNavigation();
+
+        initializeNavbarScrollState();
+
+        initializeBookButtons();
+
+        initializeStorageListeners();
+
+        initializePageRefreshHandling();
     }
 );
