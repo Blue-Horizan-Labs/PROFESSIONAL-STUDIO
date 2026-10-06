@@ -2,30 +2,38 @@
 <html lang="en">
 
 <head>
-    
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home | Professional Studio</title>
-<link
-    rel="icon"
-    type="image/png"
-    href="https://i.ibb.co/mCMDSYhH/logo1-1.png" 
->
+    <meta
+        name="description"
+        content="Professional Studio helps photographers build professional portfolios, organize bookings, showcase services, and deliver client work."
+    >
+    <meta name="theme-color" content="#111111">
 
- 
+    <title>Professional Studio | Photography Business Platform</title>
 
-    <!-- CSS -->
+    <link
+        rel="icon"
+        type="image/png"
+        href="https://i.ibb.co/mCMDSYhH/logo1-1.png"
+    >
+
     <link rel="stylesheet" href="index.css">
 
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
 
-    <!-- Remix Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+    <link
+        href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"
+        rel="stylesheet"
+    >
+
 </head>
 
 <body>
@@ -38,14 +46,14 @@
 
     <div class="container nav-container">
 
-        <a href="#" class="logo">
+        <a href="#home" class="logo" aria-label="Professional Studio home">
             <i class="ri-camera-3-line"></i>
             Professional Studio
         </a>
 
-        <nav class="nav-links">
+        <nav class="nav-links" id="primary-navigation" aria-label="Primary navigation">
 
-            <a href="#">Home</a>
+            <a href="#home">Home</a>
             <a href="#portfolio">Portfolio</a>
             <a href="#equipment">Equipment</a>
             <a href="#booking">Booking</a>
@@ -57,15 +65,19 @@
 
         <div class="nav-buttons">
 
-           <a href="/auth/login-new.html"><button class="login-btn">
+            <a href="/auth/login-new.html" class="login-btn">
                 Login
-            </button>
             </a>
 
-
-            <div class="menu-btn">
-                <i class="ri-menu-line"></i>
-            </div>
+            <button
+                class="menu-btn"
+                type="button"
+                aria-label="Open navigation menu"
+                aria-expanded="false"
+                aria-controls="primary-navigation"
+            >
+                <i class="ri-menu-line" aria-hidden="true"></i>
+            </button>
 
         </div>
 
@@ -73,18 +85,19 @@
 
 </header>
 
+
 <!-- ===================== -->
 <!-- HERO -->
 <!-- ===================== -->
- <section class="hero">
+
+<section class="hero" id="home">
 
     <div class="container hero-container">
 
-        <!-- LEFT -->
         <div class="hero-left">
 
             <span class="hero-badge">
-                ⭐ Trusted by 100+ Clients across our Country
+                Professional photography business platform
             </span>
 
             <h1>
@@ -103,71 +116,29 @@
 
             <div class="hero-buttons">
 
-                <a href="/auth/signup.html">
-                    <button class="primary-btn">
-                        Start Free
-                    </button>
+                <a href="/auth/signup.html" class="primary-btn">
+                    Get Started
                 </a>
 
-                <a href="/demo.html">
-                    <button class="secondary-btn">
-                        Watch Demo
-                    </button>
+                <a href="/demo.html" class="secondary-btn">
+                    Watch Demo
                 </a>
-
-            </div>
-
-            <div class="hero-stats">
-
-                <div class="stat">
-                    <h2>2.5K+</h2>
-                    <p>Bookings</p>
-                </div>
-
-                <div class="stat">
-                    <h2>10K+</h2>
-                    <p>Studios</p>
-                </div>
-
-                <div class="stat">
-                    <h2>99%</h2>
-                    <p>Happy Clients</p>
-                </div>
 
             </div>
 
         </div>
 
 
-        <!-- RIGHT -->
-        <div class="hero-right" style="
-            width:100%;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            position:relative;
-        ">
+        <div class="hero-right">
 
-            <!-- PORTFOLIO PREVIEW -->
-            <div style="
-                width:100%;
-                max-width:390px;
-                background:#fff;
-                border-radius:14px;
-                overflow:hidden;
-                border:1px solid #e8e8e8;
-                box-shadow:0 12px 30px rgba(0,0,0,0.07);
-            ">
+            <div class="hero-preview">
 
                 <img
                     src="https://i.ibb.co/VWZ5jPt8/hero.png"
-                    alt="Photographer Portfolio Showcase"
-                    style="
-                        width:100%;
-                        height:auto;
-                        display:block;
-                        object-fit:contain;
-                    "
+                    alt="Professional Studio portfolio interface preview"
+                    class="hero-preview-image"
+                    loading="eager"
+                    fetchpriority="high"
                 >
 
             </div>
@@ -177,39 +148,7 @@
     </div>
 
 </section>
-<!-- ===================== 
-     TRUSTED 
- ===================== 
 
-<section class="trusted">
-
-    <div class="container">
-
-        <h2>
-
-            Trusted By Professional Photographers 
-
-        </h2>
-
-        <div class="brand-grid">
-
-            <div class="brand-card">Rahul Photography</div>
-
-            <div class="brand-card">Soniya digital studio</div>
-
-            <div class="brand-card">Niki photography</div>
-
-            <div class="brand-card">Abdul studios</div>
-
-            <div class="brand-card">Fatima digital photo studio</div>
-
-        </div>
-
-    </div>
-
-</section>
-
--->
 
 <!-- ===================== -->
 <!-- FEATURES -->
@@ -224,18 +163,16 @@
             <span>FEATURES</span>
 
             <h2>
-
                 Everything A Professional Photographer Needs
-
             </h2>
 
             <p>
-
-                Powerful tools to manage your entire photography business from one dashboard.
-
+                Powerful tools to manage your entire photography business
+                from one dashboard.
             </p>
 
         </div>
+
 
         <div class="feature-grid">
 
@@ -246,12 +183,12 @@
                 <h3>Beautiful Portfolio</h3>
 
                 <p>
-
-                    Showcase your best work with responsive galleries and premium layouts.
-
+                    Showcase your best work with responsive galleries
+                    and premium layouts.
                 </p>
 
             </div>
+
 
             <div class="feature-card">
 
@@ -260,12 +197,12 @@
                 <h3>Booking Management</h3>
 
                 <p>
-
-                    Accept online bookings with calendar availability and instant confirmations.
-
+                    Manage booking requests, availability, and client
+                    details through a dedicated booking workflow.
                 </p>
 
             </div>
+
 
             <div class="feature-card">
 
@@ -274,12 +211,12 @@
                 <h3>Client Galleries</h3>
 
                 <p>
-
-                    Deliver high-quality photos securely with private gallery access.
-
+                    Deliver high-quality photos securely with private
+                    gallery access.
                 </p>
 
             </div>
+
 
             <div class="feature-card">
 
@@ -288,28 +225,29 @@
                 <h3>Online Payments</h3>
 
                 <p>
-
-                    Collect booking deposits and final payments directly through your website.
-
+                    Support online payments through a payment provider
+                    when the integration is connected to your account.
                 </p>
 
             </div>
+
 
             <div class="feature-card">
 
                 <i class="ri-ai-generate"></i>
 
-                <h3>AI Assistant
+                <h3>
+                    AI Assistant
                     (Coming Soon)
                 </h3>
 
                 <p>
-
-                     Client replies, pricing suggestions and SEO instantly.
-
+                    Planned tools for client communication, pricing support,
+                    and SEO assistance.
                 </p>
 
             </div>
+
 
             <div class="feature-card">
 
@@ -318,9 +256,8 @@
                 <h3>Business Dashboard</h3>
 
                 <p>
-
-                    Track revenue, bookings, inquiries and customer engagement in real time.
-
+                    Manage bookings, clients, inquiries, and studio
+                    information from one dashboard.
                 </p>
 
             </div>
@@ -330,6 +267,7 @@
     </div>
 
 </section>
+
 
 <!-- ===================== -->
 <!-- PORTFOLIO SHOWCASE -->
@@ -341,43 +279,59 @@
 
         <div class="section-title">
 
-            <span>YOUR PORTFOLIO</span>
+            <span>PORTFOLIO PREVIEW</span>
 
-            <h2>Showcase Your Finest Photography and Recent Works</h2>
-
+            <h2>
+                Showcase Your Finest Photography and Recent Works
+            </h2>
 
             <p>
-                Impress and connect with potential clients with a premium portfolio designed to
-                highlight your creativity and professionalism.
+                Use a polished portfolio layout to highlight your style,
+                services, and recent work. The images shown here are sample content
+                for this product preview.
             </p>
 
         </div>
+
 
         <div class="portfolio-grid">
 
             <div class="portfolio-card large">
 
-                <img src="https://i.ibb.co/MDDhvR11/wedding.webp" alt="Wedding">
+                <img
+                    src="https://i.ibb.co/MDDhvR11/wedding.webp"
+                    alt="Sample wedding photography portfolio"
+                    loading="lazy"
+                >
 
                 <div class="portfolio-overlay">
 
                     <span>Wedding</span>
 
-                    <h3>Luxury Wedding Moments</h3>
+                    <h3>
+                        Wedding Story Preview
+                    </h3>
 
                 </div>
 
             </div>
 
+
             <div class="portfolio-card">
 
-                <img src="https://i.ibb.co/pjc4WzTY/portrait.jpg" alt="Portrait">
+                <img
+                    src="https://i.ibb.co/pjc4WzTY/portrait.jpg"
+                    alt="Sample portrait photography portfolio"
+                    loading="lazy"
+                >
 
                 <div class="portfolio-overlay">
 
                     <span>Portrait</span>
 
-                    <h3>Studio Portrait</h3>
+                    <h3>
+                        Portrait Collection Preview
+                    </h3>
 
                 </div>
 
@@ -386,41 +340,61 @@
 
             <div class="portfolio-card">
 
-                <img src="https://i.ibb.co/N26LBbXz/Screenshot-2025-04-19-19-42-20-513-com-miui-gallery.jpg" alt="Wildlife">
+                <img
+                    src="https://i.ibb.co/N26LBbXz/Screenshot-2025-04-19-19-42-20-513-com-miui-gallery.jpg"
+                    alt="Sample wildlife photography portfolio"
+                    loading="lazy"
+                >
 
                 <div class="portfolio-overlay">
 
                     <span>Wildlife</span>
 
-                    <h3>Nature Collection</h3>
+                    <h3>
+                        Wildlife Collection Preview
+                    </h3>
 
                 </div>
 
             </div>
 
+
             <div class="portfolio-card large">
 
-                <img src="https://i.ibb.co/5WLqrH10/corporate-events.jpg" alt="Event">
+                <img
+                    src="https://i.ibb.co/5WLqrH10/corporate-events.jpg"
+                    alt="Sample event photography portfolio"
+                    loading="lazy"
+                >
 
                 <div class="portfolio-overlay">
 
                     <span>Events</span>
 
-                    <h3>Corporate Event</h3>
+                    <h3>
+                        Event Collection Preview
+                    </h3>
 
                 </div>
 
             </div>
 
+
             <div class="portfolio-card">
 
-                <img src="https://i.ibb.co/vnk99LF/Adventure-Travel-Places-in-India-scaled-jpg.webp" alt="Travel">
+                <img
+                    src="https://i.ibb.co/vnk99LF/Adventure-Travel-Places-in-India-scaled-jpg.webp"
+                    alt="Sample travel photography portfolio"
+                    loading="lazy"
+                >
 
                 <div class="portfolio-overlay">
 
                     <span>Travel</span>
 
-                    <h3>Adventure Stories</h3>
+                    <h3>
+                        Travel Collection Preview
+                    </h3>
 
                 </div>
 
@@ -428,11 +402,9 @@
 
         </div>
 
-
     </div>
 
 </section>
-
 
 
 <!-- ===================== -->
@@ -445,16 +417,19 @@
 
         <div class="section-title">
 
-            <span>GEAR & EQUIPMENT SHOWCASE</span>
+            <span>EQUIPMENT PREVIEW</span>
 
-            <h2>Professional Equipment Showcasing</h2>
+            <h2>
+                Professional Equipment Showcasing
+            </h2>
 
             <p>
-                Premium cameras, lenses and lighting equipment ensure every
-                photograph is captured with exceptional quality.
+                Show the cameras, lenses, lighting, video gear, and workflow tools
+                your studio uses. The categories below are examples for the product preview.
             </p>
 
         </div>
+
 
         <div class="equipment-grid">
 
@@ -462,7 +437,9 @@
 
                 <i class="ri-camera-3-line"></i>
 
-                <h3>Mirrorless Cameras</h3>
+                <h3>
+                    Mirrorless Cameras
+                </h3>
 
                 <p>
                     Sony Alpha, Canon EOS R Series and Nikon Z Series.
@@ -470,23 +447,30 @@
 
             </div>
 
+
             <div class="equipment-card">
 
                 <i class="ri-camera-lens-line"></i>
 
-                <h3>Professional Lenses</h3>
+                <h3>
+                    Professional Lenses
+                </h3>
 
                 <p>
-                    Prime, Zoom, Macro and Telephoto lenses for every occasion.
+                    Prime, Zoom, Macro and Telephoto lenses
+                    for every occasion.
                 </p>
 
             </div>
+
 
             <div class="equipment-card">
 
                 <i class="ri-sun-line"></i>
 
-                <h3>Lighting Setup</h3>
+                <h3>
+                    Lighting Setup
+                </h3>
 
                 <p>
                     Studio flashes, LED panels, reflectors and softboxes.
@@ -494,11 +478,14 @@
 
             </div>
 
+
             <div class="equipment-card">
 
                 <i class="ri-video-line"></i>
 
-                <h3>4K Video Gear</h3>
+                <h3>
+                    4K Video Gear
+                </h3>
 
                 <p>
                     Professional stabilizers, drones and cinematic equipment.
@@ -506,11 +493,14 @@
 
             </div>
 
+
             <div class="equipment-card">
 
                 <i class="ri-hard-drive-2-line"></i>
 
-                <h3>Storage & Backup</h3>
+                <h3>
+                    Storage & Backup
+                </h3>
 
                 <p>
                     Fast SSD workflow with cloud backup for maximum security.
@@ -518,11 +508,14 @@
 
             </div>
 
+
             <div class="equipment-card">
 
                 <i class="ri-shield-check-line"></i>
 
-                <h3>Reliable Workflow</h3>
+                <h3>
+                    Reliable Workflow
+                </h3>
 
                 <p>
                     Multiple backup systems ensure your memories are always safe.
@@ -537,7 +530,6 @@
 </section>
 
 
-
 <!-- ===================== -->
 <!-- BOOKING -->
 <!-- ===================== -->
@@ -548,24 +540,24 @@
 
         <div class="booking-left">
 
-            <h1>BOOKING PAGE</h1>
+            <span>BOOKING WORKFLOW</span>
 
-        <hr>
-            <h3>
+            <h2>
+                Make Booking Easier For Your Clients and Your Studio
+            </h2>
 
-              Make Booking Easy For Your Clients and yourself.
-
-            </h3>
-            <br>
+            <hr>
 
             <p>
-
-                let clients Select their preferred service, event date and package.
-                Your will be confirmed instantly.
-
+                Let clients select their preferred service, event date,
+                and package. Review and manage booking requests from
+                your studio dashboard.
             </p>
 
-            <h1>Booking Page Features</h1>
+            <h3>
+                Booking workflow features
+            </h3>
+
 
             <div class="booking-benefits">
 
@@ -573,9 +565,10 @@
 
                     <i class="ri-check-line"></i>
 
-                    Instant Confirmation
+                    Booking Confirmation
 
                 </div>
+
 
                 <div class="benefit">
 
@@ -585,23 +578,26 @@
 
                 </div>
 
-                <div class="benefit">
-
-                    <i class="ri-check-line"></i>
-
-                    Secure Online Payments
-
-                </div>
 
                 <div class="benefit">
 
                     <i class="ri-check-line"></i>
 
-                     Approx Guest Count
+                    Online Payment Support
 
                 </div>
 
-                   <div class="benefit">
+
+                <div class="benefit">
+
+                    <i class="ri-check-line"></i>
+
+                    Approx Guest Count
+
+                </div>
+
+
+                <div class="benefit">
 
                     <i class="ri-check-line"></i>
 
@@ -613,14 +609,13 @@
 
         </div>
 
-
-
     </div>
 
 </section>
 
+
 <!-- ===================== -->
-<!-- CLIENT GALLERY PREVIEW -->
+<!-- CLIENT GALLERY -->
 <!-- ===================== -->
 
 <section class="client-gallery" id="gallery">
@@ -629,42 +624,88 @@
 
         <div class="section-title">
 
-            <span>CLIENT GALLERY</span>
+            <span>GALLERY PREVIEW</span>
 
-            <h2>Deliver Memories Securely</h2>
+            <h2>
+                Deliver Memories Securely
+            </h2>
 
             <p>
-                Share high-resolution images through password-protected galleries
-                that clients can access anytime, anywhere.
+                Give clients a dedicated gallery experience for viewing and accessing
+                their delivered work. The gallery images shown here are sample content.
             </p>
 
         </div>
 
+
         <div class="gallery-grid">
 
             <div class="gallery-card">
-                <img src="https://i.ibb.co/yBqR6mt3/wedding-album.jpg" alt="Wedding Gallery">
+
+                <img
+                    src="https://i.ibb.co/yBqR6mt3/wedding-album.jpg"
+                    alt="Sample wedding client gallery"
+                    loading="lazy"
+                >
+
                 <div class="gallery-overlay">
-                    <h3>Wedding Album</h3>
-                    <span>420 Photos</span>
+
+                    <h3>
+                        Wedding Album
+                    </h3>
+
+                    <span>
+                        Gallery Preview
+                    </span>
+
                 </div>
+
             </div>
 
+
             <div class="gallery-card">
-                <img src="https://i.ibb.co/p6srYFhT/birthday.jpg" alt="Birthday Gallery">
+
+                <img
+                    src="https://i.ibb.co/p6srYFhT/birthday.jpg"
+                    alt="Sample birthday client gallery"
+                    loading="lazy"
+                >
+
                 <div class="gallery-overlay">
-                    <h3>Birthday Event</h3>
-                    <span>210 Photos</span>
+
+                    <h3>
+                        Birthday Event
+                    </h3>
+
+                    <span>
+                        Gallery Preview
+                    </span>
+
                 </div>
+
             </div>
 
 
             <div class="gallery-card">
-                <img src="https://i.ibb.co/qMJHPg1Q/travel.jpg" alt="Travel Gallery">
+
+                <img
+                    src="https://i.ibb.co/qMJHPg1Q/travel.jpg"
+                    alt="Sample travel client gallery"
+                    loading="lazy"
+                >
+
                 <div class="gallery-overlay">
-                    <h3>Travel Collection</h3>
-                    <span>520 Photos</span>
+
+                    <h3>
+                        Travel Collection
+                    </h3>
+
+                    <span>
+                        Gallery Preview
+                    </span>
+
                 </div>
+
             </div>
 
         </div>
@@ -672,9 +713,6 @@
     </div>
 
 </section>
-
-
-
 
 
 <!-- ===================== -->
@@ -687,18 +725,19 @@
 
         <div class="ai-left">
 
-            <span>AI POWERED  <h4>[UPCOMING FEATURES]</h4></span> 
+            <span class="section-kicker">
+                PLANNED AI FEATURES
+            </span>
 
             <h2>
                 Let Artificial Intelligence Grow Your Photography Business
             </h2>
 
             <p>
-
-                Save time and impress clients using powerful AI tools built
-                directly into your dashboard.
-
+                Planned AI tools can assist with repetitive content, communication,
+                SEO, insights, and package planning. These features are not available yet.
             </p>
+
 
             <div class="ai-list">
 
@@ -708,13 +747,18 @@
 
                     <div>
 
-                        <h4>Smart Caption Generator</h4>
+                        <h4>
+                            Smart Caption Generator
+                        </h4>
 
-                        <p>Create engaging captions instantly.</p>
+                        <p>
+                            Create engaging captions instantly.
+                        </p>
 
                     </div>
 
                 </div>
+
 
                 <div class="ai-item">
 
@@ -722,13 +766,18 @@
 
                     <div>
 
-                        <h4>Automatic Client Replies</h4>
+                        <h4>
+                            Automatic Client Replies
+                        </h4>
 
-                        <p>Respond professionally in seconds.</p>
+                        <p>
+                            Respond professionally in seconds.
+                        </p>
 
                     </div>
 
                 </div>
+
 
                 <div class="ai-item">
 
@@ -736,13 +785,18 @@
 
                     <div>
 
-                        <h4>SEO Optimization</h4>
+                        <h4>
+                            SEO Optimization
+                        </h4>
 
-                        <p>Improve Google rankings automatically.</p>
+                        <p>
+                            Get AI-assisted SEO suggestions when this feature is available.
+                        </p>
 
                     </div>
 
                 </div>
+
 
                 <div class="ai-item">
 
@@ -750,13 +804,18 @@
 
                     <div>
 
-                        <h4>Business Insights</h4>
+                        <h4>
+                            Business Insights
+                        </h4>
 
-                        <p>Know which services perform the best.</p>
+                        <p>
+                            Know which services perform the best.
+                        </p>
 
                     </div>
 
                 </div>
+
 
                 <div class="ai-item">
 
@@ -764,9 +823,13 @@
 
                     <div>
 
-                        <h4>Package Suggestions</h4>
+                        <h4>
+                            Package Suggestions
+                        </h4>
 
-                        <p>AI recommends profitable pricing plans.</p>
+                        <p>
+                            Planned AI-assisted package suggestions.
+                        </p>
 
                     </div>
 
@@ -775,6 +838,7 @@
             </div>
 
         </div>
+
 
         <div class="ai-right">
 
@@ -793,21 +857,18 @@
 
                 </div>
 
+
                 <div class="ai-stats">
 
                     <div class="mini-card">
 
-                        <h3>96%</h3>
+                        <h3>
+                            Coming soon
+                        </h3>
 
-                        <span>Automation</span>
-
-                    </div>
-
-                    <div class="mini-card">
-
-                        <h3>5x</h3>
-
-                        <span>Faster Replies</span>
+                        <span>
+                            AI features are planned
+                        </span>
 
                     </div>
 
@@ -820,9 +881,6 @@
     </div>
 
 </section>
-
-
-
 
 
 <!-- ===================== -->
@@ -835,18 +893,20 @@
 
         <div class="section-title">
 
-            <span>DASHBOARD</span>
+            <span>DASHBOARD PREVIEW</span>
 
-            <h2>Manage Everything From One Place</h2>
+            <h2>
+                Manage Everything From One Place
+            </h2>
 
             <p>
-
-                View bookings, revenue, clients and performance from a beautiful
-                business dashboard.
-
+                Preview the workspace for managing bookings, galleries,
+                clients, analytics, and studio settings. The values below are intentionally empty
+                because real studio data will come from the backend.
             </p>
 
         </div>
+
 
         <div class="dashboard-window">
 
@@ -858,27 +918,47 @@
 
             </div>
 
+
             <div class="dashboard-content">
 
                 <div class="dashboard-sidebar">
 
                     <ul>
 
-                        <li><i class="ri-dashboard-line"></i> Dashboard</li>
+                        <li>
+                            <i class="ri-dashboard-line"></i>
+                            Dashboard
+                        </li>
 
-                        <li><i class="ri-calendar-line"></i> Bookings</li>
+                        <li>
+                            <i class="ri-calendar-line"></i>
+                            Bookings
+                        </li>
 
-                        <li><i class="ri-image-line"></i> Gallery</li>
+                        <li>
+                            <i class="ri-image-line"></i>
+                            Gallery
+                        </li>
 
-                        <li><i class="ri-money-dollar-circle-line"></i> Revenue</li>
+                        <li>
+                            <i class="ri-money-dollar-circle-line"></i>
+                            Revenue
+                        </li>
 
-                        <li><i class="ri-user-line"></i> Clients</li>
+                        <li>
+                            <i class="ri-user-line"></i>
+                            Clients
+                        </li>
 
-                        <li><i class="ri-settings-3-line"></i> Settings</li>
+                        <li>
+                            <i class="ri-settings-3-line"></i>
+                            Settings
+                        </li>
 
                     </ul>
 
                 </div>
+
 
                 <div class="dashboard-main">
 
@@ -886,60 +966,73 @@
 
                         <div class="dash-card">
 
-                            <h4>Total Revenue</h4>
+                            <h4>Revenue</h4>
 
-                            <h2>₹418,640</h2>
+                            <h2>—</h2>
 
-                            <span>+18% this month</span>
+                            <span>
+                                Waiting for studio data
+                            </span>
 
                         </div>
+
 
                         <div class="dash-card">
 
-                            <h4>Total Bookings</h4>
+                            <h4>Bookings</h4>
 
-                            <h2>342</h2>
+                            <h2>—</h2>
 
-                            <span>+12% this month</span>
+                            <span>
+                                Waiting for booking data
+                            </span>
 
                         </div>
+
 
                         <div class="dash-card">
 
-                            <h4>Active Clients</h4>
+                            <h4>Clients</h4>
 
-                            <h2>189</h2>
+                            <h2>—</h2>
 
-                            <span>+8% this month</span>
+                            <span>
+                                Waiting for studio data
+                            </span>
 
                         </div>
+
 
                         <div class="dash-card">
 
                             <h4>Portfolio Views</h4>
 
-                            <h2>28.4K</h2>
+                            <h2>—</h2>
 
-                            <span>+25% this month</span>
+                            <span>
+                                Waiting for studio data
+                            </span>
 
                         </div>
 
                     </div>
 
+
                     <div class="dashboard-chart">
 
-                        <h3>Monthly Business Performance</h3>
+                        <div class="dashboard-chart-header">
+                            <div>
+                                <span class="dashboard-chart-kicker">ANALYTICS</span>
+                                <h3>Business Performance</h3>
+                            </div>
 
-                        <div class="chart-placeholder">
+                            <span class="preview-status">Preview</span>
+                        </div>
 
-                            <div class="bar" style="height:55%;"></div>
-                            <div class="bar" style="height:70%;"></div>
-                            <div class="bar" style="height:45%;"></div>
-                            <div class="bar" style="height:82%;"></div>
-                            <div class="bar" style="height:90%;"></div>
-                            <div class="bar" style="height:75%;"></div>
-                            <div class="bar" style="height:98%;"></div>
-
+                        <div class="chart-empty-state">
+                            <i class="ri-bar-chart-box-line" aria-hidden="true"></i>
+                            <strong>Your analytics will appear here</strong>
+                            <span>Connect your studio data to populate performance insights.</span>
                         </div>
 
                     </div>
@@ -953,6 +1046,8 @@
     </div>
 
 </section>
+
+
 <!-- ===================== -->
 <!-- HOW IT WORKS -->
 <!-- ===================== -->
@@ -965,71 +1060,98 @@
 
             <span>HOW IT WORKS</span>
 
-            <h2>Launch Your Photography Business In 4 Simple Steps</h2>
+            <h2>
+                Launch Your Photography Business In 4 Simple Steps
+            </h2>
 
             <p>
-                Build your professional online presence and start accepting
-                bookings without any technical or coding/programming knowledge.
+                Set up your professional online presence, configure your studio,
+                and prepare your booking workflow without writing code.
             </p>
 
         </div>
+
 
         <div class="steps-grid">
 
             <div class="step-card">
 
-                <div class="step-number">01</div>
+                <div class="step-number">
+                    01
+                </div>
 
                 <i class="ri-user-add-line"></i>
 
-                <h3>Create Account</h3>
+                <h3>
+                    Create Account
+                </h3>
 
                 <p>
-                   Signup and register your studio. <br>
-                   Upload you contact and information. <br>
+                    Signup and register your studio.
+                    <br>
+                    Add your contact and studio information.
+                    <br>
                     Setup your professional portfolio within minutes.
                 </p>
 
             </div>
 
+
             <div class="step-card">
 
-                <div class="step-number">02</div>
+                <div class="step-number">
+                    02
+                </div>
 
                 <i class="ri-image-add-line"></i>
 
-                <h3>Upload Your Work</h3>
+                <h3>
+                    Upload Your Work
+                </h3>
 
                 <p>
-                    Showcase your best work with beautiful galleries and albums.
+                    Showcase your best work with beautiful galleries
+                    and albums.
                 </p>
 
             </div>
 
+
             <div class="step-card">
 
-                <div class="step-number">03</div>
+                <div class="step-number">
+                    03
+                </div>
 
                 <i class="ri-settings-5-line"></i>
 
-                <h3>Customize Pricing</h3>
+                <h3>
+                    Customize Pricing
+                </h3>
 
                 <p>
-                 Set pricing for your services and packages according to your standards and market.
+                    Set pricing for your services and packages according
+                    to your standards and market.
                 </p>
 
             </div>
 
+
             <div class="step-card">
 
-                <div class="step-number">04</div>
+                <div class="step-number">
+                    04
+                </div>
 
                 <i class="ri-calendar-check-line"></i>
 
-                <h3>Start Accepting Bookings</h3>
+                <h3>
+                    Start Accepting Bookings
+                </h3>
 
                 <p>
-                    Share your website on your social media platforms and start receiving bookings from clients.
+                    Publish your website, share it with clients,
+                    and manage booking requests from one place.
                 </p>
 
             </div>
@@ -1039,9 +1161,6 @@
     </div>
 
 </section>
-
-
-
 
 
 <!-- ===================== -->
@@ -1054,53 +1173,109 @@
 
         <div class="section-title">
 
-            <span>EVENTS</span>
+            <span>SERVICE CATEGORIES</span>
 
-            <h2>Photography Services For Every Occasion</h2>
+            <h2>
+                Photography Services For Every Occasion
+            </h2>
 
             <p>
-                Display every service you offer in an attractive and organized
-                manner.
+                Organize the photography services your studio offers into clear,
+                client-friendly categories. The examples below are sample content.
             </p>
 
         </div>
 
+
         <div class="event-grid">
 
             <div class="event-card">
+
                 <i class="ri-heart-3-line"></i>
-                <h3>Wedding</h3>
-                <p>Luxury wedding photography with cinematic storytelling.</p>
+
+                <h3>
+                    Wedding
+                </h3>
+
+                <p>
+                    Luxury wedding photography with cinematic storytelling.
+                </p>
+
             </div>
 
+
             <div class="event-card">
+
                 <i class="ri-heart-line"></i>
-                <h3>Pre Wedding</h3>
-                <p>Romantic destination and outdoor pre-wedding sessions.</p>
+
+                <h3>
+                    Pre Wedding
+                </h3>
+
+                <p>
+                    Romantic destination and outdoor pre-wedding sessions.
+                </p>
+
             </div>
 
+
             <div class="event-card">
+
                 <i class="ri-user-star-line"></i>
-                <h3>Portrait</h3>
-                <p>Professional indoor and outdoor portrait photography.</p>
+
+                <h3>
+                    Portrait
+                </h3>
+
+                <p>
+                    Professional indoor and outdoor portrait photography.
+                </p>
+
             </div>
 
+
             <div class="event-card">
+
                 <i class="ri-cake-3-line"></i>
-                <h3>Birthday</h3>
-                <p>Capture every smile and unforgettable celebration.</p>
+
+                <h3>
+                    Birthday
+                </h3>
+
+                <p>
+                    Capture every smile and unforgettable celebration.
+                </p>
+
             </div>
 
+
             <div class="event-card">
+
                 <i class="ri-plane-line"></i>
-                <h3>Travel</h3>
-                <p>Travel stories, adventure shoots and tourism campaigns.</p>
+
+                <h3>
+                    Travel
+                </h3>
+
+                <p>
+                    Travel stories, adventure shoots and tourism campaigns.
+                </p>
+
             </div>
 
+
             <div class="event-card">
+
                 <i class="ri-film-line"></i>
-                <h3>Cinematography</h3>
-                <p>Professional cinematic videos with drone coverage.</p>
+
+                <h3>
+                    Cinematography
+                </h3>
+
+                <p>
+                    Professional cinematic videos with drone coverage.
+                </p>
+
             </div>
 
         </div>
@@ -1108,9 +1283,6 @@
     </div>
 
 </section>
-
-
-
 
 
 <!-- ===================== -->
@@ -1125,132 +1297,199 @@
 
             <span>SUBSCRIPTION AND PRICING</span>
 
-            <h2>Simple Pricing For Every Photographer</h2>
+            <h2>
+                Simple Pricing For Every Photographer
+            </h2>
 
             <p>
-                Start free and upgrade as your photography business grows.
+                Choose the plan that matches the features and support
+                your studio needs.
             </p>
 
         </div>
 
+
         <div class="pricing-grid">
 
-            <!-- Starter -->
 
-            <div class="pricing-card featured"  >
+            <!-- STARTER -->
 
-                <span class="popular-tag"  >Starter</span>
+            <div class="pricing-card featured">
 
-                <h2>₹499</h2>
+                <span class="popular-tag">
+                    Starter
+                </span>
 
-                <p>Per Month</p>
+                <h2>
+                    ₹499
+                </h2>
 
-                <p>Perfect for beginners</p>
+                <p>
+                    Per Month
+                </p>
+
+                <p>
+                    Perfect for beginners
+                </p>
 
                 <ul>
 
-                    <li><i class="ri-check-line"></i> Personal Portfolio </li>
+                    <li>
+                        <i class="ri-check-line"></i>
+                        Personal Portfolio
+                    </li>
 
-                    <li><i class="ri-check-line"></i> Online Booking</li>
+                    <li>
+                        <i class="ri-check-line"></i>
+                        Online Booking
+                    </li>
 
-                    <li><i class="ri-check-line"></i> Client Gallery</li>
+                    <li>
+                        <i class="ri-check-line"></i>
+                        Client Gallery
+                    </li>
 
-                    <li><i class="ri-check-line"></i> 500 MB Storage For Recent Work </li>
+                    <li>
+                        <i class="ri-check-line"></i>
+                        500 MB Storage For Recent Work
+                    </li>
 
-                    <li><i class="ri-check-line"></i> Services and Pricing Showcase</li>
+                    <li>
+                        <i class="ri-check-line"></i>
+                        Services and Pricing Showcase
+                    </li>
 
-                     <li><i class="ri-check-line"></i> Equipment Preview</li> 
-                     
+                    <li>
+                        <i class="ri-check-line"></i>
+                        Equipment Preview
+                    </li>
+
                 </ul>
 
-                <a href="/auth/signup.html">   <button  class="secondary-btn">
-
+                <a
+                    href="/auth/signup.html"
+                    class="secondary-btn"
+                >
                     Get Started
-
-                </button> </a>
+                </a>
 
             </div>
 
-            <!-- Professional -->
+
+            <!-- PROFESSIONAL -->
 
             <div class="pricing-card">
 
-                <!-- <span class="plan">
-
-                    MOST POPULAR
-
-                </span>
-            -->
                 <span class="plan">
-
                     Professional
-
                 </span>
 
-                <h2>₹1499</h2>
+                <h2>
+                    ₹1499
+                </h2>
 
-                <p>Per Month</p>
+                <p>
+                    Per Month
+                </p>
 
-                
-                <p>Additional features to Starter Plan</p>
-
+                <p>
+                    Additional features to Starter Plan
+                </p>
 
                 <ul>
-                     <li><i class="ri-check-line"></i>Basic SEO </li>
 
-                     <li><i class="ri-check-line"></i> 2 GB Storage For Recent Work </li>
+                    <li>
+                        <i class="ri-check-line"></i>
+                        Basic SEO
+                    </li>
 
-                     <li><i class="ri-check-line"></i> 2 Theme Options </li>
-                     
-                     <li><i class="ri-check-line"></i> AI Assistant Support(UPCOMING)</li>
+                    <li>
+                        <i class="ri-check-line"></i>
+                        2 GB Storage For Recent Work
+                    </li>
 
-                      <li><i class="ri-check-line"></i> Call Support For Profile Setup </li>
+                    <li>
+                        <i class="ri-check-line"></i>
+                        2 Theme Options
+                    </li>
+
+                    <li>
+                        <i class="ri-check-line"></i>
+                        AI Assistant Support (Upcoming)
+                    </li>
+
+                    <li>
+                        <i class="ri-check-line"></i>
+                        Call Support For Profile Setup
+                    </li>
 
                 </ul>
 
-             <a href="/auth/signup.html">   <button  class="primary-btn">
-
-                    Start Today 
-
-                </button> </a>
+                <a
+                    href="/auth/signup.html"
+                    class="primary-btn"
+                >
+                    Get Started
+                </a>
 
             </div>
 
-            <!-- Enterprise -->
+
+            <!-- ENTERPRISE -->
 
             <div class="pricing-card">
 
                 <span class="plan">
-
                     Enterprise
-
                 </span>
 
-                <h2>₹2,999</h2>
+                <h2>
+                    ₹2,999
+                </h2>
 
-                <p>Per Month</p>
-                
-                <p>Additional features to Professional Plan</p>
+                <p>
+                    Per Month
+                </p>
+
+                <p>
+                    Additional features to Professional Plan
+                </p>
 
                 <ul>
-                 
-                  <li><i class="ri-check-line"></i> Premium SEO </li>
 
-                  <li><i class="ri-check-line"></i> 10 GB Storage For Recent Work </li>
+                    <li>
+                        <i class="ri-check-line"></i>
+                        Premium SEO
+                    </li>
 
-                  <li><i class="ri-check-line"></i> 5 Theme Options </li>
+                    <li>
+                        <i class="ri-check-line"></i>
+                        10 GB Storage For Recent Work
+                    </li>
 
-                  <li><i class="ri-check-line"></i> Early Access To New Features </li>
+                    <li>
+                        <i class="ri-check-line"></i>
+                        5 Theme Options
+                    </li>
 
-                  <li><i class="ri-check-line"></i> On-Location/Video Call Support For Profile Setup</li>
-  
+                    <li>
+                        <i class="ri-check-line"></i>
+                        Early Access To New Features
+                    </li>
+
+                    <li>
+                        <i class="ri-check-line"></i>
+                        On-Location/Video Call Support For Profile Setup
+                    </li>
+
                 </ul>
 
-                <a href="/auth/signup.html">   <button  class="secondary-btn">
-
-                Start Today
-
-                </button> </a>
+                <a
+                    href="/auth/signup.html"
+                    class="secondary-btn"
+                >
+                    Get Started
+                </a>
 
             </div>
 
@@ -1273,20 +1512,24 @@
 
             <span>FAQ</span>
 
-            <h2>Frequently Asked Questions</h2>
+            <h2>
+                Frequently Asked Questions
+            </h2>
 
             <p>
-                Everything you need to know before launching your photography
-                website.
+                Everything you need to know before launching
+                your photography website.
             </p>
 
         </div>
 
+
         <div class="faq-container">
+
 
             <div class="faq-item">
 
-                <button class="faq-question">
+                <button class="faq-question" type="button">
 
                     Do I need coding knowledge?
 
@@ -1297,19 +1540,20 @@
                 <div class="faq-answer">
 
                     <p>
-                        No. Professional Studio is designed for photographers.
-                        Just signup , setup you portfolio , fill in your details ,
-                         upload your work and start accepting
-                        bookings without writing any code.
+                        No. The frontend is designed around guided setup flows,
+                        so photographers can configure their studio without writing code.
+                        Backend-connected actions such as saving data and accepting live
+                        bookings will use the account and integrations configured for the studio.
                     </p>
 
                 </div>
 
             </div>
 
+
             <div class="faq-item">
 
-                <button class="faq-question">
+                <button class="faq-question" type="button">
 
                     Can I receive online payments?
 
@@ -1320,18 +1564,19 @@
                 <div class="faq-answer">
 
                     <p>
-                        Yes. Secure payment gateways allow clients to pay
-                        booking fees and complete invoices online.
-                        No frauds, No delay instant payment to your account.
+                        Payment support can be connected through the payment
+                        provider used by your studio. The exact payment flow
+                        will depend on the integration configured for your account.
                     </p>
 
                 </div>
 
             </div>
 
+
             <div class="faq-item">
 
-                <button class="faq-question">
+                <button class="faq-question" type="button">
 
                     Are client galleries password protected?
 
@@ -1342,17 +1587,19 @@
                 <div class="faq-answer">
 
                     <p>
-                        Absolutely. Every gallery can have its own password and
-                        download permissions.
+                        The gallery experience is designed to support private access
+                        and download controls. Password enforcement, permissions, and secure
+                        file delivery will be handled by the backend and storage integration.
                     </p>
 
                 </div>
 
             </div>
 
+
             <div class="faq-item">
 
-                <button class="faq-question">
+                <button class="faq-question" type="button">
 
                     Can I change my plan later?
 
@@ -1363,8 +1610,9 @@
                 <div class="faq-answer">
 
                     <p>
-                        Yes. Upgrade or downgrade your subscription whenever
-                        your business requirements change.
+                        The frontend includes the plan-management flow for upgrades,
+                        downgrades, and cancellation. Billing changes will be processed
+                        once the payment and subscription backend is connected.
                     </p>
 
                 </div>
@@ -1376,7 +1624,6 @@
     </div>
 
 </section>
-
 
 
 <!-- ===================== -->
@@ -1389,37 +1636,39 @@
 
         <div class="cta-box">
 
-            <span>START TODAY</span>
+            <span>
+                START TODAY
+            </span>
 
-            <h1> GET 30 DAYS FREE TRIAL </h1>
-            <h4>[USING THE REFERAL CODE FROM OUR REFERS]</h4>
+            <span class="cta-title">BUILD YOUR STUDIO ONLINE</span>
 
             <h2>
-
                 Ready To Build Your Professional Photography Website?
-
             </h2>
 
             <p>
-
-                Join thousands of photographers using Professional Studio to
-                showcase your work, manage bookings and grow your business.
-
+                Create a professional home for your photography business,
+                showcase your work, and organize the tools you need
+                to manage your studio.
             </p>
 
             <div class="cta-buttons">
 
-               <a href="/auth/signup.html"><button class="primary-btn">
+                <a
+                    href="/auth/signup.html"
+                    class="primary-btn"
+                >
+                    Get Started
+                </a>
 
-                    Get Started Free
-
-                </button></a>
-
-               <a href="/demo.html" target="_blank"><button class="secondary-btn">
-
-                     Demo
-
-                </button></a>
+                <a
+                    href="/demo.html"
+                    target="_blank"
+                    class="secondary-btn"
+                    rel="noopener noreferrer"
+                >
+                    Demo
+                </a>
 
             </div>
 
@@ -1431,108 +1680,84 @@
 
 
 <!-- ===================== -->
-<!-- TESTIMONIALS -->
+<!-- PRODUCT VALUE -->
 <!-- ===================== -->
 
-<section class="testimonials" id="testimonials">
+<section class="testimonials" id="product-value">
 
     <div class="container">
 
         <div class="section-title">
 
-            <span>TESTIMONIALS</span>
+            <span>
+                BUILT FOR YOUR WORKFLOW
+            </span>
 
-            <h2>Loved By Professional Photographers</h2>
+            <h2>
+                One place for the work behind every shoot
+            </h2>
 
             <p>
-                Thousands of photographers trust Professional Studio to grow
-                their business and impress their clients.
+                Professional Studio brings your portfolio, bookings,
+                client delivery, services and studio information
+                into one professional experience.
             </p>
 
         </div>
+
 
         <div class="testimonial-grid">
 
             <div class="testimonial-card">
 
                 <div class="quote">
-                    <i class="ri-double-quotes-l"></i>
+                    <i class="ri-layout-4-line"></i>
                 </div>
+
+                <h3>
+                    Present your work
+                </h3>
 
                 <p>
-                    Professional Studio completely transformed my photography
-                    business. Bookings doubled within three months and clients
-                    absolutely love the gallery experience.
+                    Build a portfolio that gives potential clients
+                    a clear view of your style, services and recent work.
                 </p>
 
-                <div class="client">
-
-                    <img src="images/client1.jpg" alt="Client">
-
-                    <div>
-
-                        <h4>Ganesh Rathod</h4>
-
-                        <span>Wedding Photographer</span>
-
-                    </div>
-                </div>
-
             </div>
+
 
             <div class="testimonial-card">
 
                 <div class="quote">
-                    <i class="ri-double-quotes-l"></i>
+                    <i class="ri-calendar-check-line"></i>
                 </div>
+
+                <h3>
+                    Organize bookings
+                </h3>
 
                 <p>
-                    The professional studio platform helped me showcase my work and business profolio
-                    much better. Making my studio look more organized which helped me attract more clients boosting my business.
+                    Keep booking information, availability and client
+                    requests organized instead of scattered across messages.
                 </p>
 
-                <div class="client">
-
-                    <img src="images/client2.jpg" alt="Client">
-
-                    <div>
-
-                        <h4>Darshan Rajput</h4>
-
-                        <span>Portrait Photographer</span>
-
-                    </div>
-
-                </div>
-
             </div>
+
 
             <div class="testimonial-card">
 
                 <div class="quote">
-                    <i class="ri-double-quotes-l"></i>
+                    <i class="ri-folder-image-line"></i>
                 </div>
+
+                <h3>
+                    Deliver client work
+                </h3>
 
                 <p>
-                    Everything I needed was already built in.
-                    Now I can promote my business in a more efficient and organized way. 
-                    I no longer use
-                    multiple platforms for bookings, galleries and payments.
+                    Give clients a dedicated place to access the photography
+                    galleries and work you prepare for them.
                 </p>
-
-                <div class="client">
-
-                    <img src="images/client3.jpg" alt="Client">
-
-                    <div>
-
-                        <h4>Sumit Marathe</h4>
-
-                        <span>Commercial Photographer</span>
-
-                    </div>
-
-                </div>
 
             </div>
 
@@ -1541,8 +1766,6 @@
     </div>
 
 </section>
-
-
 
 
 <!-- ===================== -->
@@ -1555,6 +1778,7 @@
 
         <div class="footer-grid">
 
+
             <div class="footer-col">
 
                 <h2>
@@ -1566,83 +1790,154 @@
                 </h2>
 
                 <p>
-
                     The complete SaaS platform for photographers to build
                     stunning portfolios, manage bookings and grow their
                     business.
-
                 </p>
+
 
                 <div class="social-icons">
 
-                    <a href="https://www.facebook.com/cosmicnrg.r35/"><i class="ri-facebook-fill"></i></a>
+                    <a href="https://www.facebook.com/cosmicnrg.r35/">
+                        <i class="ri-facebook-fill"></i>
+                    </a>
 
-                    <a href="https://www.instagram.com/cosmicnrg.r35/"><i class="ri-instagram-line"></i></a>
+                    <a href="https://www.instagram.com/cosmicnrg.r35/">
+                        <i class="ri-instagram-line"></i>
+                    </a>
 
-                    <a href="https://twitter.com/cosmicnrg.r35"><i class="ri-twitter-x-line"></i></a>
+                    <a href="https://twitter.com/cosmicnrg.r35">
+                        <i class="ri-twitter-x-line"></i>
+                    </a>
 
-                    <a href="mailto:helloprofessionalstudio@gmail.com"><i class="ri-mail-line"></i></a>
+                    <a href="mailto:helloprofessionalstudio@gmail.com">
+                        <i class="ri-mail-line"></i>
+                    </a>
 
-                    <a href="https://www.youtube.com/@NULLWARE-NRG" target="_blank"><i class="ri-youtube-fill"></i></a>
+                    <a
+                        href="https://www.youtube.com/@NULLWARE-NRG"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <i class="ri-youtube-fill"></i>
+                    </a>
 
                 </div>
 
             </div>
 
-        <!--    <div class="footer-col">
-
-                <h3>Take a look at the pages</h3>
-
-                <a href="user.html" target="_blank">Dashboard</a>
-                <a href="client.html" target="_blank">Portfolio</a>
-                <a href="bookingMng.html" target="_blank">Manage Bookings</a>
-                <a href="serviceMng.html" target="_blank">Manage Services</a>
-                <a href="recentwork.html" target="_blank">Recent Work</a>
-                
-
-            </div>
-            -->
 
             <div class="footer-col">
 
-                <h3>Company</h3>
+                <h3>
+                    Company
+                </h3>
 
-                <a href="about.html" target="_blank">About</a>
-                <a href="/career/careers.html" target="_blank">Careers</a>
-                <a href="pricing.html" target="_blank">Pricing</a>
-                <a href="contact.html" target="_blank">Contact</a>
+                <a
+                    href="about.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    About
+                </a>
+
+                <a
+                    href="/career/careers.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Careers
+                </a>
+
+                <a
+                    href="pricing.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Pricing
+                </a>
+
+                <a
+                    href="contact.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Contact
+                </a>
 
             </div>
 
+
             <div class="footer-col">
 
-                <h3>Support</h3>
+                <h3>
+                    Support
+                </h3>
 
-                <a href="help.html" target="_blank">Help Center</a>
-                <a href="privacy.html" target="_blank">Privacy Policy</a>
-                <a href="terms.html" target="_blank">Terms of Service</a>
-                <a href="status.html" target="_blank">Status</a>
+                <a
+                    href="help.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Help Center
+                </a>
+
+                <a
+                    href="privacy.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Privacy Policy
+                </a>
+
+                <a
+                    href="terms.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Terms of Service
+                </a>
+
+                <a
+                    href="status.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Status
+                </a>
 
             </div>
 
+
             <div class="footer-col">
 
-                <h3>Newsletter</h3>
+                <h3>
+                    Newsletter
+                </h3>
 
                 <p>
-
                     Subscribe for product updates.
-
                 </p>
 
                 <form class="newsletter">
 
-                    <input type="email" placeholder="Enter your email">
+                    <label class="sr-only" for="newsletter-email">Email address</label>
 
-                    <button type="submit">
+                    <input
+                        id="newsletter-email"
+                        type="email"
+                        name="email"
+                        autocomplete="email"
+                        placeholder="Enter your email"
+                        disabled
+                    >
 
-                        Subscribe
-
+                    <button
+                        type="button"
+                        disabled
+                        title="Newsletter signup will be connected later"
+                    >
+                        Coming Soon
                     </button>
 
                 </form>
@@ -1651,26 +1946,49 @@
 
         </div>
 
+
         <div class="footer-bottom">
 
             <p>
-
                 © 2026 Professional Studio. All Rights Reserved.
-
             </p>
 
-
-        <p>
-            Powered by <a href="https://bluehorizanlabs.vercel.app/" target="_blank"> Bluehorizanlabs</a> 
-        </p>
+            <p>
+                Powered by
+                <a
+                    href="https://bluehorizanlabs.vercel.app/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Bluehorizanlabs
+                </a>
+            </p>
 
             <div class="footer-links">
 
-                <a href="privacy.html" target="_blank">Privacy</a>
+                <a
+                    href="privacy.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Privacy
+                </a>
 
-                <a href="terms.html" target="_blank">Terms</a>
+                <a
+                    href="terms.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Terms
+                </a>
 
-                <a href="cookies.html" target="_blank">Cookies</a>
+                <a
+                    href="cookies.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Cookies
+                </a>
 
             </div>
 
@@ -1680,11 +1998,13 @@
 
 </footer>
 
-<!-- ===================== --> 
+
+<!-- ===================== -->
 <!-- JAVASCRIPT -->
 <!-- ===================== -->
 
 <script src="index.js"></script>
 
 </body>
+
 </html>
