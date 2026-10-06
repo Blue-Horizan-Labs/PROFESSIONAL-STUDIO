@@ -33,11 +33,19 @@
      NAVBAR
 ========================================================= -->
 
-<nav class="navbar">
+<nav
+    class="navbar"
+    aria-label="Main navigation"
+>
 
-   <a href="https://professionalstudio.vercel.app/"> <div class="nav-brand">
-        Professional Studio
-    </div></a>
+    <a
+        href="https://professionalstudio.vercel.app/"
+        aria-label="Professional Studio home"
+    >
+        <div class="nav-brand">
+            Professional Studio
+        </div>
+    </a>
 
 
     <div class="nav-links">
@@ -45,6 +53,7 @@
         <a
             href="user.html"
             class="active"
+            aria-current="page"
         >
             Dashboard
         </a>
@@ -142,7 +151,10 @@
      DASHBOARD STATS
 ========================================================= -->
 
-<section class="dashboard-section">
+<section
+    class="dashboard-section"
+    aria-label="Dashboard statistics"
+>
 
     <div class="stats-grid">
 
@@ -161,23 +173,6 @@
             </span>
 
         </div>
-
-
-        <!-- <div class="stat-card">
-
-            <p>
-                Gallery Photos
-            </p>
-
-            <h2 id="galleryPhotosCounter">
-                0
-            </h2>
-
-            <span class="stat-note">
-                Across your client galleries
-            </span>
-
-        </div>-->
 
 
         <div class="stat-card">
@@ -216,6 +211,7 @@
     </div>
 
 </section>
+
 
 
 <!-- =========================================================
@@ -259,6 +255,13 @@
 
     <div class="booking-toolbar">
 
+        <label
+            class="sr-only"
+            for="searchBooking"
+        >
+            Search bookings
+        </label>
+
         <input
             type="search"
             id="searchBooking"
@@ -277,19 +280,19 @@
 
                 <tr>
 
-                    <th>
+                    <th scope="col">
                         Client
                     </th>
 
-                    <th>
+                    <th scope="col">
                         Service
                     </th>
 
-                    <th>
+                    <th scope="col">
                         Date
                     </th>
 
-                    <th>
+                    <th scope="col">
                         Status
                     </th>
 
@@ -298,9 +301,7 @@
             </thead>
 
 
-            <tbody id="bookingTable">
-
-            </tbody>
+            <tbody id="bookingTable"></tbody>
 
         </table>
 
@@ -324,7 +325,6 @@
     </div>
 
 </section>
-
 
 
 
@@ -394,7 +394,7 @@
             </p>
 
             <h2>
-             Client Galleries
+                Client Galleries
             </h2>
 
             <p>
@@ -431,7 +431,10 @@
 
         <div class="gallery-stat-card">
 
-            <div class="gallery-stat-icon">
+            <div
+                class="gallery-stat-icon"
+                aria-hidden="true"
+            >
                 G
             </div>
 
@@ -452,7 +455,10 @@
 
         <div class="gallery-stat-card">
 
-            <div class="gallery-stat-icon">
+            <div
+                class="gallery-stat-icon"
+                aria-hidden="true"
+            >
                 A
             </div>
 
@@ -473,7 +479,10 @@
 
         <div class="gallery-stat-card">
 
-            <div class="gallery-stat-icon">
+            <div
+                class="gallery-stat-icon"
+                aria-hidden="true"
+            >
                 S
             </div>
 
@@ -494,7 +503,10 @@
 
         <div class="gallery-stat-card">
 
-            <div class="gallery-stat-icon">
+            <div
+                class="gallery-stat-icon"
+                aria-hidden="true"
+            >
                 !
             </div>
 
@@ -523,7 +535,7 @@
             <div>
 
                 <h3>
-                latest Galleries
+                    Latest Galleries
                 </h3>
 
                 <p>
@@ -551,7 +563,10 @@
             hidden
         >
 
-            <div class="empty-icon">
+            <div
+                class="empty-icon"
+                aria-hidden="true"
+            >
                 G
             </div>
 
@@ -646,7 +661,14 @@
         </div>
 
 
-        <div class="storage-progress-track">
+        <div
+            class="storage-progress-track"
+            role="progressbar"
+            aria-label="Portfolio storage usage"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+        >
 
             <div
                 class="storage-progress"
@@ -728,9 +750,15 @@
         <div
             class="equipment-card"
             id="addEquipment"
+            role="button"
+            tabindex="0"
+            aria-label="Add equipment category"
         >
 
-            <div class="add-equipment-icon">
+            <div
+                class="add-equipment-icon"
+                aria-hidden="true"
+            >
                 +
             </div>
 
@@ -749,6 +777,7 @@
 </section>
 
 
+
 <!-- =========================================================
      PROFILE
 ========================================================= -->
@@ -761,6 +790,7 @@
     <div class="section-heading">
 
         <div>
+
             <p class="section-eyebrow">
                 PROFILE
             </p>
@@ -773,6 +803,7 @@
                 Keep your public photographer profile
                 updated so clients know who they are booking.
             </p>
+
         </div>
 
         <a
@@ -785,7 +816,6 @@
     </div>
 
 </section>
-
 
 
 
@@ -1051,11 +1081,14 @@
     <div class="settings-grid">
 
         <a
-            href="/auth/change-pass.html"
+            href="change-pass.html"
             class="settings-card"
         >
 
-            <span class="settings-icon">
+            <span
+                class="settings-icon"
+                aria-hidden="true"
+            >
                 🔒
             </span>
 
@@ -1071,7 +1104,10 @@
 
             </div>
 
-            <span class="settings-arrow">
+            <span
+                class="settings-arrow"
+                aria-hidden="true"
+            >
                 →
             </span>
 
@@ -1083,7 +1119,10 @@
             class="settings-card"
         >
 
-            <span class="settings-icon">
+            <span
+                class="settings-icon"
+                aria-hidden="true"
+            >
                 ⚙
             </span>
 
@@ -1099,7 +1138,10 @@
 
             </div>
 
-            <span class="settings-arrow">
+            <span
+                class="settings-arrow"
+                aria-hidden="true"
+            >
                 →
             </span>
 
@@ -1111,7 +1153,10 @@
             class="settings-card"
         >
 
-            <span class="settings-icon">
+            <span
+                class="settings-icon"
+                aria-hidden="true"
+            >
                 🔔
             </span>
 
@@ -1127,7 +1172,10 @@
 
             </div>
 
-            <span class="settings-arrow">
+            <span
+                class="settings-arrow"
+                aria-hidden="true"
+            >
                 →
             </span>
 
@@ -1135,146 +1183,176 @@
 
     </div>
 
+
+
     <!-- =========================================================
-     PAYMENTS & ACCOUNTS
-========================================================= -->
+         PAYMENTS & ACCOUNTS
+    ========================================================= -->
 
-<div class="payment-settings-card">
+    <div class="payment-settings-card">
 
-    <div class="payment-settings-header">
-
-        <div>
-
-            <p class="payment-settings-eyebrow">
-                PAYMENTS & ACCOUNTS
-            </p>
-
-            <h3>
-                Payment & Payout Account
-            </h3>
-
-            <p>
-                Manage the account used for receiving
-                payments and future payouts from
-                Professional Studio.
-            </p>
-
-        </div>
-
-        <span class="payment-account-status">
-            Not Connected
-        </span>
-
-    </div>
-
-
-    <div class="payment-settings-content">
-
-        <div class="payment-account-preview">
-
-            <div class="payment-preview-icon">
-                ₹
-            </div>
+        <div class="payment-settings-header">
 
             <div>
 
-                <span class="payment-preview-label">
-                    Payout Account
-                </span>
+                <p class="payment-settings-eyebrow">
+                    PAYMENTS &amp; ACCOUNTS
+                </p>
 
-                <strong>
-                    No account connected
-                </strong>
+                <h3>
+                    Payment &amp; Payout Account
+                </h3>
 
                 <p>
-                    Add your bank or payout account
-                    when account management is available.
+                    Manage the account used for receiving
+                    payments and future payouts from
+                    Professional Studio.
                 </p>
 
             </div>
 
+            <span class="payment-account-status">
+                Not Connected
+            </span>
+
         </div>
 
 
-        <div class="payment-settings-meta">
+        <div class="payment-settings-content">
 
-            <div>
-                <span>
-                    Payout Method
-                </span>
+            <div class="payment-account-preview">
 
-                <strong>
-                    Not configured
-                </strong>
+                <div
+                    class="payment-preview-icon"
+                    aria-hidden="true"
+                >
+                    ₹
+                </div>
+
+                <div>
+
+                    <span class="payment-preview-label">
+                        Payout Account
+                    </span>
+
+                    <strong>
+                        No account connected
+                    </strong>
+
+                    <p>
+                        Add your bank or payout account
+                        when account management is available.
+                    </p>
+
+                </div>
+
             </div>
 
 
+            <div class="payment-settings-meta">
+
+                <div>
+
+                    <span>
+                        Payout Method
+                    </span>
+
+                    <strong>
+                        Not configured
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Account Status
+                    </span>
+
+                    <strong>
+                        Setup required
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="payment-settings-footer">
+
             <div>
-                <span>
-                    Account Status
-                </span>
 
                 <strong>
-                    Setup required
+                    Account management
                 </strong>
+
+                <p>
+                    Bank details, payout methods and
+                    payment history will be managed
+                    from the dedicated account page.
+                </p>
+
             </div>
+
+
+            <a
+                href="payment-accounts.html"
+                class="payment-settings-button"
+            >
+                Manage Accounts
+            </a>
 
         </div>
 
     </div>
-
-
-    <div class="payment-settings-footer">
-
-        <div>
-
-            <strong>
-                Account management
-            </strong>
-
-            <p>
-                Bank details, payout methods and
-                payment history will be managed
-                from the dedicated account page.
-            </p>
-
-        </div>
-
-
-<a
-    href="payment-accounts.html"
-    class="payment-settings-button"
->
-    Manage Accounts
-</a>
-    </div>
-
-</div>
 
 </section>
+
+
+
+<!-- =========================================================
+     TOAST
+========================================================= -->
 
 <div
     id="dashboardToast"
     class="dashboard-toast"
     role="status"
     aria-live="polite"
+    aria-atomic="true"
 ></div>
 
-    <div class="footer-bottom">
-
-            <p>
-
-                © 2026 Professional Studio. All Rights Reserved.
-
-            </p>
 
 
-        <p>
-            Powered by <a href="https://bluehorizanlabs.vercel.app/" target="_blank"> Bluehorizanlabs</a> 
-        </p>
+<!-- =========================================================
+     FOOTER
+========================================================= -->
+
+<footer class="footer-bottom">
+
+    <p>
+        © 2026 Professional Studio. All Rights Reserved.
+    </p>
+
+    <p>
+        Powered by
+        <a
+            href="https://bluehorizanlabs.vercel.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            Bluehorizanlabs
+        </a>
+    </p>
+
+</footer>
+
+
 
 <script src="user.js"></script>
-
 
 </body>
 

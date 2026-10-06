@@ -16,7 +16,7 @@ var SUBSCRIPTION_PLAN_KEY =
     "professionalStudio.subscriptionPlan";
 
 var SUBSCRIPTION_STATUS_KEY =
-    "subscriptionStatus";
+    "professionalStudio.subscriptionStatus";
 
 var SUBSCRIPTION_RENEWAL_KEY =
     "professionalStudio.subscriptionRenewal";
@@ -85,22 +85,16 @@ var LEGACY_SUBSCRIPTION_PLAN_MAP = {
    GENERAL HELPERS
 ========================================================= */
 
-function normalizeSubscriptionPlanId(
-    planId
-) {
+function normalizeSubscriptionPlanId(planId) {
 
-    if (
-        typeof planId !== "string"
-    ) {
+    if (typeof planId !== "string") {
         return null;
     }
 
     var normalized =
         planId.trim().toLowerCase();
 
-    if (
-        STORAGE_PLANS[normalized]
-    ) {
+    if (STORAGE_PLANS[normalized]) {
         return normalized;
     }
 
@@ -115,33 +109,19 @@ function normalizeSubscriptionPlanId(
     }
 
     return null;
-
 }
 
 
-function readLocalStorage(
-    key,
-    fallback
-) {
-
-    var saved;
+function readLocalStorage(key, fallback) {
 
     try {
 
-        saved =
+        var saved =
             localStorage.getItem(key);
 
-    } catch (error) {
-
-        return fallback;
-
-    }
-
-    if (!saved) {
-        return fallback;
-    }
-
-    try {
+        if (!saved) {
+            return fallback;
+        }
 
         return JSON.parse(saved);
 
@@ -150,14 +130,10 @@ function readLocalStorage(
         return fallback;
 
     }
-
 }
 
 
-function writeLocalStorage(
-    key,
-    value
-) {
+function writeLocalStorage(key, value) {
 
     try {
 
@@ -173,32 +149,55 @@ function writeLocalStorage(
         return false;
 
     }
-
 }
 
 
-function safeNumber(
-    value,
-    fallback
-) {
+function removeLocalStorage(key) {
+
+    try {
+
+        localStorage.removeItem(key);
+
+        return true;
+
+    } catch (error) {
+
+        return false;
+
+    }
+}
+
+
+function getRawLocalStorageValue(key) {
+
+    try {
+
+        return localStorage.getItem(key);
+
+    } catch (error) {
+
+        return null;
+
+    }
+}
+
+
+function safeNumber(value, fallback) {
 
     var number =
         Number(value);
 
-    return Number.isFinite(number)
-        ? number
-        : (
-            fallback !== undefined
-                ? fallback
-                : 0
-        );
+    if (Number.isFinite(number)) {
+        return number;
+    }
 
+    return fallback !== undefined
+        ? fallback
+        : 0;
 }
 
 
-function safeDate(
-    value
-) {
+function safeDate(value) {
 
     if (
         value === null ||
@@ -220,6 +219,36 @@ function safeDate(
     }
 
     return date;
+}
+
+
+function createUniqueId(prefix) {
+
+    return (
+        String(prefix || "item") +
+        "-" +
+        Date.now().toString(36) +
+        "-" +
+        Math.random()
+            .toString(36)
+            .slice(2, 10)
+    );
+
+}
+
+
+function normalizeText(value) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+        return "";
+    }
+
+    return String(value)
+        .trim()
+        .toLowerCase();
 
 }
 
@@ -231,9 +260,7 @@ function safeDate(
 var toastTimer = null;
 
 
-function showDashboardToast(
-    message
-) {
+function showDashboardToast(message) {
 
     var toast =
         document.getElementById(
@@ -284,7 +311,8 @@ function getProfileData() {
 
     if (
         profile &&
-        typeof profile === "object"
+        typeof profile === "object" &&
+        !Array.isArray(profile)
     ) {
 
         return profile;
@@ -292,10 +320,12 @@ function getProfileData() {
     }
 
     var possibleNameKeys = [
+
         "photographerName",
         "profileName",
         "name",
         "userName"
+
     ];
 
     for (
@@ -305,7 +335,7 @@ function getProfileData() {
     ) {
 
         var value =
-            localStorage.getItem(
+            getRawLocalStorageValue(
                 possibleNameKeys[i]
             );
 
@@ -333,10 +363,12 @@ function getPhotographerName() {
         getProfileData();
 
     var possibleNames = [
+
         profile.name,
         profile.fullName,
         profile.photographerName,
         profile.displayName
+
     ];
 
     for (
@@ -371,10 +403,12 @@ function getProfileLink() {
         getProfileData();
 
     var possibleLinks = [
+
         profile.profileUrl,
         profile.publicUrl,
         profile.profileLink,
         profile.slug
+
     ];
 
     for (
@@ -411,7 +445,7 @@ function getProfileLink() {
     }
 
     var slug =
-        localStorage.getItem(
+        getRawLocalStorageValue(
             "professionalStudio.profileSlug"
         );
 
@@ -420,7 +454,9 @@ function getProfileLink() {
         return (
             window.location.origin +
             "/profile.html?slug=" +
-            encodeURIComponent(slug)
+            encodeURIComponent(
+                slug.trim()
+            )
         );
 
     }
@@ -447,9 +483,7 @@ function openPortfolio() {
 }
 
 
-function fallbackCopyText(
-    text
-) {
+function fallbackCopyText(text) {
 
     var textarea =
         document.createElement(
@@ -465,6 +499,11 @@ function fallbackCopyText(
     textarea.style.left =
         "-9999px";
 
+    textarea.setAttribute(
+        "readonly",
+        ""
+    );
+
     document.body.appendChild(
         textarea
     );
@@ -473,13 +512,24 @@ function fallbackCopyText(
 
     try {
 
-        document.execCommand(
-            "copy"
-        );
+        var successful =
+            document.execCommand(
+                "copy"
+            );
 
-        showDashboardToast(
-            "Profile link copied"
-        );
+        if (successful) {
+
+            showDashboardToast(
+                "Profile link copied"
+            );
+
+        } else {
+
+            showDashboardToast(
+                "Copy failed"
+            );
+
+        }
 
     } catch (error) {
 
@@ -543,7 +593,7 @@ function copyProfileLink() {
 function getCurrentSubscriptionPlan() {
 
     var savedPlan =
-        localStorage.getItem(
+        getRawLocalStorageValue(
             SUBSCRIPTION_PLAN_KEY
         );
 
@@ -590,7 +640,8 @@ function getPortfolioStorage() {
 
     if (
         !storage ||
-        typeof storage !== "object"
+        typeof storage !== "object" ||
+        Array.isArray(storage)
     ) {
 
         storage = {
@@ -619,6 +670,18 @@ function getPortfolioStorage() {
 
     }
 
+    storage.files =
+        storage.files.filter(
+            function(file) {
+
+                return (
+                    file &&
+                    typeof file === "object"
+                );
+
+            }
+        );
+
     storage.storageLimitMB =
         getPortfolioStorageLimitMB();
 
@@ -634,8 +697,11 @@ function getPortfolioStorage() {
                 function(total, file) {
 
                     return total +
-                        safeNumber(
-                            file.sizeMB
+                        Math.max(
+                            0,
+                            safeNumber(
+                                file.sizeMB
+                            )
                         );
 
                 },
@@ -659,9 +725,7 @@ function getPortfolioStorage() {
 }
 
 
-function savePortfolioStorage(
-    storage
-) {
+function savePortfolioStorage(storage) {
 
     if (
         !storage ||
@@ -686,9 +750,7 @@ function savePortfolioStorage(
 }
 
 
-function formatPortfolioStorageMB(
-    value
-) {
+function formatPortfolioStorageMB(value) {
 
     var mb =
         Math.max(
@@ -728,9 +790,7 @@ function formatPortfolioStorageMB(
 }
 
 
-function getPortfolioStoragePercentage(
-    storage
-) {
+function getPortfolioStoragePercentage(storage) {
 
     if (!storage) {
         return 0;
@@ -767,9 +827,7 @@ function getPortfolioStoragePercentage(
 }
 
 
-function getPortfolioStorageStatus(
-    storage
-) {
+function getPortfolioStorageStatus(storage) {
 
     var percentage =
         getPortfolioStoragePercentage(
@@ -911,6 +969,15 @@ function renderPortfolioStorage() {
         progressElement.style.width =
             percentage + "%";
 
+        progressElement.setAttribute(
+            "aria-valuenow",
+            String(
+                Math.round(
+                    percentage
+                )
+            )
+        );
+
     }
 
     if (badgeElement) {
@@ -968,7 +1035,30 @@ function renderPortfolioStorage() {
 
             }
 
-        } else {
+        }
+        else if (
+            percentage >= 80
+        ) {
+
+            warningElement.hidden =
+                false;
+
+            if (warningStrong) {
+
+                warningStrong.textContent =
+                    "Storage is almost full";
+
+            }
+
+            if (warningText) {
+
+                warningText.textContent =
+                    "Consider removing unused files before uploading more recent work.";
+
+            }
+
+        }
+        else {
 
             warningElement.hidden =
                 true;
@@ -1009,9 +1099,7 @@ function renderPortfolioStorage() {
 }
 
 
-function getPortfolioUploadCheck(
-    fileSizeMB
-) {
+function getPortfolioUploadCheck(fileSizeMB) {
 
     var storage =
         getPortfolioStorage();
@@ -1019,7 +1107,9 @@ function getPortfolioUploadCheck(
     var size =
         Math.max(
             0,
-            safeNumber(fileSizeMB)
+            safeNumber(
+                fileSizeMB
+            )
         );
 
     var used =
@@ -1075,9 +1165,7 @@ function getPortfolioUploadCheck(
 }
 
 
-function canUploadPortfolioFile(
-    fileSizeMB
-) {
+function canUploadPortfolioFile(fileSizeMB) {
 
     return getPortfolioUploadCheck(
         fileSizeMB
@@ -1086,13 +1174,12 @@ function canUploadPortfolioFile(
 }
 
 
-function addPortfolioFile(
-    fileData
-) {
+function addPortfolioFile(fileData) {
 
     if (
         !fileData ||
-        typeof fileData !== "object"
+        typeof fileData !== "object" ||
+        Array.isArray(fileData)
     ) {
 
         return {
@@ -1139,12 +1226,9 @@ function addPortfolioFile(
     if (!fileData.id) {
 
         fileData.id =
-            "portfolio-" +
-            Date.now() +
-            "-" +
-            Math.random()
-                .toString(36)
-                .slice(2, 8);
+            createUniqueId(
+                "portfolio"
+            );
 
     }
 
@@ -1164,17 +1248,33 @@ function addPortfolioFile(
             function(total, file) {
 
                 return total +
-                    safeNumber(
-                        file.sizeMB
+                    Math.max(
+                        0,
+                        safeNumber(
+                            file.sizeMB
+                        )
                     );
 
             },
             0
         );
 
-    savePortfolioStorage(
-        storage
-    );
+    if (
+        !savePortfolioStorage(
+            storage
+        )
+    ) {
+
+        return {
+
+            success: false,
+
+            reason:
+                "storage-write-failed"
+
+        };
+
+    }
 
     renderPortfolioStorage();
 
@@ -1193,9 +1293,7 @@ function addPortfolioFile(
 }
 
 
-function deletePortfolioFile(
-    fileId
-) {
+function deletePortfolioFile(fileId) {
 
     var storage =
         getPortfolioStorage();
@@ -1231,17 +1329,26 @@ function deletePortfolioFile(
             function(total, file) {
 
                 return total +
-                    safeNumber(
-                        file.sizeMB
+                    Math.max(
+                        0,
+                        safeNumber(
+                            file.sizeMB
+                        )
                     );
 
             },
             0
         );
 
-    savePortfolioStorage(
-        storage
-    );
+    if (
+        !savePortfolioStorage(
+            storage
+        )
+    ) {
+
+        return false;
+
+    }
 
     renderPortfolioStorage();
 
@@ -1250,9 +1357,7 @@ function deletePortfolioFile(
 }
 
 
-function setPortfolioSubscriptionPlan(
-    planId
-) {
+function setPortfolioSubscriptionPlan(planId) {
 
     var normalizedPlanId =
         normalizeSubscriptionPlanId(
@@ -1270,10 +1375,16 @@ function setPortfolioSubscriptionPlan(
 
     }
 
-    localStorage.setItem(
-        SUBSCRIPTION_PLAN_KEY,
-        normalizedPlanId
-    );
+    if (
+        !writeLocalStorage(
+            SUBSCRIPTION_PLAN_KEY,
+            normalizedPlanId
+        )
+    ) {
+
+        return false;
+
+    }
 
     var storage =
         getPortfolioStorage();
@@ -1311,18 +1422,25 @@ function getStoredServices() {
             []
         );
 
-    return Array.isArray(
-        services
-    )
-        ? services
-        : [];
+    if (!Array.isArray(services)) {
+        return [];
+    }
+
+    return services.filter(
+        function(service) {
+
+            return (
+                service &&
+                typeof service === "object"
+            );
+
+        }
+    );
 
 }
 
 
-function saveServices(
-    services
-) {
+function saveServices(services) {
 
     return writeLocalStorage(
         SERVICES_STORAGE_KEY,
@@ -1332,19 +1450,19 @@ function saveServices(
 }
 
 
-function getServiceName(
-    service
-) {
+function getServiceName(service) {
 
     if (!service) {
         return "";
     }
 
     var names = [
+
         service.name,
         service.serviceName,
         service.title,
         service.type
+
     ];
 
     for (
@@ -1369,9 +1487,7 @@ function getServiceName(
 }
 
 
-function updateActiveServiceCounter(
-    services
-) {
+function updateActiveServiceCounter(services) {
 
     var counter =
         document.getElementById(
@@ -1502,12 +1618,6 @@ function renderDashboardServices() {
         }
     );
 
-    /*
-       One delegated listener instead of a new
-       listener on every checkbox every time
-       the grid is rendered.
-    */
-
     if (
         !serviceGrid.dataset.eventsAttached
     ) {
@@ -1540,9 +1650,7 @@ function renderDashboardServices() {
                     services.find(
                         function(item) {
 
-                            if (
-                                serviceId
-                            ) {
+                            if (serviceId) {
 
                                 return String(
                                     item.id
@@ -1554,10 +1662,14 @@ function renderDashboardServices() {
                             }
 
                             return (
-                                getServiceName(
-                                    item
-                                ).toLowerCase() ===
-                                serviceName.toLowerCase()
+                                normalizeText(
+                                    getServiceName(
+                                        item
+                                    )
+                                ) ===
+                                normalizeText(
+                                    serviceName
+                                )
                             );
 
                         }
@@ -1570,13 +1682,17 @@ function renderDashboardServices() {
                 service.active =
                     checkbox.checked;
 
-                saveServices(
-                    services
-                );
+                if (
+                    saveServices(
+                        services
+                    )
+                ) {
 
-                updateActiveServiceCounter(
-                    services
-                );
+                    updateActiveServiceCounter(
+                        services
+                    );
+
+                }
 
             }
         );
@@ -1605,76 +1721,67 @@ function getStoredEquipment() {
             []
         );
 
-
     if (!Array.isArray(equipment)) {
         return [];
     }
 
-
     var changed = false;
 
+    equipment =
+        equipment.filter(
+            function(category, index) {
 
-    equipment = equipment.filter(
-        function(category, index) {
+                if (
+                    !category ||
+                    typeof category !== "object" ||
+                    Array.isArray(category)
+                ) {
 
-            if (
-                !category ||
-                typeof category !== "object"
-            ) {
+                    changed = true;
 
-                changed = true;
+                    return false;
 
-                return false;
+                }
+
+                if (!category.id) {
+
+                    category.id =
+                        createUniqueId(
+                            "equipment"
+                        );
+
+                    changed = true;
+
+                }
+
+                if (
+                    !Array.isArray(
+                        category.items
+                    )
+                ) {
+
+                    category.items = [];
+
+                    changed = true;
+
+                }
+
+                if (
+                    typeof category.name !== "string" ||
+                    !category.name.trim()
+                ) {
+
+                    category.name =
+                        "Equipment";
+
+                    changed = true;
+
+                }
+
+                return true;
 
             }
-
-
-            /*
-               Older equipment records may not have
-               an ID. Give them one without changing
-               their existing category or items.
-            */
-
-            if (!category.id) {
-
-                category.id =
-                    "equipment-" +
-                    index + "-" +
-                    Date.now();
-
-                changed = true;
-
-            }
-
-
-            /*
-               Protect against old or malformed data.
-            */
-
-            if (!Array.isArray(category.items)) {
-
-                category.items = [];
-
-                changed = true;
-
-            }
-
-
-            if (!category.name) {
-
-                category.name =
-                    "Equipment";
-
-                changed = true;
-
-            }
-
-
-            return true;
-
-        }
-    );
-
+        );
 
     if (changed) {
 
@@ -1685,15 +1792,12 @@ function getStoredEquipment() {
 
     }
 
-
     return equipment;
 
 }
 
 
-function saveEquipment(
-    equipment
-) {
+function saveEquipment(equipment) {
 
     return writeLocalStorage(
         EQUIPMENT_STORAGE_KEY,
@@ -1703,21 +1807,7 @@ function saveEquipment(
 }
 
 
-/* =========================================================
-   EQUIPMENT HELPERS
-========================================================= */
-
-function getEquipmentItemName(
-    item
-) {
-
-    /*
-       Current data normally stores equipment
-       items as strings.
-
-       These fallbacks also allow older/alternate
-       object-based records to continue displaying.
-    */
+function getEquipmentItemName(item) {
 
     if (
         item &&
@@ -1725,33 +1815,24 @@ function getEquipmentItemName(
     ) {
 
         if (item.name) {
-
             return String(
                 item.name
             ).trim();
-
         }
 
-
         if (item.title) {
-
             return String(
                 item.title
             ).trim();
-
         }
 
-
         if (item.value) {
-
             return String(
                 item.value
             ).trim();
-
         }
 
     }
-
 
     return String(
         item || ""
@@ -1760,16 +1841,11 @@ function getEquipmentItemName(
 }
 
 
-function getEquipmentCategoryName(
-    category
-) {
+function getEquipmentCategoryName(category) {
 
     if (!category) {
-
         return "Equipment";
-
     }
-
 
     return String(
         category.name ||
@@ -1784,64 +1860,47 @@ function getEquipmentCategoryName(
    EQUIPMENT LIST ITEM
 ========================================================= */
 
-function addEquipmentListItem(
-    list,
-    item
-) {
+function addEquipmentListItem(list, item) {
 
     if (!list) {
-
         return;
-
     }
-
 
     var itemName =
         getEquipmentItemName(
             item
         );
 
-
     if (!itemName) {
-
         return;
-
     }
-
 
     var li =
         document.createElement(
             "li"
         );
 
-
     var text =
         document.createElement(
             "span"
         );
 
-
     text.textContent =
         itemName;
-
 
     var removeButton =
         document.createElement(
             "button"
         );
 
-
     removeButton.type =
         "button";
-
 
     removeButton.className =
         "equipment-remove-btn";
 
-
     removeButton.textContent =
         "×";
-
 
     removeButton.setAttribute(
         "aria-label",
@@ -1849,11 +1908,9 @@ function addEquipmentListItem(
         itemName
     );
 
-
     removeButton.title =
         "Remove " +
         itemName;
-
 
     removeButton.addEventListener(
         "click",
@@ -1864,21 +1921,15 @@ function addEquipmentListItem(
                     ".equipment-card"
                 );
 
-
             if (!card) {
-
                 return;
-
             }
-
 
             var categoryId =
                 card.dataset.categoryId;
 
-
             var equipment =
                 getStoredEquipment();
-
 
             var category =
                 equipment.find(
@@ -1894,13 +1945,9 @@ function addEquipmentListItem(
                     }
                 );
 
-
             if (!category) {
-
                 return;
-
             }
-
 
             if (
                 !Array.isArray(
@@ -1912,39 +1959,32 @@ function addEquipmentListItem(
 
             }
 
-
-            /*
-               Find the current item again instead
-               of relying on a stale array index.
-            */
-
             var removeIndex =
                 category.items.findIndex(
                     function(existingItem) {
 
                         return (
-                            getEquipmentItemName(
-                                existingItem
-                            ).toLowerCase() ===
-                            itemName.toLowerCase()
+                            normalizeText(
+                                getEquipmentItemName(
+                                    existingItem
+                                )
+                            ) ===
+                            normalizeText(
+                                itemName
+                            )
                         );
 
                     }
                 );
 
-
             if (removeIndex === -1) {
-
                 return;
-
             }
-
 
             category.items.splice(
                 removeIndex,
                 1
             );
-
 
             if (
                 saveEquipment(
@@ -1953,7 +1993,6 @@ function addEquipmentListItem(
             ) {
 
                 renderDashboardEquipment();
-
 
                 showDashboardToast(
                     "Equipment removed"
@@ -1964,16 +2003,13 @@ function addEquipmentListItem(
         }
     );
 
-
     li.appendChild(
         text
     );
 
-
     li.appendChild(
         removeButton
     );
-
 
     list.appendChild(
         li
@@ -1986,69 +2022,52 @@ function addEquipmentListItem(
    CREATE EQUIPMENT CARD
 ========================================================= */
 
-function createEquipmentCard(
-    category
-) {
+function createEquipmentCard(category) {
 
     var card =
         document.createElement(
             "div"
         );
 
-
     card.className =
         "equipment-card";
 
-
     card.dataset.categoryId =
         category.id;
-
-
-    /* ==========================
-       HEADER
-    ========================== */
 
     var header =
         document.createElement(
             "div"
         );
 
-
     header.className =
         "equipment-card-header";
-
 
     var headingWrap =
         document.createElement(
             "div"
         );
 
-
     headingWrap.className =
         "equipment-card-heading";
-
 
     var heading =
         document.createElement(
             "h3"
         );
 
-
     heading.textContent =
         getEquipmentCategoryName(
             category
         );
-
 
     var itemCount =
         document.createElement(
             "span"
         );
 
-
     itemCount.className =
         "equipment-item-count";
-
 
     var items =
         Array.isArray(
@@ -2056,7 +2075,6 @@ function createEquipmentCard(
         )
             ? category.items
             : [];
-
 
     var validItemCount =
         items.filter(
@@ -2071,7 +2089,6 @@ function createEquipmentCard(
             }
         ).length;
 
-
     itemCount.textContent =
         validItemCount +
         (
@@ -2080,38 +2097,27 @@ function createEquipmentCard(
                 : " items"
         );
 
-
     headingWrap.appendChild(
         heading
     );
 
-
     headingWrap.appendChild(
         itemCount
     );
-
-
-    /* ==========================
-       DELETE CATEGORY BUTTON
-    ========================== */
 
     var deleteButton =
         document.createElement(
             "button"
         );
 
-
     deleteButton.type =
         "button";
-
 
     deleteButton.className =
         "equipment-category-delete-btn";
 
-
     deleteButton.textContent =
         "Delete";
-
 
     deleteButton.setAttribute(
         "aria-label",
@@ -2122,25 +2128,20 @@ function createEquipmentCard(
         " category"
     );
 
-
     deleteButton.title =
         "Delete category";
-
 
     deleteButton.addEventListener(
         "click",
         function(event) {
 
             event.preventDefault();
-
             event.stopPropagation();
-
 
             var categoryName =
                 getEquipmentCategoryName(
                     category
                 );
-
 
             var confirmed =
                 window.confirm(
@@ -2150,17 +2151,12 @@ function createEquipmentCard(
                     "This will also remove all equipment listed inside it."
                 );
 
-
             if (!confirmed) {
-
                 return;
-
             }
-
 
             var equipment =
                 getStoredEquipment();
-
 
             var updatedEquipment =
                 equipment.filter(
@@ -2176,7 +2172,6 @@ function createEquipmentCard(
                     }
                 );
 
-
             if (
                 updatedEquipment.length ===
                 equipment.length
@@ -2186,7 +2181,6 @@ function createEquipmentCard(
 
             }
 
-
             if (
                 saveEquipment(
                     updatedEquipment
@@ -2194,7 +2188,6 @@ function createEquipmentCard(
             ) {
 
                 renderDashboardEquipment();
-
 
                 showDashboardToast(
                     "Equipment category deleted"
@@ -2205,30 +2198,21 @@ function createEquipmentCard(
         }
     );
 
-
     header.appendChild(
         headingWrap
     );
 
-
     header.appendChild(
         deleteButton
     );
-
-
-    /* ==========================
-       EQUIPMENT LIST
-    ========================== */
 
     var list =
         document.createElement(
             "ul"
         );
 
-
     list.className =
         "equipment-list";
-
 
     if (items.length) {
 
@@ -2251,14 +2235,11 @@ function createEquipmentCard(
                 "li"
             );
 
-
         empty.className =
             "equipment-empty";
 
-
         empty.textContent =
             "No equipment added yet. Add your first item below.";
-
 
         list.appendChild(
             empty
@@ -2266,34 +2247,24 @@ function createEquipmentCard(
 
     }
 
-
-    /* ==========================
-       INPUT
-    ========================== */
-
     var inputWrapper =
         document.createElement(
             "div"
         );
 
-
     inputWrapper.className =
         "equipment-input";
-
 
     var input =
         document.createElement(
             "input"
         );
 
-
     input.type =
         "text";
 
-
     input.placeholder =
         "e.g. Sony A7 IV";
-
 
     input.setAttribute(
         "aria-label",
@@ -2303,62 +2274,46 @@ function createEquipmentCard(
         )
     );
 
-
     input.autocomplete =
         "off";
-
 
     var button =
         document.createElement(
             "button"
         );
 
-
     button.type =
         "button";
-
 
     button.className =
         "add-item-btn";
 
-
     button.textContent =
         "Add";
-
 
     inputWrapper.appendChild(
         input
     );
 
-
     inputWrapper.appendChild(
         button
     );
-
-
-    /* ==========================
-       CARD
-    ========================== */
 
     card.appendChild(
         header
     );
 
-
     card.appendChild(
         list
     );
-
 
     card.appendChild(
         inputWrapper
     );
 
-
     attachEquipmentEvents(
         card
     );
-
 
     return card;
 
@@ -2369,27 +2324,22 @@ function createEquipmentCard(
    EQUIPMENT EVENTS
 ========================================================= */
 
-function attachEquipmentEvents(
-    card
-) {
+function attachEquipmentEvents(card) {
 
     var input =
         card.querySelector(
             ".equipment-input input"
         );
 
-
     var button =
         card.querySelector(
             ".add-item-btn"
         );
 
-
     var list =
         card.querySelector(
             ".equipment-list"
         );
-
 
     if (
         !input ||
@@ -2401,12 +2351,10 @@ function attachEquipmentEvents(
 
     }
 
-
     function addItem() {
 
         var value =
             input.value.trim();
-
 
         if (!value) {
 
@@ -2416,14 +2364,11 @@ function attachEquipmentEvents(
 
         }
 
-
         var categoryId =
             card.dataset.categoryId;
 
-
         var equipment =
             getStoredEquipment();
-
 
         var category =
             equipment.find(
@@ -2439,13 +2384,9 @@ function attachEquipmentEvents(
                 }
             );
 
-
         if (!category) {
-
             return;
-
         }
-
 
         if (
             !Array.isArray(
@@ -2457,21 +2398,23 @@ function attachEquipmentEvents(
 
         }
 
-
         var alreadyExists =
             category.items.some(
                 function(existingItem) {
 
                     return (
-                        getEquipmentItemName(
-                            existingItem
-                        ).toLowerCase() ===
-                        value.toLowerCase()
+                        normalizeText(
+                            getEquipmentItemName(
+                                existingItem
+                            )
+                        ) ===
+                        normalizeText(
+                            value
+                        )
                     );
 
                 }
             );
-
 
         if (alreadyExists) {
 
@@ -2479,19 +2422,15 @@ function attachEquipmentEvents(
                 "This equipment is already added"
             );
 
-
             input.select();
-
 
             return;
 
         }
 
-
         category.items.push(
             value
         );
-
 
         if (
             saveEquipment(
@@ -2501,19 +2440,11 @@ function attachEquipmentEvents(
 
             renderDashboardEquipment();
 
-
             showDashboardToast(
                 "Equipment added"
             );
 
-
-            /*
-               Return focus to the same category's
-               input after the card is re-rendered.
-            */
-
             var newCard = null;
-
 
             document
                 .querySelectorAll(
@@ -2540,7 +2471,6 @@ function attachEquipmentEvents(
                     }
                 );
 
-
             if (newCard) {
 
                 var newInput =
@@ -2548,11 +2478,8 @@ function attachEquipmentEvents(
                         ".equipment-input input"
                     );
 
-
                 if (newInput) {
-
                     newInput.focus();
-
                 }
 
             }
@@ -2561,24 +2488,20 @@ function attachEquipmentEvents(
 
     }
 
-
     button.addEventListener(
         "click",
         addItem
     );
-
 
     input.addEventListener(
         "keydown",
         function(event) {
 
             if (
-                event.key ===
-                "Enter"
+                event.key === "Enter"
             ) {
 
                 event.preventDefault();
-
 
                 addItem();
 
@@ -2601,12 +2524,10 @@ function renderDashboardEquipment() {
             ".equipment-grid"
         );
 
-
     var addEquipment =
         document.getElementById(
             "addEquipment"
         );
-
 
     if (
         !equipmentGrid ||
@@ -2616,12 +2537,6 @@ function renderDashboardEquipment() {
         return;
 
     }
-
-
-    /*
-       Remove rendered categories and the
-       empty state before rebuilding.
-    */
 
     equipmentGrid
         .querySelectorAll(
@@ -2635,7 +2550,6 @@ function renderDashboardEquipment() {
             }
         );
 
-
     equipmentGrid
         .querySelectorAll(
             ".equipment-section-empty"
@@ -2648,14 +2562,8 @@ function renderDashboardEquipment() {
             }
         );
 
-
     var equipment =
         getStoredEquipment();
-
-
-    /* ==========================
-       EMPTY STATE
-    ========================== */
 
     if (!equipment.length) {
 
@@ -2664,15 +2572,32 @@ function renderDashboardEquipment() {
                 "div"
             );
 
-
         emptyState.className =
             "equipment-section-empty";
 
+        var strong =
+            document.createElement(
+                "strong"
+            );
 
-        emptyState.innerHTML =
-            "<strong>No equipment categories yet</strong>" +
-            "<span>Create a category to start organizing your cameras, lenses, lighting and other gear.</span>";
+        strong.textContent =
+            "No equipment categories yet";
 
+        var span =
+            document.createElement(
+                "span"
+            );
+
+        span.textContent =
+            "Create a category to start organizing your cameras, lenses, lighting and other gear.";
+
+        emptyState.appendChild(
+            strong
+        );
+
+        emptyState.appendChild(
+            span
+        );
 
         equipmentGrid.insertBefore(
             emptyState,
@@ -2680,11 +2605,6 @@ function renderDashboardEquipment() {
         );
 
     }
-
-
-    /* ==========================
-       CATEGORIES
-    ========================== */
 
     equipment.forEach(
         function(category) {
@@ -2700,12 +2620,10 @@ function renderDashboardEquipment() {
 
             }
 
-
             var card =
                 createEquipmentCard(
                     category
                 );
-
 
             equipmentGrid.insertBefore(
                 card,
@@ -2729,12 +2647,10 @@ function initializeEquipmentCategoryCreation() {
             ".equipment-grid"
         );
 
-
     var addEquipment =
         document.getElementById(
             "addEquipment"
         );
-
 
     if (
         !equipmentGrid ||
@@ -2745,17 +2661,23 @@ function initializeEquipmentCategoryCreation() {
 
     }
 
+    if (
+        addEquipment.dataset.eventsAttached
+    ) {
+
+        return;
+
+    }
+
+    addEquipment.dataset.eventsAttached =
+        "true";
 
     addEquipment.addEventListener(
         "click",
         function() {
 
-            /*
-               Prevent multiple creation cards.
-            */
-
             if (
-                document.querySelector(
+                equipmentGrid.querySelector(
                     ".create-equipment-card"
                 )
             ) {
@@ -2764,93 +2686,233 @@ function initializeEquipmentCategoryCreation() {
 
             }
 
-
             var emptyState =
                 equipmentGrid.querySelector(
                     ".equipment-section-empty"
                 );
 
-
             if (emptyState) {
-
                 emptyState.remove();
-
             }
-
 
             var createCard =
                 document.createElement(
                     "div"
                 );
 
-
             createCard.className =
                 "equipment-card create-equipment-card";
 
+            var icon =
+                document.createElement(
+                    "div"
+                );
 
-            createCard.innerHTML =
-                "<div class=\"create-equipment-icon\">+</div>" +
-                "<div class=\"create-equipment-copy\">" +
-                    "<span class=\"equipment-eyebrow\">NEW CATEGORY</span>" +
-                    "<h3>Organize your equipment</h3>" +
-                    "<p>Give this group a simple name, such as Cameras, Lenses or Studio Lighting.</p>" +
-                "</div>" +
-                "<label class=\"equipment-create-label\" for=\"newEquipmentName\">Category name</label>" +
-                "<input type=\"text\" id=\"newEquipmentName\" placeholder=\"e.g. Cameras\" maxlength=\"60\" autocomplete=\"off\">" +
-                "<div class=\"create-actions\">" +
-                    "<button type=\"button\" class=\"create-btn\">Create Category</button>" +
-                    "<button type=\"button\" class=\"cancel-btn\">Cancel</button>" +
-                "</div>";
+            icon.className =
+                "create-equipment-icon";
 
+            icon.textContent =
+                "+";
+
+            var copy =
+                document.createElement(
+                    "div"
+                );
+
+            copy.className =
+                "create-equipment-copy";
+
+            var eyebrow =
+                document.createElement(
+                    "span"
+                );
+
+            eyebrow.className =
+                "equipment-eyebrow";
+
+            eyebrow.textContent =
+                "NEW CATEGORY";
+
+            var heading =
+                document.createElement(
+                    "h3"
+                );
+
+            heading.textContent =
+                "Organize your equipment";
+
+            var paragraph =
+                document.createElement(
+                    "p"
+                );
+
+            paragraph.textContent =
+                "Give this group a simple name, such as Cameras, Lenses or Studio Lighting.";
+
+            copy.appendChild(
+                eyebrow
+            );
+
+            copy.appendChild(
+                heading
+            );
+
+            copy.appendChild(
+                paragraph
+            );
+
+            var label =
+                document.createElement(
+                    "label"
+                );
+
+            label.className =
+                "equipment-create-label";
+
+            label.setAttribute(
+                "for",
+                "newEquipmentName"
+            );
+
+            label.textContent =
+                "Category name";
+
+            var input =
+                document.createElement(
+                    "input"
+                );
+
+            input.type =
+                "text";
+
+            input.id =
+                "newEquipmentName";
+
+            input.placeholder =
+                "e.g. Cameras";
+
+            input.maxLength =
+                60;
+
+            input.autocomplete =
+                "off";
+
+            var actions =
+                document.createElement(
+                    "div"
+                );
+
+            actions.className =
+                "create-actions";
+
+            var createButton =
+                document.createElement(
+                    "button"
+                );
+
+            createButton.type =
+                "button";
+
+            createButton.className =
+                "create-btn";
+
+            createButton.textContent =
+                "Create Category";
+
+            var cancelButton =
+                document.createElement(
+                    "button"
+                );
+
+            cancelButton.type =
+                "button";
+
+            cancelButton.className =
+                "cancel-btn";
+
+            cancelButton.textContent =
+                "Cancel";
+
+            actions.appendChild(
+                createButton
+            );
+
+            actions.appendChild(
+                cancelButton
+            );
+
+            createCard.appendChild(
+                icon
+            );
+
+            createCard.appendChild(
+                copy
+            );
+
+            createCard.appendChild(
+                label
+            );
+
+            createCard.appendChild(
+                input
+            );
+
+            createCard.appendChild(
+                actions
+            );
 
             equipmentGrid.insertBefore(
                 createCard,
                 addEquipment
             );
 
-
-            var input =
-                createCard.querySelector(
-                    "#newEquipmentName"
-                );
-
-
             input.focus();
 
+            function removeCreationCard() {
+
+                createCard.remove();
+
+                renderDashboardEquipment();
+
+            }
 
             function createCategory() {
 
                 var categoryName =
                     input.value.trim();
 
-
                 if (!categoryName) {
 
                     input.focus();
+
+                    showDashboardToast(
+                        "Enter a category name"
+                    );
 
                     return;
 
                 }
 
-
                 var equipment =
                     getStoredEquipment();
-
 
                 var exists =
                     equipment.some(
                         function(category) {
 
                             return (
-                                getEquipmentCategoryName(
-                                    category
-                                ).toLowerCase() ===
-                                categoryName.toLowerCase()
+                                normalizeText(
+                                    getEquipmentCategoryName(
+                                        category
+                                    )
+                                ) ===
+                                normalizeText(
+                                    categoryName
+                                )
                             );
 
                         }
                     );
-
 
                 if (exists) {
 
@@ -2858,20 +2920,18 @@ function initializeEquipmentCategoryCreation() {
                         "This category already exists"
                     );
 
-
                     input.select();
-
 
                     return;
 
                 }
 
-
                 var category = {
 
                     id:
-                        "equipment-" +
-                        Date.now(),
+                        createUniqueId(
+                            "equipment"
+                        ),
 
                     name:
                         categoryName,
@@ -2880,11 +2940,9 @@ function initializeEquipmentCategoryCreation() {
 
                 };
 
-
                 equipment.push(
                     category
                 );
-
 
                 if (
                     saveEquipment(
@@ -2894,72 +2952,66 @@ function initializeEquipmentCategoryCreation() {
 
                     renderDashboardEquipment();
 
-
                     showDashboardToast(
                         "Equipment category created"
+                    );
+
+                } else {
+
+                    showDashboardToast(
+                        "Unable to save equipment category"
                     );
 
                 }
 
             }
 
-
-            createCard
-                .querySelector(
-                    ".create-btn"
-                )
-                .addEventListener(
-                    "click",
-                    createCategory
-                );
-
+            createButton.addEventListener(
+                "click",
+                createCategory
+            );
 
             input.addEventListener(
                 "keydown",
                 function(event) {
 
                     if (
-                        event.key ===
-                        "Enter"
+                        event.key === "Enter"
                     ) {
 
                         event.preventDefault();
 
-
                         createCategory();
+
+                    }
+
+                    if (
+                        event.key === "Escape"
+                    ) {
+
+                        event.preventDefault();
+
+                        removeCreationCard();
 
                     }
 
                 }
             );
 
+            cancelButton.addEventListener(
+                "click",
+                function() {
 
-            createCard
-                .querySelector(
-                    ".cancel-btn"
-                )
-                .addEventListener(
-                    "click",
-                    function() {
+                    removeCreationCard();
 
-                        createCard.remove();
-
-                    }
-                );
+                }
+            );
 
         }
     );
 
 }
 
-
-/* =========================================================
-   INITIALIZE EQUIPMENT
-========================================================= */
-
-renderDashboardEquipment();
-
-initializeEquipmentCategoryCreation();
 
 /* =========================================================
    GALLERIES
@@ -2996,28 +3048,37 @@ function getStoredGalleries() {
 
     }
 
-    return Array.isArray(
-        galleries
-    )
-        ? galleries
-        : [];
+    if (!Array.isArray(galleries)) {
+        return [];
+    }
+
+    return galleries.filter(
+        function(gallery) {
+
+            return (
+                gallery &&
+                typeof gallery === "object"
+            );
+
+        }
+    );
 
 }
 
 
-function getGalleryExpiryDate(
-    gallery
-) {
+function getGalleryExpiryDate(gallery) {
 
     if (!gallery) {
         return null;
     }
 
     var possibleDates = [
+
         gallery.expiresAt,
         gallery.expiryDate,
         gallery.expirationDate,
         gallery.endDate
+
     ];
 
     for (
@@ -3072,9 +3133,7 @@ function getGalleryExpiryDate(
 }
 
 
-function getGalleryStatus(
-    gallery
-) {
+function getGalleryStatus(gallery) {
 
     var expiry =
         getGalleryExpiryDate(
@@ -3084,8 +3143,12 @@ function getGalleryStatus(
     if (!expiry) {
 
         return {
+
             label: "Active",
-            className: "active"
+
+            className:
+                "active"
+
         };
 
     }
@@ -3099,8 +3162,12 @@ function getGalleryStatus(
     ) {
 
         return {
+
             label: "Expired",
-            className: "expired"
+
+            className:
+                "expired"
+
         };
 
     }
@@ -3119,11 +3186,10 @@ function getGalleryStatus(
             )
         );
 
-    if (
-        days <= 14
-    ) {
+    if (days <= 14) {
 
         return {
+
             label:
                 "Expires in " +
                 days +
@@ -3136,30 +3202,35 @@ function getGalleryStatus(
 
             className:
                 "expiring"
+
         };
 
     }
 
     return {
+
         label: "Active",
-        className: "active"
+
+        className:
+            "active"
+
     };
 
 }
 
 
-function getGalleryPhotoCount(
-    gallery
-) {
+function getGalleryPhotoCount(gallery) {
 
     if (!gallery) {
         return 0;
     }
 
     var possibleValues = [
+
         gallery.photoCount,
         gallery.photosCount,
         gallery.totalPhotos
+
     ];
 
     for (
@@ -3188,9 +3259,11 @@ function getGalleryPhotoCount(
     }
 
     var arrays = [
+
         gallery.photos,
         gallery.media,
         gallery.files
+
     ];
 
     for (
@@ -3216,18 +3289,18 @@ function getGalleryPhotoCount(
 }
 
 
-function getGalleryStorageMB(
-    gallery
-) {
+function getGalleryStorageMB(gallery) {
 
     if (!gallery) {
         return 0;
     }
 
     var possibleValues = [
+
         gallery.storageUsedMB,
         gallery.usedMB,
         gallery.storageMB
+
     ];
 
     for (
@@ -3259,9 +3332,7 @@ function getGalleryStorageMB(
             0
         );
 
-    if (
-        bytes > 0
-    ) {
+    if (bytes > 0) {
 
         return bytes /
             (
@@ -3276,40 +3347,40 @@ function getGalleryStorageMB(
 }
 
 
-function getGalleryName(
-    gallery
-) {
+function getGalleryName(gallery) {
 
     if (!gallery) {
         return "Untitled Gallery";
     }
 
-    return (
+    var name =
         gallery.name ||
         gallery.galleryName ||
         gallery.title ||
         gallery.clientName ||
-        "Untitled Gallery"
-    );
+        "";
+
+    return String(
+        name
+    ).trim() ||
+        "Untitled Gallery";
 
 }
 
 
-function getGalleryCover(
-    gallery
-) {
+function getGalleryCover(gallery) {
 
     if (!gallery) {
         return "";
     }
 
-    return (
+    return String(
         gallery.coverImage ||
         gallery.coverUrl ||
         gallery.thumbnail ||
         gallery.image ||
         ""
-    );
+    ).trim();
 
 }
 
@@ -3350,7 +3421,9 @@ function renderDashboardGalleries() {
         );
 
     var activeCount = 0;
+
     var expiringCount = 0;
+
     var totalStorageMB = 0;
 
     galleries.forEach(
@@ -3361,9 +3434,14 @@ function renderDashboardGalleries() {
                     gallery
                 );
 
+            /*
+               Expiring galleries are still active
+               until their expiry date is reached.
+            */
+
             if (
-                status.className ===
-                "active"
+                status.className === "active" ||
+                status.className === "expiring"
             ) {
 
                 activeCount++;
@@ -3371,8 +3449,7 @@ function renderDashboardGalleries() {
             }
 
             if (
-                status.className ===
-                "expiring"
+                status.className === "expiring"
             ) {
 
                 expiringCount++;
@@ -3491,9 +3568,7 @@ function renderDashboardGalleries() {
 }
 
 
-function createDashboardGalleryCard(
-    gallery
-) {
+function createDashboardGalleryCard(gallery) {
 
     var card =
         document.createElement(
@@ -3560,7 +3635,8 @@ function createDashboardGalleryCard(
             image
         );
 
-    } else {
+    }
+    else {
 
         var placeholder =
             document.createElement(
@@ -3690,48 +3766,63 @@ function getStoredBookings() {
             []
         );
 
-    return Array.isArray(
-        bookings
-    )
-        ? bookings
-        : [];
+    if (!Array.isArray(bookings)) {
+        return [];
+    }
+
+    return bookings.filter(
+        function(booking) {
+
+            return (
+                booking &&
+                typeof booking === "object"
+            );
+
+        }
+    );
 
 }
 
 
-function getBookingClientName(
-    booking
-) {
+function getBookingClientName(booking) {
 
-    return (
+    if (!booking) {
+        return "Client";
+    }
+
+    return String(
         booking.clientName ||
         booking.name ||
         booking.client ||
         booking.customerName ||
         "Client"
-    );
+    ).trim() || "Client";
 
 }
 
 
-function getBookingServiceName(
-    booking
-) {
+function getBookingServiceName(booking) {
 
-    return (
+    if (!booking) {
+        return "Photography";
+    }
+
+    return String(
         booking.serviceName ||
         booking.service ||
         booking.type ||
         booking.packageName ||
         "Photography"
-    );
+    ).trim() || "Photography";
 
 }
 
 
-function getBookingDate(
-    booking
-) {
+function getBookingDate(booking) {
+
+    if (!booking) {
+        return "";
+    }
 
     return (
         booking.date ||
@@ -3744,14 +3835,16 @@ function getBookingDate(
 }
 
 
-function getBookingStatus(
-    booking
-) {
+function getBookingStatus(booking) {
 
-    return (
+    if (!booking) {
+        return "Pending";
+    }
+
+    return String(
         booking.status ||
         "Pending"
-    );
+    ).trim() || "Pending";
 
 }
 
@@ -3760,9 +3853,7 @@ function getBookingStatus(
    BOOKING TIME
 ========================================================= */
 
-function normalizeTimeValue(
-    timeValue
-) {
+function normalizeTimeValue(timeValue) {
 
     if (
         timeValue === null ||
@@ -3775,12 +3866,9 @@ function normalizeTimeValue(
     }
 
     var value =
-        String(timeValue)
-            .trim();
-
-    /*
-       Already formatted 12-hour time.
-    */
+        String(
+            timeValue
+        ).trim();
 
     var twelveHour =
         value.match(
@@ -3818,18 +3906,12 @@ function normalizeTimeValue(
 
     }
 
-    /*
-       Existing frontend storage normally uses HH:mm.
-    */
-
     var twentyFourHour =
         value.match(
             /^(\d{1,2}):(\d{2})$/
         );
 
-    if (
-        twentyFourHour
-    ) {
+    if (twentyFourHour) {
 
         var hour =
             Number(
@@ -3878,9 +3960,7 @@ function normalizeTimeValue(
 }
 
 
-function getBookingStartTime(
-    booking
-) {
+function getBookingStartTime(booking) {
 
     if (!booking) {
         return "";
@@ -3897,9 +3977,7 @@ function getBookingStartTime(
 }
 
 
-function getBookingEndTime(
-    booking
-) {
+function getBookingEndTime(booking) {
 
     if (!booking) {
         return "";
@@ -3915,9 +3993,7 @@ function getBookingEndTime(
 }
 
 
-function formatBookingTimeRange(
-    booking
-) {
+function formatBookingTimeRange(booking) {
 
     var start =
         normalizeTimeValue(
@@ -3959,22 +4035,26 @@ function formatBookingTimeRange(
    BOOKING DATE
 ========================================================= */
 
-function parseBookingDate(
-    dateValue
-) {
+function parseBookingDate(dateValue) {
 
     if (!dateValue) {
         return null;
+    }
+
+    if (dateValue instanceof Date) {
+
+        return Number.isNaN(
+            dateValue.getTime()
+        )
+            ? null
+            : dateValue;
+
     }
 
     var value =
         String(
             dateValue
         ).trim();
-
-    /*
-       DD-MM-YYYY
-    */
 
     var indian =
         value.match(
@@ -4024,9 +4104,7 @@ function parseBookingDate(
 }
 
 
-function formatBookingDate(
-    dateValue
-) {
+function formatBookingDate(dateValue) {
 
     if (!dateValue) {
         return "—";
@@ -4058,12 +4136,88 @@ function formatBookingDate(
 
 
 /* =========================================================
+   BOOKING STATUS HELPERS
+========================================================= */
+
+function normalizeBookingStatus(status) {
+
+    return normalizeText(
+        status
+    );
+
+}
+
+
+function isCancelledBooking(booking) {
+
+    var status =
+        normalizeBookingStatus(
+            getBookingStatus(
+                booking
+            )
+        );
+
+    return (
+        status.indexOf("cancel") !== -1 ||
+        status.indexOf("reject") !== -1 ||
+        status.indexOf("declin") !== -1
+    );
+
+}
+
+
+function isRevenueEligibleBooking(booking) {
+
+    if (!booking) {
+        return false;
+    }
+
+    if (
+        isCancelledBooking(
+            booking
+        )
+    ) {
+
+        return false;
+
+    }
+
+    var status =
+        normalizeBookingStatus(
+            getBookingStatus(
+                booking
+            )
+        );
+
+    /*
+       Revenue should not be presented as earned
+       from requests that are still pending.
+
+       Paid/completed/confirmed bookings are treated
+       as revenue-eligible until the backend defines
+       a stricter payment state.
+    */
+
+    if (
+        status.indexOf("pending") !== -1 ||
+        status.indexOf("requested") !== -1 ||
+        status.indexOf("inquir") !== -1
+    ) {
+
+        return false;
+
+    }
+
+    return true;
+
+}
+
+
+/* =========================================================
    RENDER BOOKINGS
 ========================================================= */
 
-function renderDashboardBookings(
-    searchTerm
-) {
+function renderDashboardBookings(searchTerm) {
 
     var table =
         document.getElementById(
@@ -4082,6 +4236,9 @@ function renderDashboardBookings(
     var bookings =
         getStoredBookings();
 
+    var originalBookingCount =
+        bookings.length;
+
     var query =
         String(
             searchTerm || ""
@@ -4095,35 +4252,35 @@ function renderDashboardBookings(
             bookings.filter(
                 function(booking) {
 
-                    var searchable =
-                        [
-                            getBookingClientName(
-                                booking
-                            ),
+                    var searchable = [
 
-                            getBookingServiceName(
-                                booking
-                            ),
+                        getBookingClientName(
+                            booking
+                        ),
 
-                            getBookingDate(
-                                booking
-                            ),
+                        getBookingServiceName(
+                            booking
+                        ),
 
-                            getBookingStatus(
-                                booking
-                            ),
+                        getBookingDate(
+                            booking
+                        ),
 
-                            getBookingStartTime(
-                                booking
-                            ),
+                        getBookingStatus(
+                            booking
+                        ),
 
-                            getBookingEndTime(
-                                booking
-                            )
+                        getBookingStartTime(
+                            booking
+                        ),
 
-                        ]
-                            .join(" ")
-                            .toLowerCase();
+                        getBookingEndTime(
+                            booking
+                        )
+
+                    ]
+                        .join(" ")
+                        .toLowerCase();
 
                     return (
                         searchable.indexOf(
@@ -4142,7 +4299,21 @@ function renderDashboardBookings(
     if (!bookings.length) {
 
         if (empty) {
-            empty.hidden = false;
+
+            empty.hidden =
+                false;
+
+            if (query) {
+
+                empty.dataset.searchResult =
+                    "true";
+
+            } else {
+
+                delete empty.dataset.searchResult;
+
+            }
+
         }
 
         return;
@@ -4198,12 +4369,6 @@ function renderDashboardBookings(
                         )
                     );
 
-                /*
-                   Add time into the date cell only
-                   when booking time exists, preserving
-                   the existing table structure.
-                */
-
                 var time =
                     formatBookingTimeRange(
                         booking
@@ -4250,10 +4415,9 @@ function renderDashboardBookings(
                     );
 
                 var statusClass =
-                    String(
+                    normalizeBookingStatus(
                         status
-                    )
-                        .toLowerCase();
+                    );
 
                 statusElement.className =
                     "booking-status";
@@ -4272,6 +4436,9 @@ function renderDashboardBookings(
                 else if (
                     statusClass.indexOf(
                         "cancel"
+                    ) !== -1 ||
+                    statusClass.indexOf(
+                        "reject"
                     ) !== -1
                 ) {
 
@@ -4336,9 +4503,7 @@ function renderDashboardBookings(
    TODAY'S BOOKINGS
 ========================================================= */
 
-function getLocalDateKey(
-    date
-) {
+function getLocalDateKey(date) {
 
     if (
         !(date instanceof Date) ||
@@ -4416,16 +4581,20 @@ function countTodaysBookings() {
    REVENUE
 ========================================================= */
 
-function getBookingRevenue(
-    booking
-) {
+function getBookingRevenue(booking) {
+
+    if (!booking) {
+        return 0;
+    }
 
     var values = [
+
         booking.revenue,
         booking.amount,
         booking.price,
         booking.totalAmount,
         booking.total
+
     ];
 
     for (
@@ -4442,7 +4611,8 @@ function getBookingRevenue(
         if (
             Number.isFinite(
                 value
-            )
+            ) &&
+            value >= 0
         ) {
 
             return value;
@@ -4456,12 +4626,13 @@ function getBookingRevenue(
 }
 
 
-function formatCurrency(
-    amount
-) {
+function formatCurrency(amount) {
 
     var value =
-        Number(amount) || 0;
+        Math.max(
+            0,
+            Number(amount) || 0
+        );
 
     return "₹" +
         value.toLocaleString(
@@ -4535,6 +4706,16 @@ function updateDashboardStats() {
     var totalRevenue =
         bookings.reduce(
             function(total, booking) {
+
+                if (
+                    !isRevenueEligibleBooking(
+                        booking
+                    )
+                ) {
+
+                    return total;
+
+                }
 
                 return total +
                     getBookingRevenue(
@@ -4639,14 +4820,8 @@ function getStoredReviews() {
 
     }
 
-    if (
-        !Array.isArray(
-            reviews
-        )
-    ) {
-
+    if (!Array.isArray(reviews)) {
         return [];
-
     }
 
     return reviews.filter(
@@ -4663,19 +4838,19 @@ function getStoredReviews() {
 }
 
 
-function getReviewText(
-    review
-) {
+function getReviewText(review) {
 
     if (!review) {
         return "";
     }
 
     var values = [
+
         review.review,
         review.text,
         review.comment,
         review.message
+
     ];
 
     for (
@@ -4700,20 +4875,20 @@ function getReviewText(
 }
 
 
-function getReviewAuthor(
-    review
-) {
+function getReviewAuthor(review) {
 
     if (!review) {
         return "Client";
     }
 
     var values = [
+
         review.name,
         review.clientName,
         review.customerName,
         review.author,
         review.client
+
     ];
 
     for (
@@ -4738,19 +4913,19 @@ function getReviewAuthor(
 }
 
 
-function getReviewService(
-    review
-) {
+function getReviewService(review) {
 
     if (!review) {
         return "";
     }
 
     var values = [
+
         review.service,
         review.serviceName,
         review.packageName,
         review.package
+
     ];
 
     for (
@@ -4775,9 +4950,7 @@ function getReviewService(
 }
 
 
-function getReviewRating(
-    review
-) {
+function getReviewRating(review) {
 
     if (!review) {
         return 0;
@@ -4791,7 +4964,8 @@ function getReviewRating(
     if (
         !Number.isFinite(
             rating
-        )
+        ) ||
+        rating <= 0
     ) {
 
         return 0;
@@ -4811,9 +4985,7 @@ function getReviewRating(
 }
 
 
-function getReviewIdentifier(
-    review
-) {
+function getReviewIdentifier(review) {
 
     if (
         review &&
@@ -4826,15 +4998,13 @@ function getReviewIdentifier(
 
     }
 
-    /*
-       Stable fallback for older reviews without IDs.
-    */
-
     return [
+
         getReviewAuthor(review),
         getReviewText(review),
         getReviewService(review),
         getReviewRating(review)
+
     ]
         .join("|")
         .toLowerCase();
@@ -4842,9 +5012,7 @@ function getReviewIdentifier(
 }
 
 
-function deleteDashboardReview(
-    review
-) {
+function deleteDashboardReview(review) {
 
     if (!review) {
         return;
@@ -4928,9 +5096,7 @@ function deleteDashboardReview(
 }
 
 
-function renderReviewsEmptyState(
-    grid
-) {
+function renderReviewsEmptyState(grid) {
 
     var empty =
         document.createElement(
@@ -4971,9 +5137,7 @@ function renderReviewsEmptyState(
 }
 
 
-function createDashboardReviewCard(
-    review
-) {
+function createDashboardReviewCard(review) {
 
     var card =
         document.createElement(
@@ -5181,15 +5345,6 @@ function renderDashboardReviews() {
                             b.date
                         );
 
-                    if (
-                        !aDate &&
-                        !bDate
-                    ) {
-
-                        return 0;
-
-                    }
-
                     return (
                         (
                             bDate
@@ -5260,9 +5415,7 @@ function renderDashboardReviews() {
    DYNAMIC ACTIVITY CHART
 ========================================================= */
 
-function getDateKeyOffset(
-    daysAgo
-) {
+function getDateKeyOffset(daysAgo) {
 
     var date =
         new Date();
@@ -5383,6 +5536,16 @@ function renderActivityChart() {
                 )
             );
 
+            bar.setAttribute(
+                "aria-label",
+                count +
+                (
+                    count === 1
+                        ? " booking"
+                        : " bookings"
+                )
+            );
+
             chart.appendChild(
                 bar
             );
@@ -5414,9 +5577,12 @@ function getDashboardNotifications() {
     ) {
 
         notifications.push({
+
             type: "warning",
+
             message:
                 "Your portfolio storage is full."
+
         });
 
     }
@@ -5425,9 +5591,12 @@ function getDashboardNotifications() {
     ) {
 
         notifications.push({
+
             type: "warning",
+
             message:
                 "Your portfolio storage is almost full."
+
         });
 
     }
@@ -5449,12 +5618,15 @@ function getDashboardNotifications() {
             ) {
 
                 notifications.push({
+
                     type: "warning",
+
                     message:
                         getGalleryName(
                             gallery
                         ) +
                         " has expired."
+
                 });
 
             }
@@ -5464,7 +5636,9 @@ function getDashboardNotifications() {
             ) {
 
                 notifications.push({
+
                     type: "warning",
+
                     message:
                         getGalleryName(
                             gallery
@@ -5472,6 +5646,7 @@ function getDashboardNotifications() {
                         " " +
                         status.label.toLowerCase() +
                         "."
+
                 });
 
             }
@@ -5487,12 +5662,11 @@ function getDashboardNotifications() {
             function(booking) {
 
                 var status =
-                    String(
+                    normalizeBookingStatus(
                         getBookingStatus(
                             booking
                         )
-                    )
-                        .toLowerCase();
+                    );
 
                 return (
                     status.indexOf(
@@ -5508,7 +5682,9 @@ function getDashboardNotifications() {
     ) {
 
         notifications.push({
+
             type: "info",
+
             message:
                 pendingBookings +
                 (
@@ -5517,6 +5693,7 @@ function getDashboardNotifications() {
                         : " bookings are"
                 ) +
                 " waiting for your response."
+
         });
 
     }
@@ -5601,7 +5778,7 @@ function renderDashboardNotifications() {
 function getSubscriptionRenewal() {
 
     var saved =
-        localStorage.getItem(
+        getRawLocalStorageValue(
             SUBSCRIPTION_RENEWAL_KEY
         );
 
@@ -5701,17 +5878,13 @@ function renderGreeting() {
     var greeting =
         "Welcome";
 
-    if (
-        hour < 12
-    ) {
+    if (hour < 12) {
 
         greeting =
             "Good Morning";
 
     }
-    else if (
-        hour < 17
-    ) {
+    else if (hour < 17) {
 
         greeting =
             "Good Afternoon";
@@ -5857,6 +6030,10 @@ window.addEventListener(
 
         renderDashboardReviews();
 
+        updateDashboardStats();
+
+        renderDashboardNotifications();
+
     }
 );
 
@@ -5930,39 +6107,67 @@ function initializePortfolioStorage() {
    DASHBOARD INITIALIZATION
 ========================================================= */
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function() {
+var dashboardInitialized =
+    false;
 
-        initializePortfolioStorage();
 
-        renderPhotographerName();
+function initializeDashboard() {
 
-        renderGreeting();
-
-        renderPortfolioStorage();
-
-        renderDashboardEquipment();
-
-        initializeEquipmentCategoryCreation();
-
-        renderDashboardServices();
-
-        renderDashboardGalleries();
-
-        renderDashboardBookings();
-
-        renderDashboardReviews();
-
-        renderActivityChart();
-
-        renderDashboardNotifications();
-
-        updateDashboardStats();
-
-        renderSubscription();
-
-        initializeBookingSearch();
-
+    if (dashboardInitialized) {
+        return;
     }
-);
+
+    dashboardInitialized =
+        true;
+
+    initializePortfolioStorage();
+
+    renderPhotographerName();
+
+    renderGreeting();
+
+    renderPortfolioStorage();
+
+    renderDashboardEquipment();
+
+    initializeEquipmentCategoryCreation();
+
+    renderDashboardServices();
+
+    renderDashboardGalleries();
+
+    renderDashboardBookings();
+
+    renderDashboardReviews();
+
+    renderActivityChart();
+
+    renderDashboardNotifications();
+
+    updateDashboardStats();
+
+    renderSubscription();
+
+    initializeBookingSearch();
+
+}
+
+
+if (
+    document.readyState === "loading"
+) {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initializeDashboard,
+        {
+            once: true
+        }
+    );
+
+}
+else {
+
+    initializeDashboard();
+
+}
