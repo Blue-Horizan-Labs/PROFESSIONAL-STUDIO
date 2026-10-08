@@ -40,23 +40,38 @@ function readClientLocalStorage(key, fallback = null) {
 
         return JSON.parse(value);
     } catch (error) {
-        console.warn(`Unable to read localStorage key "${key}".`, error);
+        console.warn(
+            `Unable to read localStorage key "${key}".`,
+            error
+        );
+
         return fallback;
     }
 }
 
 function writeClientLocalStorage(key, value) {
     try {
-        localStorage.setItem(key, JSON.stringify(value));
+        localStorage.setItem(
+            key,
+            JSON.stringify(value)
+        );
+
         return true;
     } catch (error) {
-        console.warn(`Unable to write localStorage key "${key}".`, error);
+        console.warn(
+            `Unable to write localStorage key "${key}".`,
+            error
+        );
+
         return false;
     }
 }
 
 function normalizeText(value) {
-    if (value === null || value === undefined) {
+    if (
+        value === null ||
+        value === undefined
+    ) {
         return "";
     }
 
@@ -77,22 +92,35 @@ function escapeHtml(value) {
 }
 
 function clamp(value, min, max) {
-    return Math.min(Math.max(value, min), max);
+    return Math.min(
+        Math.max(value, min),
+        max
+    );
 }
 
 function getNumericValue(value) {
-    if (value === null || value === undefined || value === "") {
+    if (
+        value === null ||
+        value === undefined ||
+        value === ""
+    ) {
         return null;
     }
 
     const number = Number(value);
 
-    return Number.isFinite(number) ? number : null;
+    return Number.isFinite(number)
+        ? number
+        : null;
 }
 
 function isReducedMotion() {
-    return window.matchMedia &&
-        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    return (
+        window.matchMedia &&
+        window.matchMedia(
+            "(prefers-reduced-motion: reduce)"
+        ).matches
+    );
 }
 
 
@@ -101,24 +129,34 @@ function isReducedMotion() {
 ========================================================= */
 
 function getClientProfile() {
-    const profile = readClientLocalStorage(
-        STORAGE_KEYS.profile,
-        {}
-    );
+    const profile =
+        readClientLocalStorage(
+            STORAGE_KEYS.profile,
+            null
+        );
 
-    return profile && typeof profile === "object"
+    return (
+        profile &&
+        typeof profile === "object"
+    )
         ? profile
         : {};
 }
 
-function getProfileValue(profile, aliases = []) {
+
+function getProfileValue(
+    profile,
+    aliases = []
+) {
     for (const alias of aliases) {
-        const value = profile?.[alias];
+
+        const value =
+            profile?.[alias];
 
         if (
             value !== null &&
             value !== undefined &&
-            normalizeText(value)
+            String(value).trim()
         ) {
             return value;
         }
@@ -127,21 +165,39 @@ function getProfileValue(profile, aliases = []) {
     return "";
 }
 
-function getNestedProfileValue(profile, parentAliases = [], aliases = []) {
-    for (const parentAlias of parentAliases) {
-        const parent = profile?.[parentAlias];
 
-        if (!parent || typeof parent !== "object") {
+function getNestedProfileValue(
+    profile,
+    parentAliases = [],
+    aliases = []
+) {
+    for (
+        const parentAlias
+        of parentAliases
+    ) {
+
+        const parent =
+            profile?.[parentAlias];
+
+        if (
+            !parent ||
+            typeof parent !== "object"
+        ) {
             continue;
         }
 
-        for (const alias of aliases) {
-            const value = parent?.[alias];
+        for (
+            const alias
+            of aliases
+        ) {
+
+            const value =
+                parent?.[alias];
 
             if (
                 value !== null &&
                 value !== undefined &&
-                normalizeText(value)
+                String(value).trim()
             ) {
                 return value;
             }
@@ -151,15 +207,196 @@ function getNestedProfileValue(profile, parentAliases = [], aliases = []) {
     return "";
 }
 
-function getSafeProfileUrl(value) {
-    const rawValue = normalizeText(value);
+
+/* ---------------------------------------------------------
+   PROFILE BASIC VALUES
+--------------------------------------------------------- */
+
+function getProfileName(profile) {
+    return getProfileValue(
+        profile,
+        [
+            "photographerName",
+            "name",
+            "fullName",
+            "displayName",
+            "full_name"
+        ]
+    ) || "Photographer";
+}
+
+
+function getProfileStudio(profile) {
+    return getProfileValue(
+        profile,
+        [
+            "studioName",
+            "std_name",
+            "studio",
+            "businessName"
+        ]
+    ) || "Professional Studio";
+}
+
+
+function getProfileTagline(profile) {
+    return getProfileValue(
+        profile,
+        [
+            "studioTagline",
+            "std_tag",
+            "tagline",
+            "profileTagline"
+        ]
+    );
+}
+
+
+function getProfileRole(profile) {
+    return getProfileValue(
+        profile,
+        [
+            "professionalRole",
+            "professional_role",
+            "role"
+        ]
+    );
+}
+
+
+function getProfileSpecialization(profile) {
+    return getProfileValue(
+        profile,
+        [
+            "specialization",
+            "speciality",
+            "specialty"
+        ]
+    );
+}
+
+
+function getProfileAbout(profile) {
+    return getProfileValue(
+        profile,
+        [
+            "about",
+            "bio",
+            "description",
+            "profileDescription"
+        ]
+    ) || "No profile description has been added yet.";
+}
+
+
+function getProfileLocation(profile) {
+    return getProfileValue(
+        profile,
+        [
+            "address",
+            "std_address",
+            "location"
+        ]
+    ) || "Location not provided";
+}
+
+
+function getProfilePhone(profile) {
+    return getProfileValue(
+        profile,
+        [
+            "phone",
+            "phoneNumber",
+            "mobile"
+        ]
+    ) || "Phone not provided";
+}
+
+
+function getProfileEmail(profile) {
+    return getProfileValue(
+        profile,
+        [
+            "email",
+            "emailAddress"
+        ]
+    ) || "Email not provided";
+}
+
+
+function getProfileExperience(profile) {
+    return getNumericValue(
+        getProfileValue(
+            profile,
+            [
+                "experience",
+                "yearsExperience",
+                "experienceYears",
+                "yearsOfExperience"
+            ]
+        )
+    );
+}
+
+
+function getProfileSessions(profile) {
+    return getNumericValue(
+        getProfileValue(
+            profile,
+            [
+                "sessionsDone",
+                "sessionsCompleted",
+                "completedSessions",
+                "totalSessions",
+                "sessions"
+            ]
+        )
+    );
+}
+
+
+/* ---------------------------------------------------------
+   PROFILE PHOTO
+--------------------------------------------------------- */
+
+function getProfilePhoto(profile) {
+    return normalizeText(
+        getProfileValue(
+            profile,
+            [
+                "profilePhoto",
+                "photo",
+                "profileImage",
+                "profileImageUrl"
+            ]
+        )
+    );
+}
+
+
+function getSafeImageSource(value) {
+    const rawValue =
+        normalizeText(value);
 
     if (!rawValue) {
         return "";
     }
 
+    /*
+     * Setup currently stores uploaded images
+     * as base64 Data URLs.
+     */
+    if (
+        /^data:image\/(jpeg|jpg|png|webp);base64,/i.test(
+            rawValue
+        )
+    ) {
+        return rawValue;
+    }
+
     try {
-        const url = new URL(rawValue);
+        const url =
+            new URL(rawValue);
 
         if (
             url.protocol !== "https:" &&
@@ -169,352 +406,638 @@ function getSafeProfileUrl(value) {
         }
 
         return url.href;
+
     } catch {
         return "";
     }
 }
 
-function getProfileName(profile) {
-    return normalizeText(
-        getProfileValue(profile, [
-            "name",
-            "fullName",
-            "photographerName",
-            "displayName"
-        ])
-    ) || "Photographer";
+
+function renderClientProfilePhoto(profile) {
+    const photo =
+        getSafeImageSource(
+            getProfilePhoto(profile)
+        );
+
+    const portfolioImage =
+        document.querySelector(
+            ".portfolio-block img"
+        );
+
+    if (!portfolioImage) {
+        return;
+    }
+
+    /*
+     * Keep the original image if no
+     * profile photo exists.
+     */
+    if (!photo) {
+        portfolioImage.alt =
+            "Featured photography portfolio image";
+
+        return;
+    }
+
+    portfolioImage.src =
+        photo;
+
+    portfolioImage.alt =
+        `${getProfileName(profile)} profile photo`;
 }
 
-function getProfileStudio(profile) {
-    return normalizeText(
-        getProfileValue(profile, [
-            "studioName",
-            "businessName",
-            "companyName",
-            "brandName"
-        ])
-    );
-}
 
-function getProfileAbout(profile) {
-    return normalizeText(
-        getProfileValue(profile, [
-            "about",
-            "aboutMe",
-            "bio",
-            "description",
-            "profileDescription"
-        ])
-    );
-}
-
-function getProfileLocation(profile) {
-    return normalizeText(
-        getProfileValue(profile, [
-            "location",
-            "city",
-            "address",
-            "locationName"
-        ])
-    );
-}
-
-function getProfilePhone(profile) {
-    return normalizeText(
-        getProfileValue(profile, [
-            "phone",
-            "phoneNumber",
-            "mobile",
-            "contactNumber"
-        ])
-    );
-}
-
-function getProfileEmail(profile) {
-    return normalizeText(
-        getProfileValue(profile, [
-            "email",
-            "emailAddress",
-            "contactEmail"
-        ])
-    );
-}
+/* ---------------------------------------------------------
+   PROFILE DATA ATTRIBUTES
+--------------------------------------------------------- */
 
 function renderProfileDataAttributes(profile) {
     document
-        .querySelectorAll("[data-profile-field]")
+        .querySelectorAll(
+            "[data-profile-field]"
+        )
         .forEach((element) => {
 
-            const field = element.dataset.profileField;
+            const field =
+                element.dataset.profileField;
 
             if (!field) {
                 return;
             }
 
-            const value = getProfileValue(profile, [field]);
+            const value =
+                getProfileValue(
+                    profile,
+                    [field]
+                );
 
-            if (value) {
-                element.textContent = value;
-            }
+            element.textContent =
+                value || "";
         });
 }
+
+
+/* ---------------------------------------------------------
+   PHOTOGRAPHER NAME
+--------------------------------------------------------- */
 
 function renderClientPhotographerName(profile) {
-    const name = getProfileName(profile);
+    const name =
+        getProfileName(profile);
 
     document
-        .querySelectorAll("[data-profile-name], #profileName, #photographerName")
+        .querySelectorAll(
+            "[data-profile-name], #profileName, #photographerName"
+        )
         .forEach((element) => {
-            element.textContent = name;
+
+            element.textContent =
+                name;
         });
 }
 
-function renderClientStudioName(profile) {
-    const studio = getProfileStudio(profile);
 
-    const element = document.getElementById("photographerStudio");
+/* ---------------------------------------------------------
+   STUDIO
+--------------------------------------------------------- */
+
+function renderClientStudioName(profile) {
+    const studio =
+        getProfileStudio(profile);
+
+    const element =
+        document.getElementById(
+            "photographerStudio"
+        );
 
     if (!element) {
         return;
     }
 
     element.textContent =
-        studio || "Studio name not provided";
+        studio;
 }
+
+
+/* ---------------------------------------------------------
+   ABOUT
+--------------------------------------------------------- */
 
 function renderClientAbout(profile) {
-    const element = document.getElementById("aboutText");
+    const element =
+        document.getElementById(
+            "aboutText"
+        );
 
     if (!element) {
         return;
     }
 
-    const about = getProfileAbout(profile);
-
     element.textContent =
-        about || "No profile description has been added yet.";
+        getProfileAbout(profile);
 }
+
+
+/* ---------------------------------------------------------
+   CONTACT
+--------------------------------------------------------- */
 
 function renderClientContact(profile) {
     const values = {
-        profilePhone: getProfilePhone(profile) || "Phone not provided",
-        profileEmail: getProfileEmail(profile) || "Email not provided",
-        profileLocation: getProfileLocation(profile) || "Location not provided"
+
+        profilePhone:
+            getProfilePhone(profile),
+
+        profileEmail:
+            getProfileEmail(profile),
+
+        profileLocation:
+            getProfileLocation(profile)
+
     };
 
-    Object.entries(values).forEach(([id, value]) => {
+    Object.entries(values)
+        .forEach(
+            ([id, value]) => {
 
-        const element = document.getElementById(id);
+                const element =
+                    document.getElementById(id);
 
-        if (element) {
-            element.textContent = value;
-        }
-    });
+                if (element) {
+                    element.textContent =
+                        value;
+                }
+            }
+        );
 }
 
+
+/* ---------------------------------------------------------
+   SOCIAL LINKS
+--------------------------------------------------------- */
+
+function normalizeSocialUrl(
+    value,
+    platform
+) {
+    const rawValue =
+        normalizeText(value);
+
+    if (!rawValue) {
+        return "";
+    }
+
+    /*
+     * Full URL supplied.
+     */
+    try {
+        const url =
+            new URL(rawValue);
+
+        if (
+            url.protocol === "http:" ||
+            url.protocol === "https:"
+        ) {
+            return url.href;
+        }
+
+    } catch {
+        /*
+         * Not a complete URL.
+         * Treat it as a username/handle.
+         */
+    }
+
+    const username =
+        rawValue
+            .replace(/^@/, "")
+            .trim();
+
+    if (!username) {
+        return "";
+    }
+
+    switch (platform) {
+
+        case "instagram":
+            return (
+                "https://www.instagram.com/" +
+                encodeURIComponent(username) +
+                "/"
+            );
+
+        case "facebook":
+            return (
+                "https://www.facebook.com/" +
+                encodeURIComponent(username)
+            );
+
+        case "youtube":
+            return (
+                "https://www.youtube.com/@" +
+                encodeURIComponent(username)
+            );
+
+        default:
+            return "";
+    }
+}
+
+
 function renderClientSocialLinks(profile) {
-    const socialLinks = document.querySelectorAll(
-        "[data-social]"
-    );
+    const socialLinks =
+        document.querySelectorAll(
+            "[data-social]"
+        );
 
     socialLinks.forEach((link) => {
 
-        const platform = link.dataset.social;
+        const platform =
+            normalizeText(
+                link.dataset.social
+            ).toLowerCase();
 
-        const url = getSafeProfileUrl(
+        if (!platform) {
+            return;
+        }
+
+        const rawValue =
             getNestedProfileValue(
                 profile,
-                ["social", "socialLinks", "socialMedia"],
+                [
+                    "social",
+                    "socialLinks",
+                    "socialMedia"
+                ],
                 [platform]
-            )
-        );
+            );
+
+        const url =
+            normalizeSocialUrl(
+                rawValue,
+                platform
+            );
 
         if (url) {
-            link.href = url;
-            link.hidden = false;
-            link.setAttribute("aria-hidden", "false");
+
+            link.href =
+                url;
+
+            link.hidden =
+                false;
+
+            link.setAttribute(
+                "aria-hidden",
+                "false"
+            );
+
         } else {
-            link.hidden = true;
-            link.setAttribute("aria-hidden", "true");
-            link.removeAttribute("href");
+
+            link.hidden =
+                true;
+
+            link.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+
+            link.removeAttribute(
+                "href"
+            );
         }
     });
 }
 
-function getProfileExperienceValue(profile, aliases) {
-    return getNumericValue(
-        getProfileValue(profile, aliases)
-    );
-}
 
-function getProfileMeterValue(profile, aliases) {
-    const value = getNumericValue(
-        getProfileValue(profile, aliases)
-    );
+/* ---------------------------------------------------------
+   BRANDING / HERO
+--------------------------------------------------------- */
 
-    if (value === null) {
-        return null;
+function renderClientBranding(profile) {
+
+    const name =
+        getProfileName(profile);
+
+    const studio =
+        getProfileStudio(profile);
+
+    const tagline =
+        getProfileTagline(profile);
+
+    const role =
+        getProfileRole(profile);
+
+    const specialization =
+        getProfileSpecialization(profile);
+
+
+    /*
+     * Existing navbar logo.
+     */
+    const logo =
+        document.querySelector(
+            ".navbar .logo"
+        );
+
+    if (logo) {
+
+        logo.textContent =
+            studio ||
+            name ||
+            "Photographer";
     }
 
-    return clamp(value, 0, 100);
+
+    /*
+     * Existing hero heading.
+     *
+     * Priority:
+     * 1. Setup studio tagline
+     * 2. Photographer name
+     * 3. Existing default
+     */
+    const heroTitle =
+        document.getElementById(
+            "heroTitle"
+        );
+
+    if (heroTitle) {
+
+        heroTitle.textContent =
+            tagline ||
+            name ||
+            "Capturing Real Stories";
+    }
+
+
+    /*
+     * If the existing hero paragraph exists,
+     * populate it from Setup information.
+     *
+     * We do not create a new element.
+     */
+    const heroParagraph =
+        document.querySelector(
+            ".hero-content > p"
+        );
+
+    if (heroParagraph) {
+
+        const heroInformation = [
+            role,
+            specialization
+        ].filter(Boolean);
+
+        if (heroInformation.length) {
+
+            heroParagraph.textContent =
+                heroInformation.join(
+                    " • "
+                );
+
+        }
+    }
 }
+
+
+/* ---------------------------------------------------------
+   EXPERIENCE
+--------------------------------------------------------- */
 
 function renderExperience(profile) {
 
-    const section = document.getElementById(
-        "experienceSection"
-    );
+    const sessionsBox =
+        document.getElementById(
+            "sessionsExperience"
+        );
 
-    const sessionsBox = document.getElementById(
-        "sessionsExperience"
-    );
+    const yearsBox =
+        document.getElementById(
+            "yearsExperience"
+        );
 
-    const yearsBox = document.getElementById(
-        "yearsExperience"
-    );
+    const sessionsText =
+        document.getElementById(
+            "sessionsExperienceText"
+        );
 
-    const sessionsText = document.getElementById(
-        "sessionsExperienceText"
-    );
+    const yearsText =
+        document.getElementById(
+            "yearsExperienceText"
+        );
 
-    const yearsText = document.getElementById(
-        "yearsExperienceText"
-    );
+    const sessionsMeter =
+        document.querySelector(
+            '[data-meter="sessions"]'
+        );
 
-    const sessionsMeter = document.querySelector(
-        '[data-meter="sessions"]'
-    );
+    const experienceMeter =
+        document.querySelector(
+            '[data-meter="experience"]'
+        );
 
-    const experienceMeter = document.querySelector(
-        '[data-meter="experience"]'
-    );
+
+    /*
+     * The page structure can vary slightly.
+     * We therefore do not require a specific
+     * #experienceSection ID.
+     */
+    const section =
+        document.getElementById(
+            "experienceSection"
+        ) ||
+        sessionsBox?.closest("section") ||
+        yearsBox?.closest("section");
+
 
     if (
-        !section ||
         !sessionsBox ||
         !yearsBox ||
         !sessionsText ||
-        !yearsText ||
-        !sessionsMeter ||
-        !experienceMeter
+        !yearsText
     ) {
         return;
     }
 
-    const sessions = getProfileExperienceValue(
-        profile,
-        [
-            "sessionsCompleted",
-            "completedSessions",
-            "totalSessions",
-            "sessions"
-        ]
-    );
 
-    const years = getProfileExperienceValue(
-        profile,
-        [
-            "yearsExperience",
-            "experienceYears",
-            "yearsOfExperience"
-        ]
-    );
+    const sessions =
+        getProfileSessions(profile);
 
-    const sessionsMeterValue = getProfileMeterValue(
-        profile,
-        [
-            "sessionsMeter",
-            "sessionsProgress",
-            "sessionsPercentage"
-        ]
-    );
+    const years =
+        getProfileExperience(profile);
 
-    const experienceMeterValue = getProfileMeterValue(
-        profile,
-        [
-            "experienceMeter",
-            "experienceProgress",
-            "experiencePercentage"
-        ]
-    );
 
     let visibleCards = 0;
 
+
+    /* -----------------------------------------------------
+       SESSIONS
+    ----------------------------------------------------- */
+
     if (sessions !== null) {
 
-        sessionsBox.hidden = false;
+        sessionsBox.hidden =
+            false;
+
         visibleCards += 1;
 
         sessionsText.textContent =
             `${sessions.toLocaleString()} Sessions`;
 
-        const meterValue =
-            sessionsMeterValue !== null
-                ? sessionsMeterValue
-                : 0;
 
-        sessionsMeter.style.width = `${meterValue}%`;
+        if (sessionsMeter) {
 
-        const meter =
-            sessionsMeter.closest(".meter");
+            sessionsMeter.style.width =
+                "100%";
 
-        meter?.setAttribute(
-            "aria-valuenow",
-            String(meterValue)
-        );
+            sessionsMeter.dataset.value =
+                "100";
+
+            const meter =
+                sessionsMeter.closest(
+                    ".meter"
+                );
+
+            meter?.setAttribute(
+                "aria-valuenow",
+                "100"
+            );
+        }
+
     } else {
-        sessionsBox.hidden = true;
+
+        sessionsBox.hidden =
+            true;
     }
+
+
+    /* -----------------------------------------------------
+       EXPERIENCE
+    ----------------------------------------------------- */
 
     if (years !== null) {
 
-        yearsBox.hidden = false;
+        yearsBox.hidden =
+            false;
+
         visibleCards += 1;
 
         yearsText.textContent =
-            `${years} ${years === 1 ? "Year" : "Years"} Experience`;
+            `${years} ${
+                years === 1
+                    ? "Year"
+                    : "Years"
+            } Experience`;
 
-        const meterValue =
-            experienceMeterValue !== null
-                ? experienceMeterValue
-                : 0;
 
-        experienceMeter.style.width = `${meterValue}%`;
+        if (experienceMeter) {
 
-        const meter =
-            experienceMeter.closest(".meter");
+            const meterValue =
+                clamp(
+                    (years / 10) * 100,
+                    0,
+                    100
+                );
 
-        meter?.setAttribute(
-            "aria-valuenow",
-            String(meterValue)
-        );
+            experienceMeter.style.width =
+                `${meterValue}%`;
+
+            experienceMeter.dataset.value =
+                String(meterValue);
+
+            const meter =
+                experienceMeter.closest(
+                    ".meter"
+                );
+
+            meter?.setAttribute(
+                "aria-valuenow",
+                String(meterValue)
+            );
+        }
+
     } else {
-        yearsBox.hidden = true;
+
+        yearsBox.hidden =
+            true;
     }
 
-    section.hidden = visibleCards === 0;
 
-    if (!section.hidden) {
+    if (section) {
+
+        section.hidden =
+            visibleCards === 0;
+
+    }
+
+
+    if (visibleCards > 0) {
+
         requestAnimationFrame(() => {
-            section.querySelectorAll(".exp-box").forEach((box) => {
-                if (!box.hidden) {
-                    box.classList.add("visible");
-                }
-            });
+
+            document
+                .querySelectorAll(
+                    "#sessionsExperience, #yearsExperience"
+                )
+                .forEach((box) => {
+
+                    if (!box.hidden) {
+
+                        box.classList.add(
+                            "visible"
+                        );
+                    }
+                });
         });
     }
 }
 
-function renderPublicProfile() {
-    const profile = getClientProfile();
 
-    renderProfileDataAttributes(profile);
-    renderClientPhotographerName(profile);
-    renderClientStudioName(profile);
-    renderClientAbout(profile);
-    renderClientContact(profile);
-    renderClientSocialLinks(profile);
-    renderExperience(profile);
+/* ---------------------------------------------------------
+   PUBLIC PROFILE RENDER
+--------------------------------------------------------- */
+
+function renderPublicProfile() {
+
+    const profile =
+        getClientProfile();
+
+
+    renderProfileDataAttributes(
+        profile
+    );
+
+    renderClientBranding(
+        profile
+    );
+
+    renderClientPhotographerName(
+        profile
+    );
+
+    renderClientStudioName(
+        profile
+    );
+
+    renderClientAbout(
+        profile
+    );
+
+    renderClientContact(
+        profile
+    );
+
+    renderClientSocialLinks(
+        profile
+    );
+
+    renderClientProfilePhoto(
+        profile
+    );
+
+    renderExperience(
+        profile
+    );
 }
 
 
@@ -523,42 +1046,55 @@ function renderPublicProfile() {
 ========================================================= */
 
 function getClientReviews() {
-    const reviews = readClientLocalStorage(
-        STORAGE_KEYS.reviews,
-        []
-    );
+
+    const reviews =
+        readClientLocalStorage(
+            STORAGE_KEYS.reviews,
+            []
+        );
 
     return Array.isArray(reviews)
         ? reviews
         : [];
 }
 
+
 function saveClientReviews(reviews) {
+
     return writeClientLocalStorage(
         STORAGE_KEYS.reviews,
         reviews
     );
 }
 
+
 function getStoredReviewEmail() {
+
     try {
+
         return normalizeEmail(
             localStorage.getItem(
                 STORAGE_KEYS.reviewEmail
             )
         );
+
     } catch {
         return "";
     }
 }
 
+
 function setStoredReviewEmail(email) {
+
     try {
+
         localStorage.setItem(
             STORAGE_KEYS.reviewEmail,
             normalizeEmail(email)
         );
+
     } catch (error) {
+
         console.warn(
             "Unable to remember review email.",
             error
@@ -566,20 +1102,32 @@ function setStoredReviewEmail(email) {
     }
 }
 
+
 function generateReviewId() {
-    return `review_${Date.now()}_${Math.random()
-        .toString(36)
-        .slice(2, 10)}`;
+
+    return (
+        `review_${Date.now()}_` +
+        Math.random()
+            .toString(36)
+            .slice(2, 10)
+    );
 }
 
+
 function formatReviewDate(value) {
+
     if (!value) {
         return "Date unavailable";
     }
 
-    const date = new Date(value);
+    const date =
+        new Date(value);
 
-    if (Number.isNaN(date.getTime())) {
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
         return "Date unavailable";
     }
 
@@ -593,19 +1141,27 @@ function formatReviewDate(value) {
     ).format(date);
 }
 
+
 function createReviewStars(rating) {
 
-    const safeRating = clamp(
-        Number(rating) || 0,
-        0,
-        5
-    );
+    const safeRating =
+        clamp(
+            Number(rating) || 0,
+            0,
+            5
+        );
 
-    const fragment = document.createDocumentFragment();
+    const fragment =
+        document.createDocumentFragment();
 
-    for (let index = 1; index <= 5; index += 1) {
+    for (
+        let index = 1;
+        index <= 5;
+        index += 1
+    ) {
 
-        const icon = document.createElement("i");
+        const icon =
+            document.createElement("i");
 
         icon.className =
             index <= safeRating
@@ -623,93 +1179,150 @@ function createReviewStars(rating) {
     return fragment;
 }
 
+
 function createReviewCard(review) {
 
-    const article = document.createElement("article");
+    const article =
+        document.createElement("article");
 
-    article.className = "review-card";
+    article.className =
+        "review-card";
 
-    const header = document.createElement("div");
 
-    header.className = "review-card-header";
+    const header =
+        document.createElement("div");
 
-    const author = document.createElement("div");
+    header.className =
+        "review-card-header";
 
-    author.className = "review-author";
 
-    const name = document.createElement("h3");
+    const author =
+        document.createElement("div");
 
-    name.className = "review-author-name";
+    author.className =
+        "review-author";
+
+
+    const name =
+        document.createElement("h3");
+
+    name.className =
+        "review-author-name";
+
     name.textContent =
-        normalizeText(review.name) ||
+        normalizeText(
+            review.name
+        ) ||
         "Anonymous Client";
 
     author.appendChild(name);
 
-    if (normalizeText(review.service)) {
 
-        const service = document.createElement("div");
+    if (
+        normalizeText(
+            review.service
+        )
+    ) {
 
-        service.className = "review-service";
+        const service =
+            document.createElement("div");
+
+        service.className =
+            "review-service";
+
         service.textContent =
-            normalizeText(review.service);
+            normalizeText(
+                review.service
+            );
 
-        author.appendChild(service);
+        author.appendChild(
+            service
+        );
     }
 
-    const rating = document.createElement("div");
 
-    rating.className = "review-card-rating";
+    const rating =
+        document.createElement("div");
+
+    rating.className =
+        "review-card-rating";
+
     rating.setAttribute(
         "aria-label",
-        `${clamp(Number(review.rating) || 0, 0, 5)} out of 5 stars`
+        `${clamp(
+            Number(review.rating) || 0,
+            0,
+            5
+        )} out of 5 stars`
     );
 
     rating.appendChild(
-        createReviewStars(review.rating)
+        createReviewStars(
+            review.rating
+        )
     );
+
 
     header.appendChild(author);
     header.appendChild(rating);
 
-    const text = document.createElement("p");
 
-    text.className = "review-card-text";
+    const text =
+        document.createElement("p");
+
+    text.className =
+        "review-card-text";
+
     text.textContent =
-        normalizeText(review.text) ||
+        normalizeText(
+            review.text
+        ) ||
         "No review text provided.";
 
-    const date = document.createElement("div");
 
-    date.className = "review-date";
+    const date =
+        document.createElement("div");
+
+    date.className =
+        "review-date";
+
     date.textContent =
-        formatReviewDate(review.createdAt);
+        formatReviewDate(
+            review.createdAt
+        );
+
 
     article.appendChild(header);
     article.appendChild(text);
     article.appendChild(date);
 
+
     return article;
 }
 
+
 function renderReviewStars(rating) {
 
-    const container = document.getElementById(
-        "reviewsAverageStars"
-    );
+    const container =
+        document.getElementById(
+            "reviewsAverageStars"
+        );
 
     if (!container) {
         return;
     }
 
-    const safeRating = clamp(
-        Number(rating) || 0,
-        0,
-        5
-    );
+    const safeRating =
+        clamp(
+            Number(rating) || 0,
+            0,
+            5
+        );
 
     container.replaceChildren(
-        createReviewStars(safeRating)
+        createReviewStars(
+            safeRating
+        )
     );
 
     container.setAttribute(
@@ -720,25 +1333,32 @@ function renderReviewStars(rating) {
     );
 }
 
+
 function renderClientReviews() {
 
-    const reviews = getClientReviews();
+    const reviews =
+        getClientReviews();
 
-    const list = document.getElementById(
-        "reviewsList"
-    );
+    const list =
+        document.getElementById(
+            "reviewsList"
+        );
 
-    const emptyState = document.getElementById(
-        "reviewsEmptyState"
-    );
+    const emptyState =
+        document.getElementById(
+            "reviewsEmptyState"
+        );
 
-    const averageElement = document.getElementById(
-        "reviewsAverageRating"
-    );
+    const averageElement =
+        document.getElementById(
+            "reviewsAverageRating"
+        );
 
-    const countElement = document.getElementById(
-        "reviewsCount"
-    );
+    const countElement =
+        document.getElementById(
+            "reviewsCount"
+        );
+
 
     if (
         !list ||
@@ -749,77 +1369,108 @@ function renderClientReviews() {
         return;
     }
 
+
     list.replaceChildren();
+
 
     if (!reviews.length) {
 
-        averageElement.textContent = "0.0";
+        averageElement.textContent =
+            "0.0";
+
         countElement.textContent =
             "No reviews yet";
 
         renderReviewStars(0);
 
-        emptyState.hidden = false;
+        emptyState.hidden =
+            false;
 
         return;
     }
 
-    const validReviews = reviews.filter((review) => {
 
-        const rating = Number(review?.rating);
+    const validReviews =
+        reviews.filter((review) => {
 
-        return (
-            Number.isFinite(rating) &&
-            rating >= 1 &&
-            rating <= 5
-        );
-    });
+            const rating =
+                Number(
+                    review?.rating
+                );
+
+            return (
+                Number.isFinite(rating) &&
+                rating >= 1 &&
+                rating <= 5
+            );
+        });
+
 
     if (!validReviews.length) {
 
-        averageElement.textContent = "0.0";
+        averageElement.textContent =
+            "0.0";
+
         countElement.textContent =
             "No reviews yet";
 
         renderReviewStars(0);
 
-        emptyState.hidden = false;
+        emptyState.hidden =
+            false;
 
         return;
     }
+
 
     const average =
         validReviews.reduce(
             (sum, review) =>
-                sum + Number(review.rating),
+                sum +
+                Number(review.rating),
             0
-        ) / validReviews.length;
+        ) /
+        validReviews.length;
+
 
     averageElement.textContent =
         average.toFixed(1);
+
 
     countElement.textContent =
         validReviews.length === 1
             ? "1 review"
             : `${validReviews.length} reviews`;
 
-    renderReviewStars(average);
+
+    renderReviewStars(
+        average
+    );
+
 
     validReviews
         .slice()
         .sort(
             (a, b) =>
-                new Date(b.createdAt || 0) -
-                new Date(a.createdAt || 0)
+                new Date(
+                    b.createdAt || 0
+                ) -
+                new Date(
+                    a.createdAt || 0
+                )
         )
         .forEach((review) => {
 
             list.appendChild(
-                createReviewCard(review)
+                createReviewCard(
+                    review
+                )
             );
         });
 
-    emptyState.hidden = true;
+
+    emptyState.hidden =
+        true;
 }
 
 
@@ -844,13 +1495,18 @@ function getReviewFocusableElements() {
     );
 }
 
+
 function resetReviewRating() {
 
     document
-        .querySelectorAll(".rating-star")
+        .querySelectorAll(
+            ".rating-star"
+        )
         .forEach((button) => {
 
-            button.classList.remove("selected");
+            button.classList.remove(
+                "selected"
+            );
 
             button.setAttribute(
                 "aria-checked",
@@ -861,10 +1517,12 @@ function resetReviewRating() {
                 button.querySelector("i");
 
             if (icon) {
+
                 icon.className =
                     "fa-regular fa-star";
             }
         });
+
 
     const ratingValue =
         document.getElementById(
@@ -876,6 +1534,7 @@ function resetReviewRating() {
     }
 }
 
+
 function clearReviewFieldErrors() {
 
     const fields = [
@@ -884,16 +1543,24 @@ function clearReviewFieldErrors() {
         "reviewText"
     ];
 
+
     fields.forEach((id) => {
 
         const element =
             document.getElementById(id);
 
         if (element) {
-            element.classList.remove("invalid");
-            element.removeAttribute("aria-invalid");
+
+            element.classList.remove(
+                "invalid"
+            );
+
+            element.removeAttribute(
+                "aria-invalid"
+            );
         }
     });
+
 
     [
         "reviewClientNameError",
@@ -911,7 +1578,11 @@ function clearReviewFieldErrors() {
     });
 }
 
-function showReviewFormMessage(message, type) {
+
+function showReviewFormMessage(
+    message,
+    type
+) {
 
     const element =
         document.getElementById(
@@ -922,12 +1593,16 @@ function showReviewFormMessage(message, type) {
         return;
     }
 
-    element.textContent = message;
+    element.textContent =
+        message;
+
     element.className =
         `review-form-message ${type}`;
 
-    element.hidden = false;
+    element.hidden =
+        false;
 }
+
 
 function hideReviewFormMessage() {
 
@@ -940,21 +1615,29 @@ function hideReviewFormMessage() {
         return;
     }
 
-    element.hidden = true;
-    element.textContent = "";
+    element.hidden =
+        true;
+
+    element.textContent =
+        "";
+
     element.className =
         "review-form-message";
 }
+
 
 function resetReviewForm() {
 
     reviewForm?.reset();
 
     clearReviewFieldErrors();
+
     hideReviewFormMessage();
+
     resetReviewRating();
 
     updateReviewCharacterCount();
+
 
     const submitButton =
         document.getElementById(
@@ -962,10 +1645,14 @@ function resetReviewForm() {
         );
 
     if (submitButton) {
-        submitButton.disabled = false;
+
+        submitButton.disabled =
+            false;
+
         submitButton.textContent =
             "Submit Review";
     }
+
 
     const alreadySubmitted =
         document.getElementById(
@@ -973,11 +1660,16 @@ function resetReviewForm() {
         );
 
     if (alreadySubmitted) {
-        alreadySubmitted.hidden = true;
+        alreadySubmitted.hidden =
+            true;
     }
 
-    reviewForm?.removeAttribute("hidden");
+
+    reviewForm?.removeAttribute(
+        "hidden"
+    );
 }
+
 
 function openReviewModal() {
 
@@ -985,20 +1677,27 @@ function openReviewModal() {
         return;
     }
 
+
     reviewPreviouslyFocusedElement =
         document.activeElement;
 
+
     resetReviewForm();
 
-    reviewModal.hidden = false;
+
+    reviewModal.hidden =
+        false;
+
     reviewModal.setAttribute(
         "aria-hidden",
         "false"
     );
 
+
     document.body.classList.add(
         "review-modal-open"
     );
+
 
     requestAnimationFrame(() => {
 
@@ -1007,10 +1706,16 @@ function openReviewModal() {
                 "reviewClientName"
             );
 
-        if (nameInput && !nameInput.disabled) {
+        if (
+            nameInput &&
+            !nameInput.disabled
+        ) {
+
             nameInput.focus();
+
             return;
         }
+
 
         const focusable =
             getReviewFocusableElements();
@@ -1019,39 +1724,56 @@ function openReviewModal() {
     });
 }
 
+
 function closeReviewModal() {
 
     if (!reviewModal) {
         return;
     }
 
-    reviewModal.hidden = true;
+
+    reviewModal.hidden =
+        true;
 
     reviewModal.setAttribute(
         "aria-hidden",
         "true"
     );
 
+
     document.body.classList.remove(
         "review-modal-open"
     );
 
+
     resetReviewForm();
+
 
     if (
         reviewPreviouslyFocusedElement &&
-        typeof reviewPreviouslyFocusedElement.focus === "function"
+        typeof
+            reviewPreviouslyFocusedElement.focus ===
+            "function"
     ) {
+
         reviewPreviouslyFocusedElement.focus();
     }
 
-    reviewPreviouslyFocusedElement = null;
+
+    reviewPreviouslyFocusedElement =
+        null;
 }
+
 
 function setReviewRating(value) {
 
     const rating =
-        clamp(Number(value) || 0, 0, 5);
+        clamp(
+            Number(value) || 0,
+            0,
+            5
+        );
+
 
     const hiddenInput =
         document.getElementById(
@@ -1059,24 +1781,34 @@ function setReviewRating(value) {
         );
 
     if (hiddenInput) {
+
         hiddenInput.value =
-            rating ? String(rating) : "";
+            rating
+                ? String(rating)
+                : "";
     }
 
+
     document
-        .querySelectorAll(".rating-star")
+        .querySelectorAll(
+            ".rating-star"
+        )
         .forEach((button) => {
 
             const buttonRating =
-                Number(button.dataset.rating);
+                Number(
+                    button.dataset.rating
+                );
 
             const selected =
                 buttonRating <= rating;
+
 
             button.classList.toggle(
                 "selected",
                 selected
             );
+
 
             button.setAttribute(
                 "aria-checked",
@@ -1085,10 +1817,12 @@ function setReviewRating(value) {
                     : "false"
             );
 
+
             const icon =
                 button.querySelector("i");
 
             if (icon) {
+
                 icon.className =
                     selected
                         ? "fa-solid fa-star"
@@ -1096,6 +1830,7 @@ function setReviewRating(value) {
             }
         });
 }
+
 
 function updateReviewCharacterCount() {
 
@@ -1109,13 +1844,17 @@ function updateReviewCharacterCount() {
             "reviewCharacterCount"
         );
 
-    if (!textarea || !counter) {
+    if (
+        !textarea ||
+        !counter
+    ) {
         return;
     }
 
     counter.textContent =
         `${textarea.value.length} / 1000`;
 }
+
 
 function setFieldError(
     fieldId,
@@ -1124,10 +1863,15 @@ function setFieldError(
 ) {
 
     const field =
-        document.getElementById(fieldId);
+        document.getElementById(
+            fieldId
+        );
 
     const error =
-        document.getElementById(errorId);
+        document.getElementById(
+            errorId
+        );
+
 
     if (field) {
 
@@ -1136,26 +1880,34 @@ function setFieldError(
             Boolean(message)
         );
 
+
         if (message) {
+
             field.setAttribute(
                 "aria-invalid",
                 "true"
             );
+
         } else {
+
             field.removeAttribute(
                 "aria-invalid"
             );
         }
     }
 
+
     if (error) {
-        error.textContent = message || "";
+        error.textContent =
+            message || "";
     }
 }
+
 
 function validateReviewForm() {
 
     clearReviewFieldErrors();
+
 
     const name =
         normalizeText(
@@ -1164,12 +1916,14 @@ function validateReviewForm() {
             )?.value
         );
 
+
     const email =
         normalizeEmail(
             document.getElementById(
                 "reviewClientEmail"
             )?.value
         );
+
 
     const rating =
         Number(
@@ -1178,6 +1932,7 @@ function validateReviewForm() {
             )?.value
         );
 
+
     const text =
         normalizeText(
             document.getElementById(
@@ -1185,8 +1940,13 @@ function validateReviewForm() {
             )?.value
         );
 
-    let valid = true;
-    let firstInvalid = null;
+
+    let valid =
+        true;
+
+    let firstInvalid =
+        null;
+
 
     if (name.length < 2) {
 
@@ -1196,16 +1956,25 @@ function validateReviewForm() {
             "Please enter your name."
         );
 
+
         firstInvalid ??=
             document.getElementById(
                 "reviewClientName"
             );
 
-        valid = false;
+
+        valid =
+            false;
     }
 
+
+    /*
+     * Fixed email validation.
+     */
     if (
-        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+            email
+        )
     ) {
 
         setFieldError(
@@ -1214,13 +1983,17 @@ function validateReviewForm() {
             "Please enter a valid email address."
         );
 
+
         firstInvalid ??=
             document.getElementById(
                 "reviewClientEmail"
             );
 
-        valid = false;
+
+        valid =
+            false;
     }
+
 
     if (
         !Number.isInteger(rating) ||
@@ -1233,18 +2006,24 @@ function validateReviewForm() {
                 "reviewRatingError"
             );
 
+
         if (error) {
+
             error.textContent =
                 "Please choose a rating.";
         }
+
 
         firstInvalid ??=
             document.querySelector(
                 ".rating-star"
             );
 
-        valid = false;
+
+        valid =
+            false;
     }
+
 
     if (text.length < 5) {
 
@@ -1254,13 +2033,17 @@ function validateReviewForm() {
             "Please enter at least 5 characters."
         );
 
+
         firstInvalid ??=
             document.getElementById(
                 "reviewText"
             );
 
-        valid = false;
+
+        valid =
+            false;
     }
+
 
     if (text.length > 1000) {
 
@@ -1270,17 +2053,22 @@ function validateReviewForm() {
             "Your review cannot exceed 1000 characters."
         );
 
+
         firstInvalid ??=
             document.getElementById(
                 "reviewText"
             );
 
-        valid = false;
+
+        valid =
+            false;
     }
+
 
     if (!valid) {
         firstInvalid?.focus();
     }
+
 
     return {
         valid,
@@ -1291,14 +2079,18 @@ function validateReviewForm() {
     };
 }
 
+
 function handleReviewSubmit(event) {
 
     event.preventDefault();
 
+
     const result =
         validateReviewForm();
 
+
     if (!result.valid) {
+
         showReviewFormMessage(
             "Please correct the highlighted fields.",
             "error"
@@ -1307,15 +2099,20 @@ function handleReviewSubmit(event) {
         return;
     }
 
+
     const existingReviews =
         getClientReviews();
+
 
     const duplicate =
         existingReviews.some(
             (review) =>
-                normalizeEmail(review.email) ===
+                normalizeEmail(
+                    review.email
+                ) ===
                 result.email
         );
+
 
     if (duplicate) {
 
@@ -1323,39 +2120,65 @@ function handleReviewSubmit(event) {
             result.email
         );
 
-        reviewForm.hidden = true;
+
+        reviewForm.hidden =
+            true;
+
 
         const alreadySubmitted =
             document.getElementById(
                 "reviewAlreadySubmitted"
             );
 
+
         if (alreadySubmitted) {
-            alreadySubmitted.hidden = false;
+
+            alreadySubmitted.hidden =
+                false;
         }
+
 
         return;
     }
+
 
     const submitButton =
         document.getElementById(
             "submitReviewBtn"
         );
 
+
     if (submitButton) {
-        submitButton.disabled = true;
+
+        submitButton.disabled =
+            true;
+
         submitButton.textContent =
             "Submitting...";
     }
 
+
     const newReview = {
-        id: generateReviewId(),
-        name: result.name,
-        email: result.email,
-        rating: result.rating,
-        text: result.text,
-        createdAt: new Date().toISOString()
+
+        id:
+            generateReviewId(),
+
+        name:
+            result.name,
+
+        email:
+            result.email,
+
+        rating:
+            result.rating,
+
+        text:
+            result.text,
+
+        createdAt:
+            new Date().toISOString()
     };
+
 
     const saved =
         saveClientReviews([
@@ -1363,37 +2186,49 @@ function handleReviewSubmit(event) {
             newReview
         ]);
 
+
     if (!saved) {
 
         if (submitButton) {
-            submitButton.disabled = false;
+
+            submitButton.disabled =
+                false;
+
             submitButton.textContent =
                 "Submit Review";
         }
+
 
         showReviewFormMessage(
             "Your review could not be saved on this device. Please try again.",
             "error"
         );
 
+
         return;
     }
+
 
     setStoredReviewEmail(
         result.email
     );
 
+
     renderClientReviews();
+
 
     showReviewFormMessage(
         "Your review has been added successfully.",
         "success"
     );
 
+
     if (submitButton) {
+
         submitButton.textContent =
             "Review Added";
     }
+
 
     document.dispatchEvent(
         new CustomEvent(
@@ -1401,10 +2236,15 @@ function handleReviewSubmit(event) {
         )
     );
 
-    setTimeout(() => {
-        closeReviewModal();
-    }, 900);
+
+    setTimeout(
+        () => {
+            closeReviewModal();
+        },
+        900
+    );
 }
+
 
 function initializeReviewSystem() {
 
@@ -1413,24 +2253,32 @@ function initializeReviewSystem() {
             "reviewModal"
         );
 
+
     reviewForm =
         document.getElementById(
             "reviewForm"
         );
 
-    if (!reviewModal || !reviewForm) {
+
+    if (
+        !reviewModal ||
+        !reviewForm
+    ) {
         return;
     }
+
 
     const openButton =
         document.getElementById(
             "openReviewModalBtn"
         );
 
+
     openButton?.addEventListener(
         "click",
         openReviewModal
     );
+
 
     document
         .querySelectorAll(
@@ -1444,6 +2292,7 @@ function initializeReviewSystem() {
             );
         });
 
+
     document
         .getElementById(
             "closeReviewModalBtn"
@@ -1453,13 +2302,17 @@ function initializeReviewSystem() {
             closeReviewModal
         );
 
+
     document
-        .querySelectorAll(".rating-star")
+        .querySelectorAll(
+            ".rating-star"
+        )
         .forEach((button) => {
 
             button.addEventListener(
                 "click",
                 () => {
+
                     setReviewRating(
                         button.dataset.rating
                     );
@@ -1467,8 +2320,11 @@ function initializeReviewSystem() {
             );
         });
 
+
     document
-        .getElementById("reviewRating")
+        .getElementById(
+            "reviewRating"
+        )
         ?.addEventListener(
             "keydown",
             (event) => {
@@ -1480,16 +2336,22 @@ function initializeReviewSystem() {
                         )
                     );
 
+
                 const currentIndex =
                     buttons.indexOf(
                         document.activeElement
                     );
 
+
                 if (
-                    event.key === "ArrowRight" ||
-                    event.key === "ArrowDown"
+                    event.key ===
+                        "ArrowRight" ||
+                    event.key ===
+                        "ArrowDown"
                 ) {
+
                     event.preventDefault();
+
 
                     const nextIndex =
                         currentIndex < 0
@@ -1499,17 +2361,29 @@ function initializeReviewSystem() {
                                 buttons.length - 1
                             );
 
-                    buttons[nextIndex]?.focus();
+
+                    buttons[
+                        nextIndex
+                    ]?.focus();
+
+
                     setReviewRating(
-                        buttons[nextIndex]?.dataset.rating
+                        buttons[
+                            nextIndex
+                        ]?.dataset.rating
                     );
                 }
 
+
                 if (
-                    event.key === "ArrowLeft" ||
-                    event.key === "ArrowUp"
+                    event.key ===
+                        "ArrowLeft" ||
+                    event.key ===
+                        "ArrowUp"
                 ) {
+
                     event.preventDefault();
+
 
                     const previousIndex =
                         currentIndex < 0
@@ -1519,69 +2393,107 @@ function initializeReviewSystem() {
                                 0
                             );
 
-                    buttons[previousIndex]?.focus();
+
+                    buttons[
+                        previousIndex
+                    ]?.focus();
+
+
                     setReviewRating(
-                        buttons[previousIndex]?.dataset.rating
+                        buttons[
+                            previousIndex
+                        ]?.dataset.rating
                     );
                 }
             }
         );
 
+
     document
-        .getElementById("reviewText")
+        .getElementById(
+            "reviewText"
+        )
         ?.addEventListener(
             "input",
             updateReviewCharacterCount
         );
+
 
     reviewForm.addEventListener(
         "submit",
         handleReviewSubmit
     );
 
+
     reviewModal.addEventListener(
         "keydown",
         (event) => {
 
-            if (event.key === "Escape") {
+            if (
+                event.key ===
+                "Escape"
+            ) {
+
                 event.preventDefault();
+
                 closeReviewModal();
+
                 return;
             }
 
-            if (event.key !== "Tab") {
+
+            if (
+                event.key !==
+                "Tab"
+            ) {
                 return;
             }
+
 
             const focusable =
                 getReviewFocusableElements();
 
+
             if (!focusable.length) {
+
                 event.preventDefault();
+
                 return;
             }
+
 
             const first =
                 focusable[0];
 
             const last =
-                focusable[focusable.length - 1];
+                focusable[
+                    focusable.length - 1
+                ];
+
 
             if (
                 event.shiftKey &&
-                document.activeElement === first
+                document.activeElement ===
+                    first
             ) {
+
                 event.preventDefault();
+
                 last.focus();
+
             } else if (
                 !event.shiftKey &&
-                document.activeElement === last
+                document.activeElement ===
+                    last
             ) {
+
                 event.preventDefault();
+
                 first.focus();
             }
         }
     );
+
 
     renderClientReviews();
 }
@@ -1604,6 +2516,7 @@ function getClientServices() {
         : [];
 }
 
+
 function loadClientServices() {
 
     const container =
@@ -1615,7 +2528,9 @@ function loadClientServices() {
         return;
     }
 
+
     container.replaceChildren();
+
 
     const services =
         getClientServices()
@@ -1625,10 +2540,13 @@ function loadClientServices() {
                     service.active !== false
             );
 
+
     if (!services.length) {
 
         const empty =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
         empty.className =
             "service-empty-state";
@@ -1640,29 +2558,38 @@ function loadClientServices() {
             </p>
         `;
 
-        container.appendChild(empty);
+        container.appendChild(
+            empty
+        );
 
         return;
     }
 
+
     services.forEach((service) => {
 
         const card =
-            document.createElement("article");
+            document.createElement(
+                "article"
+            );
 
         card.className =
             "price-card";
+
 
         const name =
             normalizeText(
                 service.name ||
                 service.title
-            ) || "Photography Service";
+            ) ||
+            "Photography Service";
+
 
         const description =
             normalizeText(
                 service.description
             );
+
 
         const price =
             normalizeText(
@@ -1670,22 +2597,28 @@ function loadClientServices() {
                 service.startingPrice
             );
 
+
         const coverage =
             normalizeText(
                 service.coverage
             );
+
 
         const delivery =
             normalizeText(
                 service.delivery
             );
 
+
         const packageCount =
-            Array.isArray(service.packages)
+            Array.isArray(
+                service.packages
+            )
                 ? service.packages.length
                 : getNumericValue(
                     service.packageCount
                 );
+
 
         const serviceId =
             normalizeText(
@@ -1694,17 +2627,27 @@ function loadClientServices() {
                 service.slug
             );
 
+
         const title =
-            document.createElement("h3");
+            document.createElement(
+                "h3"
+            );
 
-        title.textContent = name;
+        title.textContent =
+            name;
 
-        card.appendChild(title);
+
+        card.appendChild(
+            title
+        );
+
 
         if (price) {
 
             const priceElement =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
             priceElement.className =
                 "price";
@@ -1712,13 +2655,18 @@ function loadClientServices() {
             priceElement.textContent =
                 price;
 
-            card.appendChild(priceElement);
+            card.appendChild(
+                priceElement
+            );
         }
+
 
         if (description) {
 
             const descriptionElement =
-                document.createElement("p");
+                document.createElement(
+                    "p"
+                );
 
             descriptionElement.className =
                 "service-preview-description";
@@ -1731,79 +2679,131 @@ function loadClientServices() {
             );
         }
 
+
         const details = [];
 
+
         if (packageCount !== null) {
+
             details.push(
-                `${packageCount} package${packageCount === 1 ? "" : "s"}`
+                `${packageCount} package${
+                    packageCount === 1
+                        ? ""
+                        : "s"
+                }`
             );
         }
 
+
         if (coverage) {
-            details.push(coverage);
+            details.push(
+                coverage
+            );
         }
 
+
         if (delivery) {
-            details.push(delivery);
+            details.push(
+                delivery
+            );
         }
+
 
         if (details.length) {
 
             const list =
-                document.createElement("ul");
+                document.createElement(
+                    "ul"
+                );
 
-            details.forEach((detail) => {
 
-                const item =
-                    document.createElement("li");
+            details.forEach(
+                (detail) => {
 
-                item.textContent = detail;
+                    const item =
+                        document.createElement(
+                            "li"
+                        );
 
-                list.appendChild(item);
-            });
+                    item.textContent =
+                        detail;
 
-            card.appendChild(list);
+                    list.appendChild(
+                        item
+                    );
+                }
+            );
+
+
+            card.appendChild(
+                list
+            );
         }
+
 
         if (serviceId) {
 
             const actions =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
             actions.className =
                 "service-preview-actions";
 
+
             const viewLink =
-                document.createElement("a");
+                document.createElement(
+                    "a"
+                );
 
             viewLink.className =
                 "book-btn";
 
             viewLink.href =
-                `service.html?id=${encodeURIComponent(serviceId)}`;
+                `service.html?id=${encodeURIComponent(
+                    serviceId
+                )}`;
 
             viewLink.textContent =
                 "View Service";
 
+
             const bookLink =
-                document.createElement("a");
+                document.createElement(
+                    "a"
+                );
 
             bookLink.className =
                 "book-btn";
 
             bookLink.href =
-                `service.html?id=${encodeURIComponent(serviceId)}&action=book`;
+                `service.html?id=${encodeURIComponent(
+                    serviceId
+                )}&action=book`;
 
             bookLink.textContent =
                 "Book Service";
 
-            actions.appendChild(viewLink);
-            actions.appendChild(bookLink);
 
-            card.appendChild(actions);
+            actions.appendChild(
+                viewLink
+            );
+
+            actions.appendChild(
+                bookLink
+            );
+
+
+            card.appendChild(
+                actions
+            );
         }
 
-        container.appendChild(card);
+
+        container.appendChild(
+            card
+        );
     });
 }
 
@@ -1825,11 +2825,13 @@ function getClientEquipment() {
         : [];
 }
 
+
 function getEquipmentIcon(category) {
 
     const value =
         normalizeText(category)
             .toLowerCase();
+
 
     if (
         value.includes("camera") ||
@@ -1838,12 +2840,14 @@ function getEquipmentIcon(category) {
         return "fa-camera";
     }
 
+
     if (
         value.includes("lens") ||
         value.includes("optics")
     ) {
         return "fa-camera-retro";
     }
+
 
     if (
         value.includes("light") ||
@@ -1852,6 +2856,7 @@ function getEquipmentIcon(category) {
         return "fa-lightbulb";
     }
 
+
     if (
         value.includes("audio") ||
         value.includes("microphone")
@@ -1859,11 +2864,13 @@ function getEquipmentIcon(category) {
         return "fa-microphone";
     }
 
+
     if (
         value.includes("drone")
     ) {
         return "fa-helicopter";
     }
+
 
     if (
         value.includes("tripod") ||
@@ -1872,8 +2879,10 @@ function getEquipmentIcon(category) {
         return "fa-photo-film";
     }
 
+
     return "fa-camera";
 }
+
 
 function loadClientEquipment() {
 
@@ -1882,44 +2891,58 @@ function loadClientEquipment() {
             "equipmentGrid"
         );
 
+
     if (!grid) {
         return;
     }
 
+
     grid.replaceChildren();
+
 
     const equipment =
         getClientEquipment();
 
+
     const validCategories =
-        equipment.filter((category) => {
+        equipment.filter(
+            (category) => {
 
-            if (!category) {
-                return false;
-            }
+                if (!category) {
+                    return false;
+                }
 
-            const name =
-                normalizeText(
-                    category.name ||
-                    category.category ||
-                    category.title
+
+                const name =
+                    normalizeText(
+                        category.name ||
+                        category.category ||
+                        category.title
+                    );
+
+
+                const items =
+                    Array.isArray(
+                        category.items
+                    )
+                        ? category.items
+                        : [];
+
+
+                return Boolean(
+                    name &&
+                    items.length
                 );
+            }
+        );
 
-            const items =
-                Array.isArray(category.items)
-                    ? category.items
-                    : [];
-
-            return Boolean(
-                name &&
-                items.length
-            );
-        });
 
     if (!validCategories.length) {
 
         const empty =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
         empty.className =
             "equipment-empty-state";
@@ -1927,93 +2950,146 @@ function loadClientEquipment() {
         empty.textContent =
             "Equipment information will appear here once it has been added.";
 
-        grid.appendChild(empty);
+
+        grid.appendChild(
+            empty
+        );
+
 
         return;
     }
 
-    validCategories.forEach((category) => {
 
-        const card =
-            document.createElement("article");
+    validCategories.forEach(
+        (category) => {
 
-        card.className =
-            "equipment-category-card";
+            const card =
+                document.createElement(
+                    "article"
+                );
 
-        const heading =
-            document.createElement("div");
+            card.className =
+                "equipment-category-card";
 
-        heading.className =
-            "equipment-category-heading";
 
-        const icon =
-            document.createElement("i");
+            const heading =
+                document.createElement(
+                    "div"
+                );
 
-        icon.className =
-            `fa-solid ${getEquipmentIcon(
-                category.name ||
-                category.category ||
-                category.title
-            )}`;
+            heading.className =
+                "equipment-category-heading";
 
-        icon.setAttribute(
-            "aria-hidden",
-            "true"
-        );
 
-        const title =
-            document.createElement("h3");
+            const icon =
+                document.createElement(
+                    "i"
+                );
 
-        title.textContent =
-            normalizeText(
-                category.name ||
-                category.category ||
-                category.title
+            icon.className =
+                `fa-solid ${getEquipmentIcon(
+                    category.name ||
+                    category.category ||
+                    category.title
+                )}`;
+
+            icon.setAttribute(
+                "aria-hidden",
+                "true"
             );
 
-        heading.appendChild(icon);
-        heading.appendChild(title);
 
-        const list =
-            document.createElement("ul");
+            const title =
+                document.createElement(
+                    "h3"
+                );
 
-        list.className =
-            "equipment-items";
+            title.textContent =
+                normalizeText(
+                    category.name ||
+                    category.category ||
+                    category.title
+                );
 
-        category.items.forEach((item) => {
 
-            const itemText =
-                typeof item === "string"
-                    ? item
-                    : item?.name ||
-                      item?.title ||
-                      item?.model;
+            heading.appendChild(
+                icon
+            );
 
-            const cleanItem =
-                normalizeText(itemText);
+            heading.appendChild(
+                title
+            );
 
-            if (!cleanItem) {
+
+            const list =
+                document.createElement(
+                    "ul"
+                );
+
+            list.className =
+                "equipment-items";
+
+
+            category.items.forEach(
+                (item) => {
+
+                    const itemText =
+                        typeof item ===
+                            "string"
+                            ? item
+                            : item?.name ||
+                              item?.title ||
+                              item?.model;
+
+
+                    const cleanItem =
+                        normalizeText(
+                            itemText
+                        );
+
+
+                    if (!cleanItem) {
+                        return;
+                    }
+
+
+                    const listItem =
+                        document.createElement(
+                            "li"
+                        );
+
+                    listItem.textContent =
+                        cleanItem;
+
+
+                    list.appendChild(
+                        listItem
+                    );
+                }
+            );
+
+
+            if (
+                !list.children.length
+            ) {
                 return;
             }
 
-            const listItem =
-                document.createElement("li");
 
-            listItem.textContent =
-                cleanItem;
+            card.appendChild(
+                heading
+            );
 
-            list.appendChild(listItem);
-        });
+            card.appendChild(
+                list
+            );
 
-        if (!list.children.length) {
-            return;
+
+            grid.appendChild(
+                card
+            );
         }
-
-        card.appendChild(heading);
-        card.appendChild(list);
-
-        grid.appendChild(card);
-    });
+    );
 }
 
 
@@ -2023,60 +3099,83 @@ function loadClientEquipment() {
 
 function openRecentWorkDatabase() {
 
-    return new Promise((resolve, reject) => {
+    return new Promise(
+        (resolve, reject) => {
 
-        if (!("indexedDB" in window)) {
-            reject(
-                new Error(
-                    "IndexedDB is not supported."
-                )
-            );
+            if (
+                !("indexedDB" in window)
+            ) {
 
-            return;
+                reject(
+                    new Error(
+                        "IndexedDB is not supported."
+                    )
+                );
+
+                return;
+            }
+
+
+            const request =
+                indexedDB.open(
+                    RECENT_WORK_DB_NAME,
+                    RECENT_WORK_DB_VERSION
+                );
+
+
+            request.onerror =
+                () => {
+
+                    reject(
+                        request.error ||
+                        new Error(
+                            "Unable to open recent work database."
+                        )
+                    );
+                };
+
+
+            request.onsuccess =
+                () => {
+
+                    resolve(
+                        request.result
+                    );
+                };
         }
-
-        const request =
-            indexedDB.open(
-                RECENT_WORK_DB_NAME,
-                RECENT_WORK_DB_VERSION
-            );
-
-        request.onerror = () => {
-            reject(
-                request.error ||
-                new Error(
-                    "Unable to open recent work database."
-                )
-            );
-        };
-
-        request.onsuccess = () => {
-            resolve(request.result);
-        };
-    });
+    );
 }
 
-async function getRecentWorkPhoto(photoId) {
+
+async function getRecentWorkPhoto(
+    photoId
+) {
 
     if (!photoId) {
         return null;
     }
 
+
     let db = null;
+
 
     try {
 
         db =
             await openRecentWorkDatabase();
 
+
         if (
             !db.objectStoreNames.contains(
                 RECENT_WORK_STORE_NAME
             )
         ) {
+
             db.close();
+
             return null;
         }
+
 
         return await new Promise(
             (resolve, reject) => {
@@ -2087,28 +3186,37 @@ async function getRecentWorkPhoto(photoId) {
                         "readonly"
                     );
 
+
                 const store =
                     transaction.objectStore(
                         RECENT_WORK_STORE_NAME
                     );
 
+
                 const request =
                     store.get(photoId);
 
-                request.onsuccess = () => {
-                    resolve(
-                        request.result || null
-                    );
-                };
 
-                request.onerror = () => {
-                    reject(
-                        request.error ||
-                        new Error(
-                            "Unable to read portfolio image."
-                        )
-                    );
-                };
+                request.onsuccess =
+                    () => {
+
+                        resolve(
+                            request.result ||
+                            null
+                        );
+                    };
+
+
+                request.onerror =
+                    () => {
+
+                        reject(
+                            request.error ||
+                            new Error(
+                                "Unable to read portfolio image."
+                            )
+                        );
+                    };
             }
         );
 
@@ -2118,6 +3226,7 @@ async function getRecentWorkPhoto(photoId) {
             "Unable to load recent work image.",
             error
         );
+
 
         return null;
 
@@ -2129,19 +3238,28 @@ async function getRecentWorkPhoto(photoId) {
     }
 }
 
+
 function cleanupRecentWorkObjectUrls() {
 
-    recentWorkObjectUrls.forEach((url) => {
+    recentWorkObjectUrls.forEach(
+        (url) => {
 
-        try {
-            URL.revokeObjectURL(url);
-        } catch {
-            /* Ignore cleanup errors. */
+            try {
+                URL.revokeObjectURL(
+                    url
+                );
+            } catch {
+                /*
+                 * Ignore cleanup errors.
+                 */
+            }
         }
-    });
+    );
+
 
     recentWorkObjectUrls = [];
 }
+
 
 function getRecentWorkAlbums() {
 
@@ -2151,24 +3269,41 @@ function getRecentWorkAlbums() {
             {}
         );
 
-    if (!storage || typeof storage !== "object") {
+
+    if (
+        !storage ||
+        typeof storage !== "object"
+    ) {
         return [];
     }
+
 
     if (Array.isArray(storage)) {
         return storage;
     }
 
-    if (Array.isArray(storage.albums)) {
+
+    if (
+        Array.isArray(
+            storage.albums
+        )
+    ) {
         return storage.albums;
     }
 
-    if (Array.isArray(storage.recentWork)) {
+
+    if (
+        Array.isArray(
+            storage.recentWork
+        )
+    ) {
         return storage.recentWork;
     }
 
+
     return [];
 }
+
 
 function getAlbumId(album) {
 
@@ -2179,14 +3314,17 @@ function getAlbumId(album) {
     );
 }
 
+
 function getAlbumTitle(album) {
 
     return normalizeText(
         album?.title ||
         album?.name ||
         album?.albumName
-    ) || "Untitled Album";
+    ) ||
+        "Untitled Album";
 }
+
 
 function getAlbumDescription(album) {
 
@@ -2195,6 +3333,7 @@ function getAlbumDescription(album) {
         album?.caption
     );
 }
+
 
 function getAlbumImageId(album) {
 
@@ -2205,6 +3344,7 @@ function getAlbumImageId(album) {
     );
 }
 
+
 function getAlbumImageUrl(album) {
 
     const candidates = [
@@ -2214,18 +3354,50 @@ function getAlbumImageUrl(album) {
         album?.imageUrl
     ];
 
-    for (const candidate of candidates) {
 
-        const safeUrl =
-            getSafeProfileUrl(candidate);
+    for (
+        const candidate
+        of candidates
+    ) {
 
-        if (safeUrl) {
-            return safeUrl;
+        const raw =
+            normalizeText(
+                candidate
+            );
+
+
+        if (!raw) {
+            continue;
+        }
+
+
+        try {
+
+            const url =
+                new URL(raw);
+
+
+            if (
+                url.protocol ===
+                    "http:" ||
+                url.protocol ===
+                    "https:"
+            ) {
+
+                return url.href;
+            }
+
+        } catch {
+            /*
+             * Ignore invalid image URLs.
+             */
         }
     }
 
+
     return "";
 }
+
 
 async function renderPortfolioRecentWork() {
 
@@ -2234,34 +3406,53 @@ async function renderPortfolioRecentWork() {
             "recentWorkPreview"
         );
 
+
     const emptyState =
         document.getElementById(
             "recentWorkEmpty"
         );
 
-    if (!grid || !emptyState) {
+
+    if (
+        !grid ||
+        !emptyState
+    ) {
         return;
     }
+
 
     const currentToken =
         ++recentWorkRenderToken;
 
+
     cleanupRecentWorkObjectUrls();
 
+
     grid.replaceChildren();
-    emptyState.hidden = true;
+
+    emptyState.hidden =
+        true;
+
 
     const albums =
         getRecentWorkAlbums()
             .filter(Boolean)
             .slice(0, 6);
 
+
     if (!albums.length) {
-        emptyState.hidden = false;
+
+        emptyState.hidden =
+            false;
+
         return;
     }
 
-    for (const album of albums) {
+
+    for (
+        const album
+        of albums
+    ) {
 
         if (
             currentToken !==
@@ -2270,11 +3461,15 @@ async function renderPortfolioRecentWork() {
             return;
         }
 
+
         const card =
-            document.createElement("article");
+            document.createElement(
+                "article"
+            );
 
         card.className =
             "work-card";
+
 
         const albumId =
             getAlbumId(album);
@@ -2291,31 +3486,53 @@ async function renderPortfolioRecentWork() {
         const imageId =
             getAlbumImageId(album);
 
+
         const link =
-            document.createElement("a");
+            document.createElement(
+                "a"
+            );
+
 
         link.href =
             albumId
-                ? `gallery.html?album=${encodeURIComponent(albumId)}`
+                ? `gallery.html?album=${encodeURIComponent(
+                    albumId
+                )}`
                 : "gallery.html";
+
 
         link.setAttribute(
             "aria-label",
             `View ${title}`
         );
 
-        let imageElement = null;
+
+        let imageElement =
+            null;
+
 
         if (imageUrl) {
 
             imageElement =
-                document.createElement("img");
+                document.createElement(
+                    "img"
+                );
 
-            imageElement.src = imageUrl;
+
+            imageElement.src =
+                imageUrl;
+
+
             imageElement.alt =
                 `${title} portfolio`;
-            imageElement.loading = "lazy";
-            imageElement.decoding = "async";
+
+
+            imageElement.loading =
+                "lazy";
+
+
+            imageElement.decoding =
+                "async";
 
         } else if (imageId) {
 
@@ -2324,6 +3541,7 @@ async function renderPortfolioRecentWork() {
                     imageId
                 );
 
+
             if (
                 currentToken !==
                 recentWorkRenderToken
@@ -2331,8 +3549,10 @@ async function renderPortfolioRecentWork() {
                 return;
             }
 
+
             if (
-                imageRecord?.blob instanceof Blob
+                imageRecord?.blob
+                    instanceof Blob
             ) {
 
                 const objectUrl =
@@ -2340,26 +3560,35 @@ async function renderPortfolioRecentWork() {
                         imageRecord.blob
                     );
 
+
                 recentWorkObjectUrls.push(
                     objectUrl
                 );
 
+
                 imageElement =
-                    document.createElement("img");
+                    document.createElement(
+                        "img"
+                    );
+
 
                 imageElement.src =
                     objectUrl;
 
+
                 imageElement.alt =
                     `${title} portfolio`;
 
+
                 imageElement.loading =
                     "lazy";
+
 
                 imageElement.decoding =
                     "async";
             }
         }
+
 
         if (imageElement) {
 
@@ -2372,18 +3601,24 @@ async function renderPortfolioRecentWork() {
                             "div"
                         );
 
+
                     placeholder.className =
                         "work-card-placeholder";
 
+
                     placeholder.innerHTML =
                         '<i class="fa-regular fa-image" aria-hidden="true"></i>';
+
 
                     imageElement.replaceWith(
                         placeholder
                     );
                 },
-                { once: true }
+                {
+                    once: true
+                }
             );
+
 
             link.appendChild(
                 imageElement
@@ -2396,40 +3631,72 @@ async function renderPortfolioRecentWork() {
                     "div"
                 );
 
+
             placeholder.className =
                 "work-card-placeholder";
 
+
             placeholder.innerHTML =
                 '<i class="fa-regular fa-images" aria-hidden="true"></i>';
+
 
             link.appendChild(
                 placeholder
             );
         }
 
+
         const heading =
-            document.createElement("h3");
+            document.createElement(
+                "h3"
+            );
+
 
         heading.textContent =
             title;
 
+
         const descriptionElement =
-            document.createElement("p");
+            document.createElement(
+                "p"
+            );
+
 
         descriptionElement.textContent =
             description ||
             "View this published portfolio collection.";
 
-        card.appendChild(link);
-        card.appendChild(heading);
-        card.appendChild(descriptionElement);
 
-        grid.appendChild(card);
+        card.appendChild(
+            link
+        );
 
-        requestAnimationFrame(() => {
-            card.classList.add("visible");
-        });
+
+        card.appendChild(
+            heading
+        );
+
+
+        card.appendChild(
+            descriptionElement
+        );
+
+
+        grid.appendChild(
+            card
+        );
+
+
+        requestAnimationFrame(
+            () => {
+
+                card.classList.add(
+                    "visible"
+                );
+            }
+        );
     }
+
 
     emptyState.hidden =
         grid.children.length === 0;
@@ -2443,7 +3710,9 @@ async function renderPortfolioRecentWork() {
 function initializeSmoothScrolling() {
 
     document
-        .querySelectorAll('a[href^="#"]')
+        .querySelectorAll(
+            'a[href^="#"]'
+        )
         .forEach((link) => {
 
             link.addEventListener(
@@ -2451,7 +3720,10 @@ function initializeSmoothScrolling() {
                 (event) => {
 
                     const targetId =
-                        link.getAttribute("href");
+                        link.getAttribute(
+                            "href"
+                        );
+
 
                     if (
                         !targetId ||
@@ -2460,28 +3732,35 @@ function initializeSmoothScrolling() {
                         return;
                     }
 
+
                     const target =
                         document.querySelector(
                             targetId
                         );
 
+
                     if (!target) {
                         return;
                     }
 
+
                     event.preventDefault();
+
 
                     target.scrollIntoView({
                         behavior:
                             isReducedMotion()
                                 ? "auto"
                                 : "smooth",
-                        block: "start"
+                        block:
+                            "start"
                     });
+
 
                     if (
                         history.replaceState
                     ) {
+
                         history.replaceState(
                             null,
                             "",
@@ -2505,45 +3784,70 @@ function initializeRevealAnimations() {
             ".portfolio-block, .work-card, .exp-box, .contact-info, .equipment-category-card, .price-card"
         );
 
+
     if (
         isReducedMotion() ||
-        !("IntersectionObserver" in window)
+        !(
+            "IntersectionObserver"
+            in window
+        )
     ) {
-        elements.forEach((element) => {
-            element.classList.add("visible");
-        });
+
+        elements.forEach(
+            (element) => {
+
+                element.classList.add(
+                    "visible"
+                );
+            }
+        );
+
 
         return;
     }
+
 
     const observer =
         new IntersectionObserver(
             (entries, instance) => {
 
-                entries.forEach((entry) => {
+                entries.forEach(
+                    (entry) => {
 
-                    if (!entry.isIntersecting) {
-                        return;
+                        if (
+                            !entry.isIntersecting
+                        ) {
+                            return;
+                        }
+
+
+                        entry.target.classList.add(
+                            "visible"
+                        );
+
+
+                        instance.unobserve(
+                            entry.target
+                        );
                     }
-
-                    entry.target.classList.add(
-                        "visible"
-                    );
-
-                    instance.unobserve(
-                        entry.target
-                    );
-                });
+                );
             },
             {
                 threshold: 0.08,
-                rootMargin: "0px 0px -30px 0px"
+                rootMargin:
+                    "0px 0px -30px 0px"
             }
         );
 
-    elements.forEach((element) => {
-        observer.observe(element);
-    });
+
+    elements.forEach(
+        (element) => {
+
+            observer.observe(
+                element
+            );
+        }
+    );
 }
 
 
@@ -2558,70 +3862,109 @@ function initializeExperienceMeters() {
             ".meter-fill"
         );
 
+
     if (!meters.length) {
         return;
     }
 
+
     if (
         isReducedMotion() ||
-        !("IntersectionObserver" in window)
+        !(
+            "IntersectionObserver"
+            in window
+        )
     ) {
-        meters.forEach((meter) => {
 
-            const value =
-                Number(
-                    meter.dataset.value
-                );
+        meters.forEach(
+            (meter) => {
 
-            if (
-                Number.isFinite(value)
-            ) {
-                meter.style.width =
-                    `${clamp(value, 0, 100)}%`;
+                const value =
+                    Number(
+                        meter.dataset.value
+                    );
+
+
+                if (
+                    Number.isFinite(
+                        value
+                    )
+                ) {
+
+                    meter.style.width =
+                        `${clamp(
+                            value,
+                            0,
+                            100
+                        )}%`;
+                }
             }
-        });
+        );
+
 
         return;
     }
+
 
     const observer =
         new IntersectionObserver(
             (entries, instance) => {
 
-                entries.forEach((entry) => {
+                entries.forEach(
+                    (entry) => {
 
-                    if (!entry.isIntersecting) {
-                        return;
-                    }
+                        if (
+                            !entry.isIntersecting
+                        ) {
+                            return;
+                        }
 
-                    const meter =
-                        entry.target;
 
-                    const value =
-                        Number(
-                            meter.dataset.value
+                        const meter =
+                            entry.target;
+
+
+                        const value =
+                            Number(
+                                meter.dataset.value
+                            );
+
+
+                        if (
+                            Number.isFinite(
+                                value
+                            )
+                        ) {
+
+                            meter.style.width =
+                                `${clamp(
+                                    value,
+                                    0,
+                                    100
+                                )}%`;
+                        }
+
+
+                        instance.unobserve(
+                            meter
                         );
-
-                    if (
-                        Number.isFinite(value)
-                    ) {
-                        meter.style.width =
-                            `${clamp(value, 0, 100)}%`;
                     }
-
-                    instance.unobserve(
-                        meter
-                    );
-                });
+                );
             },
             {
                 threshold: 0.5
             }
         );
 
-    meters.forEach((meter) => {
-        observer.observe(meter);
-    });
+
+    meters.forEach(
+        (meter) => {
+
+            observer.observe(
+                meter
+            );
+        }
+    );
 }
 
 
@@ -2638,67 +3981,97 @@ function initializeActiveNavigation() {
             )
         );
 
+
     const sections =
         navLinks
             .map((link) => {
 
                 const id =
-                    link.getAttribute("href");
+                    link.getAttribute(
+                        "href"
+                    );
 
-                return document.querySelector(id);
+
+                return document.querySelector(
+                    id
+                );
             })
             .filter(Boolean);
+
 
     if (!sections.length) {
         return;
     }
+
 
     function updateNavigation() {
 
         const scrollPosition =
             window.scrollY + 150;
 
-        let activeSection = null;
 
-        sections.forEach((section) => {
+        let activeSection =
+            null;
 
-            if (
-                section.offsetTop <=
-                scrollPosition
-            ) {
-                activeSection = section;
+
+        sections.forEach(
+            (section) => {
+
+                if (
+                    section.offsetTop <=
+                    scrollPosition
+                ) {
+
+                    activeSection =
+                        section;
+                }
             }
-        });
+        );
 
-        navLinks.forEach((link) => {
 
-            const target =
-                document.querySelector(
-                    link.getAttribute("href")
+        navLinks.forEach(
+            (link) => {
+
+                const target =
+                    document.querySelector(
+                        link.getAttribute(
+                            "href"
+                        )
+                    );
+
+
+                const active =
+                    target ===
+                    activeSection;
+
+
+                link.classList.toggle(
+                    "active",
+                    active
                 );
 
-            const active =
-                target === activeSection;
 
-            link.classList.toggle(
-                "active",
-                active
-            );
+                if (active) {
 
-            if (active) {
-                link.setAttribute(
-                    "aria-current",
-                    "location"
-                );
-            } else {
-                link.removeAttribute(
-                    "aria-current"
-                );
+                    link.setAttribute(
+                        "aria-current",
+                        "location"
+                    );
+
+                } else {
+
+                    link.removeAttribute(
+                        "aria-current"
+                    );
+                }
             }
-        });
+        );
     }
 
-    let ticking = false;
+
+    let ticking =
+        false;
+
 
     window.addEventListener(
         "scroll",
@@ -2708,15 +4081,26 @@ function initializeActiveNavigation() {
                 return;
             }
 
-            ticking = true;
 
-            requestAnimationFrame(() => {
-                updateNavigation();
-                ticking = false;
-            });
+            ticking =
+                true;
+
+
+            requestAnimationFrame(
+                () => {
+
+                    updateNavigation();
+
+                    ticking =
+                        false;
+                }
+            );
         },
-        { passive: true }
+        {
+            passive: true
+        }
     );
+
 
     updateNavigation();
 }
@@ -2733,9 +4117,11 @@ function initializeNavbarScrollState() {
             ".navbar"
         );
 
+
     if (!navbar) {
         return;
     }
+
 
     function update() {
 
@@ -2745,11 +4131,15 @@ function initializeNavbarScrollState() {
         );
     }
 
+
     window.addEventListener(
         "scroll",
         update,
-        { passive: true }
+        {
+            passive: true
+        }
     );
+
 
     update();
 }
@@ -2765,27 +4155,32 @@ function initializeBookButtons() {
         .querySelectorAll(
             ".book-btn"
         )
-        .forEach((button) => {
+        .forEach(
+            (button) => {
 
-            button.addEventListener(
-                "click",
-                () => {
+                button.addEventListener(
+                    "click",
+                    () => {
 
-                    button.classList.add(
-                        "clicked"
-                    );
+                        button.classList.add(
+                            "clicked"
+                        );
 
-                    window.setTimeout(
-                        () => {
-                            button.classList.remove(
-                                "clicked"
-                            );
-                        },
-                        250
-                    );
-                }
-            );
-        });
+
+                        window.setTimeout(
+                            () => {
+
+                                button.classList.remove(
+                                    "clicked"
+                                );
+
+                            },
+                            250
+                        );
+                    }
+                );
+            }
+        );
 }
 
 
@@ -2803,38 +4198,65 @@ function initializeStorageListeners() {
                 event.key ===
                 STORAGE_KEYS.profile
             ) {
+
                 renderPublicProfile();
             }
+
 
             if (
                 event.key ===
                 STORAGE_KEYS.services
             ) {
+
                 loadClientServices();
             }
+
 
             if (
                 event.key ===
                 STORAGE_KEYS.equipment
             ) {
+
                 loadClientEquipment();
             }
+
 
             if (
                 event.key ===
                 STORAGE_KEYS.portfolioStorage
             ) {
+
                 renderPortfolioRecentWork();
             }
+
 
             if (
                 event.key ===
                 STORAGE_KEYS.reviews
             ) {
+
                 renderClientReviews();
             }
         }
     );
+
+
+    /*
+     * Setup page dispatches this event after
+     * successfully saving the profile.
+     *
+     * This makes the Portfolio react immediately
+     * when the profile is changed in another
+     * same-page context.
+     */
+    window.addEventListener(
+        "professionalStudioProfileUpdated",
+        () => {
+
+            renderPublicProfile();
+        }
+    );
+
 
     document.addEventListener(
         "professionalStudioReviewsUpdated",
@@ -2854,9 +4276,13 @@ function initializePageRefreshHandling() {
         () => {
 
             renderPublicProfile();
+
             loadClientServices();
+
             loadClientEquipment();
+
             renderPortfolioRecentWork();
+
             renderClientReviews();
         }
     );

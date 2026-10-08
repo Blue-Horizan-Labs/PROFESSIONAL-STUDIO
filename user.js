@@ -299,6 +299,12 @@ function showDashboardToast(message) {
 
 /* =========================================================
    PROFILE
+   Shared profile source:
+   professionalStudio.profile
+
+   Setup -> professionalStudio.profile
+   Portfolio -> professionalStudio.profile
+   Dashboard -> professionalStudio.profile
 ========================================================= */
 
 function getProfileData() {
@@ -308,6 +314,33 @@ function getProfileData() {
             PROFILE_STORAGE_KEY,
             null
         );
+
+    /*
+       The Setup page is the primary source of truth.
+
+       Expected structure:
+
+       {
+           studioName,
+           studioTagline,
+           photographerName,
+           professionalRole,
+           experience,
+           sessionsDone,
+           specialization,
+           about,
+           phone,
+           address,
+           social: {
+               instagram,
+               facebook,
+               youtube
+           },
+           profilePhoto,
+           profileCompleted,
+           updatedAt
+       }
+    */
 
     if (
         profile &&
@@ -319,40 +352,163 @@ function getProfileData() {
 
     }
 
-    var possibleNameKeys = [
+    /*
+       Legacy fallback.
 
-        "photographerName",
-        "profileName",
-        "name",
-        "userName"
+       This keeps older Professional Studio users
+       compatible with the new shared profile system.
+    */
 
-    ];
+    var legacyProfile =
+        readLocalStorage(
+            "professionalStudio.user",
+            null
+        );
 
-    for (
-        var i = 0;
-        i < possibleNameKeys.length;
-        i++
+    if (
+        legacyProfile &&
+        typeof legacyProfile === "object" &&
+        !Array.isArray(legacyProfile)
     ) {
 
-        var value =
-            getRawLocalStorageValue(
-                possibleNameKeys[i]
-            );
+        var legacySocial =
+            legacyProfile.social &&
+            typeof legacyProfile.social === "object"
+                ? legacyProfile.social
+                : {};
 
-        if (
-            value &&
-            value.trim()
-        ) {
+        return {
 
-            return {
-                name: value.trim()
-            };
+            studioName:
+                legacyProfile.studioName ||
+                legacyProfile.std_name ||
+                legacyProfile.studio ||
+                legacyProfile.businessName ||
+                "",
 
-        }
+            studioTagline:
+                legacyProfile.studioTagline ||
+                legacyProfile.std_tag ||
+                "",
+
+            photographerName:
+                legacyProfile.photographerName ||
+                legacyProfile.full_name ||
+                legacyProfile.name ||
+                legacyProfile.fullName ||
+                legacyProfile.displayName ||
+                "",
+
+            professionalRole:
+                legacyProfile.professionalRole ||
+                legacyProfile.professional_role ||
+                legacyProfile.role ||
+                "",
+
+            experience:
+                legacyProfile.experience ||
+                "",
+
+            sessionsDone:
+                legacyProfile.sessionsDone ||
+                legacyProfile.sessions_done ||
+                "",
+
+            specialization:
+                legacyProfile.specialization ||
+                "",
+
+            about:
+                legacyProfile.about ||
+                "",
+
+            phone:
+                legacyProfile.phone ||
+                "",
+
+            address:
+                legacyProfile.address ||
+                legacyProfile.std_address ||
+                "",
+
+            social: {
+
+                instagram:
+                    legacySocial.instagram ||
+                    legacyProfile.instagram ||
+                    legacyProfile.insta_handle ||
+                    "",
+
+                facebook:
+                    legacySocial.facebook ||
+                    legacyProfile.facebook ||
+                    legacyProfile.facebook_handle ||
+                    "",
+
+                youtube:
+                    legacySocial.youtube ||
+                    legacyProfile.youtube ||
+                    legacyProfile.yt_handle ||
+                    ""
+
+            },
+
+            profilePhoto:
+                legacyProfile.profilePhoto ||
+                "",
+
+            profileCompleted:
+                legacyProfile.profileCompleted === true,
+
+            updatedAt:
+                legacyProfile.updatedAt ||
+                ""
+
+        };
 
     }
 
     return {};
+
+}
+
+
+/* =========================================================
+   PROFILE FIELD HELPERS
+========================================================= */
+
+function getProfileField(
+    fieldName,
+    fallback
+) {
+
+    var profile =
+        getProfileData();
+
+    if (
+        profile &&
+        typeof profile[fieldName] === "string" &&
+        profile[fieldName].trim()
+    ) {
+
+        return profile[fieldName].trim();
+
+    }
+
+    if (
+        profile &&
+        profile[fieldName] !== null &&
+        profile[fieldName] !== undefined &&
+        String(profile[fieldName]).trim()
+    ) {
+
+        return String(
+            profile[fieldName]
+        ).trim();
+
+    }
+
+    return fallback || "";
 
 }
 
@@ -364,10 +520,11 @@ function getPhotographerName() {
 
     var possibleNames = [
 
+        profile.photographerName,
         profile.name,
         profile.fullName,
-        profile.photographerName,
-        profile.displayName
+        profile.displayName,
+        profile.full_name
 
     ];
 
@@ -378,11 +535,16 @@ function getPhotographerName() {
     ) {
 
         if (
-            typeof possibleNames[i] === "string" &&
-            possibleNames[i].trim()
+            possibleNames[i] !== null &&
+            possibleNames[i] !== undefined &&
+            String(
+                possibleNames[i]
+            ).trim()
         ) {
 
-            return possibleNames[i].trim();
+            return String(
+                possibleNames[i]
+            ).trim();
 
         }
 
@@ -393,77 +555,160 @@ function getPhotographerName() {
 }
 
 
+function getStudioName() {
+
+    var profile =
+        getProfileData();
+
+    var possibleNames = [
+
+        profile.studioName,
+        profile.std_name,
+        profile.studio,
+        profile.businessName
+
+    ];
+
+    for (
+        var i = 0;
+        i < possibleNames.length;
+        i++
+    ) {
+
+        if (
+            possibleNames[i] !== null &&
+            possibleNames[i] !== undefined &&
+            String(
+                possibleNames[i]
+            ).trim()
+        ) {
+
+            return String(
+                possibleNames[i]
+            ).trim();
+
+        }
+
+    }
+
+    return "Professional Studio";
+
+}
+
+
+function getProfessionalRole() {
+
+    var profile =
+        getProfileData();
+
+    var possibleRoles = [
+
+        profile.professionalRole,
+        profile.professional_role,
+        profile.role
+
+    ];
+
+    for (
+        var i = 0;
+        i < possibleRoles.length;
+        i++
+    ) {
+
+        if (
+            possibleRoles[i] !== null &&
+            possibleRoles[i] !== undefined &&
+            String(
+                possibleRoles[i]
+            ).trim()
+        ) {
+
+            return String(
+                possibleRoles[i]
+            ).trim();
+
+        }
+
+    }
+
+    return "Photographer";
+
+}
+
+
+function getProfileTagline() {
+
+    return getProfileField(
+        "studioTagline",
+        ""
+    );
+
+}
+
+
+function getProfileSpecialization() {
+
+    return getProfileField(
+        "specialization",
+        ""
+    );
+
+}
+
+
+function getProfilePhoto() {
+
+    return getProfileField(
+        "profilePhoto",
+        ""
+    );
+
+}
+
+
+function isProfileCompleted() {
+
+    var profile =
+        getProfileData();
+
+    if (
+        profile.profileCompleted === true
+    ) {
+
+        return true;
+
+    }
+
+    return Boolean(
+        getPhotographerName() !== "Photographer" &&
+        getStudioName() !== "Professional Studio"
+    );
+
+}
+
+
 /* =========================================================
    PROFILE LINK
 ========================================================= */
 
 function getProfileLink() {
 
-    var profile =
-        getProfileData();
+    /*
+       The existing public Portfolio page is:
 
-    var possibleLinks = [
+       client.html
 
-        profile.profileUrl,
-        profile.publicUrl,
-        profile.profileLink,
-        profile.slug
+       Keep the URL relative to the current deployment
+       so localhost, Vercel preview deployments and the
+       production deployment all continue to work.
+    */
 
-    ];
-
-    for (
-        var i = 0;
-        i < possibleLinks.length;
-        i++
-    ) {
-
-        if (
-            typeof possibleLinks[i] === "string" &&
-            possibleLinks[i].trim()
-        ) {
-
-            var value =
-                possibleLinks[i].trim();
-
-            if (
-                value.indexOf("http://") === 0 ||
-                value.indexOf("https://") === 0
-            ) {
-
-                return value;
-
-            }
-
-            return (
-                window.location.origin +
-                "/profile.html?slug=" +
-                encodeURIComponent(value)
-            );
-
-        }
-
-    }
-
-    var slug =
-        getRawLocalStorageValue(
-            "professionalStudio.profileSlug"
-        );
-
-    if (slug) {
-
-        return (
-            window.location.origin +
-            "/profile.html?slug=" +
-            encodeURIComponent(
-                slug.trim()
-            )
-        );
-
-    }
+    var portfolioPath =
+        "/client.html";
 
     return (
         window.location.origin +
-        "/profile.html"
+        portfolioPath
     );
 
 }
@@ -499,6 +744,12 @@ function fallbackCopyText(text) {
     textarea.style.left =
         "-9999px";
 
+    textarea.style.top =
+        "0";
+
+    textarea.style.opacity =
+        "0";
+
     textarea.setAttribute(
         "readonly",
         ""
@@ -507,6 +758,8 @@ function fallbackCopyText(text) {
     document.body.appendChild(
         textarea
     );
+
+    textarea.focus();
 
     textarea.select();
 
@@ -584,8 +837,6 @@ function copyProfileLink() {
     );
 
 }
-
-
 /* =========================================================
    SUBSCRIPTION
 ========================================================= */
@@ -6037,11 +6288,24 @@ window.addEventListener(
     }
 );
 
+/* =========================================================
+   PROFILE UPDATE EVENT
+========================================================= */
+
+window.addEventListener(
+    "professionalStudioProfileUpdated",
+    function() {
+
+        renderPhotographerName();
+
+        renderPhotographerName();
+
+    }
+);
 
 /* =========================================================
    GLOBAL REFRESH
 ========================================================= */
-
 function refreshDashboard() {
 
     renderPhotographerName();
@@ -6078,7 +6342,6 @@ function refreshDashboard() {
     renderDashboardNotifications();
 
 }
-
 
 /* =========================================================
    INITIALIZE PORTFOLIO STORAGE

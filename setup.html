@@ -47,10 +47,6 @@
     --danger:#dc2626;
 }
 
-/* =========================================================
-   BODY
-========================================================= */
-
 body{
     font-family:'Poppins','Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
     background:#ffffff;
@@ -153,6 +149,7 @@ body{
     height:100%;
     background:#111111;
     border-radius:20px;
+    transition:width .35s ease;
 }
 
 /* =========================================================
@@ -214,6 +211,11 @@ label{
     font-size:.92rem;
     color:#333333;
     font-weight:500;
+}
+
+.required{
+    color:#dc2626;
+    margin-left:3px;
 }
 
 /* =========================================================
@@ -349,9 +351,9 @@ input[type="number"]::-webkit-outer-spin-button{
     display:block;
 }
 
-.upload-label.has-image i,
-.upload-label.has-image p,
-.upload-label.has-image span{
+.upload-label.has-image > i,
+.upload-label.has-image > p,
+.upload-label.has-image > span{
     display:none;
 }
 
@@ -376,6 +378,8 @@ input[type="number"]::-webkit-outer-spin-button{
 
     opacity:0;
     transition:.25s ease;
+
+    pointer-events:none;
 }
 
 .upload-label.has-image:hover .photo-overlay{
@@ -492,16 +496,21 @@ input[type="number"]::-webkit-outer-spin-button{
     transition:.3s ease;
 }
 
-.save-btn:hover{
+.save-btn:hover:not(:disabled){
     transform:translateY(-3px);
     box-shadow:0 15px 35px rgba(0,0,0,.15);
+}
+
+.save-btn:disabled{
+    opacity:.7;
+    cursor:wait;
 }
 
 .save-btn i{
     transition:.3s ease;
 }
 
-.save-btn:hover i{
+.save-btn:hover:not(:disabled) i{
     transform:translateX(5px);
 }
 
@@ -525,8 +534,19 @@ input[type="number"]::-webkit-outer-spin-button{
     box-shadow:0 0 0 3px rgba(220,38,38,.08) !important;
 }
 
+.field-error{
+    color:#dc2626;
+    font-size:.78rem;
+    margin-top:6px;
+    display:none;
+}
+
+.field-error.show{
+    display:block;
+}
+
 /* =========================================================
-   OLD SUCCESS MESSAGE
+   SUCCESS MESSAGE
 ========================================================= */
 
 .success-message{
@@ -544,6 +564,10 @@ input[type="number"]::-webkit-outer-spin-button{
     color:#166534;
 
     font-size:.9rem;
+}
+
+.success-message.show{
+    display:block;
 }
 
 /* =========================================================
@@ -605,6 +629,7 @@ input[type="number"]::-webkit-outer-spin-button{
 ========================================================= */
 
 @keyframes fadeUp{
+
     from{
         opacity:0;
         transform:translateY(25px);
@@ -614,6 +639,7 @@ input[type="number"]::-webkit-outer-spin-button{
         opacity:1;
         transform:translateY(0);
     }
+
 }
 
 /* =========================================================
@@ -812,7 +838,6 @@ input[type="number"]::-webkit-outer-spin-button{
 
 <header class="setup-header">
 
-
 <h1>Complete Your Portfolio</h1>
 
 <p>
@@ -821,30 +846,36 @@ input[type="number"]::-webkit-outer-spin-button{
 
 <div class="progress-section">
 
-    <div class="progress-text">
 
-        <span>Step 1 of 3</span>
+<div class="progress-text">
 
-        <span>33%</span>
+    <span>Step 1 of 3</span>
 
-    </div>
+    <span>33%</span>
 
-    <div class="progress-bar">
+</div>
 
-        <div class="progress-fill"></div>
+<div class="progress-bar">
 
-    </div>
+    <div class="progress-fill"></div>
 
 </div>
 
 
+</div>
+
 </header>
 
-<form id="profileForm">
+<form id="profileForm" novalidate>
 
 <div id="successMessage" class="success-message">
-    <i class="fa-solid fa-circle-check"></i>
-    Profile saved successfully.
+
+
+<i class="fa-solid fa-circle-check"></i>
+
+Profile saved successfully.
+
+
 </div>
 
 <div id="setupSuccessPopup" class="setup-success-popup">
@@ -859,356 +890,467 @@ input[type="number"]::-webkit-outer-spin-button{
 
 </div>
 
+<!-- =======================================================
+     STUDIO INFORMATION
+======================================================= -->
+
 <section class="card">
 
-
 <h2>
-    <i class="fa-solid fa-building"></i>
-    Studio Information
+
+
+<i class="fa-solid fa-building"></i>
+
+Studio Information
+
+
 </h2>
 
 <div class="input-column">
 
-    <div>
 
-        <label for="studioName">
-            Studio Name
-        </label>
+<div>
 
-        <input
-            id="studioName"
-            type="text"
-            maxlength="100"
-            placeholder="ex: Professional Studio">
+    <label for="studioName">
+        Studio Name <span class="required">*</span>
+    </label>
 
-    </div>
-
-    <div>
-
-        <label for="studioTagline">
-            Studio Tagline
-        </label>
-
-        <input
-            id="studioTagline"
-            type="text"
-            maxlength="150"
-            placeholder="ex: Capturing Timeless Memories">
-
-    </div>
+    <input
+        id="studioName"
+        type="text"
+        maxlength="100"
+        autocomplete="organization"
+        placeholder="ex: Professional Studio"
+    >
 
 </div>
 
 
+<div>
+
+    <label for="studioTagline">
+        Studio Tagline
+    </label>
+
+    <input
+        id="studioTagline"
+        type="text"
+        maxlength="150"
+        placeholder="ex: Capturing Timeless Memories"
+    >
+
+</div>
+
+
+</div>
+
 </section>
 
-<section class="card">
+<!-- =======================================================
+     PHOTOGRAPHER
+======================================================= -->
 
+<section class="card">
 
 <div class="section-heading">
 
-    <h2>
-        <i class="fa-solid fa-camera"></i>
-        Meet the Photographer
-    </h2>
+
+<h2>
+
+    <i class="fa-solid fa-camera"></i>
+
+    Meet the Photographer
+
+</h2>
+
 
 </div>
-
 
 <div id="photographerContainer">
 
-    <div class="photographer-card">
+<div class="photographer-card">
 
-        <div class="photo-side">
+<div class="photo-side">
 
-            <div class="upload-box">
+<div class="upload-box">
 
-                <input
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp"
-                    class="photoInput"
-                    id="photoInput"
-                    hidden>
+<input
+type="file"
+accept="image/jpeg,image/png,image/webp"
+class="photoInput"
+id="photoInput"
+hidden
 
-                <label
-                    class="upload-label"
-                    for="photoInput">
+>
 
-                    <img
-                        class="photoPreview"
-                        id="photoPreview"
-                        src=""
-                        alt="Photographer Preview">
+<label
+class="upload-label"
+for="photoInput"
+id="photoUploadLabel"
 
-                    <i class="fa-solid fa-user"></i>
-
-                    <p>
-                        Upload Photo
-                    </p>
-
-                    <span>
-                        JPG, PNG or WebP
-                    </span>
-
-                    <div class="photo-overlay">
-
-                        <i class="fa-solid fa-camera"></i>
-
-                        Change Photo
-
-                    </div>
-
-                </label>
-
-            </div>
-
-        </div>
+>
 
 
-        <div class="details-side">
+<img
+    class="photoPreview"
+    id="photoPreview"
+    src=""
+    alt="Photographer Preview"
+>
 
-            <div class="grid-2">
+<i class="fa-solid fa-user"></i>
 
-                <div>
+<p>
+    Upload Photo <span class="required">*</span>
+</p>
 
-                    <label for="photographerName">
-                        Full Name
-                    </label>
+<span>
+    JPG, PNG or WebP · Max 5MB
+</span>
 
-                    <input
-                        id="photographerName"
-                        type="text"
-                        maxlength="100"
-                        placeholder="ex: Rahul Patil">
+<div class="photo-overlay">
 
-                </div>
+    <i class="fa-solid fa-camera"></i>
 
-
-                <div>
-
-                    <label for="professionalRole">
-                        Professional Role
-                    </label>
-
-                    <input
-                        id="professionalRole"
-                        type="text"
-                        maxlength="100"
-                        placeholder="ex: Lead Photographer">
-
-                </div>
-
-
-                <div>
-
-                    <label for="photographerExperience">
-                        Experience
-                    </label>
-
-                    <div class="sessions-input">
-
-                        <input
-                            id="photographerExperience"
-                            type="number"
-                            min="0"
-                            max="100"
-                            placeholder="ex: 5">
-
-                        <span class="sessions-unit">
-                            Years
-                        </span>
-
-                    </div>
-
-                </div>
-
-
-                <div>
-
-                    <label for="sessionsDone">
-                        Sessions Done
-                    </label>
-
-                    <div class="sessions-input">
-
-                        <input
-                            id="sessionsDone"
-                            type="number"
-                            min="0"
-                            max="1000000"
-                            placeholder="ex: 250">
-
-                        <span class="sessions-unit">
-                            Sessions
-                        </span>
-
-                    </div>
-
-                </div>
-
-
-                <div>
-
-                    <label for="specialization">
-                        Specialization
-                    </label>
-
-                    <input
-                        id="specialization"
-                        type="text"
-                        maxlength="150"
-                        placeholder="ex: Wedding Photography">
-
-                </div>
-
-
-                <div>
-
-                    <label for="phone">
-                        Phone Number
-                    </label>
-
-                    <input
-                        id="phone"
-                        type="tel"
-                        maxlength="30"
-                        placeholder="ex: +91 9876543210">
-
-                </div>
-
-            </div>
-
-
-            <div>
-
-                <label for="about">
-                    About Yourself
-                </label>
-
-                <textarea
-                    id="about"
-                    rows="5"
-                    maxlength="300"
-                    placeholder="Tell clients about yourself, your experience and photography style."></textarea>
-
-                <small
-                    class="char-counter"
-                    id="aboutCounter">
-                    0 / 300
-                </small>
-
-            </div>
-
-
-        </div>
-
-    </div>
+    Change Photo
 
 </div>
 
 
+</label>
+
+<div
+    class="field-error"
+    id="photoError"
+>
+    Please upload your professional photo.
+</div>
+
+</div>
+
+</div>
+
+<div class="details-side">
+
+<div class="grid-2">
+
+<div>
+
+<label for="photographerName">
+
+
+Full Name <span class="required">*</span>
+
+
+</label>
+
+<input
+id="photographerName"
+type="text"
+maxlength="100"
+autocomplete="name"
+placeholder="ex: Rahul Patil"
+
+>
+
+</div>
+
+<div>
+
+<label for="professionalRole">
+
+
+Professional Role
+
+
+</label>
+
+<input
+id="professionalRole"
+type="text"
+maxlength="100"
+placeholder="ex: Lead Photographer"
+
+>
+
+</div>
+
+<div>
+
+<label for="photographerExperience">
+
+
+Experience
+
+
+</label>
+
+<div class="sessions-input">
+
+<input
+id="photographerExperience"
+type="number"
+min="0"
+max="100"
+inputmode="numeric"
+placeholder="ex: 5"
+
+>
+
+<span class="sessions-unit">
+    Years
+</span>
+
+</div>
+
+</div>
+
+<div>
+
+<label for="sessionsDone">
+
+Sessions Done 
+
+</label>
+
+<div class="sessions-input">
+
+<input
+id="sessionsDone"
+type="number"
+min="0"
+max="1000000"
+inputmode="numeric"
+placeholder="ex: 250"
+
+>
+
+<span class="sessions-unit">
+    Sessions
+</span>
+
+</div>
+
+</div>
+
+<div>
+
+<label for="specialization">
+
+
+Specialization
+
+
+</label>
+
+<input
+id="specialization"
+type="text"
+maxlength="150"
+placeholder="ex: Wedding Photography"
+
+>
+
+</div>
+
+<div>
+
+<label for="phone">
+
+
+Phone Number
+
+
+</label>
+
+<input
+id="phone"
+type="tel"
+maxlength="30"
+autocomplete="tel"
+placeholder="ex: +91 9876543210"
+
+>
+
+</div>
+
+</div>
+
+<div>
+
+<label for="about">
+
+
+About Yourself
+
+
+</label>
+
+<textarea
+    id="about"
+    rows="5"
+    maxlength="300"
+    placeholder="Tell clients about yourself, your experience and photography style."
+></textarea>
+
+<small
+class="char-counter"
+id="aboutCounter"
+
+>
+
+
+0 / 300
+
+
+</small>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
 </section>
+
+<!-- =======================================================
+     ADDRESS
+======================================================= -->
 
 <section class="card">
 
-
 <h2>
-    <i class="fa-solid fa-location-dot"></i>
-    Studio Address
+
+
+<i class="fa-solid fa-location-dot"></i>
+
+Studio Address
+
+
 </h2>
 
 <label for="address">
-    Full Address
+
+
+Full Address
+
+
 </label>
 
 <textarea
     id="address"
     rows="4"
     maxlength="300"
-    placeholder="Enter your complete studio address"></textarea>
+    placeholder="Enter your complete studio address"
+></textarea>
 
 <small
-    class="char-counter"
-    id="addressCounter">
-    0 / 300
-</small>
+class="char-counter"
+id="addressCounter"
 
+>
+
+
+0 / 300
+
+
+</small>
 
 </section>
 
+<!-- =======================================================
+     SOCIAL MEDIA
+======================================================= -->
+
 <section class="card">
 
-
 <h2>
-    <i class="fa-solid fa-share-nodes"></i>
-    Social Media
+
+
+<i class="fa-solid fa-share-nodes"></i>
+
+Social Media
+
 </h2>
 
 <div class="grid-2">
 
-    <div>
+<div>
 
-        <label for="instagram">
-            Instagram
-        </label>
+<label for="instagram">
+    Instagram
+</label>
 
-        <input
-            id="instagram"
-            type="text"
-            maxlength="200"
-            placeholder="ex: @yourprofile">
+<input
+id="instagram"
+type="text"
+maxlength="200"
+autocomplete="off"
+placeholder="ex: @yourprofile"
 
-    </div>
-
-
-    <div>
-
-        <label for="facebook">
-            Facebook
-        </label>
-
-        <input
-            id="facebook"
-            type="text"
-            maxlength="200"
-            placeholder="ex: yourprofile">
-
-    </div>
-
-
-    <div>
-
-        <label for="youtube">
-            YouTube
-        </label>
-
-        <input
-            id="youtube"
-            type="text"
-            maxlength="200"
-            placeholder="ex: @yourchannel">
-
-    </div>
+>
 
 </div>
 
+<div>
+
+<label for="facebook">
+    Facebook
+</label>
+
+<input
+id="facebook"
+type="text"
+maxlength="200"
+autocomplete="off"
+placeholder="ex: yourprofile"
+
+>
+
+</div>
+
+<div>
+
+<label for="youtube">
+    YouTube
+</label>
+
+<input
+id="youtube"
+type="text"
+maxlength="200"
+autocomplete="off"
+placeholder="ex: @yourchannel"
+
+>
+
+</div>
+
+</div>
 
 </section>
 
+<!-- =======================================================
+     SAVE
+======================================================= -->
+
 <div class="buttons">
 
-
 <button
-    type="submit"
-    class="save-btn"
-    id="saveProfileBtn">
+type="submit"
+class="save-btn"
+id="saveProfileBtn"
 
-    <span>Save & Continue</span>
+>
 
-    <i class="fa-solid fa-arrow-right"></i>
+<span>Save & Continue</span>
+
+<i class="fa-solid fa-arrow-right"></i>
+
 
 </button>
-
 
 </div>
 
@@ -1220,7 +1362,7 @@ input[type="number"]::-webkit-outer-spin-button{
 
 /* =========================================================
    PROFESSIONAL STUDIO
-   PROFILE STORAGE LAYER
+   FRONTEND PROFILE / SETUP FLOW
 ========================================================= */
 
 (function(){
@@ -1229,7 +1371,19 @@ input[type="number"]::-webkit-outer-spin-button{
 
 
 /* =========================================================
-   CONSTANTS
+   ROUTE CONFIGURATION
+   ---------------------------------------------------------
+   This is intentionally kept in one place.
+
+   When we connect your actual existing Portfolio page,
+   change ONLY this value if its route is different.
+========================================================= */
+
+const PORTFOLIO_ROUTE = "user.html";
+
+
+/* =========================================================
+   STORAGE KEYS
 ========================================================= */
 
 const PROFILE_STORAGE_KEY =
@@ -1238,10 +1392,12 @@ const PROFILE_STORAGE_KEY =
 const LEGACY_PROFILE_KEY =
     "professionalStudio.user";
 
+const SETUP_COMPLETED_KEY =
+    "professionalStudio.setupCompleted";
+
 
 /* =========================================================
    DEFAULT PROFILE
-   Backend-friendly field structure
 ========================================================= */
 
 const DEFAULT_PROFILE = {
@@ -1289,7 +1445,10 @@ const photoPreview =
     document.getElementById("photoPreview");
 
 const uploadLabel =
-    document.querySelector(".upload-label");
+    document.getElementById("photoUploadLabel");
+
+const photoError =
+    document.getElementById("photoError");
 
 const successPopup =
     document.getElementById("setupSuccessPopup");
@@ -1326,6 +1485,7 @@ function readJSON(key, fallback){
         );
 
         return fallback;
+
     }
 
 }
@@ -1350,6 +1510,7 @@ function writeJSON(key, value){
         );
 
         return false;
+
     }
 
 }
@@ -1357,7 +1518,6 @@ function writeJSON(key, value){
 
 /* =========================================================
    PROFILE NORMALIZATION
-   Keeps future backend structure stable
 ========================================================= */
 
 function normalizeProfile(data){
@@ -1412,14 +1572,22 @@ function normalizeProfile(data){
             String(source.address || "").trim(),
 
         social:{
+
             instagram:
-                String(social.instagram || "").trim(),
+                String(
+                    social.instagram || ""
+                ).trim(),
 
             facebook:
-                String(social.facebook || "").trim(),
+                String(
+                    social.facebook || ""
+                ).trim(),
 
             youtube:
-                String(social.youtube || "").trim()
+                String(
+                    social.youtube || ""
+                ).trim()
+
         },
 
         profilePhoto:
@@ -1456,9 +1624,8 @@ function getProfile(){
 
 
     /*
-       Compatibility with the older user object
-       used by the previous setup version.
-    */
+     * Compatibility with the older setup object.
+     */
 
     const legacy =
         readJSON(
@@ -1468,7 +1635,7 @@ function getProfile(){
 
     if(legacy){
 
-        const converted = normalizeProfile({
+        return normalizeProfile({
 
             studioName:
                 legacy.std_name,
@@ -1501,6 +1668,7 @@ function getProfile(){
                 legacy.std_address,
 
             social:{
+
                 instagram:
                     legacy.insta_handle,
 
@@ -1509,6 +1677,7 @@ function getProfile(){
 
                 youtube:
                     legacy.yt_handle
+
             },
 
             profilePhoto:
@@ -1521,8 +1690,6 @@ function getProfile(){
                 legacy.updatedAt
 
         });
-
-        return converted;
 
     }
 
@@ -1641,6 +1808,8 @@ function populateForm(profile){
             "has-image"
         );
 
+        clearPhotoError();
+
     }
 
 
@@ -1692,6 +1861,7 @@ function collectProfile(){
             valueOf("address"),
 
         social:{
+
             instagram:
                 valueOf("instagram"),
 
@@ -1700,6 +1870,7 @@ function collectProfile(){
 
             youtube:
                 valueOf("youtube")
+
         },
 
         profilePhoto:
@@ -1776,6 +1947,7 @@ function updateAllCounters(){
     const address =
         document.getElementById("address");
 
+
     if(about){
 
         document.getElementById(
@@ -1784,6 +1956,7 @@ function updateAllCounters(){
             `${about.value.length} / 300`;
 
     }
+
 
     if(address){
 
@@ -1829,7 +2002,39 @@ function markError(input){
 }
 
 
-/* Clear validation errors while typing */
+function showPhotoError(){
+
+    if(photoError){
+        photoError.classList.add("show");
+    }
+
+    if(uploadLabel){
+        uploadLabel.classList.add(
+            "input-error"
+        );
+    }
+
+}
+
+
+function clearPhotoError(){
+
+    if(photoError){
+        photoError.classList.remove("show");
+    }
+
+    if(uploadLabel){
+        uploadLabel.classList.remove(
+            "input-error"
+        );
+    }
+
+}
+
+
+/* =========================================================
+   CLEAR VALIDATION WHILE TYPING
+========================================================= */
 
 document.querySelectorAll(
     "#profileForm input, #profileForm textarea"
@@ -1845,6 +2050,20 @@ document.querySelectorAll(
     );
 
 });
+
+
+/* =========================================================
+   PHOTO ERROR CLEAR
+========================================================= */
+
+if(photoInput){
+
+    photoInput.addEventListener(
+        "change",
+        clearPhotoError
+    );
+
+}
 
 
 /* =========================================================
@@ -1905,6 +2124,26 @@ function validateProfile(){
     }
 
 
+    /*
+     * PHOTO IS REQUIRED
+     */
+
+    if(
+        !photoPreview.src ||
+        photoPreview.src === window.location.href
+    ){
+
+        alert(
+            "Please upload your professional photo."
+        );
+
+        showPhotoError();
+
+        return false;
+
+    }
+
+
     if(
         experience.value !== "" &&
         (
@@ -1926,11 +2165,14 @@ function validateProfile(){
 
     if(
         sessionsDone.value !== "" &&
-        Number(sessionsDone.value) < 0
+        (
+            Number(sessionsDone.value) < 0 ||
+            Number(sessionsDone.value) > 1000000
+        )
     ){
 
         alert(
-            "Sessions done cannot be negative."
+            "Please enter a valid number of sessions."
         );
 
         markError(sessionsDone);
@@ -1947,6 +2189,7 @@ function validateProfile(){
                 /[^0-9]/g,
                 ""
             );
+
 
         if(
             phoneDigits.length < 7 ||
@@ -1985,22 +2228,34 @@ if(photoInput){
                 this.files &&
                 this.files[0];
 
+
             if(!file){
                 return;
             }
 
 
-            if(![
+            const allowedTypes = [
+
                 "image/jpeg",
                 "image/png",
                 "image/webp"
-            ].includes(file.type)){
+
+            ];
+
+
+            if(
+                !allowedTypes.includes(
+                    file.type
+                )
+            ){
 
                 alert(
                     "Please select a JPG, PNG or WebP image."
                 );
 
                 this.value = "";
+
+                clearPhotoError();
 
                 return;
 
@@ -2017,6 +2272,8 @@ if(photoInput){
                 );
 
                 this.value = "";
+
+                clearPhotoError();
 
                 return;
 
@@ -2036,6 +2293,8 @@ if(photoInput){
                     uploadLabel.classList.add(
                         "has-image"
                     );
+
+                    clearPhotoError();
 
                 };
 
@@ -2075,12 +2334,6 @@ function setSavingState(isSaving){
 
         saveProfileBtn.disabled = true;
 
-        saveProfileBtn.style.opacity =
-            "0.7";
-
-        saveProfileBtn.style.cursor =
-            "wait";
-
         saveProfileBtn.innerHTML =
 
             `<span>Saving...</span>
@@ -2089,12 +2342,6 @@ function setSavingState(isSaving){
     }else{
 
         saveProfileBtn.disabled = false;
-
-        saveProfileBtn.style.opacity =
-            "";
-
-        saveProfileBtn.style.cursor =
-            "";
 
         saveProfileBtn.innerHTML =
 
@@ -2112,22 +2359,102 @@ function setSavingState(isSaving){
 
 function showSuccess(){
 
-    if(successPopup){
+    if(!successPopup){
+        return;
+    }
 
-        successPopup.classList.add(
+
+    successPopup.classList.add(
+        "show"
+    );
+
+
+    setTimeout(function(){
+
+        successPopup.classList.remove(
             "show"
         );
 
+    },1800);
 
-        setTimeout(function(){
+}
 
-            successPopup.classList.remove(
-                "show"
-            );
 
-        },3000);
+/* =========================================================
+   LEGACY COMPATIBILITY
+========================================================= */
 
-    }
+function saveLegacyProfile(profile){
+
+    return writeJSON(
+        LEGACY_PROFILE_KEY,
+        {
+
+            std_name:
+                profile.studioName,
+
+            std_tag:
+                profile.studioTagline,
+
+            full_name:
+                profile.photographerName,
+
+            professional_role:
+                profile.professionalRole,
+
+            experience:
+                profile.experience,
+
+            sessions_done:
+                profile.sessionsDone,
+
+            specialization:
+                profile.specialization,
+
+            about:
+                profile.about,
+
+            phone:
+                profile.phone,
+
+            std_address:
+                profile.address,
+
+            insta_handle:
+                profile.social.instagram,
+
+            facebook_handle:
+                profile.social.facebook,
+
+            yt_handle:
+                profile.social.youtube,
+
+            profilePhoto:
+                profile.profilePhoto,
+
+            updatedAt:
+                profile.updatedAt
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   SETUP COMPLETION FLAG
+========================================================= */
+
+function markSetupCompleted(){
+
+    return writeJSON(
+        SETUP_COMPLETED_KEY,
+        {
+            completed:true,
+            completedAt:
+                new Date().toISOString()
+        }
+    );
 
 }
 
@@ -2143,6 +2470,11 @@ if(form){
         function(event){
 
             event.preventDefault();
+
+
+            if(saveProfileBtn.disabled){
+                return;
+            }
 
 
             if(!validateProfile()){
@@ -2175,81 +2507,38 @@ if(form){
 
 
             /*
-             * Keep a small compatibility copy for
-             * older frontend pages until they are migrated.
-             *
-             * This can be removed once the whole frontend
-             * uses professionalStudio.profile.
+             * Keep the old storage format temporarily
+             * because other existing frontend pages may
+             * still depend on it.
              */
 
-            writeJSON(
-                LEGACY_PROFILE_KEY,
-                {
-                    std_name:
-                        profile.studioName,
-
-                    std_tag:
-                        profile.studioTagline,
-
-                    full_name:
-                        profile.photographerName,
-
-                    professional_role:
-                        profile.professionalRole,
-
-                    experience:
-                        profile.experience,
-
-                    sessions_done:
-                        profile.sessionsDone,
-
-                    specialization:
-                        profile.specialization,
-
-                    about:
-                        profile.about,
-
-                    phone:
-                        profile.phone,
-
-                    std_address:
-                        profile.address,
-
-                    insta_handle:
-                        profile.social.instagram,
-
-                    facebook_handle:
-                        profile.social.facebook,
-
-                    yt_handle:
-                        profile.social.youtube,
-
-                    profilePhoto:
-                        profile.profilePhoto,
-
-                    updatedAt:
-                        profile.updatedAt
-                }
-            );
-
-
-            setSavingState(false);
-
-            showSuccess();
-
-
-            window.scrollTo({
-
-                top:0,
-
-                behavior:"smooth"
-
-            });
+            saveLegacyProfile(profile);
 
 
             /*
-             * Notify other open Professional Studio
-             * pages/tabs that the profile changed.
+             * Explicitly mark onboarding/setup as complete.
+             */
+
+            const setupMarked =
+                markSetupCompleted();
+
+
+            if(!setupMarked){
+
+                setSavingState(false);
+
+                alert(
+                    "Your profile was saved, but setup completion could not be recorded."
+                );
+
+                return;
+
+            }
+
+
+            /*
+             * Notify any other open Professional Studio
+             * pages/tabs.
              */
 
             window.dispatchEvent(
@@ -2260,6 +2549,44 @@ if(form){
                     }
                 )
             );
+
+
+            window.dispatchEvent(
+                new CustomEvent(
+                    "professionalStudioSetupCompleted",
+                    {
+                        detail:profile
+                    }
+                )
+            );
+
+
+            setSavingState(false);
+
+
+            if(successMessage){
+
+                successMessage.classList.add(
+                    "show"
+                );
+
+            }
+
+
+            showSuccess();
+
+
+            /*
+             * Give the success state a moment to appear,
+             * then continue to the existing portfolio page.
+             */
+
+            setTimeout(function(){
+
+                window.location.href =
+                    PORTFOLIO_ROUTE;
+
+            },900);
 
         }
     );
@@ -2300,8 +2627,6 @@ if(
 
 /* =========================================================
    PUBLIC FRONTEND API
-   Other pages can use these functions without
-   knowing how storage works.
 ========================================================= */
 
 window.ProfessionalStudioProfile = {
@@ -2313,9 +2638,33 @@ window.ProfessionalStudioProfile = {
         saveProfile,
 
     reload:
-        initializeProfilePage
+        initializeProfilePage,
+
+    isSetupComplete:
+        function(){
+
+            const state =
+                readJSON(
+                    SETUP_COMPLETED_KEY,
+                    null
+                );
+
+            return Boolean(
+                state &&
+                state.completed === true
+            );
+
+        },
+
+    getPortfolioRoute:
+        function(){
+
+            return PORTFOLIO_ROUTE;
+
+        }
 
 };
+
 
 })();
 
