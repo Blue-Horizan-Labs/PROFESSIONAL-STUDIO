@@ -6258,6 +6258,7 @@ window.addEventListener(
         ];
 
         if (
+            event.key === null ||
             relevantKeys.indexOf(
                 event.key
             ) !== -1
@@ -6298,7 +6299,7 @@ window.addEventListener(
 
         renderPhotographerName();
 
-        renderPhotographerName();
+        renderGreeting();
 
     }
 );
