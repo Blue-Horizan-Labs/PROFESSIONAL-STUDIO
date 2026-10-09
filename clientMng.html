@@ -1,45 +1,576 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Review client contacts and booking history in Professional Studio.">
-  <meta name="theme-color" content="#111111">
-  <title>Professional Studio | Client Management</title>
-  <link rel="stylesheet" href="clientMng.css">
-</head>
-<body>
-  <header class="topbar">
-    <div class="topbar-inner">
-      <a href="index.html" class="brand">Professional Studio</a>
-      <div class="page-label">Client Management</div>
-      <a href="user.html" class="dashboard-link">Dashboard</a>
-    </div>
-  </header>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+      name="description"
+      content="Review client contacts and booking history in Professional Studio."
+    >
+    <meta name="theme-color" content="#111111">
+    <title>Professional Studio | Client Management</title>
+    <link rel="stylesheet" href="clientMng.css">
+    <style>
+      :root {
+        --bg: #f7f3ee;
+        --panel: rgba(255, 255, 255, 0.78);
+        --panel-strong: #ffffff;
+        --line: rgba(17, 17, 17, 0.08);
+        --text: #1d1d1d;
+        --muted: #5f5a57;
+        --shadow: 0 18px 42px rgba(24, 19, 15, 0.09);
+        --accent: #111111;
+        --accent-soft: #f0e4d5;
+        --accent-strong: #b68654;
+        --success: #227a5d;
+        --warning: #ad6124;
+        --danger: #a63a3a;
+      }
 
-  <main class="main">
-  <section class="heading"><div><span class="eyebrow">CLIENT RELATIONSHIPS</span><h1>Client Management</h1><p>Manage client relationships, booking history, payment plans, installments, and balances from accepted bookings.</p></div><a class="primary-link" href="bookingMng.html">Manage bookings</a></section>
-  <section class="stats" aria-label="Client summary">
-    <article class="stat"><span>Total clients</span><strong id="totalClients">0</strong></article>
-    <article class="stat"><span>Active clients</span><strong id="activeClients">0</strong></article>
-    <article class="stat"><span>Completed sessions</span><strong id="completedSessions">0</strong></article>
-    <article class="stat"><span>Outstanding balance</span><strong id="outstandingBalance">₹0</strong></article>
-    <article class="stat"><span>Overdue installments</span><strong id="overdueInstallments">0</strong></article>
-  </section>
-  <section class="panel">
-    <div class="panel-head"><div><h2>Your clients</h2><p>Customers are created from accepted bookings and grouped using their booking contact details.</p></div><span id="clientCount" class="count">0 clients</span></div>
-    <div class="controls"><label class="search"><span aria-hidden="true">⌕</span><input id="clientSearch" type="search" placeholder="Search name, email, phone or service" autocomplete="off" aria-label="Search clients"></label>
-      <label class="filter-label" for="statusFilter">Booking status</label><select id="statusFilter"><option value="all">All statuses</option><option value="Pending">Pending</option><option value="Accepted">Accepted</option><option value="Confirmed">Confirmed</option><option value="Completed">Completed</option><option value="Cancelled">Cancelled</option></select>
-    </div>
-    <div id="message" class="message" role="status" aria-live="polite"></div>
-    <div class="table-wrap"><table><thead><tr><th>Client</th><th>Contact</th><th>Bookings</th><th>Latest booking</th><th>Latest status</th><th>Payments due</th><th>History</th></tr></thead><tbody id="clientRows"></tbody></table></div>
-    <div id="emptyState" class="empty" hidden><h3>No clients found</h3><p>A client record appears here after you accept a booking. Pending requests alone do not create client records. Accept a booking in Booking Management, then return here.</p><a href="booking.html" class="primary-link">Create a booking</a></div>
-  </section>
-  <section id="historyPanel" class="panel history-panel" hidden>
-    <div class="panel-head"><div><span class="eyebrow">CLIENT RECORD</span><h2 id="historyTitle">Booking history</h2></div><button type="button" id="closeHistory" class="secondary-button">Close</button></div>
-    <div id="historyContent"></div>
-    <p class="hint">Offline payments recorded here are stored in this browser. Online payments are not verified by a payment gateway in this frontend-only workflow. Use the backend/payment gateway before treating online transactions as verified.</p>
-  </section>
-</main>
-<script src="clientMng.js" defer></script>
-</body></html>
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background:
+          radial-gradient(circle at top left, rgba(182, 134, 84, 0.13), transparent 26%),
+          linear-gradient(180deg, #f5f0ea 0%, #f8f6f4 100%);
+        color: var(--text);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        backdrop-filter: blur(18px);
+        background: rgba(17, 17, 17, 0.82);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .topbar-inner {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0.9rem 1.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+
+      .brand {
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        color: #f8f5f2;
+      }
+
+      .page-label {
+        color: rgba(255, 255, 255, 0.78);
+        font-size: 0.9rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .dashboard-link {
+        background: rgba(255, 255, 255, 0.09);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: #fff;
+        padding: 0.6rem 1rem;
+        border-radius: 999px;
+        font-size: 0.95rem;
+        transition: 0.2s ease;
+      }
+
+      .dashboard-link:hover,
+      .dashboard-link:focus-visible {
+        background: rgba(255, 255, 255, 0.15);
+      }
+
+      .main {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 2rem 1.25rem 3rem;
+      }
+
+      .heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1.25rem;
+        background: linear-gradient(135deg, rgba(17, 17, 17, 0.96), rgba(41, 31, 22, 0.88));
+        border: 1px solid rgba(17, 17, 17, 0.06);
+        border-radius: 24px;
+        padding: 2rem;
+        box-shadow: var(--shadow);
+        color: #f4efe9;
+      }
+
+      .heading-copy {
+        max-width: 710px;
+      }
+
+      .eyebrow {
+        display: inline-block;
+        margin-bottom: 0.75rem;
+        font-size: 0.72rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2rem, 4vw, 3rem);
+        line-height: 1.1;
+        letter-spacing: -0.04em;
+      }
+
+      .heading p {
+        margin: 0.9rem 0 0;
+        font-size: 1.02rem;
+        line-height: 1.6;
+        color: rgba(255, 255, 255, 0.78);
+      }
+
+      .heading-actions {
+        display: flex;
+        align-items: center;
+      }
+
+      .primary-link,
+      .secondary-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        padding: 0.85rem 1.3rem;
+        font-weight: 600;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+      }
+
+      .primary-link {
+        background: linear-gradient(135deg, #f0dec4, #d8b88a);
+        color: #17120e;
+        box-shadow: 0 10px 24px rgba(182, 134, 84, 0.28);
+      }
+
+      .primary-link:hover,
+      .secondary-button:hover,
+      .primary-link:focus-visible,
+      .secondary-button:focus-visible {
+        transform: translateY(-1px);
+      }
+
+      .stats {
+        margin-top: 1.5rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 1rem;
+      }
+
+      .stat {
+        background: rgba(255, 255, 255, 0.68);
+        border: 1px solid var(--line);
+        backdrop-filter: blur(8px);
+        border-radius: 18px;
+        padding: 1.1rem 1.2rem;
+        box-shadow: 0 10px 18px rgba(17, 17, 17, 0.03);
+      }
+
+      .stat span {
+        display: block;
+        font-size: 0.78rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .stat strong {
+        display: block;
+        margin-top: 0.7rem;
+        font-size: clamp(1.65rem, 2vw, 2.2rem);
+        line-height: 1;
+      }
+
+      .panel {
+        margin-top: 1.6rem;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        box-shadow: var(--shadow);
+        padding: 1.4rem;
+        backdrop-filter: blur(8px);
+      }
+
+      .panel-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1.2rem;
+      }
+
+      .panel-head h2 {
+        margin: 0;
+        font-size: clamp(1.5rem, 2vw, 2rem);
+      }
+
+      .panel-head p {
+        margin: 0.4rem 0 0;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .count {
+        background: var(--accent-soft);
+        color: var(--accent);
+        border-radius: 999px;
+        padding: 0.5rem 0.8rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+
+      .search {
+        flex: 1 1 340px;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        background: rgba(255, 255, 255, 0.7);
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        padding: 0.75rem 0.9rem;
+      }
+
+      .search span {
+        color: var(--muted);
+        font-size: 1.1rem;
+      }
+
+      .search input,
+      .controls select {
+        width: 100%;
+        border: none;
+        outline: none;
+        background: transparent;
+        color: var(--text);
+        font: inherit;
+      }
+
+      .search input::placeholder {
+        color: #7a7a7a;
+      }
+
+      .filter-label {
+        font-size: 0.8rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .controls select {
+        padding: 0.78rem 0.9rem;
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        background: rgba(255, 255, 255, 0.72);
+        min-width: 180px;
+      }
+
+      .message {
+        min-height: 1.6rem;
+        margin: 0.35rem 0 1rem;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.4);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 900px;
+      }
+
+      th,
+      td {
+        text-align: left;
+        padding: 1rem 0.9rem;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+
+      thead th {
+        background: rgba(17, 17, 17, 0.02);
+        color: var(--muted);
+        font-size: 0.76rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      tbody tr:hover {
+        background: rgba(182, 134, 84, 0.03);
+      }
+
+      .client-name {
+        font-weight: 700;
+      }
+
+      .muted-text,
+      .detail-meta {
+        color: var(--muted);
+      }
+
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.38rem 0.7rem;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+
+      .status-Pending {
+        background: rgba(173, 97, 36, 0.12);
+        color: var(--warning);
+      }
+
+      .status-Accepted,
+      .status-Confirmed {
+        background: rgba(34, 122, 93, 0.12);
+        color: var(--success);
+      }
+
+      .status-Completed {
+        background: rgba(17, 17, 17, 0.08);
+        color: var(--accent);
+      }
+
+      .status-Cancelled {
+        background: rgba(166, 58, 58, 0.12);
+        color: var(--danger);
+      }
+
+      .history-button,
+      .secondary-button {
+        background: rgba(17, 17, 17, 0.03);
+        border: 1px solid var(--line);
+        color: var(--text);
+      }
+
+      .empty {
+        text-align: center;
+        padding: 2.2rem 1rem 1rem;
+        color: var(--muted);
+      }
+
+      .empty h3 {
+        color: var(--text);
+        margin: 0 0 0.6rem;
+        font-size: 1.6rem;
+      }
+
+      .empty p {
+        max-width: 620px;
+        margin: 0 auto 1.2rem;
+        line-height: 1.7;
+      }
+
+      .history-panel {
+        margin-top: 1.8rem;
+      }
+
+      .history-panel .panel-head {
+        margin-bottom: 1rem;
+      }
+
+      .hint {
+        margin-top: 1.2rem;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      @media (max-width: 720px) {
+        .topbar-inner {
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+
+        .heading {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .panel-head {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .controls {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .filter-label {
+          margin-bottom: -0.15rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <nav class="topbar-inner" aria-label="Main navigation">
+        <a href="index.html" class="brand">Professional Studio</a>
+        <div class="page-label">Client Management</div>
+        <a href="user.html" class="dashboard-link" aria-label="Go to dashboard">Dashboard</a>
+      </nav>
+    </header>
+
+    <main class="main">
+      <section class="heading" aria-labelledby="client-management-title">
+        <div class="heading-copy">
+          <span class="eyebrow">CLIENT RELATIONSHIPS</span>
+          <h1 id="client-management-title">Client Management</h1>
+          <p>
+            Manage client relationships, booking history, payment plans,
+            installments, and balances from accepted bookings.
+          </p>
+        </div>
+        <div class="heading-actions">
+          <a class="primary-link" href="bookingMng.html" aria-label="Manage bookings">Manage bookings</a>
+        </div>
+      </section>
+
+      <section class="stats" aria-label="Client summary">
+        <article class="stat">
+          <span>Total clients</span>
+          <strong id="totalClients">0</strong>
+        </article>
+        <article class="stat">
+          <span>Active clients</span>
+          <strong id="activeClients">0</strong>
+        </article>
+        <article class="stat">
+          <span>Completed sessions</span>
+          <strong id="completedSessions">0</strong>
+        </article>
+        <article class="stat">
+          <span>Outstanding balance</span>
+          <strong id="outstandingBalance">₹0</strong>
+        </article>
+        <article class="stat">
+          <span>Overdue installments</span>
+          <strong id="overdueInstallments">0</strong>
+        </article>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Your clients</h2>
+            <p>
+              Customers are created from accepted bookings and grouped using their
+              booking contact details.
+            </p>
+          </div>
+          <span id="clientCount" class="count">0 clients</span>
+        </div>
+
+        <div class="controls">
+          <label class="search" for="clientSearch">
+            <span aria-hidden="true">⌕</span>
+            <input
+              id="clientSearch"
+              type="search"
+              placeholder="Search name, email, phone or service"
+              autocomplete="off"
+              aria-label="Search clients"
+            >
+          </label>
+
+          <label class="filter-label" for="statusFilter">Booking status</label>
+          <select id="statusFilter" aria-label="Filter client list by booking status">
+            <option value="all">All statuses</option>
+            <option value="Pending">Pending</option>
+            <option value="Accepted">Accepted</option>
+            <option value="Confirmed">Confirmed</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+        </div>
+
+        <div id="message" class="message" role="status" aria-live="polite"></div>
+
+        <div class="table-wrap">
+          <table aria-label="Client records table">
+            <thead>
+              <tr>
+                <th>Client</th>
+                <th>Contact</th>
+                <th>Bookings</th>
+                <th>Latest booking</th>
+                <th>Latest status</th>
+                <th>Payments due</th>
+                <th>History</th>
+              </tr>
+            </thead>
+            <tbody id="clientRows"></tbody>
+          </table>
+        </div>
+
+        <div id="emptyState" class="empty" hidden>
+          <h3>No clients found</h3>
+          <p>
+            A client record appears here after you accept a booking. Pending
+            requests alone do not create client records. Accept a booking in
+            Booking Management, then return here.
+          </p>
+          <a href="booking.html" class="primary-link" aria-label="Create a booking">Create a booking</a>
+        </div>
+      </section>
+
+      <section id="historyPanel" class="panel history-panel" hidden>
+        <div class="panel-head">
+          <div>
+            <span class="eyebrow">CLIENT RECORD</span>
+            <h2 id="historyTitle">Booking history</h2>
+          </div>
+          <button type="button" id="closeHistory" class="secondary-button" aria-label="Close client record">
+            Close
+          </button>
+        </div>
+        <div id="historyContent"></div>
+        <p class="hint">
+          Offline payments recorded here are stored in this browser. Online
+          payments are not verified by a payment gateway in this frontend-only
+          workflow. Use the backend/payment gateway before treating online
+          transactions as verified.
+        </p>
+      </section>
+    </main>
+
+    <script src="clientMng.js" defer></script>
+  </body>
+</html>

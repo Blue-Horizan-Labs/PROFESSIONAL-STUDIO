@@ -69,6 +69,8 @@ document.addEventListener("DOMContentLoaded", () => {
         gallerySettingsForm: $("gallerySettingsForm"),
         editGalleryName: $("editGalleryName"),
         editClientName: $("editClientName"),
+        editClientRecord: $("editClientRecord"),
+        editClientBooking: $("editClientBooking"),
         editGalleryDescription: $("editGalleryDescription"),
         deleteGalleryBtn: $("deleteGalleryBtn"),
 
@@ -186,6 +188,107 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =========================================================
+       CUSTOMER / BOOKING LINKING
+    ========================================================= */
+
+    function readBookingsForGalleryLinking() {
+        try {
+            const raw = localStorage.getItem("bookings");
+            const parsed = raw ? JSON.parse(raw) : [];
+            return Array.isArray(parsed)
+                ? parsed.filter(item => item && typeof item === "object" && !Array.isArray(item))
+                : [];
+        } catch (error) {
+            console.warn("Could not read bookings for gallery linking.", error);
+            return [];
+        }
+    }
+
+    function bookingClientName(booking) {
+        const client = booking?.client;
+        return String((client && typeof client === "object" ? client.name : client) || booking?.clientName || booking?.name || "").trim();
+    }
+
+    function bookingClientEmail(booking) {
+        const client = booking?.client;
+        return String((client && typeof client === "object" ? client.email : "") || booking?.email || booking?.clientEmail || "").trim().toLowerCase();
+    }
+
+    function bookingClientPhone(booking) {
+        const client = booking?.client;
+        return String((client && typeof client === "object" ? client.phone : "") || booking?.phone || booking?.clientPhone || "").trim();
+    }
+
+    function bookingHasCustomer(booking) {
+        const status = String(booking?.status || "").trim().toLowerCase();
+        if (["accepted", "confirmed", "completed"].includes(status) || booking?.acceptedAt || booking?.confirmedAt || booking?.completedAt) return true;
+        return Array.isArray(booking?.statusHistory) && booking.statusHistory.some(entry => ["accepted", "confirmed", "completed"].includes(String(entry?.status || entry?.newStatus || "").trim().toLowerCase()));
+    }
+
+    function getCustomerRecords() {
+        const bookings = readBookingsForGalleryLinking().filter(bookingHasCustomer);
+        const parent = bookings.map((_, index) => index);
+        const find = index => { while (parent[index] !== index) { parent[index] = parent[parent[index]]; index = parent[index]; } return index; };
+        const union = (a, b) => { const ra = find(a), rb = find(b); if (ra !== rb) parent[rb] = ra; };
+        const aliases = new Map();
+        bookings.forEach((booking, index) => {
+            const email = bookingClientEmail(booking);
+            const phone = bookingClientPhone(booking).replace(/\D/g, "");
+            const keys = [];
+            if (email) keys.push(`email:${email}`);
+            if (phone) keys.push(`phone:${phone}`);
+            if (!email && !phone) { const name = bookingClientName(booking).toLowerCase(); if (name) keys.push(`name:${name}`); }
+            keys.forEach(key => { if (aliases.has(key)) union(index, aliases.get(key)); else aliases.set(key, index); });
+        });
+        const groups = new Map();
+        bookings.forEach((booking, index) => { const root = find(index); if (!groups.has(root)) groups.set(root, []); groups.get(root).push(booking); });
+        return Array.from(groups.values()).map(group => {
+            const best = group.find(item => bookingClientEmail(item)) || group.find(item => bookingClientPhone(item)) || group[0];
+            const email = bookingClientEmail(best);
+            const phone = bookingClientPhone(best);
+            const name = bookingClientName(best) || "Customer";
+            const key = email ? `email:${email}` : phone ? `phone:${phone.replace(/\D/g, "")}` : `name:${name.toLowerCase()}`;
+            return { key, name, email, phone, bookings: group, bookingIds: group.map(item => String(item.id || item.bookingId || "")).filter(Boolean) };
+        }).sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    function galleryMatchesCustomer(gallery, customer) {
+        if (gallery.clientKey && gallery.clientKey === customer.key) return true;
+        if (gallery.clientEmail && customer.email && gallery.clientEmail === customer.email) return true;
+        const galleryPhone = String(gallery.clientPhone || "").replace(/\D/g, "");
+        const customerPhone = String(customer.phone || "").replace(/\D/g, "");
+        if (galleryPhone && customerPhone && galleryPhone === customerPhone) return true;
+        return Boolean(gallery.bookingId && customer.bookingIds.includes(String(gallery.bookingId)));
+    }
+
+    function populateClientLinkControls(gallery) {
+        if (!refs.editClientRecord || !refs.editClientBooking) return;
+        const customers = getCustomerRecords();
+        refs.editClientRecord.innerHTML = '<option value="">No customer linked</option>' + customers.map(customer => {
+            const detail = customer.email || customer.phone;
+            const label = detail ? `${customer.name} (${detail})` : customer.name;
+            return `<option value="${escapeAttr(customer.key)}">${escapeHtml(label)}</option>`;
+        }).join("");
+        const matched = customers.find(customer => galleryMatchesCustomer(gallery, customer));
+        refs.editClientRecord.value = matched ? matched.key : "";
+        populateBookingOptions(gallery, matched, customers);
+    }
+
+    function populateBookingOptions(gallery, customer, customers = getCustomerRecords()) {
+        if (!refs.editClientBooking) return;
+        const selected = customer || customers.find(item => item.key === refs.editClientRecord?.value);
+        const bookings = selected ? selected.bookings : [];
+        refs.editClientBooking.innerHTML = '<option value="">No specific booking</option>' + bookings.map((booking, index) => {
+            const id = String(booking.id || booking.bookingId || `booking-${index}`);
+            const date = booking.date || booking.bookingDate || booking.sessionDate || "Date not set";
+            const service = booking.serviceName || booking.service || booking.serviceTitle || "Service";
+            const status = booking.status || "Pending";
+            return `<option value="${escapeAttr(id)}">${escapeHtml(`${service} · ${date} · ${status}`)}</option>`;
+        }).join("");
+        refs.editClientBooking.value = selected && selected.bookingIds.includes(String(gallery.bookingId || "")) ? String(gallery.bookingId) : "";
+    }
+
+    /* =========================================================
        NORMALIZATION / BACKWARD COMPATIBILITY
     ========================================================= */
 
@@ -247,8 +350,17 @@ document.addEventListener("DOMContentLoaded", () => {
             String(
                 gallery.clientName ||
                 gallery.client ||
-                "New Client"
+                ""
             ).trim();
+
+        gallery.clientKey =
+            String(gallery.clientKey || "");
+        gallery.clientEmail =
+            String(gallery.clientEmail || "").trim().toLowerCase();
+        gallery.clientPhone =
+            String(gallery.clientPhone || "").trim();
+        gallery.bookingId =
+            String(gallery.bookingId || "");
 
         gallery.description =
             String(
@@ -3077,6 +3189,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         refs.editGalleryDescription.value =
             gallery.description || "";
+
+        populateClientLinkControls(gallery);
     }
 
 
@@ -3124,67 +3238,43 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    function saveSettings(
-        event
-    ) {
-
+    function saveSettings(event) {
         event.preventDefault();
+        const gallery = getSelectedGallery();
+        if (!gallery) return;
 
-        const gallery =
-            getSelectedGallery();
+        const name = refs.editGalleryName.value.trim();
+        const clientName = refs.editClientName.value.trim();
+        if (!name) { showToast("Gallery name is required."); return; }
 
-        if (!gallery) {
+        const customers = getCustomerRecords();
+        const selectedCustomer = customers.find(item => item.key === refs.editClientRecord?.value) || null;
+        const selectedBookingId = String(refs.editClientBooking?.value || "");
+        const linkedBooking = selectedCustomer?.bookings.find((booking, index) => String(booking.id || booking.bookingId || `booking-${index}`) === selectedBookingId) || null;
+        const previous = { ...gallery };
+
+        gallery.name = name;
+        gallery.clientName = selectedCustomer ? selectedCustomer.name : clientName;
+        gallery.clientKey = selectedCustomer ? selectedCustomer.key : "";
+        gallery.clientEmail = selectedCustomer ? selectedCustomer.email : "";
+        gallery.clientPhone = selectedCustomer ? selectedCustomer.phone : "";
+        gallery.bookingId = linkedBooking ? String(linkedBooking.id || linkedBooking.bookingId || selectedBookingId) : "";
+        gallery.description = refs.editGalleryDescription.value.trim();
+        gallery.galleryLink = gallery.galleryLink || buildGalleryLink(gallery.id);
+        gallery.updatedAt = new Date().toISOString();
+
+        if (!saveGalleries()) {
+            Object.keys(gallery).forEach(key => delete gallery[key]);
+            Object.assign(gallery, previous);
+            populateModal(gallery);
             return;
         }
-
-        const name =
-            refs.editGalleryName.value
-                .trim();
-
-        const clientName =
-            refs.editClientName.value
-                .trim();
-
-        if (!name) {
-
-            showToast(
-                "Gallery name is required."
-            );
-
-            return;
-        }
-
-        gallery.name =
-            name;
-
-        gallery.clientName =
-            clientName;
-
-        gallery.description =
-            refs.editGalleryDescription.value
-                .trim();
-
-        gallery.galleryLink =
-            gallery.galleryLink ||
-            buildGalleryLink(
-                gallery.id
-            );
-
-        saveGalleries();
 
         renderStats();
-
         renderGalleryGrid();
-
-        populateModal(
-            gallery
-        );
-
-        showToast(
-            "Gallery information saved."
-        );
+        populateModal(gallery);
+        showToast(selectedCustomer ? "Gallery saved and linked to the customer record." : "Gallery information saved.");
     }
-
 
     function togglePassword() {
 
@@ -3293,6 +3383,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const removed =
             gallery.media.slice();
+        const previousGalleries = state.galleries.slice();
 
         state.galleries =
             state.galleries.filter(
@@ -3301,7 +3392,13 @@ document.addEventListener("DOMContentLoaded", () => {
                     gallery.id
             );
 
-        saveGalleries();
+        if (!saveGalleries()) {
+            state.galleries = previousGalleries;
+            renderStats();
+            renderGalleryGrid();
+            showToast("Gallery could not be deleted because storage failed.");
+            return;
+        }
 
         removed.forEach(
             media =>
@@ -3384,19 +3481,32 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
+        const previous = {
+            deliveryStatus: gallery.deliveryStatus,
+            sentAt: gallery.sentAt,
+            visible: gallery.visible,
+            updatedAt: gallery.updatedAt
+        };
+
         gallery.deliveryStatus =
             "sent";
 
         gallery.sentAt =
             new Date().toISOString();
+        gallery.updatedAt = gallery.sentAt;
 
         gallery.visible =
             true;
 
+        if (!saveGalleries()) {
+            Object.assign(gallery, previous);
+            populateModal(gallery);
+            showToast("Gallery delivery status could not be saved.");
+            return;
+        }
+
         refs.galleryVisible.checked =
             true;
-
-        saveGalleries();
 
         populateModal(
             gallery
@@ -3759,6 +3869,18 @@ document.addEventListener("DOMContentLoaded", () => {
             saveSettings
         );
 
+        refs.editClientRecord?.addEventListener("change", () => {
+            const customer = getCustomerRecords().find(item => item.key === refs.editClientRecord.value);
+            if (customer) refs.editClientName.value = customer.name;
+            populateBookingOptions(getSelectedGallery(), customer);
+        });
+
+        refs.editClientBooking?.addEventListener("change", () => {
+            const customer = getCustomerRecords().find(item => item.key === refs.editClientRecord?.value);
+            const booking = customer?.bookings.find((item, index) => String(item.id || item.bookingId || `booking-${index}`) === refs.editClientBooking.value);
+            if (booking) refs.editClientName.value = bookingClientName(booking) || customer.name;
+        });
+
         refs.deleteGalleryBtn?.addEventListener(
             "click",
             deleteSelectedGallery
@@ -3878,11 +4000,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
         setupEvents();
 
+        window.addEventListener("storage", event => {
+            if (event.key !== null && event.key !== STORAGE_KEY && event.key !== "bookings") return;
+            state.galleries = loadGalleries();
+            state.galleries.forEach(refreshStorage);
+            renderStats();
+            renderGalleryGrid();
+            const selected = getSelectedGallery();
+            if (selected && refs.galleryModal?.classList.contains("open")) populateModal(selected);
+        });
+
         setupMobileMenu();
 
         renderStats();
 
         renderGalleryGrid();
+
+        const requestedGalleryId = new URLSearchParams(window.location.search).get("gallery");
+        if (requestedGalleryId) {
+            const requestedGallery = state.galleries.find(gallery => gallery.id === requestedGalleryId);
+            if (requestedGallery) openGallery(requestedGalleryId);
+            else showToast("That gallery could not be found in this browser.");
+        }
 
         window.addEventListener(
             "beforeunload",

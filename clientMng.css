@@ -436,7 +436,6 @@ tbody tr:last-child td {
 }
 
 /* Payment tracking */
-
 .payment-due-cell {
   font-size: 0.82rem;
   line-height: 1.45;
@@ -730,5 +729,55 @@ tbody tr:last-child td {
 
 .hidden {
   display: none !important;
+}
+
+/* Linked client galleries */
+.linked-galleries {
+  border-top: 1px solid #eee;
+  margin-top: 20px;
+  padding-top: 18px;
+}
+
+.linked-galleries-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.linked-galleries-head h3 {
+  font-size: 0.98rem;
+  margin: 0;
+}
+
+.linked-gallery-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px;
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+  margin: 8px 0;
+}
+
+.linked-gallery-card strong {
+  display: block;
+  font-size: 0.88rem;
+}
+
+.linked-gallery-card .history-button {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+  .linked-galleries-head,
+  .linked-gallery-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
 
