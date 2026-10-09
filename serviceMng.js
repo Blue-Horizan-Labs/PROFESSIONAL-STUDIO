@@ -287,7 +287,19 @@ function persistServices(dispatchEvent = true) {
 }
 
 function loadServices() {
-    const stored = localStorage.getItem(SERVICES_STORAGE_KEY);
+    let stored;
+
+    try {
+        stored = localStorage.getItem(SERVICES_STORAGE_KEY);
+    } catch (error) {
+        console.error("Unable to read saved services:", error);
+        services = cloneData(DEFAULT_SERVICES);
+        showNotification(
+            "Browser storage is unavailable. Services are temporary in this session.",
+            "error"
+        );
+        return;
+    }
 
     if (!stored) {
         services = cloneData(DEFAULT_SERVICES);
@@ -303,18 +315,11 @@ function loadServices() {
         }
 
         services = normalizeServices(parsed);
-
-        /*
-         * Save normalized data so newly-created IDs and missing
-         * optional fields become permanent.
-         */
         persistServices(false);
     } catch (error) {
         console.error("Unable to load services:", error);
-
         services = cloneData(DEFAULT_SERVICES);
         persistServices(false);
-
         showNotification(
             "Saved service data was invalid. Default services were restored.",
             "error"
@@ -323,18 +328,20 @@ function loadServices() {
 }
 
 function normalizeServices(list) {
-    return list.map((service) => ({
-        id: service.id || createId("service"),
-        name: String(service.name || "").trim(),
-        description: String(service.description || "").trim(),
-        coverageDuration: String(service.coverageDuration || "").trim(),
-        deliveryTime: String(service.deliveryTime || "").trim(),
-        coverageType: String(service.coverageType || "").trim(),
-        active: service.active !== false,
-        packages: Array.isArray(service.packages)
-            ? service.packages.map(normalizePackage)
-            : []
-    }));
+    return list
+        .filter((service) => service && typeof service === "object")
+        .map((service) => ({
+            id: String(service.id || createId("service")),
+            name: String(service.name || "").trim(),
+            description: String(service.description || "").trim(),
+            coverageDuration: String(service.coverageDuration || "").trim(),
+            deliveryTime: String(service.deliveryTime || "").trim(),
+            coverageType: String(service.coverageType || "").trim(),
+            active: service.active !== false,
+            packages: Array.isArray(service.packages)
+                ? service.packages.filter((pkg) => pkg && typeof pkg === "object").map(normalizePackage)
+                : []
+        }));
 }
 
 function normalizePackage(pkg) {
@@ -843,11 +850,16 @@ function toggleServiceStatus() {
         return;
     }
 
+    const previousStatus = service.active;
     service.active = !service.active;
 
-    updateStatusIndicator(service);
-    persistServices();
+    if (!persistServices()) {
+        service.active = previousStatus;
+        updateStatusIndicator(service);
+        return;
+    }
 
+    updateStatusIndicator(service);
     showNotification(
         service.active
             ? "Service activated."
@@ -981,13 +993,20 @@ function saveCurrentService() {
         return;
     }
 
-    service.name = data.name;
-    service.description = data.description;
-    service.coverageDuration = data.coverageDuration;
-    service.deliveryTime = data.deliveryTime;
-    service.coverageType = data.coverageType;
+    const previousData = {
+        name: service.name,
+        description: service.description,
+        coverageDuration: service.coverageDuration,
+        deliveryTime: service.deliveryTime,
+        coverageType: service.coverageType
+    };
 
-    persistServices();
+    Object.assign(service, data);
+
+    if (!persistServices()) {
+        Object.assign(service, previousData);
+        return;
+    }
 
     isCreatingService = false;
 
@@ -1075,11 +1094,15 @@ function deleteCurrentService() {
         return;
     }
 
+    const previousServices = services;
     services = services.filter(
         (item) => item.id !== service.id
     );
 
-    persistServices();
+    if (!persistServices()) {
+        services = previousServices;
+        return;
+    }
 
     currentServiceId = null;
     isCreatingService = false;
@@ -1521,16 +1544,13 @@ function saveCurrentPackage() {
         return;
     }
 
-    pkg.name = data.name;
-    pkg.price = data.price;
-    pkg.coverage = data.coverage;
-    pkg.photos = data.photos;
-    pkg.delivery = data.delivery;
-    pkg.album = data.album;
-    pkg.description = data.description;
-    pkg.paymentPlan = paymentPlan.value;
+    const previousPackage = cloneData(pkg);
+    Object.assign(pkg, data, { paymentPlan: paymentPlan.value });
 
-    persistServices();
+    if (!persistServices()) {
+        Object.assign(pkg, previousPackage);
+        return;
+    }
 
     creatingPackageId = null;
 
@@ -1567,17 +1587,22 @@ function deletePackage(packageId) {
         return;
     }
 
+    const previousPackages = service.packages;
     service.packages = service.packages.filter(
         (item) => item.id !== packageId
     );
+
+    if (!persistServices()) {
+        service.packages = previousPackages;
+        renderPackages();
+        return;
+    }
 
     if (editingPackageId === packageId) {
         closePackageEditor();
     }
 
-    persistServices();
     renderPackages();
-
     showNotification("Package deleted successfully.");
 }
 
@@ -2241,8 +2266,24 @@ window.ProfessionalStudioServices = {
 };
 
 /* =========================================================
-   STORAGE UPDATE LISTENER
+   STORAGE UPDATE LISTENERS
    ========================================================= */
+
+window.addEventListener("storage", (event) => {
+    if (event.key !== SERVICES_STORAGE_KEY && event.key !== null) {
+        return;
+    }
+
+    loadServices();
+    renderServices();
+
+    const currentService = getCurrentService();
+    if (currentService && editorView && !editorView.hidden) {
+        populateEditor();
+    } else if (!currentService && editorView && !editorView.hidden) {
+        closeEditor();
+    }
+});
 
 window.addEventListener(
     "professionalStudioServicesUpdated",
