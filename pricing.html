@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description"
-        content="Choose a Professional Studio plan for your photography business. Start with a 30-day free trial and upgrade as your studio grows.">
+        content="Compare Professional Studio plans and choose the tools that fit your photography business.">
     <title>Plans & Pricing | Professional Studio</title>
     
 <link
@@ -602,22 +602,22 @@
         </a>
         <nav class="navlinks" aria-label="Main navigation"><a href="#plans">Pricing</a><a href="#compare">Compare
                 plans</a><a href="#faq">FAQ</a><a class="nav-cta"
-                href="https://professionalstudio.vercel.app/auth/signup.html">Start free</a></nav>
+                href="/auth/signup.html?plan=starter">Start free</a></nav>
     </header>
     <main>
         <section class="hero wrap"><span class="eyebrow"><span class="spark">✦</span> SUBSCRIPTION &amp; PRICING</span>
             <h1>Simple pricing for <span class="accent">every photographer.</span></h1>
             <p>Start free and upgrade as your photography business grows. Your portfolio, bookings and client galleries
                 work together in one place.</p>
-            <div class="trial-note"><span>✓</span> 30 days free to get your studio started</div>
+            <div class="trial-note"><span>✓</span> Transparent monthly plans. Choose the plan that fits your studio.</div>
         </section>
         <section class="wrap plans" id="plans" aria-label="Monthly plans">
-            <article class="plan">
+            <article class="plan" data-plan="starter">
                 <h2>Starter</h2>
                 <div class="plan-desc">Everything you need to put your photography business online.</div>
-                <div class="price"><strong>₹499</strong><span>/ month</span></div>
+                <div class="price"><strong data-plan-price="starter">₹499</strong><span>/ month</span></div>
                 <div class="billing">Perfect for beginners</div>
-                <hr><a class="button-plan" href="https://professionalstudio.vercel.app/auth/signup.html">Get started
+                <hr><a class="button-plan" href="/auth/signup.html?plan=starter">Get started
                     free <span aria-hidden="true">&nbsp;→</span></a>
                 <div class="includes">Included in Starter</div>
                 <ul class="features">
@@ -636,12 +636,12 @@
                 </ul>
                 <div class="plan-foot">A polished place to showcase your work.</div>
             </article>
-            <article class="plan featured"><span class="popular">MOST POPULAR</span>
+            <article class="plan featured" data-plan="professional"><span class="popular">MOST POPULAR</span>
                 <h2>Professional</h2>
                 <div class="plan-desc">More visibility and flexibility for a growing studio.</div>
-                <div class="price"><strong>₹1,499</strong><span>/ month</span></div>
+                <div class="price"><strong data-plan-price="professional">₹1,499</strong><span>/ month</span></div>
                 <div class="billing">Everything in Starter, plus</div>
-                <hr><a class="button-plan" href="https://professionalstudio.vercel.app/auth/signup.html">Start your free
+                <hr><a class="button-plan" href="/auth/signup.html?plan=professional">Start your free
                     trial <span aria-hidden="true">&nbsp;→</span></a>
                 <div class="includes">Grow your studio</div>
                 <ul class="features">
@@ -654,12 +654,12 @@
                 </ul>
                 <div class="plan-foot">More ways to make your studio your own.</div>
             </article>
-            <article class="plan">
+            <article class="plan" data-plan="enterprise">
                 <h2>Enterprise</h2>
                 <div class="plan-desc">More capacity and hands-on help for your next stage.</div>
-                <div class="price"><strong>₹2,999</strong><span>/ month</span></div>
+                <div class="price"><strong data-plan-price="enterprise">₹2,999</strong><span>/ month</span></div>
                 <div class="billing">Everything in Professional, plus</div>
-                <hr><a class="button-plan" href="https://professionalstudio.vercel.app/auth/signup.html">Start your free
+                <hr><a class="button-plan" href="/auth/signup.html?plan=enterprise">Start your free
                     trial <span aria-hidden="true">&nbsp;→</span></a>
                 <div class="includes">Stand out and scale</div>
                 <ul class="features">
@@ -755,8 +755,7 @@
                     </details>
                     <details>
                         <summary>Can I receive online payments?</summary>
-                        <p>Yes. Clients can pay booking fees and complete invoices online through supported payment
-                            gateways.</p>
+                        <p>Online payment processing is not available yet. Payment gateway integration will be enabled after the billing backend is completed.</p>
                     </details>
                     <details>
                         <summary>Are client galleries password protected?</summary>
@@ -779,9 +778,9 @@
             </div>
         </section>
         <section class="bottom wrap"><span class="eyebrow"><span class="spark">✦</span> START TODAY</span>
-            <h2>Get 30 days to build your professional photography website.</h2>
+            <h2>Build your professional photography website.</h2>
             <p>Showcase your work, manage bookings and share client galleries from one studio.</p><a class="button"
-                href="https://professionalstudio.vercel.app/auth/signup.html">Get started free <span
+                href="/auth/signup.html?plan=starter">Get started free <span
                     aria-hidden="true">&nbsp;→</span></a>
         </section>
     </main>
@@ -793,6 +792,8 @@
                     href="https://professionalstudio.vercel.app/terms.html">Terms</a></nav>
         </div>
     </footer>
+    <script src="plan-catalog.js"></script>
+    <script src="pricing.js"></script>
 </body>
 
 </html>

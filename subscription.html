@@ -140,16 +140,16 @@
 
                 <strong
                     id="overviewStatus"
-                    class="overview-value status-active"
+                    class="overview-value status-inactive"
                 >
-                    Active
+                    Not activated
                 </strong>
 
                 <span
                     id="overviewStatusText"
                     class="overview-meta"
                 >
-                    Your subscription is active
+                    No paid subscription has been activated yet
                 </span>
 
             </article>
@@ -169,7 +169,7 @@
                 </strong>
 
                 <span class="overview-meta">
-                    Monthly renewal
+                    Shown after billing activation
                 </span>
 
             </article>
@@ -217,8 +217,7 @@
                     </h2>
 
                     <p>
-                        Your Professional Studio account is currently
-                        using this plan.
+                        View your activated plan here. Plan selections remain requests until billing is connected and confirmed.
                     </p>
 
                 </div>
@@ -399,8 +398,7 @@
                     </h2>
 
                     <p>
-                        Subscription payments made through
-                        Professional Studio.
+                        Confirmed subscription payments will appear here once billing is connected.
                     </p>
 
                 </div>
@@ -698,14 +696,11 @@
             <div>
 
                 <strong>
-                    Billing is currently in frontend mode
+                    Billing setup is not connected yet
                 </strong>
 
                 <p>
-                    Subscription changes, invoices and payments
-                    are simulated locally for the current
-                    Professional Studio frontend. Real payment
-                    processing will be connected later.
+                    This page can save plan and cancellation requests in this browser, but it does not activate subscriptions, cancel access, create invoices, or process payments. The backend must confirm subscription status before paid features are enabled.
                 </p>
 
             </div>
@@ -807,6 +802,7 @@
 
 
 
+    <script src="plan-catalog.js"></script>
     <script src="subscription.js"></script>
 
 </body>

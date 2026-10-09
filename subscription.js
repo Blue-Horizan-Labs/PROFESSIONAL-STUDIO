@@ -24,109 +24,19 @@ var GALLERY_PURCHASES_KEY =
 var PROFILE_STORAGE_KEY =
     "professionalStudio.profile";
 
+var PLAN_REQUEST_KEY =
+    "professionalStudio.subscriptionPlanRequest";
+
+var CANCELLATION_REQUEST_KEY =
+    "professionalStudio.subscriptionCancellationRequest";
+
 
 /* =========================================================
-   ACTUAL PROFESSIONAL STUDIO PLANS
-   Source:
-   professionalstudio.vercel.app
+   SHARED PROFESSIONAL STUDIO PLAN CATALOG
+   Loaded by subscription.html before this file.
 ========================================================= */
-
-var SUBSCRIPTION_PLANS = {
-
-    starter: {
-
-        id: "starter",
-
-        name: "Starter",
-
-        price: 499,
-
-        storageMB: 500,
-
-        description:
-            "Perfect for photographers getting started.",
-
-        features: [
-
-            "Personal Portfolio",
-
-            "Online Booking",
-
-            "Contact Form",
-
-            "500 MB Storage For Recent Work",
-
-            "Services and Pricing Showcase",
-
-            "Equipment Preview"
-
-        ]
-
-    },
-
-
-    professional: {
-
-        id: "professional",
-
-        name: "Professional",
-
-        price: 1499,
-
-        storageMB: 2048,
-
-        description:
-            "Additional features to the Starter Plan.",
-
-        features: [
-
-            "Everything in Starter",
-
-            "Basic SEO",
-
-            "2 GB Storage For Recent Work",
-
-            "2 Theme Options",
-
-            "AI Assistant Support (Upcoming)",
-
-            "Basic Support For Profile Setup"
-
-        ]
-
-    },
-
-
-    enterprise: {
-
-        id: "enterprise",
-
-        name: "Enterprise",
-
-        price: 2999,
-
-        storageMB: 10240,
-
-        description:
-            "Additional features to the Professional Plan.",
-
-        features: [
-
-            "Everything in Professional",
-
-            "Premium SEO",
-
-            "10 GB Storage For Recent Work",
-
-            "5 Theme Options",
-
-            "Top Priority Support For Profile Setup"
-
-        ]
-
-    }
-
-};
+var SUBSCRIPTION_PLANS = window.PROFESSIONAL_STUDIO_PLANS || {};
+if (!Object.keys(SUBSCRIPTION_PLANS).length) { console.error("Shared plan catalog failed to load. Check plan-catalog.js is loaded before subscription.js."); }
 
 
 /* =========================================================
@@ -391,150 +301,74 @@ function getPhotographerName() {
 
 
 /* =========================================================
-   NORMALIZE PLAN ID
+   PLAN AND SUBSCRIPTION STATE
 ========================================================= */
 
-function normalizePlanId(
-    planId
-) {
-
-    var value =
-        String(
-            planId || ""
-        )
-        .trim()
-        .toLowerCase();
-
-
-    return (
-        LEGACY_PLAN_MAP[value] ||
-        "starter"
-    );
-
+function normalizePlanId(planId) {
+    var value = String(planId || "").trim().toLowerCase();
+    var normalized = LEGACY_PLAN_MAP[value] || value;
+    return Object.prototype.hasOwnProperty.call(SUBSCRIPTION_PLANS, normalized)
+        ? normalized
+        : null;
 }
-
-
-/* =========================================================
-   GET CURRENT PLAN
-========================================================= */
 
 function getCurrentPlanId() {
-
-    var saved =
-        localStorage.getItem(
-            SUBSCRIPTION_PLAN_KEY
-        );
-
-
-    return normalizePlanId(
-        saved
-    );
-
+    return normalizePlanId(localStorage.getItem(SUBSCRIPTION_PLAN_KEY));
 }
-
 
 function getCurrentPlan() {
-
-    return SUBSCRIPTION_PLANS[
-        getCurrentPlanId()
-    ];
-
+    var id = getCurrentPlanId();
+    return (id && SUBSCRIPTION_PLANS[id]) || SUBSCRIPTION_PLANS.starter;
 }
 
-
-/* =========================================================
-   SUBSCRIPTION STATUS
-========================================================= */
+function hasActiveSubscription() {
+    // Only a backend-confirmed flag may activate paid subscription UI.
+    // Local plan selection or a legacy frontend status is not proof of payment.
+    return localStorage.getItem("professionalStudio.subscriptionVerified") === "true" &&
+        getSubscriptionStatus() === "active" &&
+        Boolean(getCurrentPlanId());
+}
 
 function getSubscriptionStatus() {
-
-    var savedStatus =
-        localStorage.getItem(
-            "professionalStudio.subscriptionStatus"
-        );
-
-
-    if (!savedStatus) {
-
-        return "active";
-
-    }
-
-
-    return String(
-        savedStatus
-    ).toLowerCase();
-
+    var verified = localStorage.getItem("professionalStudio.subscriptionVerified") === "true";
+    var saved = String(localStorage.getItem("professionalStudio.subscriptionStatus") || "").toLowerCase();
+    if (!verified) return "not-active";
+    if (saved === "active" || saved === "cancelled" || saved === "past_due" || saved === "suspended") return saved;
+    return "not-active";
 }
-
-
-/* =========================================================
-   RENEWAL DATE
-========================================================= */
 
 function getRenewalDate() {
-
-    var saved =
-        localStorage.getItem(
-            SUBSCRIPTION_RENEWAL_KEY
-        );
-
-
-    if (saved) {
-
-        var savedDate =
-            new Date(
-                saved
-            );
-
-
-        if (
-            !Number.isNaN(
-                savedDate.getTime()
-            )
-        ) {
-
-            return savedDate;
-
-        }
-
-    }
-
-
-    /*
-       Frontend fallback.
-
-       If no real billing date exists,
-       create a monthly renewal date.
-    */
-
-    var date =
-        new Date();
-
-
-    date.setMonth(
-        date.getMonth() + 1
-    );
-
-
-    date.setHours(
-        0,
-        0,
-        0,
-        0
-    );
-
-
-    localStorage.setItem(
-        SUBSCRIPTION_RENEWAL_KEY,
-        date.toISOString()
-    );
-
-
-    return date;
-
+    var saved = localStorage.getItem(SUBSCRIPTION_RENEWAL_KEY);
+    if (!saved) return null;
+    var date = new Date(saved);
+    return Number.isNaN(date.getTime()) ? null : date;
 }
 
+function getPlanRequest() {
+    var request = readLocalStorage(PLAN_REQUEST_KEY, null);
+    return request && typeof request === "object" ? request : null;
+}
+
+function getCancellationRequest() {
+    var request = readLocalStorage(CANCELLATION_REQUEST_KEY, null);
+    return request && typeof request === "object" ? request : null;
+}
+
+function getPendingRequestMessage() {
+    var planRequest = getPlanRequest();
+    if (planRequest && planRequest.status === "awaiting-billing") {
+        var requestedPlan = SUBSCRIPTION_PLANS[normalizePlanId(planRequest.requestedPlanId)];
+        return requestedPlan
+            ? "Plan request for " + requestedPlan.name + " saved. It is not active until billing is connected."
+            : "A plan request is saved and is awaiting billing setup.";
+    }
+
+    var cancellation = getCancellationRequest();
+    if (cancellation && cancellation.status === "awaiting-backend") {
+        return "Cancellation request saved. Your subscription has not been cancelled by this frontend.";
+    }
+    return "";
+}
 
 /* =========================================================
    GET BILLING HISTORY
@@ -810,50 +644,25 @@ function getGalleryDuration(
 
 
 /* =========================================================
-   TOTAL PAID
+   TOTAL PAID: COUNT ONLY EXPLICITLY PAID GALLERY ORDERS
 ========================================================= */
 
 function getTotalPaid() {
+    var subscriptionTotal = getBillingHistory().reduce(function(total, record) {
+        var status = String(record.status || "").toLowerCase();
+        return total + (["paid", "success", "succeeded", "completed"].includes(status)
+            ? (Number(record.amount) || 0)
+            : 0);
+    }, 0);
 
-    var subscriptionTotal =
-        getBillingHistory()
-            .reduce(
-                function(total, record) {
+    var galleryTotal = getGalleryPurchases().reduce(function(total, purchase) {
+        var status = String(purchase.paymentStatus || purchase.status || "").toLowerCase();
+        var isPaid = ["paid", "success", "succeeded", "completed"].includes(status);
+        return total + (isPaid ? getGalleryPurchasePrice(purchase) : 0);
+    }, 0);
 
-                    return total +
-                        (
-                            Number(
-                                record.amount
-                            ) || 0
-                        );
-
-                },
-                0
-            );
-
-
-    var galleryTotal =
-        getGalleryPurchases()
-            .reduce(
-                function(total, purchase) {
-
-                    return total +
-                        getGalleryPurchasePrice(
-                            purchase
-                        );
-
-                },
-                0
-            );
-
-
-    return (
-        subscriptionTotal +
-        galleryTotal
-    );
-
+    return subscriptionTotal + galleryTotal;
 }
-
 
 /* =========================================================
    TOAST
@@ -907,554 +716,156 @@ function showToast(
 
 
 /* =========================================================
-   RENDER OVERVIEW
+   RENDER OVERVIEW AND CURRENT PLAN
 ========================================================= */
 
 function renderOverview() {
+    var active = hasActiveSubscription();
+    var plan = getCurrentPlan();
+    var status = getSubscriptionStatus();
+    var renewal = active ? getRenewalDate() : null;
 
-    var plan =
-        getCurrentPlan();
+    var planElement = document.getElementById("overviewPlan");
+    var priceElement = document.getElementById("overviewPlanPrice");
+    var statusElement = document.getElementById("overviewStatus");
+    var statusText = document.getElementById("overviewStatusText");
+    var renewalElement = document.getElementById("overviewRenewal");
+    var totalPaidElement = document.getElementById("overviewTotalPaid");
 
+    if (planElement) planElement.textContent = active ? plan.name : "No active plan";
+    if (priceElement) priceElement.textContent = active ? formatCurrency(plan.price) + " / month" : "Choose a plan to get started";
 
-    var status =
-        getSubscriptionStatus();
-
-
-    var renewal =
-        getRenewalDate();
-
-
-    var planElement =
-        document.getElementById(
-            "overviewPlan"
-        );
-
-
-    var priceElement =
-        document.getElementById(
-            "overviewPlanPrice"
-        );
-
-
-    var statusElement =
-        document.getElementById(
-            "overviewStatus"
-        );
-
-
-    var statusText =
-        document.getElementById(
-            "overviewStatusText"
-        );
-
-
-    var renewalElement =
-        document.getElementById(
-            "overviewRenewal"
-        );
-
-
-    var totalPaidElement =
-        document.getElementById(
-            "overviewTotalPaid"
-        );
-
-
-    if (planElement) {
-
-        planElement.textContent =
-            plan.name;
-
-    }
-
-
-    if (priceElement) {
-
-        priceElement.textContent =
-            formatCurrency(
-                plan.price
-            ) +
-            " / month";
-
-    }
-
-
+    var statusLabels = {
+        active: "Active",
+        cancelled: "Cancelled",
+        past_due: "Payment issue",
+        suspended: "Suspended",
+        "not-active": "Not activated"
+    };
     if (statusElement) {
-
-        statusElement.textContent =
-            status === "cancelled"
-                ? "Cancelled"
-                : "Active";
-
-
-        statusElement.className =
-            "overview-value " +
-            (
-                status === "cancelled"
-                    ? ""
-                    : "status-active"
-            );
-
+        statusElement.textContent = statusLabels[status] || "Not activated";
+        statusElement.className = "overview-value " + (status === "active" ? "status-active" : "status-inactive");
     }
-
-
     if (statusText) {
-
-        statusText.textContent =
-            status === "cancelled"
-                ? "Your subscription is cancelled"
-                : "Your subscription is active";
-
+        statusText.textContent = getPendingRequestMessage() || (
+            status === "active" ? "Your subscription is active" :
+            status === "cancelled" ? "Your subscription is marked as cancelled" :
+            status === "past_due" ? "Billing needs attention" :
+            status === "suspended" ? "Subscription access is suspended" :
+            "No paid subscription has been activated yet"
+        );
     }
-
-
-    if (renewalElement) {
-
-        renewalElement.textContent =
-            formatDate(
-                renewal
-            );
-
-    }
-
-
-    if (totalPaidElement) {
-
-        totalPaidElement.textContent =
-            formatCurrency(
-                getTotalPaid()
-            );
-
-    }
-
+    if (renewalElement) renewalElement.textContent = renewal ? formatDate(renewal) : "—";
+    if (totalPaidElement) totalPaidElement.textContent = formatCurrency(getTotalPaid());
 }
-
-
-/* =========================================================
-   RENDER CURRENT PLAN
-========================================================= */
 
 function renderCurrentPlan() {
+    var active = hasActiveSubscription();
+    var plan = getCurrentPlan();
+    var status = getSubscriptionStatus();
+    var planName = document.getElementById("currentPlanName");
+    var planDescription = document.getElementById("currentPlanDescription");
+    var planPrice = document.getElementById("currentPlanPrice");
+    var planStorage = document.getElementById("currentPlanStorage");
+    var planRenewal = document.getElementById("currentPlanRenewal");
+    var statusElement = document.getElementById("currentPlanStatus");
+    var cancelButton = document.getElementById("cancelSubscriptionBtn");
 
-    var plan =
-        getCurrentPlan();
-
-
-    var status =
-        getSubscriptionStatus();
-
-
-    var planName =
-        document.getElementById(
-            "currentPlanName"
-        );
-
-
-    var planDescription =
-        document.getElementById(
-            "currentPlanDescription"
-        );
-
-
-    var planPrice =
-        document.getElementById(
-            "currentPlanPrice"
-        );
-
-
-    var planStorage =
-        document.getElementById(
-            "currentPlanStorage"
-        );
-
-
-    var planRenewal =
-        document.getElementById(
-            "currentPlanRenewal"
-        );
-
-
-    var statusElement =
-        document.getElementById(
-            "currentPlanStatus"
-        );
-
-
-    if (planName) {
-
-        planName.textContent =
-            plan.name;
-
-    }
-
-
-    if (planDescription) {
-
-        planDescription.textContent =
-            plan.description;
-
-    }
-
-
-    if (planPrice) {
-
-        planPrice.textContent =
-            formatCurrency(
-                plan.price
-            );
-
-    }
-
-
-    if (planStorage) {
-
-        planStorage.textContent =
-            formatStorage(
-                plan.storageMB
-            );
-
-    }
-
-
-    if (planRenewal) {
-
-        planRenewal.textContent =
-            formatDate(
-                getRenewalDate()
-            );
-
-    }
-
+    if (planName) planName.textContent = active ? plan.name : "No active subscription";
+    if (planDescription) planDescription.textContent = active
+        ? plan.description
+        : "Choose a plan below. Your subscription will only activate after billing is connected and payment is confirmed.";
+    if (planPrice) planPrice.textContent = active ? formatCurrency(plan.price) : "—";
+    if (planStorage) planStorage.textContent = active ? formatStorage(plan.storageMB) : "—";
+    if (planRenewal) planRenewal.textContent = active && getRenewalDate() ? formatDate(getRenewalDate()) : "—";
 
     if (statusElement) {
-
-        statusElement.textContent =
-            status === "cancelled"
-                ? "Cancelled"
-                : "Active";
-
-
-        statusElement.className =
-            "plan-status " +
-            (
-                status === "cancelled"
-                    ? "cancelled"
-                    : "active"
-            );
-
+        var labels = { active: "Active", cancelled: "Cancelled", past_due: "Payment issue", suspended: "Suspended", "not-active": "Not activated" };
+        statusElement.textContent = labels[status] || "Not activated";
+        statusElement.className = "plan-status " + (status === "active" ? "active" : status === "cancelled" ? "cancelled" : "inactive");
     }
-
+    if (cancelButton) {
+        cancelButton.disabled = !active || Boolean(getCancellationRequest() && getCancellationRequest().status === "awaiting-backend");
+        cancelButton.textContent = getCancellationRequest() && getCancellationRequest().status === "awaiting-backend"
+            ? "Cancellation Requested"
+            : "Cancel Subscription";
+    }
 }
-
 
 /* =========================================================
    RENDER PLANS
 ========================================================= */
 
 function renderPlans() {
-
-    var grid =
-        document.getElementById(
-            "plansGrid"
-        );
-
-
-    if (!grid) {
-        return;
-    }
-
-
-    grid.innerHTML =
-        "";
-
-
-    var currentPlanId =
-        getCurrentPlanId();
-
-
-    Object.keys(
-        SUBSCRIPTION_PLANS
-    )
-    .forEach(
-        function(planId) {
-
-            var plan =
-                SUBSCRIPTION_PLANS[
-                    planId
-                ];
-
-
-            var card =
-                document.createElement(
-                    "article"
-                );
-
-
-            card.className =
-                "plan-card";
-
-
-            if (
-                planId ===
-                currentPlanId
-            ) {
-
-                card.classList.add(
-                    "current"
-                );
-
-            }
-
-
-            var badge =
-                document.createElement(
-                    "span"
-                );
-
-
-            badge.className =
-                "plan-card-badge";
-
-
-            badge.textContent =
-                planId ===
-                currentPlanId
-                    ? "CURRENT PLAN"
-                    : (
-                        planId ===
-                        "professional"
-                            ? "POPULAR"
-                            : ""
-                    );
-
-
-            if (
-                !badge.textContent
-            ) {
-
-                badge.remove();
-
-            }
-            else {
-
-                card.appendChild(
-                    badge
-                );
-
-            }
-
-
-            var name =
-                document.createElement(
-                    "h3"
-                );
-
-
-            name.className =
-                "plan-card-name";
-
-
-            name.textContent =
-                plan.name;
-
-
-            card.appendChild(
-                name
-            );
-
-
-            var description =
-                document.createElement(
-                    "p"
-                );
-
-
-            description.className =
-                "plan-card-description";
-
-
-            description.textContent =
-                plan.description;
-
-
-            card.appendChild(
-                description
-            );
-
-
-            var price =
-                document.createElement(
-                    "div"
-                );
-
-
-            price.className =
-                "plan-price";
-
-
-            price.innerHTML =
-                formatCurrency(
-                    plan.price
-                ) +
-                "<span>/ month</span>";
-
-
-            card.appendChild(
-                price
-            );
-
-
-            var storage =
-                document.createElement(
-                    "div"
-                );
-
-
-            storage.className =
-                "plan-storage";
-
-
-            storage.textContent =
-                formatStorage(
-                    plan.storageMB
-                ) +
-                " recent work storage";
-
-
-            card.appendChild(
-                storage
-            );
-
-
-            var divider =
-                document.createElement(
-                    "div"
-                );
-
-
-            divider.className =
-                "plan-divider";
-
-
-            card.appendChild(
-                divider
-            );
-
-
-            var featureList =
-                document.createElement(
-                    "ul"
-                );
-
-
-            featureList.className =
-                "plan-features";
-
-
-            plan.features.forEach(
-                function(feature) {
-
-                    var item =
-                        document.createElement(
-                            "li"
-                        );
-
-
-                    item.textContent =
-                        feature;
-
-
-                    featureList.appendChild(
-                        item
-                    );
-
-                }
-            );
-
-
-            card.appendChild(
-                featureList
-            );
-
-
-            var button =
-                document.createElement(
-                    "button"
-                );
-
-
-            button.type =
-                "button";
-
-
-            button.className =
-                planId ===
-                currentPlanId
-                    ? "btn-secondary"
-                    : "btn-primary";
-
-
-            button.textContent =
-                planId ===
-                currentPlanId
-                    ? "Current Plan"
-                    : (
-                        getPlanOrder(
-                            planId
-                        ) >
-                        getPlanOrder(
-                            currentPlanId
-                        )
-                            ? "Upgrade"
-                            : "Change Plan"
-                    );
-
-
-            if (
-                planId ===
-                currentPlanId
-            ) {
-
-                button.disabled =
-                    true;
-
-                button.style.cursor =
-                    "default";
-
-                button.style.opacity =
-                    "0.65";
-
-            }
-            else {
-
-                button.addEventListener(
-                    "click",
-                    function() {
-
-                        openPlanModal(
-                            planId
-                        );
-
-                    }
-                );
-
-            }
-
-
-            card.appendChild(
-                button
-            );
-
-
-            grid.appendChild(
-                card
-            );
-
+    var grid = document.getElementById("plansGrid");
+    if (!grid) return;
+    grid.innerHTML = "";
+
+    var active = hasActiveSubscription();
+    var currentPlanId = active ? getCurrentPlanId() : null;
+    var pendingRequest = getPlanRequest();
+
+    Object.keys(SUBSCRIPTION_PLANS).forEach(function(planId) {
+        var plan = SUBSCRIPTION_PLANS[planId];
+        var card = document.createElement("article");
+        card.className = "plan-card";
+        if (planId === currentPlanId) card.classList.add("current");
+
+        var badgeText = planId === currentPlanId ? "CURRENT PLAN" : (plan.popular ? "POPULAR" : "");
+        if (pendingRequest && pendingRequest.status === "awaiting-billing" && pendingRequest.requestedPlanId === planId) badgeText = "REQUESTED";
+        if (badgeText) {
+            var badge = document.createElement("span");
+            badge.className = "plan-card-badge";
+            badge.textContent = badgeText;
+            card.appendChild(badge);
         }
-    );
 
+        var name = document.createElement("h3");
+        name.className = "plan-card-name";
+        name.textContent = plan.name;
+        card.appendChild(name);
+
+        var description = document.createElement("p");
+        description.className = "plan-card-description";
+        description.textContent = plan.description;
+        card.appendChild(description);
+
+        var price = document.createElement("div");
+        price.className = "plan-price";
+        price.textContent = formatCurrency(plan.price) + " / month";
+        card.appendChild(price);
+
+        var storage = document.createElement("div");
+        storage.className = "plan-storage";
+        storage.textContent = formatStorage(plan.storageMB) + " recent work storage";
+        card.appendChild(storage);
+
+        var divider = document.createElement("div");
+        divider.className = "plan-divider";
+        card.appendChild(divider);
+
+        var featureList = document.createElement("ul");
+        featureList.className = "plan-features";
+        (Array.isArray(plan.features) ? plan.features : []).forEach(function(feature) {
+            var item = document.createElement("li");
+            item.textContent = feature;
+            featureList.appendChild(item);
+        });
+        card.appendChild(featureList);
+
+        var button = document.createElement("button");
+        button.type = "button";
+        var isCurrent = planId === currentPlanId;
+        var isRequested = pendingRequest && pendingRequest.status === "awaiting-billing" && pendingRequest.requestedPlanId === planId;
+        button.className = isCurrent ? "btn-secondary" : "btn-primary";
+        button.textContent = isCurrent ? "Current Plan" : isRequested ? "Request Saved" : active ? (getPlanOrder(planId) > getPlanOrder(currentPlanId) ? "Upgrade" : "Change Plan") : "Choose Plan";
+        button.disabled = isCurrent || Boolean(isRequested);
+        if (button.disabled) button.style.cursor = "default";
+        if (!button.disabled) button.addEventListener("click", function() { openPlanModal(planId); });
+        card.appendChild(button);
+        grid.appendChild(card);
+    });
 }
-
 
 /* =========================================================
    PLAN ORDER
@@ -1661,7 +1072,7 @@ function renderBillingHistory() {
 
                 status.textContent =
                     record.status ||
-                    "Paid";
+                    "Status unavailable";
 
 
                 statusCell.appendChild(
@@ -2071,530 +1482,166 @@ function renderBillingAccount() {
 
 
 /* =========================================================
-   PLAN MODAL
+   PLAN REQUESTS (FRONTEND ONLY)
 ========================================================= */
 
-var selectedPlanId =
-    null;
+var selectedPlanId = null;
 
+function openPlanModal(planId) {
+    selectedPlanId = normalizePlanId(planId);
+    var modal = document.getElementById("planModal");
+    var options = document.getElementById("modalPlanOptions");
+    var modalText = document.getElementById("planModalText");
+    var confirmButton = document.getElementById("confirmPlanBtn");
+    if (!modal || !options) return;
 
-function openPlanModal(
-    planId
-) {
-
-    selectedPlanId =
-        normalizePlanId(
-            planId
-        );
-
-
-    var modal =
-        document.getElementById(
-            "planModal"
-        );
-
-
-    var options =
-        document.getElementById(
-            "modalPlanOptions"
-        );
-
-
-    if (
-        !modal ||
-        !options
-    ) {
-
-        return;
-
+    var active = hasActiveSubscription();
+    var currentPlanId = active ? getCurrentPlanId() : null;
+    if (modalText) {
+        modalText.textContent = active
+            ? "Choose a plan to request a change. Your current plan will remain unchanged until billing is connected and the request is processed."
+            : "Choose a plan to request activation. No payment will be taken and the plan will not activate until billing is connected.";
     }
+    if (confirmButton) confirmButton.textContent = active ? "Save Change Request" : "Save Plan Request";
 
+    options.innerHTML = "";
+    Object.keys(SUBSCRIPTION_PLANS).forEach(function(id) {
+        var plan = SUBSCRIPTION_PLANS[id];
+        var button = document.createElement("button");
+        button.type = "button";
+        button.className = "modal-plan-option";
+        if (id === currentPlanId) button.classList.add("current");
+        if (id === selectedPlanId) button.classList.add("selected");
 
-    options.innerHTML =
-        "";
+        var left = document.createElement("div");
+        var name = document.createElement("strong");
+        name.textContent = plan.name;
+        var storage = document.createElement("span");
+        storage.textContent = formatStorage(plan.storageMB) + " recent work storage";
+        left.appendChild(name);
+        left.appendChild(storage);
 
+        var price = document.createElement("span");
+        price.className = "modal-plan-price";
+        price.textContent = formatCurrency(plan.price) + " / month";
+        button.appendChild(left);
+        button.appendChild(price);
+        button.setAttribute("aria-pressed", id === selectedPlanId ? "true" : "false");
+        button.addEventListener("click", function() {
+            selectedPlanId = id;
+            options.querySelectorAll(".modal-plan-option").forEach(function(option) {
+                option.classList.remove("selected");
+                option.setAttribute("aria-pressed", "false");
+            });
+            button.classList.add("selected");
+            button.setAttribute("aria-pressed", "true");
+        });
+        options.appendChild(button);
+    });
 
-    var currentPlanId =
-        getCurrentPlanId();
-
-
-    Object.keys(
-        SUBSCRIPTION_PLANS
-    )
-    .forEach(
-        function(id) {
-
-            var plan =
-                SUBSCRIPTION_PLANS[
-                    id
-                ];
-
-
-            var button =
-                document.createElement(
-                    "button"
-                );
-
-
-            button.type =
-                "button";
-
-
-            button.className =
-                "modal-plan-option";
-
-
-            if (
-                id ===
-                currentPlanId
-            ) {
-
-                button.classList.add(
-                    "current"
-                );
-
-            }
-
-
-            if (
-                id ===
-                selectedPlanId
-            ) {
-
-                button.classList.add(
-                    "selected"
-                );
-
-            }
-
-
-            var left =
-                document.createElement(
-                    "div"
-                );
-
-
-            var name =
-                document.createElement(
-                    "strong"
-                );
-
-
-            name.textContent =
-                plan.name;
-
-
-            var storage =
-                document.createElement(
-                    "span"
-                );
-
-
-            storage.textContent =
-                formatStorage(
-                    plan.storageMB
-                ) +
-                " recent work storage";
-
-
-            left.appendChild(
-                name
-            );
-
-
-            left.appendChild(
-                storage
-            );
-
-
-            var price =
-                document.createElement(
-                    "span"
-                );
-
-
-            price.className =
-                "modal-plan-price";
-
-
-            price.textContent =
-                formatCurrency(
-                    plan.price
-                ) +
-                " / month";
-
-
-            button.appendChild(
-                left
-            );
-
-
-            button.appendChild(
-                price
-            );
-
-
-            button.addEventListener(
-                "click",
-                function() {
-
-                    selectedPlanId =
-                        id;
-
-
-                    options
-                        .querySelectorAll(
-                            ".modal-plan-option"
-                        )
-                        .forEach(
-                            function(option) {
-
-                                option.classList.remove(
-                                    "selected"
-                                );
-
-                            }
-                        );
-
-
-                    button.classList.add(
-                        "selected"
-                    );
-
-                }
-            );
-
-
-            options.appendChild(
-                button
-            );
-
-        }
-    );
-
-
-    modal.hidden =
-        false;
-
-
-    document.body.style.overflow =
-        "hidden";
-
+    modal.hidden = false;
+    document.body.style.overflow = "hidden";
 }
-
 
 function closePlanModal() {
-
-    var modal =
-        document.getElementById(
-            "planModal"
-        );
-
-
-    if (!modal) {
-        return;
-    }
-
-
-    modal.hidden =
-        true;
-
-
-    document.body.style.overflow =
-        "";
-
-    selectedPlanId =
-        null;
-
+    var modal = document.getElementById("planModal");
+    if (modal) modal.hidden = true;
+    document.body.style.overflow = "";
+    selectedPlanId = null;
 }
 
-
-/* =========================================================
-   CHANGE PLAN
-========================================================= */
-
-function changeSubscriptionPlan(
-    planId
-) {
-
-    var normalizedPlan =
-        normalizePlanId(
-            planId
-        );
-
-
-    var plan =
-        SUBSCRIPTION_PLANS[
-            normalizedPlan
-        ];
-
-
-    if (!plan) {
+function changeSubscriptionPlan(planId) {
+    var requestedPlanId = normalizePlanId(planId);
+    if (!requestedPlanId || !SUBSCRIPTION_PLANS[requestedPlanId]) {
+        showToast("Please select a valid plan.");
         return false;
     }
 
-
-    var currentPlanId =
-        getCurrentPlanId();
-
-
-    if (
-        currentPlanId ===
-        normalizedPlan
-    ) {
-
+    var active = hasActiveSubscription();
+    var currentPlanId = active ? getCurrentPlanId() : null;
+    if (active && currentPlanId === requestedPlanId) {
+        showToast("That is already your current plan.");
         return false;
-
     }
 
+    var request = {
+        requestId: "plan-request-" + Date.now(),
+        requestType: active ? "change-plan" : "new-subscription",
+        currentPlanId: currentPlanId,
+        requestedPlanId: requestedPlanId,
+        status: "awaiting-billing",
+        createdAt: new Date().toISOString(),
+        source: "subscription-page",
+        note: "Frontend request only. No payment was processed and no subscription was activated or changed."
+    };
 
-    /*
-       Keep the canonical plan IDs.
-
-       The dashboard can be updated to these
-       same IDs when its subscription module
-       is synchronized.
-    */
-
-    localStorage.setItem(
-        SUBSCRIPTION_PLAN_KEY,
-        normalizedPlan
-    );
-
-
-    /*
-       Reset subscription status when
-       changing to another plan.
-    */
-
-    localStorage.setItem(
-        "professionalStudio.subscriptionStatus",
-        "active"
-    );
-
-
-    var renewal =
-        new Date();
-
-
-    renewal.setMonth(
-        renewal.getMonth() + 1
-    );
-
-
-    localStorage.setItem(
-        SUBSCRIPTION_RENEWAL_KEY,
-        renewal.toISOString()
-    );
-
-
-    /*
-       Frontend-only payment simulation.
-
-       No payment record is created because
-       this is not a real transaction.
-    */
-
-
-    renderAll();
-
+    if (!writeLocalStorage(PLAN_REQUEST_KEY, request)) {
+        showToast("Could not save the request. Check browser storage and try again.");
+        return false;
+    }
 
     closePlanModal();
-
-
-    showToast(
-        "Plan changed to " +
-        plan.name +
-        "."
-    );
-
-
+    renderAll();
+    showToast("Plan request saved. Billing setup is still required.");
     return true;
-
 }
-
-
-/* =========================================================
-   CANCEL SUBSCRIPTION
-========================================================= */
 
 function cancelSubscription() {
-
-    var confirmed =
-        window.confirm(
-            "Cancel your Professional Studio subscription?"
-        );
-
-
-    if (!confirmed) {
+    if (!hasActiveSubscription()) {
+        showToast("There is no active subscription to cancel.");
         return;
     }
+    var existing = getCancellationRequest();
+    if (existing && existing.status === "awaiting-backend") {
+        showToast("A cancellation request is already saved.");
+        return;
+    }
+    var confirmed = window.confirm("Save a cancellation request? Your subscription will remain unchanged until the billing backend processes it.");
+    if (!confirmed) return;
 
-
-    localStorage.setItem(
-        "professionalStudio.subscriptionStatus",
-        "cancelled"
-    );
-
-
+    var request = {
+        requestId: "cancel-request-" + Date.now(),
+        currentPlanId: getCurrentPlanId(),
+        status: "awaiting-backend",
+        createdAt: new Date().toISOString(),
+        source: "subscription-page",
+        note: "Frontend request only. Subscription has not been cancelled by this page."
+    };
+    if (!writeLocalStorage(CANCELLATION_REQUEST_KEY, request)) {
+        showToast("Could not save the cancellation request.");
+        return;
+    }
     renderAll();
-
-
-    showToast(
-        "Subscription marked as cancelled."
-    );
-
+    showToast("Cancellation request saved. Backend processing is still required.");
 }
-
-
-/* =========================================================
-   CHANGE PLAN BUTTON
-========================================================= */
 
 function initializeButtons() {
+    var changeButton = document.getElementById("changePlanBtn");
+    var cancelButton = document.getElementById("cancelSubscriptionBtn");
+    var closeButton = document.getElementById("closePlanModal");
+    var modalCancelButton = document.getElementById("modalCancelBtn");
+    var confirmButton = document.getElementById("confirmPlanBtn");
 
-    var changeButton =
-        document.getElementById(
-            "changePlanBtn"
-        );
-
-
-    var cancelButton =
-        document.getElementById(
-            "cancelSubscriptionBtn"
-        );
-
-
-    var closeButton =
-        document.getElementById(
-            "closePlanModal"
-        );
-
-
-    var modalCancelButton =
-        document.getElementById(
-            "modalCancelBtn"
-        );
-
-
-    var confirmButton =
-        document.getElementById(
-            "confirmPlanBtn"
-        );
-
-
-    if (changeButton) {
-
-        changeButton.addEventListener(
-            "click",
-            function() {
-
-                openPlanModal(
-                    getCurrentPlanId()
-                );
-
-            }
-        );
-
-    }
-
-
-    if (cancelButton) {
-
-        cancelButton.addEventListener(
-            "click",
-            cancelSubscription
-        );
-
-    }
-
-
-    if (closeButton) {
-
-        closeButton.addEventListener(
-            "click",
-            closePlanModal
-        );
-
-    }
-
-
-    if (modalCancelButton) {
-
-        modalCancelButton.addEventListener(
-            "click",
-            closePlanModal
-        );
-
-    }
-
-
-    if (confirmButton) {
-
-        confirmButton.addEventListener(
-            "click",
-            function() {
-
-                if (!selectedPlanId) {
-                    return;
-                }
-
-
-                changeSubscriptionPlan(
-                    selectedPlanId
-                );
-
-            }
-        );
-
-    }
-
-
-    var modal =
-        document.getElementById(
-            "planModal"
-        );
-
-
-    if (modal) {
-
-        modal.addEventListener(
-            "click",
-            function(event) {
-
-                if (
-                    event.target ===
-                    modal
-                ) {
-
-                    closePlanModal();
-
-                }
-
-            }
-        );
-
-    }
-
-
-    document.addEventListener(
-        "keydown",
-        function(event) {
-
-            if (
-                event.key ===
-                "Escape"
-            ) {
-
-                closePlanModal();
-
-            }
-
+    if (changeButton) changeButton.addEventListener("click", function() { openPlanModal(null); });
+    if (cancelButton) cancelButton.addEventListener("click", cancelSubscription);
+    if (closeButton) closeButton.addEventListener("click", closePlanModal);
+    if (modalCancelButton) modalCancelButton.addEventListener("click", closePlanModal);
+    if (confirmButton) confirmButton.addEventListener("click", function() {
+        if (!selectedPlanId) {
+            showToast("Select a plan first.");
+            return;
         }
-    );
+        changeSubscriptionPlan(selectedPlanId);
+    });
 
+    var modal = document.getElementById("planModal");
+    if (modal) modal.addEventListener("click", function(event) {
+        if (event.target === modal) closePlanModal();
+    });
+    document.addEventListener("keydown", function(event) {
+        if (event.key === "Escape") closePlanModal();
+    });
 }
-
 
 /* =========================================================
    GLOBAL RENDER
@@ -2621,38 +1668,19 @@ function renderAll() {
    STORAGE EVENT
 ========================================================= */
 
-window.addEventListener(
-    "storage",
-    function(event) {
-
-        var relevantKeys = [
-
-            SUBSCRIPTION_PLAN_KEY,
-
-            SUBSCRIPTION_RENEWAL_KEY,
-
-            BILLING_HISTORY_KEY,
-
-            GALLERY_PURCHASES_KEY,
-
-            PROFILE_STORAGE_KEY
-
-        ];
-
-
-        if (
-            relevantKeys.indexOf(
-                event.key
-            ) !== -1
-        ) {
-
-            renderAll();
-
-        }
-
-    }
-);
-
+window.addEventListener("storage", function(event) {
+    var relevantKeys = [
+        SUBSCRIPTION_PLAN_KEY,
+        SUBSCRIPTION_RENEWAL_KEY,
+        BILLING_HISTORY_KEY,
+        GALLERY_PURCHASES_KEY,
+        PROFILE_STORAGE_KEY,
+        "professionalStudio.subscriptionStatus",
+        PLAN_REQUEST_KEY,
+        CANCELLATION_REQUEST_KEY
+    ];
+    if (event.key === null || relevantKeys.indexOf(event.key) !== -1) renderAll();
+});
 
 /* =========================================================
    INITIALIZATION

@@ -192,6 +192,10 @@ a {
 }
 
 
+.status-inactive {
+    color: #777;
+}
+
 .status-active {
     color: #1f6b43;
 }
@@ -344,6 +348,11 @@ a {
     color: #bde9ce;
 }
 
+
+.plan-status.inactive {
+    color: #777;
+    background: #f1f1f1;
+}
 
 .plan-status.cancelled {
     color: #ffbaba;
@@ -1278,4 +1287,10 @@ a {
         transition: none !important;
     }
 
+}
+
+/* Disabled subscription actions are intentionally subdued. */
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.62;
 }
