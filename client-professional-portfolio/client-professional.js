@@ -670,12 +670,15 @@ function renderClientBranding(profile){
         );
 
     if(logo){
-
-        logo.textContent =
-            getProfileStudio(profile);
-
+        logo.textContent = getProfileStudio(profile);
     }
 
+    document.title = `${getProfileStudio(profile)} | Portfolio`;
+
+    const heroEyebrow = document.getElementById("heroEyebrow");
+    if(heroEyebrow){
+        heroEyebrow.textContent = getProfileRole(profile) || "Photography & Visual Stories";
+    }
 
     const heroTitle =
         document.getElementById(
@@ -698,27 +701,22 @@ function renderClientBranding(profile){
         );
 
     if(heroParagraph){
-
-        const role =
-            getProfileRole(profile);
-
-        const specialization =
-            getProfileSpecialization(profile);
-
-
-        const description =
-            [
-                role,
-                specialization
-            ]
-            .filter(Boolean)
-            .join(" • ");
-
-
-        heroParagraph.textContent =
-            description ||
+        const role = getProfileRole(profile);
+        const specialization = getProfileSpecialization(profile);
+        const description = [role, specialization].filter(Boolean).join(" • ");
+        heroParagraph.textContent = description ||
             "Photography crafted around people, places and meaningful moments.";
+    }
 
+    const heroMetaPrimary = document.getElementById("heroMetaPrimary");
+    if(heroMetaPrimary){
+        heroMetaPrimary.textContent = getProfileRole(profile) || "Professional Photography";
+    }
+
+    const heroMetaSpecialization = document.getElementById("heroMetaSpecialization");
+    if(heroMetaSpecialization){
+        heroMetaSpecialization.textContent = getProfileSpecialization(profile) ||
+            "Weddings · Portraits · Events · Commercial";
     }
 
 }
@@ -753,7 +751,7 @@ function renderClientPhotographerName(profile){
 
     document
         .querySelectorAll(
-            "#photographerName"
+            "[data-profile-photographer-name]"
         )
         .forEach(element => {
 
@@ -772,7 +770,7 @@ function renderClientStudioName(profile){
 
     document
         .querySelectorAll(
-            "#photographerStudio"
+            "[data-profile-studio-name]"
         )
         .forEach(element => {
 
@@ -1149,149 +1147,139 @@ function renderPublicProfile(){
    SERVICES
 ========================================================= */
 
+function formatClientCurrency(amount){
+
+    const value = Number(amount);
+
+    if(!Number.isFinite(value) || value < 0){
+        return "";
+    }
+
+    try{
+        return new Intl.NumberFormat("en-IN", {
+            style: "currency",
+            currency: "INR",
+            maximumFractionDigits: 0
+        }).format(value);
+    }catch{
+        return `₹${Math.round(value).toLocaleString("en-IN")}`;
+    }
+
+}
+
+
+function getClientServiceStartingPrice(service){
+
+    const packages = Array.isArray(service?.packages)
+        ? service.packages
+        : [];
+
+    const packagePrices = packages
+        .map(pkg => Number(pkg?.price))
+        .filter(price => Number.isFinite(price) && price > 0);
+
+    // Service Management stores pricing on packages, not on the service itself.
+    // Keep support for older records that used a top-level price field.
+    if(packagePrices.length){
+        return Math.min(...packagePrices);
+    }
+
+    const legacyPrice = Number(service?.price);
+    return Number.isFinite(legacyPrice) && legacyPrice > 0
+        ? legacyPrice
+        : null;
+
+}
+
+
 function loadClientServices(){
 
-    const container =
-        document.getElementById(
-            "servicesContainer"
-        );
+    const container = document.getElementById("servicesContainer");
+    if(!container) return;
 
-    if(!container){
-        return;
-    }
+    const storedServices = readLocalStorage(STORAGE_KEYS.services, []);
+    const activeServices = Array.isArray(storedServices)
+        ? storedServices.filter(service =>
+            service &&
+            typeof service === "object" &&
+            service.active !== false &&
+            normalizeText(service.name || service.title)
+        )
+        : [];
 
-
-    const services =
-        readLocalStorage(
-            STORAGE_KEYS.services,
-            []
-        );
-
-
-    container.innerHTML =
-        "";
-
-
-    const activeServices =
-        Array.isArray(services)
-            ? services.filter(
-                service =>
-                    service &&
-                    service.active !== false
-            )
-            : [];
-
+    container.replaceChildren();
 
     if(!activeServices.length){
-
-        container.innerHTML =
-            `
+        container.innerHTML = `
             <div class="empty-state">
-                <i class="fa-solid fa-camera"></i>
+                <i class="fa-solid fa-camera" aria-hidden="true"></i>
                 <h3>Services coming soon</h3>
-                <p>
-                    Photography services will appear here.
-                </p>
-            </div>
-            `;
-
+                <p>Published photography services will appear here when they are added in Service Management.</p>
+            </div>`;
         return;
-
     }
 
+    activeServices.forEach((service, index) => {
+        const id = normalizeText(service.id);
+        const name = normalizeText(service.name || service.title);
+        const description = normalizeText(service.description || service.details);
+        const startingPrice = getClientServiceStartingPrice(service);
+        const packageCount = Array.isArray(service.packages)
+            ? service.packages.filter(pkg => pkg && typeof pkg === "object").length
+            : 0;
 
-    activeServices.forEach(
-        service => {
+        const article = document.createElement("article");
+        article.className = "service-card";
 
-            const id =
-                encodeURIComponent(
-                    service.id ||
-                    ""
-                );
+        const content = document.createElement("div");
+        content.className = "service-card-content";
 
+        const number = document.createElement("span");
+        number.className = "service-index";
+        number.textContent = String(index + 1).padStart(2, "0");
 
-            const name =
-                normalizeText(
-                    service.name ||
-                    service.title ||
-                    "Photography Service"
-                );
+        const heading = document.createElement("h3");
+        heading.textContent = name;
 
+        const summary = document.createElement("p");
+        summary.textContent = description || "Contact the studio to discuss this service.";
 
-            const description =
-                normalizeText(
-                    service.description ||
-                    service.details ||
-                    ""
-                );
+        content.append(number, heading, summary);
 
+        const meta = document.createElement("div");
+        meta.className = "service-card-meta";
 
-            const price =
-                normalizeText(
-                    service.price ||
-                    ""
-                );
+        const price = document.createElement("strong");
+        price.className = "service-card-price";
+        price.textContent = startingPrice !== null
+            ? `Packages from ${formatClientCurrency(startingPrice)}`
+            : "Contact for pricing";
+        meta.appendChild(price);
 
-
-            const article =
-                document.createElement(
-                    "article"
-                );
-
-            article.className =
-                "service-card";
-
-
-            article.innerHTML =
-                `
-                <div class="service-card-content">
-
-                    <span class="service-index">
-                        ${String(
-                            activeServices.indexOf(service) + 1
-                        ).padStart(2,"0")}
-                    </span>
-
-                    <h3>
-                        ${escapeHtml(name)}
-                    </h3>
-
-                    <p>
-                        ${escapeHtml(
-                            description ||
-                            "Professional photography service."
-                        )}
-                    </p>
-
-                    ${
-                        price
-                            ? `
-                                <strong>
-                                    ${escapeHtml(price)}
-                                </strong>
-                            `
-                            : ""
-                    }
-
-                    <a
-                        href="service.html?id=${id}"
-                        class="text-link"
-                    >
-                        View Service
-                        <i class="fa-solid fa-arrow-right"></i>
-                    </a>
-
-                </div>
-                `;
-
-
-            container.appendChild(
-                article
-            );
-
+        if(packageCount){
+            const packages = document.createElement("span");
+            packages.className = "service-card-package-count";
+            packages.textContent = `${packageCount} ${packageCount === 1 ? "package" : "packages"}`;
+            meta.appendChild(packages);
         }
-    );
 
+        content.appendChild(meta);
+
+        if(id){
+            const link = document.createElement("a");
+            link.href = `service.html?id=${encodeURIComponent(id)}`;
+            link.className = "text-link";
+            link.append(document.createTextNode("View Service "));
+            const icon = document.createElement("i");
+            icon.className = "fa-solid fa-arrow-right";
+            icon.setAttribute("aria-hidden", "true");
+            link.appendChild(icon);
+            content.appendChild(link);
+        }
+
+        article.appendChild(content);
+        container.appendChild(article);
+    });
 }
 
 
@@ -1588,157 +1576,83 @@ async function getRecentWorkImage(
 
 async function renderPortfolioRecentWork(){
 
-    const container =
-        document.getElementById(
-            "recentWorkPreview"
-        );
+    const container = document.getElementById("recentWorkPreview");
+    const emptyState = document.getElementById("recentWorkEmpty");
 
-    const emptyState =
-        document.getElementById(
-            "recentWorkEmpty"
-        );
+    if (!container) return;
 
+    container.replaceChildren();
 
-    if(!container){
+    const saved = readLocalStorage(STORAGE_KEYS.portfolioStorage, []);
+    let albums = [];
+
+    // Recent Work Management stores { albums: [], files: [], ... }.
+    // Keep compatibility with earlier array and recentWork formats.
+    if (Array.isArray(saved)) {
+        albums = saved;
+    } else if (saved && typeof saved === "object" && Array.isArray(saved.albums)) {
+        albums = saved.albums;
+    } else if (saved && typeof saved === "object" && Array.isArray(saved.recentWork)) {
+        albums = saved.recentWork;
+    }
+
+    // Albums explicitly marked private must never be shown in the public portfolio.
+    const publicAlbums = albums
+        .filter(album => album && typeof album === "object" && album.isPublic !== false)
+        .slice(0, 6);
+
+    if (!publicAlbums.length) {
+        if (emptyState) emptyState.hidden = false;
         return;
     }
 
+    if (emptyState) emptyState.hidden = true;
 
-    const albums =
-        readLocalStorage(
-            STORAGE_KEYS.portfolioStorage,
-            []
+    for (const album of publicAlbums) {
+        let imageSource = getSafeImageSource(
+            album.coverUrl || album.coverImage || album.thumbnail || album.imageUrl || ""
         );
 
-
-    container.innerHTML =
-        "";
-
-
-    if(
-        !Array.isArray(albums) ||
-        !albums.length
-    ){
-
-        if(emptyState){
-            emptyState.hidden = false;
+        const coverId = album.coverFileId || album.coverPhotoId;
+        if (!imageSource && coverId) {
+            imageSource = await getRecentWorkImage(coverId);
         }
 
-        return;
+        const albumId = normalizeText(album.id || album.albumId || album.slug);
+        const title = normalizeText(album.title || album.name || album.albumName) || "Photography";
+        const category = normalizeText(album.category) || "Portfolio";
+        const card = document.createElement("article");
+        card.className = "recent-work-card";
 
-    }
+        const link = document.createElement("a");
+        link.className = "recent-work-link";
+        link.href = albumId
+            ? `gallery.html?album=${encodeURIComponent(albumId)}`
+            : "gallery.html";
 
-
-    const recent =
-        albums
-            .filter(Boolean)
-            .slice(0,6);
-
-
-    if(!recent.length){
-
-        if(emptyState){
-            emptyState.hidden = false;
+        if (imageSource) {
+            const image = document.createElement("img");
+            image.src = imageSource;
+            image.alt = title;
+            image.loading = "lazy";
+            link.appendChild(image);
+        } else {
+            const placeholder = document.createElement("div");
+            placeholder.className = "recent-work-placeholder";
+            placeholder.innerHTML = '<i class="fa-regular fa-image" aria-hidden="true"></i>';
+            link.appendChild(placeholder);
         }
 
-        return;
-
-    }
-
-
-    if(emptyState){
-        emptyState.hidden = true;
-    }
-
-
-    for(
-        const album of recent
-    ){
-
-        let imageSource =
-            getSafeImageSource(
-                album.coverUrl ||
-                album.coverImage ||
-                album.thumbnail ||
-                album.imageUrl ||
-                ""
-            );
-
-
-        if(
-            !imageSource &&
-            album.coverPhotoId
-        ){
-
-            imageSource =
-                await getRecentWorkImage(
-                    album.coverPhotoId
-                );
-
-        }
-
-
-        const card =
-            document.createElement(
-                "article"
-            );
-
-        card.className =
-            "recent-work-card";
-
-
-        card.innerHTML =
-            `
-            <a
-                href="gallery.html"
-                class="recent-work-link"
-            >
-
-                ${
-                    imageSource
-                        ? `
-                            <img
-                                src="${escapeHtml(imageSource)}"
-                                alt="${escapeHtml(
-                                    album.title ||
-                                    "Photography work"
-                                )}"
-                                loading="lazy"
-                            >
-                        `
-                        : `
-                            <div class="recent-work-placeholder">
-                                <i class="fa-regular fa-image"></i>
-                            </div>
-                        `
-                }
-
-                <div class="recent-work-overlay">
-
-                    <span>
-                        ${escapeHtml(
-                            album.category ||
-                            "Portfolio"
-                        )}
-                    </span>
-
-                    <h3>
-                        ${escapeHtml(
-                            album.title ||
-                            "Photography"
-                        )}
-                    </h3>
-
-                </div>
-
-            </a>
-            `;
-
-
-        container.appendChild(
-            card
-        );
-
+        const overlay = document.createElement("div");
+        overlay.className = "recent-work-overlay";
+        const categoryLabel = document.createElement("span");
+        categoryLabel.textContent = category;
+        const heading = document.createElement("h3");
+        heading.textContent = title;
+        overlay.append(categoryLabel, heading);
+        link.appendChild(overlay);
+        card.appendChild(link);
+        container.appendChild(card);
     }
 
 }
@@ -2473,6 +2387,7 @@ function initializeStorageListeners(){
         event => {
 
             if(
+                event.key === null ||
                 Object.values(
                     STORAGE_KEYS
                 ).includes(
@@ -2493,6 +2408,10 @@ function initializeStorageListeners(){
         refreshProfessionalPage
     );
 
+    window.addEventListener(
+        "professionalStudioServicesUpdated",
+        loadClientServices
+    );
 
     window.addEventListener(
         "professionalStudioReviewsUpdated",

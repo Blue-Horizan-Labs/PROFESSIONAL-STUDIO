@@ -2112,78 +2112,45 @@ form.addEventListener(
          * Keep legacy storage compatible.
          */
 
-        writeJSON(
+        const legacySaved = writeJSON(
             LEGACY_PROFILE_KEY,
             {
-
-                std_name:
-                    profile.studioName,
-
-                std_tag:
-                    profile.studioTagline,
-
-                full_name:
-                    profile.photographerName,
-
-                professional_role:
-                    profile.professionalRole,
-
-                experience:
-                    profile.experience,
-
-                sessions_done:
-                    profile.sessionsDone,
-
-                specialization:
-                    profile.specialization,
-
-                about:
-                    profile.about,
-
-                phone:
-                    profile.phone,
-
-                std_address:
-                    profile.address,
-
-                insta_handle:
-                    profile.social.instagram,
-
-                facebook_handle:
-                    profile.social.facebook,
-
-                yt_handle:
-                    profile.social.youtube,
-
-                profilePhoto:
-                    profile.profilePhoto,
-
-                updatedAt:
-                    profile.updatedAt
-
+                std_name: profile.studioName,
+                std_tag: profile.studioTagline,
+                full_name: profile.photographerName,
+                professional_role: profile.professionalRole,
+                experience: profile.experience,
+                sessions_done: profile.sessionsDone,
+                specialization: profile.specialization,
+                about: profile.about,
+                phone: profile.phone,
+                std_address: profile.address,
+                insta_handle: profile.social.instagram,
+                facebook_handle: profile.social.facebook,
+                yt_handle: profile.social.youtube,
+                profilePhoto: profile.profilePhoto,
+                updatedAt: profile.updatedAt
             }
-
         );
 
-
-        /*
-         * Mark Professional setup as completed.
-         */
-
-        writeJSON(
+        /* Mark setup complete only after the primary profile was saved. */
+        const completionSaved = writeJSON(
             SETUP_COMPLETED_KEY,
             {
-
-                completed:true,
-
-                plan:"professional",
-
-                completedAt:
-                    new Date().toISOString()
-
+                completed: true,
+                plan: "professional",
+                completedAt: new Date().toISOString()
             }
-
         );
+
+        if (!legacySaved || !completionSaved) {
+            console.warn(
+                "Professional profile saved, but one or more compatibility records could not be saved."
+            );
+            alert(
+                "Your Professional profile was saved, but this browser could not update every compatibility record. Your portfolio may still open, but some older pages may not show the latest profile data."
+            );
+        }
 
 
         /*

@@ -118,8 +118,8 @@
 
     <div class="hero-content">
 
-        <span class="hero-eyebrow">
-            Photography & Visual Stories
+        <span class="hero-eyebrow" id="heroEyebrow">
+            Photography &amp; Visual Stories
         </span>
 
 
@@ -157,11 +157,11 @@
 
     <div class="hero-meta">
 
-        <span>
+        <span id="heroMetaPrimary">
             Professional Photography
         </span>
 
-        <span>
+        <span id="heroMetaSpecialization">
             Weddings · Portraits · Events · Commercial
         </span>
 
@@ -267,7 +267,7 @@
                         Photographer
                     </span>
 
-                    <strong id="photographerName">
+                    <strong id="photographerName" data-profile-photographer-name>
                         Photographer
                     </strong>
 
@@ -280,7 +280,7 @@
                         Studio
                     </span>
 
-                    <strong id="photographerStudio">
+                    <strong id="photographerStudio" data-profile-studio-name>
                         Professional Studio
                     </strong>
 
@@ -533,11 +533,11 @@
 
         <div class="contact-intro">
 
-            <h3 id="photographerName">
+            <h3 id="footerPhotographerName" data-profile-photographer-name>
                 Photographer
             </h3>
 
-            <p id="photographerStudio">
+            <p id="footerPhotographerStudio" data-profile-studio-name>
                 Professional Studio
             </p>
 
@@ -622,7 +622,7 @@
 
 <!-- =========================================================
      REVIEW MODAL
-========================================================= 
+========================================================= -->
 
 <div
     class="review-modal"
@@ -654,6 +654,7 @@
             Share Your Experience
         </h2>
 
+        <p>Your feedback helps future clients know what working together is like.</p>
 
         <form id="reviewForm">
 
@@ -665,7 +666,9 @@
 
                 <input
                     id="reviewName"
+                    name="name"
                     type="text"
+                    autocomplete="name"
                     maxlength="100"
                     required
                 >
@@ -681,7 +684,9 @@
 
                 <input
                     id="reviewEmail"
+                    name="email"
                     type="email"
+                    autocomplete="email"
                     maxlength="150"
                     required
                 >
@@ -697,6 +702,7 @@
 
                 <select
                     id="reviewRating"
+                    name="rating"
                     required
                 >
                     <option value="">Select rating</option>
@@ -718,6 +724,7 @@
 
                 <textarea
                     id="reviewText"
+                    name="review"
                     maxlength="500"
                     rows="5"
                     required
@@ -738,7 +745,6 @@
     </div>
 
 </div>
--->
 
 <footer class="professional-footer">
 
