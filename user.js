@@ -3636,6 +3636,88 @@ function getGalleryCover(gallery) {
 }
 
 
+function renderDashboardRecentWork() {
+    var listElement = document.getElementById("dashboardRecentWorkList");
+    if (!listElement) return;
+
+    var albumCountElement = document.getElementById("recentWorkAlbumCount");
+    var photoCountElement = document.getElementById("recentWorkPhotoCount");
+    var publicCountElement = document.getElementById("recentWorkPublicCount");
+    var emptyElement = document.getElementById("recentWorkEmptyState");
+    var storage = { albums: [], files: [] };
+
+    try {
+        var raw = localStorage.getItem(PORTFOLIO_STORAGE_KEY);
+        if (raw) {
+            var parsed = JSON.parse(raw);
+            if (parsed && typeof parsed === "object") storage = parsed;
+        }
+    } catch (error) {
+        console.warn("Could not read Recent Work albums for dashboard:", error);
+    }
+
+    var albums = Array.isArray(storage.albums) ? storage.albums.filter(function(album) {
+        return album && typeof album === "object" && album.id;
+    }) : [];
+    var files = Array.isArray(storage.files) ? storage.files.filter(function(file) {
+        return file && typeof file === "object" && file.albumId;
+    }) : [];
+    var publicCount = albums.filter(function(album) { return album.isPublic !== false; }).length;
+
+    if (albumCountElement) albumCountElement.textContent = String(albums.length);
+    if (photoCountElement) photoCountElement.textContent = String(files.length);
+    if (publicCountElement) publicCountElement.textContent = String(publicCount);
+
+    listElement.replaceChildren();
+    if (!albums.length) {
+        if (emptyElement) emptyElement.hidden = false;
+        return;
+    }
+    if (emptyElement) emptyElement.hidden = true;
+
+    albums.slice().sort(function(a, b) {
+        var aDate = safeDate(a.updatedAt || a.createdAt);
+        var bDate = safeDate(b.updatedAt || b.createdAt);
+        return (bDate ? bDate.getTime() : 0) - (aDate ? aDate.getTime() : 0);
+    }).slice(0, 3).forEach(function(album) {
+        var albumFiles = files.filter(function(file) { return file.albumId === album.id; });
+        var card = document.createElement("article");
+        card.className = "gallery-card";
+
+        var imageArea = document.createElement("div");
+        imageArea.className = "gallery-card-image";
+        var placeholder = document.createElement("span");
+        placeholder.className = "gallery-placeholder";
+        placeholder.textContent = "Recent Work Album";
+        imageArea.appendChild(placeholder);
+
+        var content = document.createElement("div");
+        content.className = "gallery-card-content";
+        var title = document.createElement("h4");
+        title.textContent = String(album.name || "Untitled Album");
+        var meta = document.createElement("div");
+        meta.className = "gallery-card-meta";
+        var photoMeta = document.createElement("span");
+        photoMeta.textContent = albumFiles.length + (albumFiles.length === 1 ? " photo" : " photos");
+        var visibility = document.createElement("span");
+        visibility.textContent = album.isPublic === false ? "Private" : "Public";
+        meta.append(photoMeta, visibility);
+        var status = document.createElement("div");
+        status.className = "gallery-status " + (album.isPublic === false ? "expired" : "active");
+        status.textContent = album.isPublic === false ? "Hidden from public portfolio" : "Visible in public portfolio";
+        var link = document.createElement("a");
+        link.href = "recentwork.html";
+        link.className = "btn-secondary";
+        link.textContent = "Manage albums";
+        link.style.display = "inline-block";
+        link.style.marginTop = "12px";
+        content.append(title, meta, status, link);
+        card.append(imageArea, content);
+        listElement.appendChild(card);
+    });
+}
+
+
 function renderDashboardGalleries() {
 
     var galleries =
@@ -6273,6 +6355,15 @@ window.addEventListener(
 
 
 /* =========================================================
+   RECENT WORK UPDATE EVENT
+========================================================= */
+window.addEventListener("professionalStudioRecentWorkUpdated", function() {
+    renderDashboardRecentWork();
+    renderPortfolioStorage();
+});
+
+
+/* =========================================================
    REVIEW UPDATE EVENT
 ========================================================= */
 
@@ -6320,6 +6411,8 @@ function refreshDashboard() {
     renderDashboardServices();
 
     renderDashboardGalleries();
+
+    renderDashboardRecentWork();
 
     var searchInput =
         document.getElementById(
@@ -6399,6 +6492,8 @@ function initializeDashboard() {
     renderDashboardServices();
 
     renderDashboardGalleries();
+
+    renderDashboardRecentWork();
 
     renderDashboardBookings();
 

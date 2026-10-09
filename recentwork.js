@@ -5166,6 +5166,7 @@ function setupEvents() {
         function(event) {
 
             if (
+                event.key === null ||
                 event.key ===
                     PORTFOLIO_STORAGE_KEY ||
                 event.key ===

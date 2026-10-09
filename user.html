@@ -381,6 +381,35 @@
 
 
 <!-- =========================================================
+     RECENT WORK ALBUMS
+========================================================= -->
+<section class="dashboard-section" id="recent-work-albums">
+    <div class="gallery-preview-wrapper">
+        <div class="gallery-preview-header">
+            <div>
+                <p class="section-eyebrow">PORTFOLIO</p>
+                <h3>Recent Work Albums</h3>
+                <p>Manage the photography albums shown in your recent work portfolio.</p>
+            </div>
+            <a href="recentwork.html">Manage Recent Work</a>
+        </div>
+        <div class="gallery-dashboard-grid" id="dashboardRecentWorkStats">
+            <div class="gallery-stat-card"><div class="gallery-stat-icon" aria-hidden="true">A</div><div><span>Total albums</span><strong id="recentWorkAlbumCount">0</strong></div></div>
+            <div class="gallery-stat-card"><div class="gallery-stat-icon" aria-hidden="true">P</div><div><span>Photos stored</span><strong id="recentWorkPhotoCount">0</strong></div></div>
+            <div class="gallery-stat-card"><div class="gallery-stat-icon" aria-hidden="true">V</div><div><span>Public albums</span><strong id="recentWorkPublicCount">0</strong></div></div>
+        </div>
+        <div class="gallery-preview-grid" id="dashboardRecentWorkList" aria-live="polite"></div>
+        <div class="gallery-empty" id="recentWorkEmptyState" hidden>
+            <div class="empty-icon" aria-hidden="true">A</div>
+            <h3>No recent work albums yet</h3>
+            <p>Create an album and upload selected work to start building your portfolio.</p>
+            <a href="recentwork.html" class="btn-primary">Create Your First Album</a>
+        </div>
+    </div>
+</section>
+
+
+<!-- =========================================================
      CLIENT GALLERIES
 ========================================================= -->
 
