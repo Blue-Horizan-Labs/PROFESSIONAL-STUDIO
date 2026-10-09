@@ -120,12 +120,13 @@ function getSelectedService() {
 
 function formatPrice(price) {
 
-    const numericPrice =
-        Number(price);
+    if (price === null || price === undefined || String(price).trim() === "") {
+        return "Contact for pricing";
+    }
 
-    if (
-        Number.isNaN(numericPrice)
-    ) {
+    const numericPrice = Number(price);
+
+    if (!Number.isFinite(numericPrice) || numericPrice < 0) {
         return "Contact for pricing";
     }
 
@@ -327,7 +328,9 @@ function renderPackages(service) {
 
     const packages =
         Array.isArray(service.packages)
-            ? service.packages
+            ? service.packages.filter(
+                packageData => packageData && typeof packageData === "object"
+            )
             : [];
 
 
@@ -535,10 +538,8 @@ function attachPackageButtons() {
                         !selectedPackageId
                     ) {
 
-                        console.error(
-                            "Missing service or package ID."
-                        );
-
+                        console.error("Missing service or package ID.");
+                        window.alert("This package cannot be booked right now. Please return to Services and try again.");
                         return;
                     }
 
@@ -581,8 +582,8 @@ window.addEventListener(
     function (event) {
 
         if (
-            event.key ===
-            SERVICE_STORAGE_KEY
+            event.key === SERVICE_STORAGE_KEY ||
+            event.key === null
         ) {
 
             const updatedService =
