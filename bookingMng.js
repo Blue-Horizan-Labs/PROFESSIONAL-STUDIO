@@ -184,7 +184,9 @@ function loadBookings() {
 
         bookings =
             Array.isArray(parsedBookings)
-                ? parsedBookings
+                ? parsedBookings.filter(
+                    booking => booking && typeof booking === "object" && !Array.isArray(booking)
+                )
                 : [];
 
     } catch (error) {
@@ -214,6 +216,8 @@ function saveBookings() {
             JSON.stringify(bookings)
         );
 
+        return true;
+
     } catch (error) {
 
         console.error(
@@ -221,7 +225,27 @@ function saveBookings() {
             error
         );
 
+        showBookingStorageError();
+        return false;
+
     }
+
+}
+
+function showBookingStorageError() {
+
+    let notice = document.getElementById("bookingStorageNotice");
+
+    if (!notice) {
+        notice = document.createElement("div");
+        notice.id = "bookingStorageNotice";
+        notice.setAttribute("role", "alert");
+        notice.style.cssText = "margin:12px 0;padding:12px 16px;border:1px solid #b42318;border-radius:8px;color:#b42318;background:#fff4f2;";
+        const main = document.querySelector("main");
+        if (main) main.prepend(notice);
+    }
+
+    notice.textContent = "Your changes could not be saved in this browser. Check available storage and try again.";
 
 }
 
@@ -493,10 +517,9 @@ function setupEvents() {
         event => {
 
             if (
-                event.key !==
-                    BOOKING_STORAGE_KEY &&
-                event.key !==
-                    SERVICE_STORAGE_KEY
+                event.key !== null &&
+                event.key !== BOOKING_STORAGE_KEY &&
+                event.key !== SERVICE_STORAGE_KEY
             ) {
 
                 return;
@@ -690,6 +713,36 @@ function renderOverview() {
 
 
 /* ============================================================
+   BOOKING FIELD COMPATIBILITY
+============================================================ */
+
+function getClientName(booking) {
+    const client = booking && booking.client;
+    if (client && typeof client === "object") {
+        return String(client.name || booking.clientName || booking.name || "Unknown Client");
+    }
+    return String(client || booking.clientName || booking.name || "Unknown Client");
+}
+
+function getClientEmail(booking) {
+    const client = booking && booking.client;
+    return String((client && typeof client === "object" ? client.email : "") || booking.email || "");
+}
+
+function getClientPhone(booking) {
+    const client = booking && booking.client;
+    return String((client && typeof client === "object" ? client.phone : "") || booking.phone || "");
+}
+
+function getServiceName(booking) {
+    return String(booking.serviceName || booking.service || booking.serviceTitle || "Photography Service");
+}
+
+function getPackageName(booking) {
+    return String(booking.packageName || booking.package || "Package");
+}
+
+/* ============================================================
    FILTER
 ============================================================ */
 
@@ -717,12 +770,11 @@ function getFilteredBookings() {
 
             const searchableText = [
 
-                booking.client,
-                booking.name,
-                booking.service,
-                booking.package,
-                booking.email,
-                booking.phone,
+                getClientName(booking),
+                getClientEmail(booking),
+                getClientPhone(booking),
+                getServiceName(booking),
+                getPackageName(booking),
                 booking.location
 
             ]
@@ -819,18 +871,11 @@ function createBookingCard(
         booking
     );
 
-    const clientName =
-        booking.client ||
-        booking.name ||
-        "Unknown Client";
+    const clientName = getClientName(booking);
 
-    const service =
-        booking.service ||
-        "Photography Service";
+    const service = getServiceName(booking);
 
-    const packageName =
-        booking.package ||
-        "Package";
+    const packageName = getPackageName(booking);
 
     const price =
         extractPrice(
@@ -1029,8 +1074,8 @@ function createBookingCard(
 
                     <span>
                         ${escapeHtml(
-                            booking.email ||
-                            booking.phone ||
+                            getClientEmail(booking) ||
+                            getClientPhone(booking) ||
                             "Client"
                         )}
                     </span>
@@ -1159,6 +1204,8 @@ function updateBookingStatus(
             bookingIndex
         ];
 
+    const originalBooking = JSON.parse(JSON.stringify(booking));
+
     const oldStatus =
         normalizeStatus(
             booking.status
@@ -1262,7 +1309,13 @@ function updateBookingStatus(
     }
 
 
-    saveBookings();
+    if (!saveBookings()) {
+        bookings[bookingIndex] = originalBooking;
+        renderOverview();
+        renderBookings();
+        renderCalendar();
+        return;
+    }
 
     renderOverview();
     renderBookings();
@@ -1312,18 +1365,11 @@ function openBookingModal(
         booking
     );
 
-    const clientName =
-        booking.client ||
-        booking.name ||
-        "Unknown Client";
+    const clientName = getClientName(booking);
 
-    const service =
-        booking.service ||
-        "Photography Service";
+    const service = getServiceName(booking);
 
-    const packageName =
-        booking.package ||
-        "Package";
+    const packageName = getPackageName(booking);
 
     const status =
         normalizeStatus(
@@ -1370,7 +1416,7 @@ function openBookingModal(
                     <span>Email</span>
                     <strong>
                         ${escapeHtml(
-                            booking.email || "-"
+                            getClientEmail(booking) || "-"
                         )}
                     </strong>
                 </div>
@@ -1379,7 +1425,7 @@ function openBookingModal(
                     <span>Phone</span>
                     <strong>
                         ${escapeHtml(
-                            booking.phone || "-"
+                            getClientPhone(booking) || "-"
                         )}
                     </strong>
                 </div>
@@ -2554,9 +2600,7 @@ function renderCalendarDetails() {
                             <strong>
 
                                 ${escapeHtml(
-                                    booking.client ||
-                                    booking.name ||
-                                    "Client"
+                                    getClientName(booking)
                                 )}
 
                             </strong>
@@ -2564,8 +2608,7 @@ function renderCalendarDetails() {
                             <span>
 
                                 ${escapeHtml(
-                                    booking.service ||
-                                    "Photography"
+                                    getServiceName(booking)
                                 )}
 
                                 ·
@@ -2856,8 +2899,7 @@ function findPackageForBooking(
 
     const packageName =
         String(
-            booking.package ||
-            ""
+            booking.packageName || booking.package || ""
         )
             .trim()
             .toLowerCase();
