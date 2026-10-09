@@ -126,6 +126,13 @@ input.input-error{
     line-height:1.5;
 }
 
+.status.error{
+    display:block;
+    background:#3a1717;
+    color:#fecaca;
+    border:1px solid #7f1d1d;
+}
+
 .checkbox{
     display:flex;
     align-items:flex-start;
@@ -224,8 +231,7 @@ button{
 <h1>Delete Account</h1>
 
 <p class="subtitle">
-Deleting your Professional Studio account is permanent. Once deleted,
-your account, bookings, portfolio, and associated data cannot be recovered.
+Account deletion must be completed securely by Professional Studio’s server. This page is not connected to a server-side deletion endpoint yet, so submitting this form will not delete your account.
 </p>
 
 <div class="warning">
@@ -234,13 +240,13 @@ your account, bookings, portfolio, and associated data cannot be recovered.
 
 <ul>
 
-<li>Your account will be permanently deleted.</li>
+<li>Your account cannot be deleted from this page until server-side deletion is implemented.</li>
 
-<li>Your bookings, projects and profile information will be removed.</li>
+<li>Your bookings, projects and profile information will remain unchanged for now.</li>
 
-<li>You will lose access to your dashboard immediately.</li>
+<li>You will retain access to your dashboard.</li>
 
-<li>This action cannot be undone.</li>
+<li>Do not assume your account is deleted until the server confirms it.</li>
 
 </ul>
 
@@ -259,13 +265,14 @@ Type <strong>DELETE</strong> to continue
     id="deleteInput"
     placeholder="Type DELETE"
     autocomplete="off"
+    autocapitalize="characters"
     spellcheck="false"
 >
 
 <div
     class="status"
     id="status">
-✓ Verification complete. You can now press <strong>Delete Account</strong> to continue.
+Confirmation phrase matches. Server-side deletion is not available yet.
 </div>
 
 </div>
@@ -354,78 +361,30 @@ cancelBtn.addEventListener("click",function(){
 
 });
 
-deleteForm.addEventListener("submit",function(e){
+deleteForm.addEventListener("submit", function (event) {
+    event.preventDefault();
 
-    e.preventDefault();
-
-    if(button.disabled){
+    if (button.disabled) {
         return;
     }
 
-    const confirmDelete = window.confirm(
-        "Delete your Professional Studio account permanently?\n\n" +
-        "This action cannot be undone."
+    const confirmed = window.confirm(
+        "Account deletion is not connected to the server yet.\n\n" +
+        "No account data will be deleted. Continue to view this notice?"
     );
 
-    if(!confirmDelete){
+    if (!confirmed) {
         return;
     }
 
-    /*
-        Frontend-only account deletion simulation.
+    status.classList.add("error");
+    status.style.display = "block";
+    status.textContent =
+        "Your account has NOT been deleted. Server-side account deletion is not implemented yet. " +
+        "No local or server data was removed. Return to your dashboard for now.";
 
-        Remove Professional Studio application data stored
-        in localStorage. In the production version this must
-        be handled by the backend/database.
-    */
-
-    const keysToRemove = [];
-
-    for(let i = 0; i < localStorage.length; i++){
-
-        const key = localStorage.key(i);
-
-        if(
-            key &&
-            (
-                key.startsWith("professionalStudio") ||
-                key.startsWith("professionalstudio")
-            )
-        ){
-            keysToRemove.push(key);
-        }
-
-    }
-
-    keysToRemove.forEach(function(key){
-
-        localStorage.removeItem(key);
-
-    });
-
-    /*
-        Remove the client gallery IndexedDB database if it exists.
-    */
-
-    if("indexedDB" in window){
-
-        try{
-
-            window.indexedDB.deleteDatabase("professionalStudioDB");
-
-        }catch(error){
-
-            console.warn(
-                "Could not remove local gallery database:",
-                error
-            );
-
-        }
-
-    }
-
-    window.location.href = "goodby.html";
-
+    button.disabled = true;
+    button.textContent = "Deletion Unavailable";
 });
 
 validate();
