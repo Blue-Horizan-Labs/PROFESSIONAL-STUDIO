@@ -1693,6 +1693,78 @@
 
 
             /* =====================================
+               SAFE SERVER ERROR MESSAGES
+               ====================================== */
+
+            function getUserFacingError(value, fallback) {
+
+                let candidate = value;
+
+                if (
+                    candidate &&
+                    typeof candidate === "object"
+                ) {
+
+                    candidate =
+                        candidate.message?.message ||
+                        candidate.message?.error_description ||
+                        candidate.error?.message ||
+                        candidate.message ||
+                        candidate.error_description ||
+                        candidate.error ||
+                        candidate.code ||
+                        "";
+
+                    if (
+                        candidate &&
+                        typeof candidate === "object"
+                    ) {
+
+                        candidate =
+                            candidate.message ||
+                            candidate.code ||
+                            "";
+
+                    }
+
+                }
+
+                const raw =
+                    typeof candidate === "string"
+                        ? candidate.trim()
+                        : "";
+
+                if (!raw) {
+                    return fallback;
+                }
+
+                if (
+                    /AUTH_CONFIG|missing.{0,30}(environment|env|config)|supabase.{0,30}(url|key|config)|invalid.{0,20}(api key|configuration)/i.test(raw)
+                ) {
+                    return "Account creation is temporarily unavailable because the authentication service is not configured correctly. Please try again later.";
+                }
+
+                if (
+                    /^(failed to fetch|networkerror|load failed|fetch failed)$/i.test(raw)
+                ) {
+                    return "Unable to connect to the account service. Check your connection and try again.";
+                }
+
+                if (
+                    /^\s*</.test(raw) ||
+                    /<\/?(html|head|body|!doctype)\b/i.test(raw) ||
+                    raw.length > 240 ||
+                    /^\[object object\]$/i.test(raw)
+                ) {
+                    return fallback;
+                }
+
+                return raw;
+
+            }
+
+
+            /* =====================================
                LOADING
                ====================================== */
 
@@ -2387,33 +2459,76 @@
                             )
                         ) {
 
-                            data =
-                                await response.json();
+                            try {
+
+                                data =
+                                    await response.json();
+
+                            } catch (parseError) {
+
+                                data = null;
+
+                            }
 
                         } else {
 
-                            data =
+                            const responseText =
                                 await response.text();
+
+                            if (responseText.trim()) {
+
+                                try {
+
+                                    data =
+                                        JSON.parse(responseText);
+
+                                } catch (parseError) {
+
+                                    data =
+                                        responseText.trim();
+
+                                }
+
+                            }
+
+                        }
+
+
+                        if (!response.ok) {
+
+                            throw new Error(
+                                getUserFacingError(
+                                    data,
+                                    "Unable to create your account right now. Please try again later."
+                                )
+                            );
 
                         }
 
 
                         if (
-                            !response.ok
+                            typeof data === "string" &&
+                            /<\/?(html|head|body|!doctype)\b/i.test(data)
                         ) {
 
-                            const serverMessage =
-                                typeof data === "string"
-                                    ? data
-                                    : (
-                                        data?.message ||
-                                        data?.error ||
-                                        "Unable to create your account."
-                                    );
+                            throw new Error(
+                                "The account service returned an unexpected response. Please try again later."
+                            );
 
+                        }
+
+
+                        if (
+                            data &&
+                            typeof data === "object" &&
+                            data.success === false
+                        ) {
 
                             throw new Error(
-                                serverMessage
+                                getUserFacingError(
+                                    data,
+                                    "Unable to create your account right now. Please try again later."
+                                )
                             );
 
                         }
@@ -2424,25 +2539,35 @@
                            ================================= */
 
                         showMessage(
-                            "Account created successfully. Setting up your studio...",
+                            "Account created successfully. Check your email for the verification code.",
                             "success"
                         );
 
 
                         /*
-                         * This is the current frontend
-                         * hand-off point.
-                         *
-                         * Replace this route later if the
-                         * final authentication flow uses
-                         * email verification first.
+                         * Email verification must happen before
+                         * the user continues to workspace setup.
+                         * Pass the email as a display/lookup hint;
+                         * the backend must still validate the code
+                         * and the pending account/session securely.
                          */
 
                         setTimeout(
                             function () {
 
+                                const verificationUrl =
+                                    new URL(
+                                        "/auth/email-verification.html",
+                                        window.location.origin
+                                    );
+
+                                verificationUrl.searchParams.set(
+                                    "email",
+                                    payload.email
+                                );
+
                                 window.location.href =
-                                    "setup.html";
+                                    verificationUrl.toString();
 
                             },
                             350
@@ -2458,10 +2583,10 @@
 
 
                         const errorMessage =
-                            error?.message &&
-                            error.message.trim()
-                                ? error.message
-                                : "Unable to connect to the server. Please try again.";
+                            getUserFacingError(
+                                error?.message,
+                                "Unable to connect to the account service. Check your connection and try again."
+                            );
 
 
                         showMessage(

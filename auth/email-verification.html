@@ -537,7 +537,7 @@
                 1px solid rgba(143, 58, 58, 0.35);
         }
 
-        .form-message.success-state {
+        .form-message.success-message {
             color: var(--success);
 
             background:
@@ -1050,7 +1050,7 @@
         <header class="auth-header">
 
             <a
-                href="index.html"
+                href="/index.html"
                 class="brand"
                 aria-label="Professional Studio home"
             >
@@ -1070,7 +1070,7 @@
 
 
             <a
-                href="login.html"
+                href="/auth/login-new.html"
                 class="header-login"
             >
                 Log in
@@ -1353,7 +1353,7 @@
 
                         <div class="secondary-actions">
 
-                            <a href="signup.html">
+                            <a href="/auth/signup.html">
                                 Back to Sign Up
                             </a>
 
@@ -1403,7 +1403,7 @@
 
 
                     <a
-                        href="setup.html"
+                        href="/setup.html"
                         class="success-login"
                     >
                         Continue to Setup
@@ -1565,13 +1565,13 @@
 
             formMessage.classList.remove(
                 "error-state",
-                "success-state"
+                "success-message"
             );
 
             formMessage.classList.add(
                 "show",
                 type === "success"
-                    ? "success-state"
+                    ? "success-message"
                     : "error-state"
             );
 
@@ -1586,7 +1586,7 @@
             formMessage.classList.remove(
                 "show",
                 "error-state",
-                "success-state"
+                "success-message"
             );
 
         }
@@ -1944,7 +1944,8 @@
 
                                 body:
                                     JSON.stringify({
-                                        code: code
+                                        code: code,
+                                        email: email || null
                                     })
                             }
                         );
