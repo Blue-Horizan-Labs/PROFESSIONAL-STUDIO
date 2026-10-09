@@ -3596,7 +3596,42 @@ window.addEventListener(
    INITIALIZE
 ========================================================= */
 
-renderAlbums();
+async function initializePublicGallery() {
+    try {
+        await renderAlbums();
+
+        // Public portfolio cards link to a specific album.
+        // Open it only after the public album list has rendered.
+        const requestedAlbumId =
+            new URLSearchParams(window.location.search).get("album");
+
+        if (requestedAlbumId) {
+            const publicAlbumExists =
+                getRecentWorkAlbums().some(
+                    (album) => album.id === requestedAlbumId
+                );
+
+            if (publicAlbumExists) {
+                await openAlbum(requestedAlbumId);
+            } else {
+                const notice = document.createElement("p");
+                notice.className = "empty-gallery";
+                notice.textContent =
+                    "That album is unavailable or is no longer public.";
+                albumGrid.prepend(notice);
+            }
+        }
+    } catch (error) {
+        console.error("Unable to initialize the public gallery.", error);
+
+        if (albumGrid) {
+            albumGrid.textContent =
+                "Recent work could not be loaded. Please refresh the page and try again.";
+        }
+    }
+}
+
+initializePublicGallery();
 
 </script>
 

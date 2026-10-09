@@ -3436,7 +3436,11 @@ async function renderPortfolioRecentWork() {
 
     const albums =
         getRecentWorkAlbums()
-            .filter(Boolean)
+            .filter(
+                (album) =>
+                    album &&
+                    album.isPublic !== false
+            )
             .slice(0, 6);
 
 
