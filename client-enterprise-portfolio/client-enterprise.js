@@ -493,10 +493,32 @@ function renderEnterprisePhilosophy(profile) {
 
 
 function renderEnterpriseBrand(profile) {
+    const logo = document.getElementById("enterpriseLogo");
+    if (logo) {
+        logo.textContent = normalizeText(profile.studioName || profile.photographerName) || "Professional Studio";
+    }
+
+    const heroTitle = document.getElementById("heroTitle");
+    if (heroTitle) {
+        const primaryTitle = normalizeText(profile.studioName || profile.photographerName) || "Professional Studio";
+        const secondaryTitle = normalizeText(profile.studioTagline || profile.specialization || profile.professionalRole);
+        heroTitle.replaceChildren(document.createTextNode(primaryTitle));
+        if (secondaryTitle) {
+            const accent = document.createElement("span");
+            accent.textContent = secondaryTitle;
+            heroTitle.appendChild(accent);
+        }
+    }
+
     enterpriseSetText(
-        "#heroTitle",
-        profile.photographerName
+        "#heroKicker",
+        normalizeText(profile.professionalRole || profile.specialization) || "Enterprise Photography Portfolio"
     );
+
+    const pageTitle = normalizeText(profile.studioName || profile.photographerName);
+    document.title = pageTitle
+        ? `${pageTitle} | Portfolio`
+        : "Professional Studio | Enterprise Portfolio";
 
     enterpriseSetText(
         "#aboutText",
@@ -2119,269 +2141,137 @@ function initializeReviewSystem() {
 ========================================================= */
 
 function getClientServices() {
-    const services =
-        readClientLocalStorage(
-            STORAGE_KEYS.services,
-            []
-        );
-
-    return Array.isArray(services)
-        ? services
-        : [];
+    const services = readClientLocalStorage(STORAGE_KEYS.services, []);
+    return Array.isArray(services) ? services : [];
 }
 
+function formatEnterpriseCurrency(amount) {
+    const value = Number(amount);
+    if (!Number.isFinite(value) || value < 0) return "";
+    try {
+        return new Intl.NumberFormat("en-IN", {
+            style: "currency",
+            currency: "INR",
+            maximumFractionDigits: 0
+        }).format(value);
+    } catch {
+        return `₹${Math.round(value).toLocaleString("en-IN")}`;
+    }
+}
+
+function getEnterpriseServiceStartingPrice(service) {
+    const packages = Array.isArray(service?.packages) ? service.packages : [];
+    const prices = packages
+        .filter(pkg => pkg && typeof pkg === "object")
+        .map(pkg => Number(pkg.price))
+        .filter(price => Number.isFinite(price) && price > 0);
+    if (prices.length) return Math.min(...prices);
+
+    // Compatibility for older service records; current Service Management
+    // stores prices on packages rather than on the service itself.
+    const legacy = Number(service?.price ?? service?.startingPrice);
+    return Number.isFinite(legacy) && legacy > 0 ? legacy : null;
+}
+
+function renderEnterpriseHeroServices(services) {
+    const line = document.getElementById("heroServicesLine");
+    if (!line) return;
+    const names = services
+        .map(service => normalizeText(service?.name || service?.title))
+        .filter(Boolean);
+    line.textContent = names.length
+        ? names.slice(0, 5).join(" · ") + (names.length > 5 ? " · + More" : "")
+        : "Explore the studio's published services and work.";
+}
 
 function loadClientServices() {
-    const container =
-        document.getElementById(
-            "servicesContainer"
-        );
+    const container = document.getElementById("servicesContainer");
+    if (!container) return;
 
-    if (!container) {
-        return;
-    }
+    const services = getClientServices().filter(service =>
+        service &&
+        typeof service === "object" &&
+        service.active !== false &&
+        service.isActive !== false &&
+        normalizeText(service.name || service.title)
+    );
 
+    renderEnterpriseHeroServices(services);
     container.replaceChildren();
 
-    const services =
-        getClientServices()
-            .filter(
-                (service) =>
-                    service &&
-                    service.active !== false
-            );
-
     if (!services.length) {
-        const empty =
-            document.createElement(
-                "div"
-            );
-
-        empty.className =
-            "service-empty-state";
-
-        empty.innerHTML = `
-            <h3>No Services Available Yet</h3>
-            <p>
-                Photography services will appear here once they have been published.
-            </p>
-        `;
-
-        container.appendChild(
-            empty
-        );
-
+        const empty = document.createElement("div");
+        empty.className = "service-empty-state";
+        const heading = document.createElement("h3");
+        heading.textContent = "Services coming soon";
+        const message = document.createElement("p");
+        message.textContent = "Published services will appear here after they are added in Service Management.";
+        empty.append(heading, message);
+        container.appendChild(empty);
         return;
     }
 
-    services.forEach((service) => {
-        const card =
-            document.createElement(
-                "article"
-            );
+    services.forEach((service, index) => {
+        const card = document.createElement("article");
+        card.className = "price-card";
 
-        card.className =
-            "price-card";
+        const name = normalizeText(service.name || service.title) || "Photography Service";
+        const description = normalizeText(service.description || service.details);
+        const packages = Array.isArray(service.packages)
+            ? service.packages.filter(pkg => pkg && typeof pkg === "object")
+            : [];
+        const serviceId = normalizeText(service.id || service.serviceId || service.slug);
+        const price = getEnterpriseServiceStartingPrice(service);
 
-        const name =
-            normalizeText(
-                service.name ||
-                service.title
-            ) ||
-            "Photography Service";
+        const heading = document.createElement("h3");
+        heading.textContent = name;
+        card.appendChild(heading);
 
-        const description =
-            normalizeText(
-                service.description
-            );
+        const priceElement = document.createElement("div");
+        priceElement.className = "price";
+        priceElement.textContent = price !== null
+            ? `Packages from ${formatEnterpriseCurrency(price)}`
+            : "Contact for pricing";
+        card.appendChild(priceElement);
 
-        const price =
-            normalizeText(
-                service.price ??
-                service.startingPrice
-            );
-
-        const coverage =
-            normalizeText(
-                service.coverage
-            );
-
-        const delivery =
-            normalizeText(
-                service.delivery
-            );
-
-        const packageCount =
-            Array.isArray(
-                service.packages
-            )
-                ? service.packages.length
-                : getNumericValue(
-                    service.packageCount
-                );
-
-        const serviceId =
-            normalizeText(
-                service.id ||
-                service.serviceId ||
-                service.slug
-            );
-
-        const title =
-            document.createElement(
-                "h3"
-            );
-
-        title.textContent =
-            name;
-
-        card.appendChild(title);
-
-        if (price) {
-            const priceElement =
-                document.createElement(
-                    "div"
-                );
-
-            priceElement.className =
-                "price";
-
-            priceElement.textContent =
-                price;
-
-            card.appendChild(
-                priceElement
-            );
-        }
-
-        if (description) {
-            const descriptionElement =
-                document.createElement(
-                    "p"
-                );
-
-            descriptionElement.className =
-                "service-preview-description";
-
-            descriptionElement.textContent =
-                description;
-
-            card.appendChild(
-                descriptionElement
-            );
-        }
+        const summary = document.createElement("p");
+        summary.className = "service-preview-description";
+        summary.textContent = description || "Contact the studio to discuss this service.";
+        card.appendChild(summary);
 
         const details = [];
-
-        if (packageCount !== null) {
-            details.push(
-                `${packageCount} package${
-                    packageCount === 1
-                        ? ""
-                        : "s"
-                }`
-            );
+        if (packages.length) {
+            details.push(`${packages.length} ${packages.length === 1 ? "package" : "packages"}`);
         }
-
-        if (coverage) {
-            details.push(
-                coverage
-            );
-        }
-
-        if (delivery) {
-            details.push(
-                delivery
-            );
-        }
+        const coverage = normalizeText(service.coverage);
+        const delivery = normalizeText(service.delivery);
+        if (coverage) details.push(coverage);
+        if (delivery) details.push(delivery);
 
         if (details.length) {
-            const list =
-                document.createElement(
-                    "ul"
-                );
-
-            details.forEach(
-                (detail) => {
-                    const item =
-                        document.createElement(
-                            "li"
-                        );
-
-                    item.textContent =
-                        detail;
-
-                    list.appendChild(
-                        item
-                    );
-                }
-            );
-
-            card.appendChild(
-                list
-            );
+            const list = document.createElement("ul");
+            details.forEach(detail => {
+                const item = document.createElement("li");
+                item.textContent = detail;
+                list.appendChild(item);
+            });
+            card.appendChild(list);
         }
 
         if (serviceId) {
-            const actions =
-                document.createElement(
-                    "div"
-                );
-
-            actions.className =
-                "service-preview-actions";
-
-            const viewLink =
-                document.createElement(
-                    "a"
-                );
-
-            viewLink.className =
-                "book-btn";
-
-            viewLink.href =
-                `service.html?id=${encodeURIComponent(
-                    serviceId
-                )}`;
-
-            viewLink.textContent =
-                "View Service";
-
-            const bookLink =
-                document.createElement(
-                    "a"
-                );
-
-            bookLink.className =
-                "book-btn";
-
-            bookLink.href =
-                `service.html?id=${encodeURIComponent(
-                    serviceId
-                )}&action=book`;
-
-            bookLink.textContent =
-                "Book Service";
-
-            actions.appendChild(
-                viewLink
-            );
-
-            actions.appendChild(
-                bookLink
-            );
-
-            card.appendChild(
-                actions
-            );
+            const actions = document.createElement("div");
+            actions.className = "service-preview-actions";
+            const view = document.createElement("a");
+            view.className = "book-btn";
+            view.href = `service.html?id=${encodeURIComponent(serviceId)}`;
+            view.textContent = "View Service";
+            actions.appendChild(view);
+            card.appendChild(actions);
         }
 
-        container.appendChild(
-            card
-        );
+        container.appendChild(card);
     });
 }
-
 
 /* =========================================================
    EQUIPMENT
@@ -2896,7 +2786,7 @@ async function renderPortfolioRecentWork() {
 
     const albums =
         getRecentWorkAlbums()
-            .filter(Boolean)
+            .filter((album) => album && typeof album === "object" && album.isPublic !== false)
             .slice(0, 6);
 
     if (!albums.length) {
@@ -3531,36 +3421,36 @@ function initializeStorageListeners() {
         "storage",
         (event) => {
             if (
-                event.key ===
-                STORAGE_KEYS.profile
+                event.key === null ||
+                event.key === STORAGE_KEYS.profile
             ) {
                 renderPublicProfile();
             }
 
             if (
-                event.key ===
-                STORAGE_KEYS.services
+                event.key === null ||
+                event.key === STORAGE_KEYS.services
             ) {
                 loadClientServices();
             }
 
             if (
-                event.key ===
-                STORAGE_KEYS.equipment
+                event.key === null ||
+                event.key === STORAGE_KEYS.equipment
             ) {
                 loadClientEquipment();
             }
 
             if (
-                event.key ===
-                STORAGE_KEYS.portfolioStorage
+                event.key === null ||
+                event.key === STORAGE_KEYS.portfolioStorage
             ) {
                 renderPortfolioRecentWork();
             }
 
             if (
-                event.key ===
-                STORAGE_KEYS.reviews
+                event.key === null ||
+                event.key === STORAGE_KEYS.reviews
             ) {
                 renderClientReviews();
             }
@@ -3572,6 +3462,11 @@ function initializeStorageListeners() {
         () => {
             renderPublicProfile();
         }
+    );
+
+    window.addEventListener(
+        "professionalStudioServicesUpdated",
+        loadClientServices
     );
 
     document.addEventListener(
