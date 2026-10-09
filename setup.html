@@ -919,6 +919,8 @@ Studio Information
         id="studioName"
         type="text"
         maxlength="100"
+        required
+        aria-required="true"
         autocomplete="organization"
         placeholder="ex: Professional Studio"
     >
@@ -1048,6 +1050,8 @@ Full Name <span class="required">*</span>
 id="photographerName"
 type="text"
 maxlength="100"
+required
+aria-required="true"
 autocomplete="name"
 placeholder="ex: Rahul Patil"
 
@@ -1379,7 +1383,7 @@ id="saveProfileBtn"
    change ONLY this value if its route is different.
 ========================================================= */
 
-const PORTFOLIO_ROUTE = "user.html";
+const PORTFOLIO_ROUTE = "/user.html";
 
 
 /* =========================================================
@@ -2147,13 +2151,15 @@ function validateProfile(){
     if(
         experience.value !== "" &&
         (
+            !Number.isFinite(Number(experience.value)) ||
             Number(experience.value) < 0 ||
-            Number(experience.value) > 100
+            Number(experience.value) > 100 ||
+            !Number.isInteger(Number(experience.value))
         )
     ){
 
         alert(
-            "Please enter a valid experience between 0 and 100 years."
+            "Please enter a whole number for experience, between 0 and 100 years."
         );
 
         markError(experience);
@@ -2166,13 +2172,15 @@ function validateProfile(){
     if(
         sessionsDone.value !== "" &&
         (
+            !Number.isFinite(Number(sessionsDone.value)) ||
             Number(sessionsDone.value) < 0 ||
-            Number(sessionsDone.value) > 1000000
+            Number(sessionsDone.value) > 1000000 ||
+            !Number.isInteger(Number(sessionsDone.value))
         )
     ){
 
         alert(
-            "Please enter a valid number of sessions."
+            "Please enter a whole number of sessions, between 0 and 1,000,000."
         );
 
         markError(sessionsDone);
@@ -2215,103 +2223,173 @@ function validateProfile(){
 
 
 /* =========================================================
-   PHOTO UPLOAD + PREVIEW
+   PHOTO COMPRESSION + UPLOAD PREVIEW
+   ---------------------------------------------------------
+   Profile photos are kept in localStorage for compatibility
+   with the existing frontend. Raw 5MB files can exceed browser
+   storage limits, especially because the legacy profile format
+   also stores the photo. Resize/compress before saving.
 ========================================================= */
+
+function compressProfilePhoto(file){
+
+    return new Promise(function(resolve, reject){
+
+        const reader = new FileReader();
+
+        reader.onerror = function(){
+            reject(new Error("Unable to read the selected image."));
+        };
+
+        reader.onload = function(event){
+
+            const image = new Image();
+
+            image.onerror = function(){
+                reject(new Error("The selected file is not a readable image."));
+            };
+
+            image.onload = function(){
+
+                const maxDimension = 1200;
+                const scale = Math.min(
+                    1,
+                    maxDimension / Math.max(image.naturalWidth, image.naturalHeight)
+                );
+
+                const canvas = document.createElement("canvas");
+                canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+                canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+
+                const context = canvas.getContext("2d");
+
+                if(!context){
+                    reject(new Error("Image compression is not supported by this browser."));
+                    return;
+                }
+
+                context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+                let quality = 0.82;
+                let dataUrl = "";
+                const targetLength = 900 * 1024;
+
+                try{
+
+                    dataUrl = canvas.toDataURL("image/webp", quality);
+
+                    if(!dataUrl.startsWith("data:image/webp")){
+                        dataUrl = canvas.toDataURL("image/jpeg", quality);
+                    }
+
+                    while(dataUrl.length > targetLength && quality > 0.45){
+                        quality = Math.max(0.45, quality - 0.08);
+                        dataUrl = canvas.toDataURL(
+                            dataUrl.startsWith("data:image/webp") ? "image/webp" : "image/jpeg",
+                            quality
+                        );
+                    }
+
+                    if(dataUrl.length > targetLength){
+                        const reducedCanvas = document.createElement("canvas");
+                        reducedCanvas.width = Math.max(1, Math.round(canvas.width * 0.75));
+                        reducedCanvas.height = Math.max(1, Math.round(canvas.height * 0.75));
+                        const reducedContext = reducedCanvas.getContext("2d");
+
+                        if(!reducedContext){
+                            reject(new Error("Unable to prepare the image for saving."));
+                            return;
+                        }
+
+                        reducedContext.drawImage(
+                            canvas,
+                            0,
+                            0,
+                            reducedCanvas.width,
+                            reducedCanvas.height
+                        );
+
+                        dataUrl = reducedContext.toDataURL("image/jpeg", 0.65);
+                    }
+
+                    resolve(dataUrl);
+
+                }catch(error){
+                    reject(new Error("Unable to compress the selected image."));
+                }
+
+            };
+
+            image.src = event.target.result;
+
+        };
+
+        reader.readAsDataURL(file);
+
+    });
+
+}
+
 
 if(photoInput){
 
     photoInput.addEventListener(
         "change",
-        function(){
+        async function(){
 
             const file =
                 this.files &&
                 this.files[0];
 
-
             if(!file){
                 return;
             }
 
-
             const allowedTypes = [
-
                 "image/jpeg",
                 "image/png",
                 "image/webp"
-
             ];
 
+            if(!allowedTypes.includes(file.type)){
 
-            if(
-                !allowedTypes.includes(
-                    file.type
-                )
-            ){
-
-                alert(
-                    "Please select a JPG, PNG or WebP image."
-                );
-
+                alert("Please select a JPG, PNG or WebP image.");
                 this.value = "";
-
                 clearPhotoError();
-
                 return;
 
             }
 
+            if(file.size > 5 * 1024 * 1024){
 
-            if(
-                file.size >
-                5 * 1024 * 1024
-            ){
-
-                alert(
-                    "Please select an image smaller than 5MB."
-                );
-
+                alert("Please select an image smaller than 5MB.");
                 this.value = "";
-
                 clearPhotoError();
-
                 return;
 
             }
 
+            uploadLabel.classList.add("is-processing");
 
-            const reader =
-                new FileReader();
+            try{
 
+                const compressedPhoto = await compressProfilePhoto(file);
+                photoPreview.src = compressedPhoto;
 
-            reader.onload =
-                function(event){
+                uploadLabel.classList.add("has-image");
+                clearPhotoError();
 
-                    photoPreview.src =
-                        event.target.result;
+            }catch(error){
 
-                    uploadLabel.classList.add(
-                        "has-image"
-                    );
+                console.error("Professional Studio photo processing failed:", error);
+                alert(error.message || "Unable to process the selected image.");
+                this.value = "";
 
-                    clearPhotoError();
+            }finally{
 
-                };
+                uploadLabel.classList.remove("is-processing");
 
-
-            reader.onerror =
-                function(){
-
-                    alert(
-                        "Unable to read the selected image."
-                    );
-
-                    photoInput.value = "";
-
-                };
-
-
-            reader.readAsDataURL(file);
+            }
 
         }
     );
