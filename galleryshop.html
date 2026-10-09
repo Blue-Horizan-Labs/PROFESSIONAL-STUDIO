@@ -912,8 +912,8 @@
                     </span>
 
                     <p>
-                        Your gallery will be created after checkout
-                        and will appear in <strong>My Galleries</strong>.
+                        This checkout is not connected to a payment gateway yet.
+                        Saving an order request will not charge you or create a gallery.
                     </p>
 
                 </div>
@@ -928,7 +928,7 @@
                         </span>
 
                         <small>
-                            Frontend demo
+                            Not connected yet
                         </small>
 
                     </div>
@@ -943,11 +943,11 @@
                         <div>
 
                             <strong>
-                                Razorpay Checkout
+                                Online payment setup pending
                             </strong>
 
                             <span>
-                                UPI · Cards · Net Banking · Wallets
+                                UPI, cards and other methods will be enabled after gateway integration.
                             </span>
 
                         </div>
@@ -962,9 +962,9 @@
 
 
                 <p class="checkout-disclaimer">
-                    This frontend currently simulates successful payment.
-                    Production checkout will be connected to Razorpay
-                    with server-side payment verification.
+                    No payment will be taken here. This step only saves an order request
+                    as awaiting payment. A gallery must not be created until a backend
+                    verifies a successful payment.
                 </p>
 
             </div>
@@ -987,7 +987,7 @@
                 >
 
                     <span>
-                        Confirm Purchase
+                        Save Order Request
                     </span>
 
                     <span>
@@ -1020,15 +1020,15 @@
             </div>
 
             <span class="success-eyebrow">
-                PURCHASE COMPLETE
+                ORDER REQUEST SAVED
             </span>
 
             <h2>
-                Your gallery is ready.
+                Your order is awaiting payment.
             </h2>
 
             <p id="successMessage">
-                Your gallery has been created and is ready to set up.
+                Your order request has been saved. No payment has been processed and no gallery has been created yet.
             </p>
 
             <div class="success-details">
@@ -1055,7 +1055,7 @@
                 class="success-button"
                 id="openGalleryBtn"
             >
-                Open My Galleries →
+                Back to Gallery Shop →
             </button>
 
         </div>

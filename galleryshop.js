@@ -128,6 +128,24 @@ document.addEventListener("DOMContentLoaded", () => {
     const paymentTotal =
         document.getElementById("paymentTotal");
 
+    const successOverlay =
+        document.getElementById("successOverlay");
+
+    const successMessage =
+        document.getElementById("successMessage");
+
+    const successStorage =
+        document.getElementById("successStorage");
+
+    const successDuration =
+        document.getElementById("successDuration");
+
+    const successTotal =
+        document.getElementById("successTotal");
+
+    const openGalleryBtn =
+        document.getElementById("openGalleryBtn");
+
 
     /* =====================================================
        STATE
@@ -569,177 +587,93 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =====================================================
-       CREATE PURCHASE HANDOFF
+       SAVE ORDER REQUEST (NO PAYMENT PROCESSING)
     ====================================================== */
 
-    function createGalleryPurchase(orderData) {
+    let isSavingOrderRequest = false;
 
-        /*
-            IMPORTANT CONNECTION
+    function createOrderRequest() {
 
-            Gallery Shop
-                    ↓
-            professionalStudioPendingGallery
-                    ↓
-            Client Galleries
-
-            These names are intentionally preserved
-            because Client Galleries already depends
-            on them.
-        */
-
-        const purchaseId =
-            `purchase_${Date.now()}_${Math.random()
-                .toString(36)
-                .slice(2, 8)}`;
-
-
-        const purchaseData = {
-
-            purchaseId,
-
-            storageGB:
-                orderData.storageGB,
-
-            durationMonths:
-                orderData.durationMonths,
-
-            totalPriceINR:
-                orderData.totalPriceINR,
-
-            purchasedAt:
-                new Date().toISOString(),
-
-            source:
-                "gallery-shop",
-
-            paymentStatus:
-                "frontend-confirmed",
-
-            status:
-                "purchased"
-
-        };
-
-
-        /* =================================================
-           CLIENT GALLERY HANDOFF
-        ================================================= */
-
-        localStorage.setItem(
-            "professionalStudioPendingGallery",
-            JSON.stringify(purchaseData)
-        );
-
-
-        /* =================================================
-           PURCHASE HISTORY
-        ================================================= */
-
-        let purchases = [];
-
-        try {
-
-            purchases =
-                JSON.parse(
-                    localStorage.getItem(
-                        "professionalStudioGalleryPurchases"
-                    )
-                ) || [];
-
-        } catch (error) {
-
-            purchases = [];
-
+        if (isSavingOrderRequest) {
+            return;
         }
 
+        isSavingOrderRequest = true;
 
-        if (!Array.isArray(purchases)) {
-
-            purchases = [];
-
+        if (checkoutConfirm) {
+            checkoutConfirm.disabled = true;
         }
-
-
-        purchases.push(
-            purchaseData
-        );
-
-
-        localStorage.setItem(
-            "professionalStudioGalleryPurchases",
-            JSON.stringify(purchases)
-        );
-
-
-        return purchaseData;
-
-    }
-
-
-    /* =====================================================
-       FINISH FRONTEND PURCHASE
-    ====================================================== */
-
-    function completePurchase() {
 
         const orderData = {
-
-            storageGB:
-                selectedStorage,
-
-            durationMonths:
-                selectedDuration,
-
-            totalPriceINR:
-                calculatePrice(
-                    selectedStorage,
-                    selectedDuration
-                )
-
+            purchaseId: `purchase_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+            storageGB: selectedStorage,
+            durationMonths: selectedDuration,
+            totalPriceINR: calculatePrice(selectedStorage, selectedDuration),
+            createdAt: new Date().toISOString(),
+            source: "gallery-shop",
+            paymentStatus: "not-started",
+            status: "awaiting-payment",
+            note: "Frontend order request only. Payment has not been processed."
         };
 
+        try {
+            let purchases = [];
+            const saved = localStorage.getItem("professionalStudioGalleryPurchases");
 
-        const purchase =
-            createGalleryPurchase(
-                orderData
-            );
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed)) {
+                    purchases = parsed.filter(item => item && typeof item === "object");
+                }
+            }
 
+            purchases.push(orderData);
+            localStorage.setItem("professionalStudioGalleryPurchases", JSON.stringify(purchases));
 
-        console.log(
-            "Gallery purchase created:",
-            purchase
-        );
+            const verify = JSON.parse(localStorage.getItem("professionalStudioGalleryPurchases") || "[]");
+            if (!Array.isArray(verify) || !verify.some(item => item && item.purchaseId === orderData.purchaseId)) {
+                throw new Error("The order request could not be verified after saving.");
+            }
 
+            if (successStorage) {
+                successStorage.textContent = `${formatIndianNumber(orderData.storageGB)} GB`;
+            }
+            if (successDuration) {
+                successDuration.textContent = `${orderData.durationMonths} months`;
+            }
+            if (successTotal) {
+                successTotal.textContent = `₹${formatIndianNumber(orderData.totalPriceINR)}`;
+            }
+            if (successMessage) {
+                successMessage.textContent = "Your order request has been saved locally and is awaiting payment setup. No payment was processed, and no gallery was created.";
+            }
 
-        closePayment();
+            closeCheckout();
+            if (successOverlay) {
+                successOverlay.classList.add("open");
+                successOverlay.setAttribute("aria-hidden", "false");
+                document.body.classList.add("modal-open");
+            } else {
+                window.alert("Order request saved locally. No payment was processed and no gallery was created.");
+            }
 
+        } catch (error) {
+            console.error("Could not save gallery order request:", error);
+            window.alert("The order request could not be saved in this browser. Please check browser storage and try again.");
+        } finally {
+            isSavingOrderRequest = false;
+            if (checkoutConfirm) {
+                checkoutConfirm.disabled = checkoutAgreement ? !checkoutAgreement.checked : false;
+            }
+        }
+    }
 
-        /*
-            Small success state before navigation.
-        */
-
-        sessionStorage.setItem(
-            "professionalStudioGalleryPurchaseSuccess",
-            JSON.stringify({
-                purchaseId:
-                    purchase.purchaseId,
-
-                storageGB:
-                    purchase.storageGB,
-
-                durationMonths:
-                    purchase.durationMonths,
-
-                totalPriceINR:
-                    purchase.totalPriceINR
-            })
-        );
-
-
-        window.location.href =
-            "clientgallery.html";
-
+    function closeSuccess() {
+        if (successOverlay) {
+            successOverlay.classList.remove("open");
+            successOverlay.setAttribute("aria-hidden", "true");
+        }
+        document.body.classList.remove("modal-open");
     }
 
 
@@ -803,7 +737,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 }
 
-                openPayment();
+                createOrderRequest();
 
             }
         );
@@ -836,24 +770,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =====================================================
-       PAYMENT CONFIRM
-    ====================================================== */
-
-    if (paymentConfirm) {
-
-        paymentConfirm.addEventListener(
-            "click",
-            () => {
-
-                completePurchase();
-
-            }
-        );
-
-    }
-
-
-    /* =====================================================
        PAYMENT BACK
     ====================================================== */
 
@@ -872,6 +788,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
+
+    if (openGalleryBtn) {
+        openGalleryBtn.addEventListener("click", closeSuccess);
+    }
+
+    if (successOverlay) {
+        successOverlay.addEventListener("click", event => {
+            if (event.target === successOverlay) {
+                closeSuccess();
+            }
+        });
+    }
 
     /* =====================================================
        CLOSE CHECKOUT ON BACKDROP
@@ -951,7 +879,12 @@ document.addEventListener("DOMContentLoaded", () => {
             ) {
 
                 closeCheckout();
+                return;
 
+            }
+
+            if (successOverlay && successOverlay.classList.contains("open")) {
+                closeSuccess();
             }
 
         }
