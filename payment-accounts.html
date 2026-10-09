@@ -155,8 +155,7 @@
                             </h2>
 
                             <p>
-                                Connect an account to receive eligible
-                                payouts from Professional Studio.
+                                Manage payout details for future use. An account is not connected or verified until the secure backend confirms it.
                             </p>
 
                         </div>
@@ -232,8 +231,7 @@
                             </h2>
 
                             <p>
-                                Enter the account where you want
-                                your Professional Studio payouts sent.
+                                Enter your details only when secure payout setup is available. This page does not store bank details in your browser.
                             </p>
 
                         </div>
@@ -428,15 +426,12 @@
 
                         <div class="form-security-note">
 
-                            <span class="security-symbol">
-                                ✓
+                            <span class="security-symbol" aria-hidden="true">
+                                !
                             </span>
 
-                            <p>
-                                Your account details are currently
-                                handled in frontend demo mode.
-                                Production payment processing should
-                                use secure server-side storage.
+                            <p id="payoutSecurityMessage" aria-live="polite">
+                                Secure payout setup requires the backend API. Bank details are sent only to that API and are never saved in localStorage. Until the API is available, submitting this form will not save or connect an account.
                             </p>
 
                         </div>
@@ -464,82 +459,6 @@
                     </form>
 
                 </section>
-
-
-
-                <!-- =============================================
-                     UPI / ALTERNATIVE METHOD
-                ============================================== 
-
-                <section class="panel">
-
-                    <div class="panel-header">
-
-                        <div>
-
-                            <p class="panel-eyebrow">
-                                ALTERNATIVE METHOD
-                            </p>
-
-                            <h2>
-                                UPI Payout
-                            </h2>
-
-                            <p>
-                                Keep a UPI ID available for future
-                                payout options.
-                            </p>
-
-                        </div>
-
-
-                        <span
-                            class="method-status"
-                            id="upiStatus"
-                        >
-                            Not Added
-                        </span>
-
-                    </div>
-
-
-                    <form
-                        id="upiForm"
-                        class="upi-form"
-                        novalidate
-                    >
-
-                        <div class="upi-input-wrap">
-
-                            <label for="upiId">
-                                UPI ID
-                            </label>
-
-                            <input
-                                type="text"
-                                id="upiId"
-                                placeholder="example@upi"
-                                autocomplete="off"
-                            >
-
-                            <small
-                                class="field-error"
-                                id="upiError"
-                            ></small>
-
-                        </div>
-
-
-                        <button
-                            type="submit"
-                            class="btn-secondary"
-                        >
-                            Save UPI
-                        </button>
-
-                    </form>
-
-                </section> -->
 
 
 
@@ -624,7 +543,7 @@
                     <div class="preference-row">
 
                         <span>
-                            Bank Account
+                            Payout Method
                         </span>
 
                         <strong id="defaultMethod">
