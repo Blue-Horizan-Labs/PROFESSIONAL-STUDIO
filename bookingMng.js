@@ -2933,7 +2933,10 @@ function normalizePaymentPlan(
                 value:
                     Number(
                         plan.advance.value
-                    ) || 0
+                    ) || 0,
+
+                due:
+                    String(plan.advance.due || "")
 
             }
             : {
@@ -2942,7 +2945,10 @@ function normalizePaymentPlan(
                     "percentage",
 
                 value:
-                    0
+                    0,
+
+                due:
+                    ""
 
             };
 
@@ -2975,7 +2981,7 @@ function normalizePaymentPlan(
                             String(
                                 item.due ||
                                 item.dueTiming ||
-                                "Due as scheduled"
+                                ""
                             )
 
                     })
@@ -2985,6 +2991,10 @@ function normalizePaymentPlan(
     return {
 
         type,
+
+        dueDate: String(plan.dueDate || ""),
+
+        balanceDue: String(plan.balanceDue || ""),
 
         advance,
 
@@ -3031,7 +3041,7 @@ function getPaymentStages(
                     packagePrice,
 
                 due:
-                    "Before booking confirmation"
+                    normalizedPlan.dueDate || "Before booking confirmation"
 
             }
 
@@ -3073,7 +3083,7 @@ function getPaymentStages(
                     safeAdvance,
 
                 due:
-                    "Required after booking acceptance"
+                    normalizedPlan.advance.due || "Required after booking acceptance"
 
             },
 
@@ -3090,7 +3100,7 @@ function getPaymentStages(
                     ),
 
                 due:
-                    "Due later"
+                    normalizedPlan.balanceDue || "Due later"
 
             }
 
@@ -3316,7 +3326,8 @@ function getPaymentDetailsPaidAmount(
                             "failed",
                             "cancelled",
                             "canceled",
-                            "pending"
+                            "pending",
+                            "refunded"
                         ].includes(
                             status
                         )
