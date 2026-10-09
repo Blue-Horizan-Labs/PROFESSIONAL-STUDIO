@@ -1,147 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta
-      name="description"
-      content="Review client contacts and booking history in Professional Studio."
-    >
-    <meta name="theme-color" content="#111111">
-    <title>Professional Studio | Client Management</title>
-    <link rel="stylesheet" href="clientMng.css">
-  </head>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Review client contacts and booking history in Professional Studio.">
+  <meta name="theme-color" content="#111111">
+  <title>Professional Studio | Client Management</title>
+  <link rel="stylesheet" href="clientMng.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a href="index.html" class="brand">Professional Studio</a>
+      <div class="page-label">Client Management</div>
+      <a href="user.html" class="dashboard-link">Dashboard</a>
+    </div>
+  </header>
 
-  <body>
-    <header class="topbar">
-      <div class="topbar-inner">
-        <a href="index.html" class="brand">Professional Studio</a>
-        <div class="page-label">Client Management</div>
-        <a href="user.html" class="dashboard-link">Dashboard</a>
-      </div>
-    </header>
-
-    <main class="main">
-      <section class="heading">
-        <div>
-          <span class="eyebrow">CLIENT RELATIONSHIPS</span>
-          <h1>Client Management</h1>
-          <p>
-            Manage client relationships, booking history, payment plans,
-            installments, and balances from accepted bookings.
-          </p>
-        </div>
-        <a class="primary-link" href="bookingMng.html">Manage bookings</a>
-      </section>
-
-      <section class="stats" aria-label="Client summary">
-        <article class="stat">
-          <span>Total clients</span>
-          <strong id="totalClients">0</strong>
-        </article>
-        <article class="stat">
-          <span>Active clients</span>
-          <strong id="activeClients">0</strong>
-        </article>
-        <article class="stat">
-          <span>Completed sessions</span>
-          <strong id="completedSessions">0</strong>
-        </article>
-        <article class="stat">
-          <span>Outstanding balance</span>
-          <strong id="outstandingBalance">₹0</strong>
-        </article>
-        <article class="stat">
-          <span>Overdue installments</span>
-          <strong id="overdueInstallments">0</strong>
-        </article>
-      </section>
-
-      <section class="panel">
-        <div class="panel-head">
-          <div>
-            <h2>Your clients</h2>
-            <p>
-              Customers are created from accepted bookings and grouped using their
-              booking contact details.
-            </p>
-          </div>
-          <span id="clientCount" class="count">0 clients</span>
-        </div>
-
-        <div class="controls">
-          <label class="search">
-            <span aria-hidden="true">⌕</span>
-            <input
-              id="clientSearch"
-              type="search"
-              placeholder="Search name, email, phone or service"
-              autocomplete="off"
-              aria-label="Search clients"
-            >
-          </label>
-
-          <label class="filter-label" for="statusFilter">Booking status</label>
-          <select id="statusFilter">
-            <option value="all">All statuses</option>
-            <option value="Pending">Pending</option>
-            <option value="Accepted">Accepted</option>
-            <option value="Confirmed">Confirmed</option>
-            <option value="Completed">Completed</option>
-            <option value="Cancelled">Cancelled</option>
-          </select>
-        </div>
-
-        <div id="message" class="message" role="status" aria-live="polite"></div>
-
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Client</th>
-                <th>Contact</th>
-                <th>Bookings</th>
-                <th>Latest booking</th>
-                <th>Latest status</th>
-                <th>Payments due</th>
-                <th>History</th>
-              </tr>
-            </thead>
-            <tbody id="clientRows"></tbody>
-          </table>
-        </div>
-
-        <div id="emptyState" class="empty" hidden>
-          <h3>No clients found</h3>
-          <p>
-            A client record appears here after you accept a booking. Pending
-            requests alone do not create client records. Accept a booking in
-            Booking Management, then return here.
-          </p>
-          <a href="booking.html" class="primary-link">Create a booking</a>
-        </div>
-      </section>
-
-      <section id="historyPanel" class="panel history-panel" hidden>
-        <div class="panel-head">
-          <div>
-            <span class="eyebrow">CLIENT RECORD</span>
-            <h2 id="historyTitle">Booking history</h2>
-          </div>
-          <button type="button" id="closeHistory" class="secondary-button">
-            Close
-          </button>
-        </div>
-        <div id="historyContent"></div>
-        <p class="hint">
-          Offline payments recorded here are stored in this browser. Online
-          payments are not verified by a payment gateway in this frontend-only
-          workflow. Use the backend/payment gateway before treating online
-          transactions as verified.
-        </p>
-      </section>
-    </main>
-
-    <script src="clientMng.js" defer></script>
-  </body>
-</html>
+  <main class="main">
+  <section class="heading"><div><span class="eyebrow">CLIENT RELATIONSHIPS</span><h1>Client Management</h1><p>Manage client relationships, booking history, payment plans, installments, and balances from accepted bookings.</p></div><a class="primary-link" href="bookingMng.html">Manage bookings</a></section>
+  <section class="stats" aria-label="Client summary">
+    <article class="stat"><span>Total clients</span><strong id="totalClients">0</strong></article>
+    <article class="stat"><span>Active clients</span><strong id="activeClients">0</strong></article>
+    <article class="stat"><span>Completed sessions</span><strong id="completedSessions">0</strong></article>
+    <article class="stat"><span>Outstanding balance</span><strong id="outstandingBalance">₹0</strong></article>
+    <article class="stat"><span>Overdue installments</span><strong id="overdueInstallments">0</strong></article>
+  </section>
+  <section class="panel">
+    <div class="panel-head"><div><h2>Your clients</h2><p>Customers are created from accepted bookings and grouped using their booking contact details.</p></div><span id="clientCount" class="count">0 clients</span></div>
+    <div class="controls"><label class="search"><span aria-hidden="true">⌕</span><input id="clientSearch" type="search" placeholder="Search name, email, phone or service" autocomplete="off" aria-label="Search clients"></label>
+      <label class="filter-label" for="statusFilter">Booking status</label><select id="statusFilter"><option value="all">All statuses</option><option value="Pending">Pending</option><option value="Accepted">Accepted</option><option value="Confirmed">Confirmed</option><option value="Completed">Completed</option><option value="Cancelled">Cancelled</option></select>
+    </div>
+    <div id="message" class="message" role="status" aria-live="polite"></div>
+    <div class="table-wrap"><table><thead><tr><th>Client</th><th>Contact</th><th>Bookings</th><th>Latest booking</th><th>Latest status</th><th>Payments due</th><th>History</th></tr></thead><tbody id="clientRows"></tbody></table></div>
+    <div id="emptyState" class="empty" hidden><h3>No clients found</h3><p>A client record appears here after you accept a booking. Pending requests alone do not create client records. Accept a booking in Booking Management, then return here.</p><a href="booking.html" class="primary-link">Create a booking</a></div>
+  </section>
+  <section id="historyPanel" class="panel history-panel" hidden>
+    <div class="panel-head"><div><span class="eyebrow">CLIENT RECORD</span><h2 id="historyTitle">Booking history</h2></div><button type="button" id="closeHistory" class="secondary-button">Close</button></div>
+    <div id="historyContent"></div>
+    <p class="hint">Offline payments recorded here are stored in this browser. Online payments are not verified by a payment gateway in this frontend-only workflow. Use the backend/payment gateway before treating online transactions as verified.</p>
+  </section>
+</main>
+<script src="clientMng.js" defer></script>
+</body></html>

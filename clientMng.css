@@ -436,6 +436,7 @@ tbody tr:last-child td {
 }
 
 /* Payment tracking */
+
 .payment-due-cell {
   font-size: 0.82rem;
   line-height: 1.45;

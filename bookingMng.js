@@ -3237,166 +3237,46 @@ function ensureBookingPaymentState(
 function getPaymentDetailsPaidAmount(
     paymentDetails
 ) {
-
-    if (
-        !paymentDetails ||
-        typeof paymentDetails !==
-            "object"
-    ) {
-
+    if (!paymentDetails || typeof paymentDetails !== "object") {
         return null;
+    }
 
+    // If a transaction ledger exists, calculate from it first. Cached summary
+    // fields can become stale after a failed, cancelled, or refunded transaction.
+    if (Array.isArray(paymentDetails.transactions) && paymentDetails.transactions.length > 0) {
+        let total = 0;
+        paymentDetails.transactions.forEach(transaction => {
+            if (!transaction || typeof transaction !== "object") return;
+            const status = String(transaction.status || transaction.paymentStatus || "paid").trim().toLowerCase();
+            if (["failed", "cancelled", "canceled", "pending", "refunded"].includes(status)) return;
+            total += extractPrice(transaction.amount);
+        });
+        return Math.max(0, total);
     }
 
     const candidates = [
-
         paymentDetails.paidAmount,
         paymentDetails.amountPaid,
         paymentDetails.totalPaid,
         paymentDetails.paid
-
     ];
-
-    for (
-        const value of candidates
-    ) {
-
-        if (
-            value !== undefined &&
-            value !== null &&
-            value !== ""
-        ) {
-
-            const amount =
-                extractPrice(
-                    value
-                );
-
-            if (
-                Number.isFinite(
-                    amount
-                )
-            ) {
-
-                return Math.max(
-                    0,
-                    amount
-                );
-
-            }
-
+    for (const value of candidates) {
+        if (value !== undefined && value !== null && value !== "") {
+            const amount = extractPrice(value);
+            if (Number.isFinite(amount)) return Math.max(0, amount);
         }
-
     }
 
-
-    if (
-        Array.isArray(
-            paymentDetails.transactions
-        )
-    ) {
-
+    if (Array.isArray(paymentDetails.schedule)) {
         let total = 0;
-
-        paymentDetails.transactions
-            .forEach(
-                transaction => {
-
-                    if (
-                        !transaction ||
-                        typeof transaction !==
-                            "object"
-                    ) {
-
-                        return;
-
-                    }
-
-                    const status =
-                        String(
-                            transaction.status ||
-                            transaction.paymentStatus ||
-                            "paid"
-                        )
-                            .trim()
-                            .toLowerCase();
-
-                    if (
-                        [
-                            "failed",
-                            "cancelled",
-                            "canceled",
-                            "pending",
-                            "refunded"
-                        ].includes(
-                            status
-                        )
-                    ) {
-
-                        return;
-
-                    }
-
-                    total +=
-                        extractPrice(
-                            transaction.amount
-                        );
-
-                }
-            );
-
-        return total;
-
+        paymentDetails.schedule.forEach(stage => {
+            if (!stage || typeof stage !== "object") return;
+            total += extractPrice(stage.paidAmount || stage.paid || stage.amountPaid);
+        });
+        if (total > 0) return total;
     }
-
-
-    if (
-        Array.isArray(
-            paymentDetails.schedule
-        )
-    ) {
-
-        let total = 0;
-
-        paymentDetails.schedule
-            .forEach(
-                stage => {
-
-                    if (
-                        !stage ||
-                        typeof stage !==
-                            "object"
-                    ) {
-
-                        return;
-
-                    }
-
-                    total +=
-                        extractPrice(
-                            stage.paidAmount ||
-                            stage.paid ||
-                            stage.amountPaid
-                        );
-
-                }
-            );
-
-        if (
-            total > 0
-        ) {
-
-            return total;
-
-        }
-
-    }
-
-
     return null;
-
 }
-
 
 /* ============================================================
    LEGACY PAID AMOUNT
