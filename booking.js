@@ -1169,11 +1169,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         /*
-         * Backward-compatible fallback:
-         * If only one service exists, use it.
+         * Backward-compatible fallback is only safe when no
+         * service ID was supplied. Never silently book a different
+         * service when a URL contains a stale or invalid ID.
          */
 
         if (
+            !serviceId &&
             services.length === 1
         ) {
 
@@ -1261,6 +1263,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         if (
+            !packageId &&
             packages.length === 1
         ) {
 
@@ -1309,7 +1312,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         a package again.
                     </p>
 
-                    <a href="client.html">
+                    <a href="service.html">
                         Return to Services
                     </a>
 
@@ -3251,6 +3254,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
+    function getLocalDateString(date = new Date()) {
+
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+
+        return `${year}-${month}-${day}`;
+
+    }
+
+
     function validateDates() {
 
         let valid = true;
@@ -3258,6 +3272,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const dates =
             getSelectedDates();
+
+
+        const normalizedDates = dates
+            .map(normalizeDateValue)
+            .filter(Boolean);
+
+        const today = getLocalDateString();
+
+        if (
+            normalizedDates.some(date => date < today) ||
+            new Set(normalizedDates).size !== normalizedDates.length
+        ) {
+
+            if (multiDate) {
+                showFieldError(
+                    multiDate,
+                    normalizedDates.some(date => date < today)
+                        ? "Event dates cannot be in the past. Please select today or a future date."
+                        : "Each event date can only be selected once."
+                );
+            }
+
+            return false;
+
+        }
 
 
         if (
@@ -3748,6 +3787,8 @@ document.addEventListener("DOMContentLoaded", () => {
        FORM SUBMISSION
        ========================================================= */
 
+    let submissionInProgress = false;
+
     if (
         bookingForm
     ) {
@@ -3757,6 +3798,10 @@ document.addEventListener("DOMContentLoaded", () => {
             event => {
 
                 event.preventDefault();
+
+                if (submissionInProgress) {
+                    return;
+                }
 
 
                 if (
@@ -3801,6 +3846,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
 
+                submissionInProgress = true;
+
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = "Submitting…";
+                }
+
                 const booking =
                     createBooking();
 
@@ -3824,8 +3876,15 @@ document.addEventListener("DOMContentLoaded", () => {
                     !saved
                 ) {
 
+                    submissionInProgress = false;
+
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = "Submit Booking Request";
+                    }
+
                     alert(
-                        "Unable to save your booking request. Please try again."
+                        "Unable to save your booking request. Please check browser storage and try again."
                     );
 
                     return;
@@ -3888,7 +3947,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 ) {
 
                     window.location.href =
-                        `client.html?service=${encodeURIComponent(
+                        `service.html?id=${encodeURIComponent(
                             serviceId
                         )}`;
 
