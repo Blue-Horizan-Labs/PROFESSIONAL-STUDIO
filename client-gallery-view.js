@@ -494,11 +494,45 @@
                 gallery.expiresAt
             ).getTime();
 
+        // If an expiry value exists but cannot be parsed, fail closed.
         if (!Number.isFinite(expiry)) {
-            return false;
+            return true;
         }
 
         return Date.now() >= expiry;
+    }
+
+
+    /*
+     * A client link is usable only after the studio explicitly sends
+     * the gallery. This is a frontend gate, not server-side security:
+     * localStorage must be replaced by authenticated backend access
+     * before this can protect real private photographs.
+     */
+    function isClientAccessible(gallery) {
+
+        if (!gallery || gallery.visible === false) {
+            return false;
+        }
+
+        const deliveryStatus = String(
+            gallery.deliveryStatus || gallery.delivery || ""
+        ).trim().toLowerCase();
+
+        return deliveryStatus === "sent" && !isExpired(gallery);
+    }
+
+
+    function denyGalleryAccess() {
+
+        state.authenticated = false;
+        closeViewer();
+
+        if (state.gallery && isExpired(state.gallery)) {
+            showExpiredScreen();
+        } else {
+            showNotFoundScreen();
+        }
     }
 
 
@@ -1406,6 +1440,11 @@
 
     async function submitSelection() {
 
+        if (!state.authenticated || !isClientAccessible(state.gallery)) {
+            denyGalleryAccess();
+            return;
+        }
+
         if (
             !selectionEnabled() ||
             isSelectionLocked()
@@ -2189,6 +2228,11 @@
         media
     ) {
 
+        if (!state.authenticated || !isClientAccessible(state.gallery)) {
+            denyGalleryAccess();
+            return;
+        }
+
         if (!media) {
             return;
         }
@@ -2292,6 +2336,11 @@
     ========================================================= */
 
     async function downloadEntireGallery() {
+
+        if (!state.authenticated || !isClientAccessible(state.gallery)) {
+            denyGalleryAccess();
+            return;
+        }
 
         if (!state.gallery) {
             return;
@@ -2796,10 +2845,7 @@
         }
 
 
-        if (
-            state.gallery.visible ===
-            false
-        ) {
+        if (!isClientAccessible(state.gallery)) {
 
             showNotFoundScreen();
 
@@ -2860,6 +2906,16 @@
             return;
         }
 
+
+        const latestGallery = getGallery();
+
+        if (!latestGallery || !isClientAccessible(latestGallery)) {
+            state.gallery = latestGallery;
+            denyGalleryAccess();
+            return;
+        }
+
+        state.gallery = latestGallery;
 
         const entered =
             refs.passwordInput.value;
@@ -2925,22 +2981,15 @@
             )
         ) {
 
-            closeViewer();
-
-            showExpiredScreen();
+            denyGalleryAccess();
 
             return;
         }
 
 
-        if (
-            state.gallery.visible ===
-            false
-        ) {
+        if (!isClientAccessible(state.gallery)) {
 
-            closeViewer();
-
-            showNotFoundScreen();
+            denyGalleryAccess();
 
             return;
         }
@@ -3227,6 +3276,7 @@
 
                 if (!updated) {
 
+                    state.authenticated = false;
                     closeViewer();
 
                     showNotFoundScreen();
@@ -3253,14 +3303,9 @@
                 }
 
 
-                if (
-                    state.gallery.visible ===
-                    false
-                ) {
+                if (!isClientAccessible(state.gallery)) {
 
-                    closeViewer();
-
-                    showNotFoundScreen();
+                    denyGalleryAccess();
 
                     return;
                 }
@@ -3336,18 +3381,15 @@
                 )
             ) {
 
-                showExpiredScreen();
+                denyGalleryAccess();
 
                 return;
             }
 
 
-            if (
-                state.gallery.visible ===
-                false
-            ) {
+            if (!isClientAccessible(state.gallery)) {
 
-                showNotFoundScreen();
+                denyGalleryAccess();
 
                 return;
             }
@@ -3405,10 +3447,7 @@
         }
 
 
-        if (
-            state.gallery.visible ===
-            false
-        ) {
+        if (!isClientAccessible(state.gallery)) {
 
             showNotFoundScreen();
 
