@@ -983,15 +983,6 @@ function createBookingCard(
 
             <button
                 type="button"
-                class="action-btn primary"
-                data-action="complete"
-                data-id="${escapeAttribute(id)}"
-            >
-                Mark Completed
-            </button>
-
-            <button
-                type="button"
                 class="action-btn danger"
                 data-action="cancel"
                 data-id="${escapeAttribute(id)}"
@@ -1185,156 +1176,118 @@ function updateBookingStatus(
     const bookingIndex =
         bookings.findIndex(
             booking =>
-                getBookingId(
-                    booking
-                ) ===
-                String(
-                    bookingId
-                )
+                getBookingId(booking) === String(bookingId)
         );
 
-    if (
-        bookingIndex === -1
-    ) {
-        return;
+    if (bookingIndex === -1) {
+        showBookingWorkflowNotice("This booking could not be found. Refresh the page and try again.");
+        return false;
     }
 
-    const booking =
-        bookings[
-            bookingIndex
-        ];
+    const requestedStatus = String(newStatus || "").trim().toLowerCase();
+    const validStatusMap = {
+        pending: "Pending",
+        accepted: "Accepted",
+        confirmed: "Confirmed",
+        completed: "Completed",
+        cancelled: "Cancelled",
+        canceled: "Cancelled",
+        rejected: "Cancelled"
+    };
+    const normalizedNewStatus = validStatusMap[requestedStatus];
 
+    if (!normalizedNewStatus) {
+        showBookingWorkflowNotice("That booking status is not valid. No changes were made.");
+        return false;
+    }
+
+    const booking = bookings[bookingIndex];
     const originalBooking = JSON.parse(JSON.stringify(booking));
+    const oldStatus = normalizeStatus(booking.status);
 
-    const oldStatus =
-        normalizeStatus(
-            booking.status
+    const allowedTransitions = {
+        Pending: ["Accepted", "Cancelled"],
+        Accepted: ["Confirmed", "Cancelled"],
+        Confirmed: ["Completed", "Cancelled"],
+        Completed: [],
+        Cancelled: []
+    };
+
+    if (oldStatus === normalizedNewStatus) {
+        return true;
+    }
+
+    if (!(allowedTransitions[oldStatus] || []).includes(normalizedNewStatus)) {
+        showBookingWorkflowNotice(
+            oldStatus === "Completed" || oldStatus === "Cancelled"
+                ? "This booking is already closed and cannot be changed."
+                : `A booking can move from ${oldStatus} to ${normalizedNewStatus} only through the normal booking workflow.`
         );
-
-    const normalizedNewStatus =
-        normalizeStatus(
-            newStatus
-        );
-
-    booking.status =
-        normalizedNewStatus;
-
-    const now =
-        new Date().toISOString();
-
-
-    if (
-        booking.status ===
-        "Accepted"
-    ) {
-
-        booking.acceptedAt =
-            booking.acceptedAt ||
-            now;
-
-        ensureBookingPaymentState(
-            booking
-        );
-
+        return false;
     }
 
+    const now = new Date().toISOString();
+    booking.status = normalizedNewStatus;
+    booking.updatedAt = now;
 
-    if (
-        booking.status ===
-        "Confirmed"
-    ) {
-
-        booking.confirmedAt =
-            booking.confirmedAt ||
-            now;
-
-        ensureBookingPaymentState(
-            booking
-        );
-
+    if (normalizedNewStatus === "Accepted") {
+        booking.acceptedAt = booking.acceptedAt || now;
+        ensureBookingPaymentState(booking);
+    } else if (normalizedNewStatus === "Confirmed") {
+        booking.confirmedAt = booking.confirmedAt || now;
+        ensureBookingPaymentState(booking);
+    } else if (normalizedNewStatus === "Completed") {
+        booking.completedAt = booking.completedAt || now;
+    } else if (normalizedNewStatus === "Cancelled") {
+        booking.cancelledAt = booking.cancelledAt || now;
+        booking.cancellationReason = booking.cancellationReason || "Cancelled by studio";
     }
 
-
-    if (
-        booking.status ===
-        "Completed"
-    ) {
-
-        booking.completedAt =
-            booking.completedAt ||
-            now;
-
+    if (!Array.isArray(booking.statusHistory)) {
+        booking.statusHistory = [];
     }
 
-
-    if (
-        booking.status ===
-        "Cancelled"
-    ) {
-
-        booking.cancelledAt =
-            booking.cancelledAt ||
-            now;
-
-    }
-
-
-    if (
-        !Array.isArray(
-            booking.statusHistory
-        )
-    ) {
-
-        booking.statusHistory =
-            [];
-
-    }
-
-
-    if (
-        oldStatus !==
-        booking.status
-    ) {
-
-        booking.statusHistory.push({
-
-            status:
-                booking.status,
-
-            changedAt:
-                now
-
-        });
-
-    }
-
+    booking.statusHistory.push({
+        status: normalizedNewStatus,
+        previousStatus: oldStatus,
+        changedAt: now
+    });
 
     if (!saveBookings()) {
         bookings[bookingIndex] = originalBooking;
         renderOverview();
         renderBookings();
         renderCalendar();
-        return;
+        return false;
     }
+
+    const notice = document.getElementById("bookingWorkflowNotice");
+    if (notice) notice.remove();
 
     renderOverview();
     renderBookings();
     renderCalendar();
 
-
-    if (
-        bookingModal &&
-        bookingModal.classList.contains(
-            "open"
-        )
-    ) {
-
-        openBookingModal(
-            bookingId
-        );
-
+    if (bookingModal && bookingModal.classList.contains("open")) {
+        openBookingModal(bookingId);
     }
 
+    return true;
+}
+
+function showBookingWorkflowNotice(message) {
+    let notice = document.getElementById("bookingWorkflowNotice");
+
+    if (!notice) {
+        notice = document.createElement("div");
+        notice.id = "bookingWorkflowNotice";
+        notice.setAttribute("role", "alert");
+        notice.style.cssText = "margin:12px 0;padding:12px 16px;border:1px solid #b54708;border-radius:8px;color:#7a2e0e;background:#fffaeb;";
+        const main = document.querySelector("main");
+        if (main) main.prepend(notice);
+    }
+
+    notice.textContent = message;
 }
 
 
@@ -1735,17 +1688,6 @@ function openBookingModal(
                 )}"
             >
                 Confirm Booking
-            </button>
-
-            <button
-                type="button"
-                class="action-btn primary"
-                data-action="complete"
-                data-id="${escapeAttribute(
-                    bookingId
-                )}"
-            >
-                Mark Completed
             </button>
 
         `;
