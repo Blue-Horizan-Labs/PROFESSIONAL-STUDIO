@@ -113,10 +113,11 @@ if (menuBtn && navLinks) {
 
         if (event.key === "Escape") {
 
+            const menuWasOpen = navLinks && navLinks.classList.contains("show-menu");
             closeMobileMenu();
 
-            if (document.activeElement === menuBtn) {
-                menuBtn.blur();
+            if (menuWasOpen && menuBtn) {
+                menuBtn.focus();
             }
 
         }
@@ -185,8 +186,12 @@ inPageLinks.forEach((anchor) => {
                 return;
             }
 
-            const target =
-                document.querySelector(selector);
+            let target = null;
+            try {
+                target = document.querySelector(selector);
+            } catch (_) {
+                return;
+            }
 
             if (!target) {
                 return;
