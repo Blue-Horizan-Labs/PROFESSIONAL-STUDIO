@@ -20,6 +20,7 @@ let isCreatingService = false;
 const DEFAULT_SERVICES = [
     {
         id: "wedding-photography",
+        category: "Wedding",
         name: "Wedding Photography",
         description:
             "Complete wedding photography coverage for ceremonies, portraits and celebrations.",
@@ -94,6 +95,7 @@ const DEFAULT_SERVICES = [
 
     {
         id: "portrait-photography",
+        category: "Portrait",
         name: "Portrait Photography",
         description:
             "Professional portrait sessions for individuals, couples and personal branding.",
@@ -160,6 +162,12 @@ const emptyAddServiceBtn = document.getElementById("emptyAddServiceBtn");
 const serviceCount = document.getElementById("serviceCount");
 const servicesList = document.getElementById("servicesList");
 const emptyState = document.getElementById("emptyState");
+const serviceFilters = document.getElementById("serviceFilters");
+const serviceSearch = document.getElementById("serviceSearch");
+const serviceCategoryFilter = document.getElementById("serviceCategoryFilter");
+const serviceFilterCount = document.getElementById("serviceFilterCount");
+const filteredEmptyState = document.getElementById("filteredEmptyState");
+const clearServiceFiltersBtn = document.getElementById("clearServiceFiltersBtn");
 
 const backBtn = document.getElementById("backBtn");
 const editorBreadcrumb = document.getElementById("editorBreadcrumb");
@@ -169,6 +177,7 @@ const editorSubtitle = document.getElementById("editorSubtitle");
 const statusIndicator = document.getElementById("statusIndicator");
 
 const serviceName = document.getElementById("serviceName");
+const serviceCategory = document.getElementById("serviceCategory");
 const serviceDescription = document.getElementById("serviceDescription");
 const coverageDuration = document.getElementById("coverageDuration");
 const deliveryTime = document.getElementById("deliveryTime");
@@ -333,6 +342,7 @@ function normalizeServices(list) {
         .map((service) => ({
             id: String(service.id || createId("service")),
             name: String(service.name || "").trim(),
+            category: String(service.category || "General").trim() || "General",
             description: String(service.description || "").trim(),
             coverageDuration: String(service.coverageDuration || "").trim(),
             deliveryTime: String(service.deliveryTime || "").trim(),
@@ -530,6 +540,22 @@ function bindEvents() {
     if (servicesList) {
         servicesList.addEventListener("click", handleServiceListClick);
     }
+    if (serviceSearch) {
+        serviceSearch.addEventListener("input", renderServices);
+    }
+
+    if (serviceCategoryFilter) {
+        serviceCategoryFilter.addEventListener("change", renderServices);
+    }
+
+    if (clearServiceFiltersBtn) {
+        clearServiceFiltersBtn.addEventListener("click", () => {
+            if (serviceSearch) serviceSearch.value = "";
+            if (serviceCategoryFilter) serviceCategoryFilter.value = "";
+            renderServices();
+            if (serviceSearch) serviceSearch.focus();
+        });
+    }
 
     /*
      * Event delegation for package cards.
@@ -581,98 +607,93 @@ function bindEvents() {
    ========================================================= */
 
 function renderServices() {
-    if (!servicesList) {
-        return;
-    }
+    if (!servicesList) return;
 
-    servicesList.innerHTML = "";
+    const searchTerm = String(serviceSearch?.value || "").trim().toLocaleLowerCase();
+    let selectedCategory = String(serviceCategoryFilter?.value || "").trim().toLocaleLowerCase();
 
-    if (serviceCount) {
-        serviceCount.textContent = services.length;
-    }
+    if (serviceCount) serviceCount.textContent = String(services.length);
 
-    if (services.length === 0) {
-        servicesList.hidden = true;
-
-        if (emptyState) {
-            emptyState.hidden = false;
-        }
-
-        return;
-    }
-
-    servicesList.hidden = false;
-
-    if (emptyState) {
-        emptyState.hidden = true;
-    }
-
+    const categoryMap = new Map();
     services.forEach((service) => {
+        const category = String(service.category || "General").trim() || "General";
+        const key = category.toLocaleLowerCase();
+        if (!categoryMap.has(key)) categoryMap.set(key, category);
+    });
+
+    if (serviceCategoryFilter) {
+        const previousValue = selectedCategory;
+        const options = ['<option value="">All categories</option>'];
+        [...categoryMap.values()].sort((a, b) => a.localeCompare(b)).forEach((category) => {
+            options.push(`<option value="${escapeAttribute(category.toLocaleLowerCase())}">${escapeHTML(category)}</option>`);
+        });
+        serviceCategoryFilter.innerHTML = options.join("");
+        selectedCategory = categoryMap.has(previousValue) ? previousValue : "";
+        serviceCategoryFilter.value = selectedCategory;
+    }
+
+    const filteredServices = services.filter((service) => {
+        const category = String(service.category || "General").trim() || "General";
+        const matchesCategory = !selectedCategory || category.toLocaleLowerCase() === selectedCategory;
+        const searchable = [service.name, service.description, category, service.coverageType]
+            .map((value) => String(value || "").toLocaleLowerCase())
+            .join(" ");
+        return matchesCategory && (!searchTerm || searchable.includes(searchTerm));
+    });
+
+    if (serviceFilters) serviceFilters.hidden = services.length === 0;
+    if (emptyState) emptyState.hidden = services.length !== 0;
+    if (filteredEmptyState) filteredEmptyState.hidden = services.length === 0 || filteredServices.length !== 0;
+    if (servicesList) servicesList.hidden = services.length === 0 || filteredServices.length === 0;
+    if (serviceFilterCount) {
+        serviceFilterCount.textContent = services.length
+            ? `Showing ${filteredServices.length} of ${services.length} service${services.length === 1 ? "" : "s"}`
+            : "";
+    }
+
+    servicesList.replaceChildren();
+    if (!filteredServices.length) return;
+
+    filteredServices.forEach((service) => {
         const card = document.createElement("article");
         card.className = "service-card";
         card.dataset.serviceId = service.id;
-
         const startingPrice = getStartingPrice(service);
+        const category = String(service.category || "General").trim() || "General";
 
         card.innerHTML = `
             <div class="service-card-main">
                 <div class="service-card-header">
                     <div>
                         <h3>${escapeHTML(service.name || "Untitled Service")}</h3>
-                        <span class="service-status ${
-                            service.active ? "active" : "inactive"
-                        }">
-                            <span class="status-dot"></span>
-                            ${service.active ? "Active" : "Inactive"}
-                        </span>
+                        <div class="service-card-badges">
+                            <span class="service-category-badge">${escapeHTML(category)}</span>
+                            <span class="service-status ${service.active ? "active" : "inactive"}">
+                                <span class="status-dot"></span>
+                                ${service.active ? "Active" : "Inactive"}
+                            </span>
+                        </div>
                     </div>
                 </div>
-
-                <p class="service-description">
-                    ${escapeHTML(
-                        service.description || "No description added."
-                    )}
-                </p>
-
+                <p class="service-description">${escapeHTML(service.description || "No description added.")}</p>
                 <div class="service-meta">
                     <div class="meta-item">
                         <span class="meta-label">Starting From</span>
-                        <strong>
-                            ${
-                                startingPrice > 0
-                                    ? formatCurrency(startingPrice)
-                                    : "Not set"
-                            }
-                        </strong>
+                        <strong>${startingPrice > 0 ? formatCurrency(startingPrice) : "Not set"}</strong>
                     </div>
-
                     <div class="meta-item">
                         <span class="meta-label">Packages</span>
                         <strong>${service.packages.length}</strong>
                     </div>
-
                     <div class="meta-item">
                         <span class="meta-label">Coverage</span>
-                        <strong>
-                            ${escapeHTML(
-                                service.coverageDuration || "Not set"
-                            )}
-                        </strong>
+                        <strong>${escapeHTML(service.coverageDuration || "Not set")}</strong>
                     </div>
                 </div>
             </div>
-
             <div class="service-card-actions">
-                <button
-                    type="button"
-                    class="btn btn-secondary edit-service-btn"
-                    data-service-id="${escapeHTML(service.id)}"
-                >
-                    Edit Service
-                </button>
-            </div>
-        `;
-
+                <button type="button" class="btn btn-secondary edit-service-btn" data-service-id="${escapeAttribute(service.id)}">Edit Service</button>
+            </div>`;
         servicesList.appendChild(card);
     });
 }
@@ -699,6 +720,7 @@ function createService() {
     const newService = {
         id: createId("service"),
         name: "",
+        category: "General",
         description: "",
         coverageDuration: "",
         deliveryTime: "",
@@ -818,6 +840,10 @@ function populateEditor() {
         serviceName.value = service.name;
     }
 
+    if (serviceCategory) {
+        serviceCategory.value = service.category || "General";
+    }
+
     if (serviceDescription) {
         serviceDescription.value = service.description;
     }
@@ -899,6 +925,7 @@ function updateStatusIndicator(service) {
 function collectServiceData() {
     return {
         name: serviceName ? serviceName.value.trim() : "",
+        category: serviceCategory ? serviceCategory.value.trim() : "",
         description: serviceDescription
             ? serviceDescription.value.trim()
             : "",
@@ -925,6 +952,40 @@ function validateService(data) {
         return false;
     }
 
+    if (!data.category) {
+        showNotification("Please enter a service category.", "error");
+        if (serviceCategory) serviceCategory.focus();
+        return false;
+    }
+
+    if (data.category.length > 60) {
+        showNotification("Service category must be 60 characters or fewer.", "error");
+        if (serviceCategory) serviceCategory.focus();
+        return false;
+    }
+
+    const duplicateName = services.some((item) =>
+        item.id !== currentServiceId &&
+        String(item.name || "").trim().toLocaleLowerCase() === data.name.toLocaleLowerCase()
+    );
+    if (duplicateName) {
+        showNotification("A service with this name already exists. Choose a different name.", "error");
+        if (serviceName) serviceName.focus();
+        return false;
+    }
+
+    if (data.name.length > 100) {
+        showNotification("Service name must be 100 characters or fewer.", "error");
+        if (serviceName) serviceName.focus();
+        return false;
+    }
+
+    if (data.description.length > 500) {
+        showNotification("Service description must be 500 characters or fewer.", "error");
+        if (serviceDescription) serviceDescription.focus();
+        return false;
+    }
+
     if (!data.description) {
         showNotification(
             "Please enter a service description.",
@@ -935,6 +996,14 @@ function validateService(data) {
             serviceDescription.focus();
         }
 
+        return false;
+    }
+
+    if (data.coverageDuration.length > 80 || data.deliveryTime.length > 80 || data.coverageType.length > 80) {
+        showNotification("Coverage, delivery, and location fields must be 80 characters or fewer.", "error");
+        if (coverageDuration && data.coverageDuration.length > 80) coverageDuration.focus();
+        else if (deliveryTime && data.deliveryTime.length > 80) deliveryTime.focus();
+        else if (coverageType) coverageType.focus();
         return false;
     }
 
@@ -995,6 +1064,7 @@ function saveCurrentService() {
 
     const previousData = {
         name: service.name,
+        category: service.category,
         description: service.description,
         coverageDuration: service.coverageDuration,
         deliveryTime: service.deliveryTime,
@@ -1460,7 +1530,30 @@ function validatePackage(data) {
         return false;
     }
 
-    if (!Number.isFinite(data.price) || data.price <= 0) {
+    const service = getCurrentService();
+    const duplicateName = Boolean(service) && service.packages.some((item) =>
+        item.id !== editingPackageId &&
+        String(item.name || "").trim().toLocaleLowerCase() === data.name.toLocaleLowerCase()
+    );
+    if (duplicateName) {
+        showNotification("A package with this name already exists in this service.", "error");
+        if (packageName) packageName.focus();
+        return false;
+    }
+
+    if (data.name.length > 100) {
+        showNotification("Package name must be 100 characters or fewer.", "error");
+        if (packageName) packageName.focus();
+        return false;
+    }
+
+    if (data.description.length > 400) {
+        showNotification("Package description must be 400 characters or fewer.", "error");
+        if (packageDescription) packageDescription.focus();
+        return false;
+    }
+
+    if (!Number.isFinite(data.price) || data.price <= 0 || data.price > 100000000) {
         showNotification(
             "Package price must be greater than ₹0.",
             "error"
@@ -1470,6 +1563,15 @@ function validatePackage(data) {
             packagePrice.focus();
         }
 
+        return false;
+    }
+
+    if (data.coverage.length > 100 || data.photos.length > 100 || data.delivery.length > 100 || data.album.length > 120) {
+        showNotification("Package coverage, photo details, and delivery must be 100 characters or fewer; album details must be 120 characters or fewer.", "error");
+        if (packageCoverage && data.coverage.length > 100) packageCoverage.focus();
+        else if (packagePhotos && data.photos.length > 100) packagePhotos.focus();
+        else if (packageDelivery && data.delivery.length > 100) packageDelivery.focus();
+        else if (packageAlbum) packageAlbum.focus();
         return false;
     }
 

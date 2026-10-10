@@ -110,10 +110,30 @@
                     </div>
 
 
+                    <div class="service-filters" id="serviceFilters" hidden>
+                        <div class="service-filter-field">
+                            <label for="serviceSearch">Search services</label>
+                            <input id="serviceSearch" type="search" maxlength="100" autocomplete="off" placeholder="Search name, description or category">
+                        </div>
+                        <div class="service-filter-field">
+                            <label for="serviceCategoryFilter">Category</label>
+                            <select id="serviceCategoryFilter">
+                                <option value="">All categories</option>
+                            </select>
+                        </div>
+                        <p class="service-filter-count" id="serviceFilterCount" role="status" aria-live="polite"></p>
+                    </div>
+
                     <div
                         class="services-list"
                         id="servicesList"
                     ></div>
+
+                    <div class="empty-state filtered-empty-state" id="filteredEmptyState" hidden>
+                        <h3>No matching services</h3>
+                        <p>Try another search term or choose a different category.</p>
+                        <button type="button" class="btn btn-secondary" id="clearServiceFiltersBtn">Clear filters</button>
+                    </div>
 
 
                     <div
@@ -252,6 +272,12 @@
                         <div class="form-grid">
 
                             <div class="form-group">
+                                <label for="serviceCategory">Category</label>
+                                <input type="text" id="serviceCategory" maxlength="60" autocomplete="off" placeholder="e.g. Wedding, Portrait, Event">
+                                <span class="field-hint">Helps clients understand and filter your services.</span>
+                            </div>
+
+                            <div class="form-group">
 
                                 <label for="coverageDuration">
                                     Coverage
@@ -260,6 +286,7 @@
                                 <input
                                     type="text"
                                     id="coverageDuration"
+                                    maxlength="80"
                                     placeholder="e.g. 8 hours"
                                 >
 
@@ -275,6 +302,7 @@
                                 <input
                                     type="text"
                                     id="deliveryTime"
+                                    maxlength="80"
                                     placeholder="e.g. 14 days"
                                 >
 
@@ -290,6 +318,7 @@
                                 <input
                                     type="text"
                                     id="coverageType"
+                                    maxlength="80"
                                     placeholder="e.g. Studio / On-location"
                                 >
 
@@ -410,7 +439,9 @@
                                         type="number"
                                         id="packagePrice"
                                         min="1"
-                                        step="100"
+                                        max="100000000"
+                                        step="0.01"
+                                        inputmode="decimal"
                                         placeholder="45000"
                                     >
 
@@ -428,6 +459,7 @@
                                 <input
                                     type="text"
                                     id="packageCoverage"
+                                    maxlength="100"
                                     placeholder="e.g. 8 hours"
                                 >
 
@@ -443,6 +475,7 @@
                                 <input
                                     type="text"
                                     id="packagePhotos"
+                                    maxlength="100"
                                     placeholder="e.g. 350 photos"
                                 >
 
@@ -458,6 +491,7 @@
                                 <input
                                     type="text"
                                     id="packageDelivery"
+                                    maxlength="100"
                                     placeholder="e.g. 12 days"
                                 >
 
@@ -473,6 +507,7 @@
                                 <input
                                     type="text"
                                     id="packageAlbum"
+                                    maxlength="120"
                                     placeholder="e.g. Included / ₹5000"
                                     maxlength="100"
                                 >

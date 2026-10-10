@@ -793,3 +793,17 @@ img {
     }
 
 }
+
+/* Phase 4: service category and package clarity */
+.service-label {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    max-width: 100%;
+    padding: 5px 11px;
+    border: 1px solid rgba(255,255,255,.28);
+    border-radius: 999px;
+    overflow-wrap: anywhere;
+}
+.package-details strong { overflow-wrap: anywhere; }
+.package-card .primary-button:focus-visible { outline: 3px solid #777; outline-offset: 3px; }

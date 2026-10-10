@@ -1395,3 +1395,67 @@ a {
     }
 
     
+
+
+/* =========================================================
+   SERVICE FILTERS & CATEGORY LABELS (PHASE 4)
+========================================================= */
+.service-filters {
+    display: grid;
+    grid-template-columns: minmax(220px, 1.5fr) minmax(180px, 1fr) auto;
+    align-items: end;
+    gap: 16px;
+    margin: 0 0 22px;
+    padding: 18px;
+    border: 1px solid #e7e7e7;
+    border-radius: 12px;
+    background: #fff;
+}
+.service-filter-field { min-width: 0; }
+.service-filter-field label {
+    display: block;
+    margin-bottom: 7px;
+    color: #555;
+    font-size: 12px;
+    font-weight: 700;
+}
+.service-filter-field input,
+.service-filter-field select {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid #d8d8d8;
+    border-radius: 8px;
+    background: #fff;
+    color: #111;
+}
+.service-filter-field input:focus-visible,
+.service-filter-field select:focus-visible,
+#serviceCategory:focus-visible {
+    outline: 3px solid rgba(17, 17, 17, .2);
+    outline-offset: 2px;
+}
+.service-filter-count {
+    align-self: center;
+    color: #666;
+    font-size: 12px;
+    white-space: nowrap;
+}
+.service-card-badges { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; }
+.service-category-badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    padding: 3px 9px;
+    border: 1px solid #dedede;
+    border-radius: 999px;
+    background: #f7f7f7;
+    color: #555;
+    font-size: 11px;
+    font-weight: 700;
+}
+.filtered-empty-state { margin-top: 12px; }
+@media (max-width: 760px) {
+    .service-filters { grid-template-columns: 1fr; gap: 12px; padding: 14px; }
+    .service-filter-count { white-space: normal; }
+}

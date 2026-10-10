@@ -18,6 +18,8 @@ const SERVICE_STORAGE_KEY =
 
 const serviceNameElement =
     document.getElementById("serviceName");
+const serviceCategoryLabel =
+    document.getElementById("serviceCategoryLabel");
 
 const serviceDescriptionElement =
     document.getElementById("serviceDescription");
@@ -106,11 +108,10 @@ function getSelectedService() {
     const services =
         getServices();
 
-    return services.find(
-        service =>
-            String(service.id) ===
-            String(serviceId)
-    );
+    return services.find((service) => {
+        const candidateId = service && (service.id ?? service.serviceId ?? service.slug);
+        return String(candidateId ?? "") === String(serviceId ?? "");
+    });
 }
 
 
@@ -213,7 +214,7 @@ function renderService(service) {
      * to clients.
      */
 
-    if (service.active !== true) {
+    if (service.active === false) {
 
         showServiceError(
             "This service is currently unavailable for booking."
@@ -229,6 +230,10 @@ function renderService(service) {
             service.name ||
             "Service"
         );
+
+    if (serviceCategoryLabel) {
+        serviceCategoryLabel.textContent = String(service.category || "Photography Service").trim().toLocaleUpperCase();
+    }
 
 
     /* -----------------------------------------------------
@@ -328,9 +333,13 @@ function renderPackages(service) {
 
     const packages =
         Array.isArray(service.packages)
-            ? service.packages.filter(
-                packageData => packageData && typeof packageData === "object"
-            )
+            ? service.packages.filter((packageData) => {
+                if (!packageData || typeof packageData !== "object") return false;
+                const id = packageData.id ?? packageData.packageId ?? packageData.key ?? packageData.slug;
+                const name = String(packageData.name ?? packageData.packageName ?? packageData.title ?? "").trim();
+                const price = Number(String(packageData.price ?? packageData.packagePrice ?? "").replace(/[^\d.-]/g, ""));
+                return Boolean(String(id ?? "").trim() && name && Number.isFinite(price) && price > 0);
+            })
             : [];
 
 
@@ -375,6 +384,22 @@ function renderPackages(service) {
 }
 
 
+function getPaymentPlanLabel(plan, price) {
+    if (!plan || typeof plan !== "object" || plan.type === "full") return "Full payment";
+    if (plan.type === "advance") {
+        const value = Number(plan.advanceValue);
+        if (!Number.isFinite(value) || value <= 0) return "Advance payment";
+        if (plan.advanceType === "fixed") return `Advance ${formatPrice(value)}`;
+        return `Advance ${Math.min(100, value)}%`;
+    }
+    if (plan.type === "installments") {
+        const stages = Array.isArray(plan.installments) ? plan.installments.length : 0;
+        return stages ? `${stages} payment stages` : "Custom installments";
+    }
+    return "Contact for payment details";
+}
+
+
 /* =========================================================
    CREATE PACKAGE CARD
 ========================================================= */
@@ -386,33 +411,41 @@ function createPackageCard(
 ) {
 
     const packageId =
-        packageData.id ||
+        packageData.id ??
+        packageData.packageId ??
+        packageData.key ??
+        packageData.slug ??
         `package-${index + 1}`;
+
+    const serviceIdentifier =
+        service.id ?? service.serviceId ?? service.slug ?? "";
 
 
     const packageName =
         packageData.name ||
+        packageData.packageName ||
+        packageData.title ||
         `Package ${index + 1}`;
 
 
     const price =
         formatPrice(
-            packageData.price
+            packageData.price ?? packageData.packagePrice ?? packageData.amount
         );
 
 
     const coverage =
-        packageData.coverage ||
+        packageData.coverage || packageData.duration || packageData.hours ||
         "Available on request";
 
 
     const photos =
-        packageData.photos ||
+        packageData.photos || packageData.photoCount ||
         "Available on request";
 
 
     const delivery =
-        packageData.delivery ||
+        packageData.delivery || packageData.deliveryTime ||
         "Available on request";
 
 
@@ -489,6 +522,13 @@ function createPackageCard(
                         ${escapeHTML(delivery)}
                     </strong>
                 </li>
+                ${(packageData.album ?? packageData.albumIncluded) && String(packageData.album ?? packageData.albumIncluded).toLowerCase() !== "no" ? `
+                    <li>Album: <strong>${escapeHTML(packageData.album ?? packageData.albumIncluded)}</strong></li>
+                ` : ""}
+                <li>
+                    Payment:
+                    <strong>${escapeHTML(getPaymentPlanLabel(packageData.paymentPlan ?? packageData.packagePaymentPlan ?? packageData.payment, packageData.price ?? packageData.packagePrice))}</strong>
+                </li>
 
             </ul>
 
@@ -496,7 +536,7 @@ function createPackageCard(
             <button
                 type="button"
                 class="primary-button package-book-button"
-                data-service-id="${escapeHTML(service.id)}"
+                data-service-id="${escapeHTML(serviceIdentifier)}"
                 data-package-id="${escapeHTML(packageId)}"
             >
                 BOOK THIS PACKAGE
