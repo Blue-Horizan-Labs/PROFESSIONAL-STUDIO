@@ -2574,7 +2574,7 @@ function loadClientServices() {
             );
 
         card.className =
-            "price-card";
+            "price-card visible";
 
 
         const name =

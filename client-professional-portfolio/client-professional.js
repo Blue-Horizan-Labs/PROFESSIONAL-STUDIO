@@ -1197,7 +1197,51 @@ function loadClientServices(){
     const container = document.getElementById("servicesContainer");
     if(!container) return;
 
-    const storedServices = readLocalStorage(STORAGE_KEYS.services, []);
+    // The portfolio can be opened before Service Management has ever been
+    // visited. In that case localStorage has no service record yet, so seed
+    // the same starter services used by Service Management instead of showing
+    // an empty Services section on a first visit.
+    let storedServices = readLocalStorage(STORAGE_KEYS.services, []);
+    try {
+        if (localStorage.getItem(STORAGE_KEYS.services) === null) {
+            storedServices = [
+                {
+                    id: "wedding-photography",
+                    category: "Wedding",
+                    name: "Wedding Photography",
+                    description: "Complete wedding photography coverage for ceremonies, portraits and celebrations.",
+                    coverageDuration: "8 Hours",
+                    deliveryTime: "15-20 Days",
+                    coverageType: "Full Day",
+                    active: true,
+                    packages: [
+                        { id: "wedding-basic", name: "Basic", price: 25000, coverage: "6 Hours", photos: "300+ Edited Photos", delivery: "15 Days", album: "No", description: "Essential wedding photography coverage.", paymentPlan: { type: "full" } },
+                        { id: "wedding-premium", name: "Premium", price: 45000, coverage: "10 Hours", photos: "600+ Edited Photos", delivery: "15 Days", album: "1 Premium Album", description: "Extended wedding coverage with album.", paymentPlan: { type: "advance", advanceType: "percentage", advanceValue: 30 } },
+                        { id: "wedding-luxury", name: "Luxury", price: 75000, coverage: "Full Day", photos: "1000+ Edited Photos", delivery: "12 Days", album: "2 Premium Albums", description: "Complete premium wedding photography experience.", paymentPlan: { type: "installments", installments: [{ name: "Booking", type: "percentage", value: 30, due: "At Booking" }, { name: "Event", type: "percentage", value: 40, due: "Event Day" }, { name: "Delivery", type: "percentage", value: 30, due: "Before Delivery" }] } }
+                    ]
+                },
+                {
+                    id: "portrait-photography",
+                    category: "Portrait",
+                    name: "Portrait Photography",
+                    description: "Professional portrait sessions for individuals, couples and personal branding.",
+                    coverageDuration: "2 Hours",
+                    deliveryTime: "7-10 Days",
+                    coverageType: "Session",
+                    active: true,
+                    packages: [
+                        { id: "portrait-basic", name: "Basic", price: 5000, coverage: "1 Hour", photos: "15 Edited Photos", delivery: "7 Days", album: "No", description: "Simple portrait session.", paymentPlan: { type: "full" } },
+                        { id: "portrait-premium", name: "Premium", price: 9000, coverage: "2 Hours", photos: "30 Edited Photos", delivery: "7 Days", album: "No", description: "Extended portrait session with additional edited photos.", paymentPlan: { type: "advance", advanceType: "percentage", advanceValue: 50 } },
+                        { id: "portrait-luxury", name: "Luxury", price: 15000, coverage: "3 Hours", photos: "50 Edited Photos", delivery: "5 Days", album: "1 Premium Album", description: "Premium portrait experience.", paymentPlan: { type: "full" } }
+                    ]
+                }
+            ];
+            localStorage.setItem(STORAGE_KEYS.services, JSON.stringify(storedServices));
+        }
+    } catch (error) {
+        console.warn("Unable to initialize starter services:", error);
+    }
+
     const activeServices = Array.isArray(storedServices)
         ? storedServices.filter(service =>
             service &&
