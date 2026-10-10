@@ -57,6 +57,12 @@
         color: inherit;
     }
 
+    a:focus-visible {
+        outline: 2px solid #171717;
+        outline-offset: 4px;
+        border-radius: 3px;
+    }
+
     button,
     input,
     textarea,
@@ -301,6 +307,13 @@
 
         overflow: hidden;
         position: relative;
+    }
+
+    .preview-disclaimer {
+        margin-top: 14px;
+        color: #666666;
+        font-size: 11px;
+        line-height: 1.5;
     }
 
     .visual-content {
@@ -944,8 +957,8 @@
                         Professional Studio
                     </span>
 
-                    <span class="visual-status">
-                        Workspace
+                    <span class="visual-status" aria-label="Illustrative interface preview">
+                        Preview
                     </span>
 
                 </div>
@@ -959,7 +972,7 @@
                         </small>
 
                         <strong>
-                            12
+                            Sample
                         </strong>
 
                     </div>
@@ -971,7 +984,7 @@
                         </small>
 
                         <strong>
-                            48
+                            Sample
                         </strong>
 
                     </div>
@@ -981,16 +994,18 @@
                 <div class="visual-box">
 
                     <small>
-                        Business Overview
+                        Illustrative Business Overview
                     </small>
 
                     <strong>
-                        Organized.
+                        Example only
                     </strong>
 
                     <div class="visual-line"></div>
 
                 </div>
+
+                <p class="preview-disclaimer">Illustrative preview only. These are not live account metrics.</p>
 
             </div>
 
@@ -1108,12 +1123,13 @@
             </div>
 
             <h3>
-                Equipment Management
+                Business Resources
             </h3>
 
             <p>
-                Keep track of the equipment and resources that support
-                day-to-day photography operations.
+                Keep the resources that support day-to-day photography
+                operations organized alongside your business workflows.
+                Specific tools depend on the features available in your account.
             </p>
 
         </article>
@@ -1309,7 +1325,7 @@
 
 
         <p>
-            Powered by <a href="https://bluehorizanlabs.vercel.app/" target="_blank"> Bluehorizanlabs</a> 
+            Powered by <a href="https://bluehorizanlabs.vercel.app/" target="_blank" rel="noopener noreferrer"> Bluehorizanlabs</a> 
         </p>
     
     

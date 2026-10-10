@@ -8,7 +8,7 @@
 
     <meta
         name="description"
-        content="See the current status of Professional Studio and how photographers around the world are using the platform."
+        content="Professional Studio service status page. Live monitoring is not yet connected."
     >
 
     <link
@@ -411,6 +411,35 @@
             height: 6px;
             border-radius: 50%;
             background: var(--green);
+        }
+
+
+        .status-pill {
+            border-color: #e7e7e7;
+            background: #f5f5f5;
+            color: #555;
+        }
+
+        .status-dot {
+            background: #8b8b8b;
+            box-shadow: 0 0 0 4px rgba(100, 100, 100, 0.08);
+        }
+
+        .unmonitored {
+            justify-self: end;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            color: #686868;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .unmonitored-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #8b8b8b;
         }
 
         /* =========================================================
@@ -1071,7 +1100,7 @@
 
         <div class="status-pill fade-up">
             <span class="status-dot"></span>
-            All systems operational
+            Live monitoring not configured
         </div>
 
         <h1 class="fade-up delay-1">
@@ -1080,14 +1109,12 @@
         </h1>
 
         <p class="fade-up delay-2">
-            A transparent look at the Professional Studio platform,
-            our growing photography community, and the services
-            currently available to photographers.
+            This page is not connected to a live monitoring service yet. Service health and platform metrics cannot currently be verified here.
         </p>
 
         <div class="last-updated fade-up delay-3">
             Last updated
-            <span id="lastUpdated">just now</span>
+            <span id="lastUpdated">No live monitoring feed connected</span>
         </div>
 
     </header>
@@ -1107,13 +1134,10 @@
                     Photographers connected
                 </div>
 
-                <div class="stat-number" data-target="1284">
-                    0
-                </div>
+                <div class="stat-number" aria-label="Metric unavailable">—</div>
 
                 <div class="stat-description">
-                    Professionals using Professional Studio
-                    to manage their photography business.
+                    Live aggregate metric is not connected.
                 </div>
             </div>
 
@@ -1123,12 +1147,10 @@
                     Galleries created
                 </div>
 
-                <div class="stat-number" data-target="4872">
-                    0
-                </div>
+                <div class="stat-number" aria-label="Metric unavailable">—</div>
 
                 <div class="stat-description">
-                    Client galleries created through the platform.
+                    Live aggregate metric is not connected.
                 </div>
             </div>
 
@@ -1138,13 +1160,10 @@
                     Bookings managed
                 </div>
 
-                <div class="stat-number" data-target="9360">
-                    0
-                </div>
+                <div class="stat-number" aria-label="Metric unavailable">—</div>
 
                 <div class="stat-description">
-                    Photography bookings organized through
-                    Professional Studio.
+                    Live aggregate metric is not connected.
                 </div>
             </div>
 
@@ -1154,13 +1173,10 @@
                     Reviews received
                 </div>
 
-                <div class="stat-number" data-target="2146">
-                    0
-                </div>
+                <div class="stat-number" aria-label="Metric unavailable">—</div>
 
                 <div class="stat-description">
-                    Client feedback received across
-                    connected photography businesses.
+                    Live aggregate metric is not connected.
                 </div>
             </div>
 
@@ -1181,14 +1197,12 @@
                     </div>
 
                     <h2 class="section-title">
-                        Everything is operational.
+                        Live service health is not available yet.
                     </h2>
                 </div>
 
                 <p class="section-description">
-                    Public service status only. Private account,
-                    client, payment and business information is
-                    never displayed here.
+                    Service states below are marked unmonitored until real health checks are connected. No live uptime data is currently available.
                 </p>
 
             </div>
@@ -1210,9 +1224,9 @@
                         Studio management
                     </div>
 
-                    <div class="operational">
-                        <span class="operational-dot"></span>
-                        Operational
+                    <div class="unmonitored">
+                        <span class="unmonitored-dot"></span>
+                        Not monitored
                     </div>
 
                 </div>
@@ -1232,9 +1246,9 @@
                         Gallery management
                     </div>
 
-                    <div class="operational">
-                        <span class="operational-dot"></span>
-                        Operational
+                    <div class="unmonitored">
+                        <span class="unmonitored-dot"></span>
+                        Not monitored
                     </div>
 
                 </div>
@@ -1254,9 +1268,9 @@
                         Booking management
                     </div>
 
-                    <div class="operational">
-                        <span class="operational-dot"></span>
-                        Operational
+                    <div class="unmonitored">
+                        <span class="unmonitored-dot"></span>
+                        Not monitored
                     </div>
 
                 </div>
@@ -1276,9 +1290,9 @@
                         Studio services
                     </div>
 
-                    <div class="operational">
-                        <span class="operational-dot"></span>
-                        Operational
+                    <div class="unmonitored">
+                        <span class="unmonitored-dot"></span>
+                        Not monitored
                     </div>
 
                 </div>
@@ -1298,9 +1312,9 @@
                         Account access
                     </div>
 
-                    <div class="operational">
-                        <span class="operational-dot"></span>
-                        Operational
+                    <div class="unmonitored">
+                        <span class="unmonitored-dot"></span>
+                        Not monitored
                     </div>
 
                 </div>
@@ -1457,16 +1471,17 @@
     </div>
 
 
-    <div class="customer-grid" id="customerGrid">
-        <!-- Customer cards generated by JavaScript -->
+    <div class="customer-grid" id="customerGrid" role="status" aria-live="polite">
+        <div class="customer-empty">
+            <strong>Featured studios are not connected yet.</strong>
+            Public studio profiles will appear here after an approved, live showcase feed is configured.
+        </div>
     </div>
 
 
     <div class="customer-footer">
 
-        <span id="customerCount">
-            Showing 0 studios
-        </span>
+        <span id="customerCount">Showcase feed unavailable</span>
 
         <a href="auth/signup.html" class="customer-cta">
             Create your studio
@@ -1527,694 +1542,31 @@
     ========================================================= -->
 
     <script>
-        /* =========================================================
-   PROFESSIONAL STUDIO
-   STATUS PAGE JAVASCRIPT
-========================================================= */
-
-
-/* =========================================================
-   FEATURED CUSTOMER ACCOUNTS
-=========================================================
-
-   THIS IS THE MAIN SECTION YOU WILL EDIT.
-
-   To ADD a photographer:
-   Add another object to this array.
-
-   To REMOVE a photographer:
-   Delete their entire object.
-
-   To CHANGE ORDER:
-   Move the object up/down.
-
-   To CHANGE HOW MANY ARE DISPLAYED:
-   Simply add or remove objects.
-
-   IMPORTANT:
-   Only use PUBLIC portfolio pages and PUBLIC preview images.
-
-========================================================= */
-
-const featuredCustomers = [
-
-    {
-        name: "Arjun Photography",
-
-        location: "Mumbai, India",
-
-        description:
-            "Wedding and portrait photography studio.",
-
-        image:
-            "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1000&q=80",
-
-        portfolio:
-            "https://professionalstudio.vercel.app/"
-    },
-
-
-    {
-        name: "Studio Frame",
-
-        location: "Pune, India",
-
-        description:
-            "Creative photography and cinematic wedding stories.",
-
-        image:
-            "https://images.unsplash.com/photo-1531058020387-3be344556be6?auto=format&fit=crop&w=1000&q=80",
-
-        portfolio:
-            "https://professionalstudio.vercel.app/"
-    },
-
-
-    {
-        name: "Light & Lens",
-
-        location: "Delhi, India",
-
-        description:
-            "Portraits, events and commercial photography.",
-
-        image:
-            "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1000&q=80",
-
-        portfolio:
-            "https://professionalstudio.vercel.app/"
-    }
-
-];
-
-
-
-/* =========================================================
-   PUBLIC PLATFORM STATISTICS
-=========================================================
-
-   These are currently demo/public aggregate numbers.
-
-   Later, these can be replaced with backend/API values.
-
-   NEVER put private information here.
-
-========================================================= */
-
-const publicPlatformStats = {
-
-    photographersConnected: 1284,
-
-    galleriesCreated: 4872,
-
-    bookingsManaged: 9360,
-
-    reviewsReceived: 2146,
-
-    platformStatus: "operational"
-
-};
-
-
-
-/* =========================================================
-   COUNTER ANIMATION
-========================================================= */
-
-const counters =
-    document.querySelectorAll(".stat-number");
-
-
-function animateCounter(element) {
-
-    const target =
-        Number(element.dataset.target);
-
-    const duration = 1300;
-
-    const startTime =
-        performance.now();
-
-
-    function updateCounter(currentTime) {
-
-        const elapsed =
-            currentTime - startTime;
-
-
-        const progress =
-            Math.min(
-                elapsed / duration,
-                1
-            );
-
-
-        /*
-            Smooth ease-out animation.
-        */
-
-        const eased =
-            1 - Math.pow(
-                1 - progress,
-                3
-            );
-
-
-        const currentValue =
-            Math.floor(
-                target * eased
-            );
-
-
-        element.textContent =
-            currentValue.toLocaleString("en-IN");
-
-
-        if (progress < 1) {
-
-            requestAnimationFrame(
-                updateCounter
-            );
-
-        }
-
-    }
-
-
-    requestAnimationFrame(
-        updateCounter
-    );
-
-}
-
-
-
-/* =========================================================
-   COUNTER INTERSECTION OBSERVER
-=========================================================
-
-   Counters start when the user actually reaches them.
-
-========================================================= */
-
-if ("IntersectionObserver" in window) {
-
-    const counterObserver =
-        new IntersectionObserver(
-            (entries, observer) => {
-
-                entries.forEach(entry => {
-
-                    if (!entry.isIntersecting) {
-                        return;
-                    }
-
-
-                    animateCounter(
-                        entry.target
-                    );
-
-
-                    observer.unobserve(
-                        entry.target
-                    );
-
-                });
-
-            },
-            {
-                threshold: 0.4
-            }
-        );
-
-
-    counters.forEach(counter => {
-
-        counterObserver.observe(
-            counter
-        );
-
-    });
-
-} else {
-
-    /*
-        Fallback for older browsers.
-    */
-
-    counters.forEach(counter => {
-
-        counter.textContent =
-            Number(
-                counter.dataset.target
-            ).toLocaleString("en-IN");
-
-    });
-
-}
-
-
-
-/* =========================================================
-   LAST UPDATED
-========================================================= */
-
-const updatedElement =
-    document.getElementById("lastUpdated");
-
-
-if (updatedElement) {
-
-    const now =
-        new Date();
-
-
-    updatedElement.textContent =
-        now.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit"
-        });
-
-}
-
-
-
-/* =========================================================
-   CUSTOMER SHOWCASE ELEMENTS
-========================================================= */
-
-const customerGrid =
-    document.getElementById(
-        "customerGrid"
-    );
-
-
-const customerCount =
-    document.getElementById(
-        "customerCount"
-    );
-
-
-
-/* =========================================================
-   HTML ESCAPING
-=========================================================
-
-   Customer information is inserted into HTML.
-
-   Escaping prevents unexpected HTML from being interpreted.
-
-========================================================= */
-
-function escapeHTML(value) {
-
-    return String(value)
-
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-
-        .replace(
-            /</g,
-            "&lt;"
-        )
-
-        .replace(
-            />/g,
-            "&gt;"
-        )
-
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
-}
-
-
-
-/* =========================================================
-   VALIDATE CUSTOMER DATA
-========================================================= */
-
-function isValidCustomer(customer) {
-
-    if (!customer) {
-        return false;
-    }
-
-
-    if (!customer.name) {
-        return false;
-    }
-
-
-    if (!customer.location) {
-        return false;
-    }
-
-
-    if (!customer.description) {
-        return false;
-    }
-
-
-    if (!customer.image) {
-        return false;
-    }
-
-
-    if (!customer.portfolio) {
-        return false;
-    }
-
-
-    return true;
-
-}
-
-
-
-/* =========================================================
-   CREATE CUSTOMER CARD
-========================================================= */
-
-function createCustomerCard(customer) {
-
-    const card =
-        document.createElement(
-            "article"
-        );
-
-
-    card.className =
-        "customer-card";
-
-
-    card.innerHTML = `
-
-        <div class="customer-preview">
-
-            <img
-                src="${escapeHTML(customer.image)}"
-                alt="${escapeHTML(customer.name)} portfolio"
-                loading="lazy"
-            >
-
-            <div class="customer-overlay">
-
-                <a
-                    href="${escapeHTML(customer.portfolio)}"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="view-portfolio"
-                >
-                    View portfolio →
-                </a>
-
-            </div>
-
-        </div>
-
-
-        <div class="customer-info">
-
-            <div class="customer-name">
-                ${escapeHTML(customer.name)}
-            </div>
-
-            <div class="customer-location">
-                ${escapeHTML(customer.location)}
-            </div>
-
-            <div class="customer-description">
-                ${escapeHTML(customer.description)}
-            </div>
-
-        </div>
-
-    `;
-
-
-    return card;
-
-}
-
-
-
-/* =========================================================
-   RENDER CUSTOMER SHOWCASE
-========================================================= */
-
-function renderFeaturedCustomers() {
-
-    /*
-        Make sure the required container exists.
-    */
-
-    if (!customerGrid) {
-        return;
-    }
-
-
-    /*
-        Clear existing cards.
-    */
-
-    customerGrid.innerHTML = "";
-
-
-    /*
-        Only keep properly configured accounts.
-    */
-
-    const validCustomers =
-        featuredCustomers.filter(
-            isValidCustomer
-        );
-
-
-    /* =====================================================
-       EMPTY STATE
-    ===================================================== */
-
-    if (
-        validCustomers.length === 0
-    ) {
-
-        customerGrid.innerHTML = `
-
-            <div class="customer-empty">
-
-                <strong>
-                    Customer showcases are coming soon.
-                </strong>
-
-                Public portfolio previews will appear here
-                as photographers choose to participate.
-
-            </div>
-
-        `;
-
-
-        if (customerCount) {
-
-            customerCount.textContent =
-                "Showing 0 studios";
-
-        }
-
-
-        return;
-    }
-
-
-
-    /* =====================================================
-       CREATE CARDS
-    ===================================================== */
-
-    validCustomers.forEach(
-        customer => {
-
-            const card =
-                createCustomerCard(
-                    customer
-                );
-
-
-            customerGrid.appendChild(
-                card
-            );
-
-        }
-    );
-
-
-
-    /* =====================================================
-       UPDATE COUNT
-    ===================================================== */
-
-    if (customerCount) {
-
-        const count =
-            validCustomers.length;
-
-
-        customerCount.textContent =
-            `Showing ${count} studio${
-                count === 1
-                    ? ""
-                    : "s"
-            }`;
-
-    }
-
-}
-
-
-
-/* =========================================================
-   INITIALIZE CUSTOMER SHOWCASE
-========================================================= */
-
-renderFeaturedCustomers();
-
-
-
-/* =========================================================
-   OPTIONAL PUBLIC STATISTICS HELPER
-=========================================================
-
-   This allows the HTML counters to be populated from the
-   publicPlatformStats object instead of manually editing
-   data-target values in the HTML.
-
-========================================================= */
-
-function updatePublicStatistics() {
-
-    const statisticsMap = {
-
-        photographersConnected:
-            publicPlatformStats.photographersConnected,
-
-        galleriesCreated:
-            publicPlatformStats.galleriesCreated,
-
-        bookingsManaged:
-            publicPlatformStats.bookingsManaged,
-
-        reviewsReceived:
-            publicPlatformStats.reviewsReceived
-
-    };
-
-
-    /*
-        The current HTML uses the order of the stat cards.
-        We update each counter according to its position.
-    */
-
-    const statElements =
-        document.querySelectorAll(
-            ".stat-number"
-        );
-
-
-    if (statElements.length >= 4) {
-
-        statElements[0].dataset.target =
-            statisticsMap.photographersConnected;
-
-
-        statElements[1].dataset.target =
-            statisticsMap.galleriesCreated;
-
-
-        statElements[2].dataset.target =
-            statisticsMap.bookingsManaged;
-
-
-        statElements[3].dataset.target =
-            statisticsMap.reviewsReceived;
-
-    }
-
-}
-
-
-
-/* =========================================================
-   INITIALIZE PUBLIC STATISTICS
-========================================================= */
-
-updatePublicStatistics();
-
-
-
-/* =========================================================
-   FINAL NOTES FOR FUTURE BACKEND CONNECTION
-=========================================================
-
-   When the backend is ready:
-
-   1. Fetch ONLY aggregate public statistics.
-   2. Never return private user/client information.
-   3. Fetch ONLY photographers approved for public showcase.
-   4. Store their public portfolio URL.
-   5. Store their approved preview image.
-   6. Render the returned list through renderFeaturedCustomers().
-
-   Example future structure:
-
-   GET /public/status
-
-   {
-       photographersConnected: 1284,
-       galleriesCreated: 4872,
-       bookingsManaged: 9360,
-       reviewsReceived: 2146
-   }
-
-
-   Example future showcase:
-
-   GET /public/featured-studios
-
-   [
-       {
-           name: "...",
-           location: "...",
-           description: "...",
-           image: "...",
-           portfolio: "..."
-       }
-   ]
-
-   Do NOT expose:
-
-   - email
-   - phone
-   - password
-   - user ID
-   - client information
-   - private gallery data
-   - payment data
-   - revenue
-   - private storage usage
-   - authentication tokens
-
-========================================================= */
-    </script>
+        /* Status page deliberately does not claim live health without a verified feed. */
+(() => {
+  const statusPill = document.querySelector('.status-pill');
+  const serviceHeading = document.querySelector('.section-title');
+  const updated = document.getElementById('lastUpdated');
+  const customerGrid = document.getElementById('customerGrid');
+  const customerCount = document.getElementById('customerCount');
+
+  if (statusPill) {
+    statusPill.setAttribute('role', 'status');
+    statusPill.setAttribute('aria-live', 'polite');
+  }
+  if (updated) updated.textContent = 'No live monitoring feed connected';
+  if (customerGrid && !customerGrid.textContent.trim()) {
+    const empty = document.createElement('div');
+    empty.className = 'customer-empty';
+    const title = document.createElement('strong');
+    title.textContent = 'Featured studios are not connected yet.';
+    empty.append(title, document.createTextNode(' Public studio profiles will appear here after an approved, live showcase feed is configured.'));
+    customerGrid.appendChild(empty);
+  }
+  if (customerCount) customerCount.textContent = 'Showcase feed unavailable';
+})();
+
+</script>
 
 </body>
 </html>

@@ -488,18 +488,24 @@
                 flex-wrap: wrap;
             }
         }
+    
+        .skip-link { position: absolute; left: 1rem; top: -5rem; z-index: 1000; padding: .75rem 1rem; background: #171717; color: #fff; border-radius: .35rem; }
+        .skip-link:focus { top: 1rem; }
+        a:focus-visible, button:focus-visible { outline: 3px solid #2563eb; outline-offset: 3px; border-radius: 2px; }
+
     </style>
 </head>
 
 <body>
+    <a class="skip-link" href="#cookie-content">Skip to policy content</a>
     <header class="wrap nav">
-        <a class="brand" href="https://professionalstudio.vercel.app/">
+        <a class="brand" href="./">
             <span class="brand-mark">▣</span>Professional Studio
         </a>
         <nav class="navlinks" aria-label="Main navigation">
-            <a href="https://professionalstudio.vercel.app/">Home</a>
-            <a href="https://professionalstudio.vercel.app/pricing.html">Pricing</a>
-            <a class="nav-cta" href="https://professionalstudio.vercel.app/auth/signup.html">Start free</a>
+            <a href="./">Home</a>
+            <a href="./pricing.html">Pricing</a>
+            <a class="nav-cta" href="./auth/signup.html">Start free</a>
         </nav>
     </header>
     <main>
@@ -510,7 +516,7 @@
                 choices available to you.</p>
             <div class="updated">Last updated: September 27, 2026</div>
         </section>
-        <div class="content wrap">
+        <div class="content wrap" id="cookie-content">
             <aside class="toc">
                 <p class="toc-title">On this page</p>
                 <nav aria-label="Cookie policy contents">
@@ -621,7 +627,7 @@
                 <h2>Explore Professional Studio</h2>
                 <p>Build your portfolio, manage bookings and deliver client galleries from one place.</p>
             </div>
-            <a class="button" href="https://professionalstudio.vercel.app/">Visit the homepage <span
+            <a class="button" href="./">Visit the homepage <span
                     aria-hidden="true">&nbsp;→</span></a>
         </section>
     </main>
@@ -629,10 +635,10 @@
         <div class="wrap">
             <span>© 2026 Professional Studio. All Rights Reserved.</span>
             <nav class="footer-links" aria-label="Footer">
-                <a href="https://professionalstudio.vercel.app/">Home</a>
-                <a href="https://professionalstudio.vercel.app/pricing.html">Pricing</a>
-                <a href="https://professionalstudio.vercel.app/privacy.html">Privacy</a>
-                <a href="https://professionalstudio.vercel.app/terms.html">Terms</a>
+                <a href="./">Home</a>
+                <a href="./pricing.html">Pricing</a>
+                <a href="./privacy.html">Privacy</a>
+                <a href="./terms.html">Terms</a>
             </nav>
         </div>
     </footer>

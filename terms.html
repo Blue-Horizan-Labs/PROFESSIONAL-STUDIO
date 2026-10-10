@@ -2529,23 +2529,23 @@ a:focus-visible {
 
                 <span>
                     Email:
-                 helloprofessionalstudio@gmail.com
+                    <a href="mailto:helloprofessionalstudio@gmail.com">helloprofessionalstudio@gmail.com</a>
                 </span>
 
 
                 <span>
                     Email:
-                    bluehorizanlabs@gmail.com
+                    <a href="mailto:bluehorizanlabs@gmail.com">bluehorizanlabs@gmail.com</a>
                 </span>
 
                 <span>
                     Phone:
-                    +91 9529924506
+                    <a href="tel:+919529924506">+91 9529924506</a>
                 </span>
 
                 <span>
                     Phone:
-                    +91 9309703484
+                    <a href="tel:+919309703484">+91 9309703484</a>
                 </span>
 
                 <span>
@@ -2651,7 +2651,7 @@ a:focus-visible {
             <a
                 href="https://bluehorizanlabs.vercel.app/"
                 target="_blank"
-                rel="noopener"
+                rel="noopener noreferrer"
             >
                 Bluehorizanlabs
             </a>
@@ -2722,7 +2722,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             try {
 
-                history.replaceState(
+                history.pushState(
                     null,
                     "",
                     targetId
@@ -2783,10 +2783,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 link.getAttribute("href");
 
 
+            const isCurrent = linkTarget === `#${currentId}`;
+
             link.classList.toggle(
                 "active",
-                linkTarget === `#${currentId}`
+                isCurrent
             );
+
+            if (isCurrent) {
+                link.setAttribute("aria-current", "location");
+            } else {
+                link.removeAttribute("aria-current");
+            }
 
         });
 
