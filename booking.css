@@ -1158,3 +1158,15 @@ textarea:focus{
     }
 
 }
+
+/* Phase 4: selected service category */
+.package-category {
+    display: inline-flex;
+    width: fit-content;
+    margin: 6px 0 0;
+    padding: 3px 9px;
+    border: 1px solid #ddd;
+    border-radius: 999px;
+    color: #555;
+    font-size: .75rem;
+}

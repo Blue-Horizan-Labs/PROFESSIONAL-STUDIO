@@ -742,6 +742,23 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
+    function getPaymentPlanSummaryText(pkg, price) {
+        const plan = getPaymentPlan(pkg);
+        if (!plan || typeof plan !== "object" || plan.type === "full") return "Full payment";
+        if (plan.type === "advance") {
+            const value = Number(plan.advanceValue);
+            if (!Number.isFinite(value) || value <= 0) return "Advance payment";
+            if (plan.advanceType === "fixed") return `Advance ${formatPrice(value)}`;
+            return `Advance ${Math.min(100, value)}%`;
+        }
+        if (plan.type === "installments") {
+            const stages = Array.isArray(plan.installments) ? plan.installments.length : 0;
+            return stages ? `${stages} payment stages` : "Custom installments";
+        }
+        return "Contact for payment details";
+    }
+
+
     /* =========================================================
        PAYMENT PLAN NORMALIZATION
        ========================================================= */
@@ -1157,12 +1174,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
 
 
-            if (
-                exact
-            ) {
-
-                return exact;
-
+            if (exact) {
+                return exact.active === false ? null : exact;
             }
 
         }
@@ -1338,6 +1351,7 @@ document.addEventListener("DOMContentLoaded", () => {
             selectedService.name ??
             selectedService.title ??
             "Photography Service";
+        const serviceCategory = String(selectedService.category || "").trim();
 
 
         const packageName =
@@ -1356,6 +1370,17 @@ document.addEventListener("DOMContentLoaded", () => {
             getPackagePrice(
                 selectedPackage
             );
+
+        if (!Number.isFinite(price) || price <= 0) {
+            selectedPackageCard.innerHTML = `
+                <div class="package-error" role="alert">
+                    <h2>Package pricing unavailable</h2>
+                    <p>This package does not have a valid price. Please return to Services and choose a package with a valid price.</p>
+                    <a href="service.html">Return to Services</a>
+                </div>`;
+            if (submitBtn) submitBtn.disabled = true;
+            return;
+        }
 
 
         const coverage =
@@ -1431,6 +1456,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
+        const album = String(selectedPackage.album ?? selectedPackage.albumIncluded ?? "").trim();
+        if (album && album.toLocaleLowerCase() !== "no" && album.toLocaleLowerCase() !== "none") {
+            metaItems.push(`<span class="package-meta-item">Album: ${escapeHTML(album)}</span>`);
+        }
+        metaItems.push(`<span class="package-meta-item">Payment: ${escapeHTML(getPaymentPlanSummaryText(selectedPackage, price))}</span>`);
+
         selectedPackageCard.innerHTML = `
 
             <div class="package-topline">
@@ -1438,10 +1469,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div>
 
                     <p class="package-service">
-                        ${escapeHTML(
-                            serviceName
-                        )}
+                        ${escapeHTML(serviceName)}
                     </p>
+                    ${serviceCategory ? `<p class="package-category">${escapeHTML(serviceCategory)}</p>` : ""}
 
                     <h2 class="package-name">
                         ${escapeHTML(

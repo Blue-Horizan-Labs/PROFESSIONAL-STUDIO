@@ -2591,33 +2591,29 @@ function loadClientServices() {
             );
 
 
-        const price =
-            normalizeText(
-                service.price ??
-                service.startingPrice
-            );
+        const packages = Array.isArray(service.packages) ? service.packages : [];
+        const bookablePackages = packages.filter((pkg) => {
+            if (!pkg || typeof pkg !== "object") return false;
+            const id = String(pkg.id ?? pkg.packageId ?? pkg.key ?? pkg.slug ?? "").trim();
+            const name = String(pkg.name ?? pkg.packageName ?? pkg.title ?? "").trim();
+            const price = Number(String(pkg.price ?? pkg.packagePrice ?? "").replace(/[^\d.-]/g, ""));
+            return Boolean(id && name && Number.isFinite(price) && price > 0);
+        });
+        const packagePrices = bookablePackages
+            .map((pkg) => Number(String(pkg.price ?? pkg.packagePrice ?? "").replace(/[^\d.-]/g, "")));
+        const startingPrice = packagePrices.length ? Math.min(...packagePrices) : null;
+        const price = startingPrice === null
+            ? "Contact for pricing"
+            : new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(startingPrice);
+
+        const coverage = normalizeText(service.coverageDuration ?? service.coverage);
+        const delivery = normalizeText(service.deliveryTime ?? service.delivery);
+        const category = normalizeText(service.category) || "Photography Service";
 
 
-        const coverage =
-            normalizeText(
-                service.coverage
-            );
-
-
-        const delivery =
-            normalizeText(
-                service.delivery
-            );
-
-
-        const packageCount =
-            Array.isArray(
-                service.packages
-            )
-                ? service.packages.length
-                : getNumericValue(
-                    service.packageCount
-                );
+        const packageCount = Array.isArray(service.packages)
+            ? bookablePackages.length
+            : getNumericValue(service.packageCount);
 
 
         const serviceId =
@@ -2637,10 +2633,12 @@ function loadClientServices() {
             name;
 
 
-        card.appendChild(
-            title
-        );
+        card.appendChild(title);
 
+        const categoryBadge = document.createElement("p");
+        categoryBadge.className = "service-category-label";
+        categoryBadge.textContent = category;
+        card.appendChild(categoryBadge);
 
         if (price) {
 

@@ -2669,3 +2669,19 @@ footer a:hover {
         transform: none;
     }
 }
+
+/* Phase 4: consistent service category badges */
+.service-category-label {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    margin: 0 0 8px;
+    padding: 4px 10px;
+    border: 1px solid #dedede;
+    border-radius: 999px;
+    color: #555;
+    background: #f7f7f7;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .03em;
+}
