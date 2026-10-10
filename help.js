@@ -42,6 +42,8 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll(".faq-item")
     );
 
+    const categoryCounts = new Map();
+
     const currentYear =
         document.getElementById("currentYear");
 
@@ -102,9 +104,35 @@ document.addEventListener("DOMContentLoaded", () => {
        FILTER TOPICS
     ===================================================== */
 
+    function updateCategoryCounts() {
+
+        categoryCounts.clear();
+        categoryCounts.set("all", topicCards.length);
+
+        topicCards.forEach((card) => {
+            const category = card.dataset.category || "";
+            categoryCounts.set(
+                category,
+                (categoryCounts.get(category) || 0) + 1
+            );
+        });
+
+        categoryButtons.forEach((button) => {
+            const count = button.querySelector(".category-count");
+            if (count) {
+                count.textContent = String(
+                    categoryCounts.get(button.dataset.category || "all") || 0
+                ).padStart(2, "0");
+            }
+        });
+
+    }
+
+
     function filterTopics() {
 
         let visibleCount = 0;
+        let visibleFaqCount = 0;
 
         const search =
             normalize(currentSearch);
@@ -123,7 +151,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const categoryMatch =
                 activeCategory === "all" ||
-                category === activeCategory;
+                category === activeCategory ||
+                category === "all";
 
 
             const searchMatch =
@@ -141,6 +170,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (shouldShow) {
                 visibleCount++;
+            }
+
+        });
+
+
+        faqItems.forEach((item) => {
+
+            const category = item.dataset.category || "all";
+            const searchableText = normalize(item.textContent);
+            const categoryMatch =
+                activeCategory === "all" ||
+                category === activeCategory ||
+                category === "all";
+            const searchMatch =
+                !search || searchableText.includes(search);
+            const shouldShow = categoryMatch && searchMatch;
+
+            item.hidden = !shouldShow;
+            if (shouldShow) {
+                visibleFaqCount++;
+            } else {
+                closeFaq(item);
             }
 
         });
@@ -174,10 +225,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (resultCount) {
 
-            resultCount.textContent =
-                visibleCount === 1
-                    ? "1 topic"
-                    : `${visibleCount} topics`;
+            const topicLabel = `${visibleCount} ${visibleCount === 1 ? "topic" : "topics"}`;
+            const faqLabel = `${visibleFaqCount} ${visibleFaqCount === 1 ? "answer" : "answers"}`;
+            resultCount.textContent = search || activeCategory !== "all"
+                ? `${topicLabel} · ${faqLabel}`
+                : topicLabel;
 
         }
 
@@ -189,7 +241,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (emptyState) {
 
             emptyState.hidden =
-                visibleCount !== 0;
+                visibleCount !== 0 || visibleFaqCount !== 0;
 
         }
 
@@ -202,26 +254,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (search) {
 
-                if (visibleCount === 0) {
+                if (visibleCount === 0 && visibleFaqCount === 0) {
 
                     searchStatus.textContent =
-                        "No matching help topics were found.";
+                        "No matching help topics or answers were found.";
 
                 } else {
 
                     searchStatus.textContent =
-                        `${visibleCount} matching ${
-                            visibleCount === 1
-                                ? "topic"
-                                : "topics"
-                        } found.`;
+                        `${visibleCount} matching ${visibleCount === 1 ? "topic" : "topics"} and ${visibleFaqCount} matching ${visibleFaqCount === 1 ? "answer" : "answers"} found.`;
 
                 }
 
             } else {
 
                 searchStatus.textContent =
-                    "Search across help topics and common questions.";
+                    "Search help topics, common questions, and answers.";
 
             }
 
@@ -598,6 +646,7 @@ document.addEventListener("DOMContentLoaded", () => {
        INITIALIZE
     ===================================================== */
 
+    updateCategoryCounts();
     filterTopics();
 
     updateClearButton();

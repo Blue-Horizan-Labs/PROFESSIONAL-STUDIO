@@ -238,6 +238,7 @@ Choose which notifications you'd like to receive from Professional Studio.
 <input
     type="checkbox"
     id="email"
+    aria-label="Email Notifications"
 >
 
 <span class="slider"></span>
@@ -258,6 +259,7 @@ Choose which notifications you'd like to receive from Professional Studio.
 <input
     type="checkbox"
     id="booking"
+    aria-label="Booking Alerts"
 >
 
 <span class="slider"></span>
@@ -278,6 +280,7 @@ Choose which notifications you'd like to receive from Professional Studio.
 <input
     type="checkbox"
     id="payment"
+    aria-label="Payment Updates"
 >
 
 <span class="slider"></span>
@@ -298,6 +301,7 @@ Choose which notifications you'd like to receive from Professional Studio.
 <input
     type="checkbox"
     id="marketing"
+    aria-label="Marketing Emails"
 >
 
 <span class="slider"></span>
@@ -318,6 +322,7 @@ Choose which notifications you'd like to receive from Professional Studio.
 <input
     type="checkbox"
     id="sms"
+    aria-label="SMS Notifications"
 >
 
 <span class="slider"></span>
@@ -348,7 +353,9 @@ Save Changes
 
 <div
     class="message"
-    id="message">
+    id="message"
+    role="status"
+    aria-live="polite">
 Notification settings updated successfully.
 </div>
 
@@ -365,134 +372,105 @@ Notification settings updated successfully.
 </div>
 
 <script>
+(function () {
+    "use strict";
 
-const NOTIFICATION_KEY =
-    "professionalStudio.notificationSettings";
+    const NOTIFICATION_KEY = "professionalStudio.notificationSettings";
+    const defaults = Object.freeze({
+        email: true,
+        booking: true,
+        payment: true,
+        marketing: false,
+        sms: false
+    });
+    const fields = Object.keys(defaults);
+    const message = document.getElementById("message");
+    const saveButton = document.getElementById("saveBtn");
+    const resetButton = document.getElementById("resetBtn");
+    let messageTimer = null;
 
-const defaults = {
-    email:true,
-    booking:true,
-    payment:true,
-    marketing:false,
-    sms:false
-};
-
-const fields = [
-    "email",
-    "booking",
-    "payment",
-    "marketing",
-    "sms"
-];
-
-const message = document.getElementById("message");
-
-function loadSettings(){
-
-    let saved = null;
-
-    try{
-
-        saved = JSON.parse(
-            localStorage.getItem(NOTIFICATION_KEY)
-        );
-
-    }catch(error){
-
-        saved = null;
-
+    function readSettings() {
+        try {
+            const raw = localStorage.getItem(NOTIFICATION_KEY);
+            if (!raw) return { ...defaults };
+            const parsed = JSON.parse(raw);
+            if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+                return { ...defaults };
+            }
+            const result = { ...defaults };
+            fields.forEach((field) => {
+                if (typeof parsed[field] === "boolean") result[field] = parsed[field];
+            });
+            return result;
+        } catch (error) {
+            showMessage("Settings could not be read from this browser. Changes may not persist.", true);
+            return { ...defaults };
+        }
     }
 
-    const settings = {
-        ...defaults,
-        ...(saved || {})
-    };
+    function renderSettings(settings) {
+        fields.forEach((field) => {
+            const input = document.getElementById(field);
+            if (input) input.checked = settings[field];
+        });
+    }
 
-    fields.forEach(function(field){
+    function getCurrentSettings() {
+        const settings = {};
+        fields.forEach((field) => {
+            settings[field] = document.getElementById(field).checked;
+        });
+        return settings;
+    }
 
-        document.getElementById(field).checked =
-            Boolean(settings[field]);
+    function persistSettings(settings, successText) {
+        try {
+            localStorage.setItem(NOTIFICATION_KEY, JSON.stringify(settings));
+            showMessage(successText, false);
+            return true;
+        } catch (error) {
+            showMessage("Could not save settings in this browser. Check storage permissions or available space, then try again.", true);
+            return false;
+        }
+    }
 
-    });
+    function saveSettings() {
+        persistSettings(getCurrentSettings(), "Notification preferences saved in this browser.");
+    }
 
-}
+    function resetSettings() {
+        const previous = readSettings();
+        renderSettings(defaults);
+        if (!persistSettings({ ...defaults }, "Notification preferences restored to their defaults.")) {
+            renderSettings(previous);
+        }
+    }
 
-function getCurrentSettings(){
-
-    const settings = {};
-
-    fields.forEach(function(field){
-
-        settings[field] =
-            document.getElementById(field).checked;
-
-    });
-
-    return settings;
-
-}
-
-function saveSettings(){
-
-    const settings = getCurrentSettings();
-
-    localStorage.setItem(
-        NOTIFICATION_KEY,
-        JSON.stringify(settings)
-    );
-
-    showMessage(
-        "Notification settings updated successfully."
-    );
-
-}
-
-function resetSettings(){
-
-    fields.forEach(function(field){
-
-        document.getElementById(field).checked =
-            defaults[field];
-
-    });
-
-    localStorage.setItem(
-        NOTIFICATION_KEY,
-        JSON.stringify(defaults)
-    );
-
-    showMessage(
-        "Notification settings restored to default."
-    );
-
-}
-
-function showMessage(text){
-
-    message.textContent = text;
-    message.style.display = "block";
-
-    clearTimeout(window.notificationMessageTimer);
-
-    window.notificationMessageTimer =
-        setTimeout(function(){
-
+    function showMessage(text, isError) {
+        if (!message) return;
+        message.textContent = text;
+        message.style.display = "block";
+        message.setAttribute("role", isError ? "alert" : "status");
+        message.style.background = isError ? "#3b1717" : "#13361d";
+        message.style.color = isError ? "#ffb4b4" : "#7ee787";
+        if (messageTimer) window.clearTimeout(messageTimer);
+        messageTimer = window.setTimeout(() => {
             message.style.display = "none";
+        }, 4500);
+    }
 
-        },3000);
+    saveButton.addEventListener("click", saveSettings);
+    resetButton.addEventListener("click", resetSettings);
 
-}
+    // Keep the page in sync when another Professional Studio tab changes these preferences.
+    window.addEventListener("storage", (event) => {
+        if (event.key === NOTIFICATION_KEY || event.key === null) {
+            renderSettings(readSettings());
+        }
+    });
 
-document
-    .getElementById("saveBtn")
-    .addEventListener("click",saveSettings);
-
-document
-    .getElementById("resetBtn")
-    .addEventListener("click",resetSettings);
-
-loadSettings();
-
+    renderSettings(readSettings());
+})();
 </script>
 
 </body>
