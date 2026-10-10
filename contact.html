@@ -495,7 +495,7 @@
                 Send us a message
             </h2>
 
-            <form id="contactForm">
+            <form id="contactForm" novalidate>
 
 
                 <div class="form-group">
@@ -507,6 +507,9 @@
                     <input
                         type="text"
                         id="name"
+                        name="name"
+                        autocomplete="name"
+                        maxlength="100"
                         placeholder="Enter your name"
                         required
                     >
@@ -523,6 +526,9 @@
                     <input
                         type="email"
                         id="email"
+                        name="email"
+                        autocomplete="email"
+                        maxlength="254"
                         placeholder="Enter your email"
                         required
                     >
@@ -539,6 +545,8 @@
                     <input
                         type="text"
                         id="subject"
+                        name="subject"
+                        maxlength="150"
                         placeholder="What can we help you with?"
                         required
                     >
@@ -554,6 +562,8 @@
 
                     <textarea
                         id="message"
+                        name="message"
+                        maxlength="5000"
                         placeholder="Write your message..."
                         required
                     ></textarea>
@@ -572,6 +582,9 @@
                 <div
                     id="formMessage"
                     class="message"
+                    role="status"
+                    aria-live="polite"
+                    aria-atomic="true"
                 ></div>
 
 
@@ -605,82 +618,117 @@
     ========================= -->
 
     <script>
+        (() => {
+            "use strict";
 
-        const form =
-            document.getElementById("contactForm");
+            const form = document.getElementById("contactForm");
+            const formMessage = document.getElementById("formMessage");
+            const submitButton = form.querySelector('button[type="submit"]');
+            const fields = {
+                name: document.getElementById("name"),
+                email: document.getElementById("email"),
+                subject: document.getElementById("subject"),
+                message: document.getElementById("message")
+            };
+            let submitting = false;
 
-        const formMessage =
-            document.getElementById("formMessage");
-
-
-        form.addEventListener("submit", function (event) {
-
-            event.preventDefault();
-
-
-            const name =
-                document.getElementById("name").value.trim();
-
-            const email =
-                document.getElementById("email").value.trim();
-
-            const subject =
-                document.getElementById("subject").value.trim();
-
-            const message =
-                document.getElementById("message").value.trim();
-
-
-            /* Basic validation */
-
-            if (!name || !email || !subject || !message) {
-
-                formMessage.textContent =
-                    "Please fill in all the fields.";
-
-                formMessage.className =
-                    "message error";
-
-                return;
+            function showMessage(text, type) {
+                formMessage.textContent = text;
+                formMessage.className = `message ${type}`;
             }
 
+            function validate() {
+                const values = Object.fromEntries(
+                    Object.entries(fields).map(([key, field]) => [key, field.value.trim()])
+                );
 
-            /* Email validation */
+                for (const [key, field] of Object.entries(fields)) {
+                    if (!values[key]) {
+                        field.focus();
+                        showMessage("Please fill in all the fields.", "error");
+                        return null;
+                    }
+                }
 
-            const emailPattern =
-                /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-
-            if (!emailPattern.test(email)) {
-
-                formMessage.textContent =
-                    "Please enter a valid email address.";
-
-                formMessage.className =
-                    "message error";
-
-                return;
+                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailPattern.test(values.email) || values.email.length > 254) {
+                    fields.email.focus();
+                    showMessage("Please enter a valid email address.", "error");
+                    return null;
+                }
+                if (values.name.length > 100 || values.subject.length > 150 || values.message.length > 5000) {
+                    showMessage("One or more fields exceed the allowed length. Please shorten your message.", "error");
+                    return null;
+                }
+                return values;
             }
 
+            form.addEventListener("submit", async (event) => {
+                event.preventDefault();
+                if (submitting) return;
 
-            /*
-                Frontend only for now.
+                const payload = validate();
+                if (!payload) return;
 
-                Later this can be connected to
-                your backend/email service.
-            */
+                submitting = true;
+                submitButton.disabled = true;
+                submitButton.setAttribute("aria-busy", "true");
+                submitButton.textContent = "Sending…";
+                showMessage("Sending your message securely…", "");
 
-            formMessage.textContent =
-                "Thank you! Your message has been received.";
+                const controller = new AbortController();
+                const timeoutId = window.setTimeout(() => controller.abort(), 15000);
 
-            formMessage.className =
-                "message success";
+                try {
+                    const response = await fetch("/api/contact", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Accept": "application/json"
+                        },
+                        credentials: "same-origin",
+                        body: JSON.stringify(payload),
+                        signal: controller.signal
+                    });
 
+                    let result = null;
+                    try { result = await response.json(); } catch (_) { /* Non-JSON response */ }
 
-            form.reset();
+                    if (!response.ok || result?.success === false) {
+                        const message = response.status === 429
+                            ? "Too many requests. Please wait a little before trying again."
+                            : (typeof result?.message === "string" && result.message.trim()
+                                ? result.message.trim().slice(0, 240)
+                                : "We couldn't send your message. Please try again later.");
+                        showMessage(message, "error");
+                        return;
+                    }
 
-        });
+                    showMessage("Thank you. Your message has been sent successfully.", "success");
+                    form.reset();
+                } catch (error) {
+                    const message = error?.name === "AbortError"
+                        ? "The request timed out. Your message was not confirmed as sent. Please try again."
+                        : "Contact service is unavailable right now. Your message has not been confirmed as sent. Please try again later.";
+                    showMessage(message, "error");
+                } finally {
+                    window.clearTimeout(timeoutId);
+                    submitting = false;
+                    submitButton.disabled = false;
+                    submitButton.removeAttribute("aria-busy");
+                    submitButton.textContent = "Send Message";
+                }
+            });
 
+            Object.values(fields).forEach((field) => {
+                field.addEventListener("input", () => {
+                    if (formMessage.classList.contains("error")) {
+                        formMessage.textContent = "";
+                        formMessage.className = "message";
+                    }
+                });
+            });
+        })();
     </script>
 
 
