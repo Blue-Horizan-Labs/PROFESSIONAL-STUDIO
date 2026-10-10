@@ -263,6 +263,10 @@
 
     </header>
 
+    <aside class="admin-demo-warning" role="status" aria-live="polite">
+        <strong>Preview dashboard</strong>
+        <span>The figures and records on this page are sample data. Admin actions are not connected to a secured backend yet. Do not use this page to manage real accounts or payments.</span>
+    </aside>
 
     <!-- =====================================================
          DASHBOARD
@@ -895,18 +899,19 @@
                         <input
                             type="search"
                             placeholder="Search photographers..."
+                            aria-label="Search photographers"
                         >
 
                     </div>
 
-                    <select>
+                    <select aria-label="Filter photographers by plan">
                         <option>All Plans</option>
                         <option>Starter</option>
                         <option>Pro</option>
                         <option>Studio</option>
                     </select>
 
-                    <select>
+                    <select aria-label="Filter photographers by status">
                         <option>All Status</option>
                         <option>Active</option>
                         <option>Pending</option>

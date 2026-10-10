@@ -2661,3 +2661,31 @@ SMALL MOBILE
 }
 
 }
+
+/* Task 3.24: honest preview-state notice; visual style follows the existing dashboard. */
+.admin-demo-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin: 18px 28px 0;
+    padding: 14px 16px;
+    border: 1px solid #f0d38a;
+    border-left: 4px solid #c58b18;
+    border-radius: 10px;
+    background: #fff9e8;
+    color: #674b0d;
+    font-size: 13px;
+    line-height: 1.55;
+}
+.admin-demo-warning strong { flex: 0 0 auto; }
+.admin-demo-warning span { min-width: 0; }
+.admin-demo-warning[hidden] { display: none; }
+.admin-table-empty td {
+    padding: 22px !important;
+    color: #6b7280;
+    text-align: center;
+}
+.admin-notification-message { overflow-wrap: anywhere; }
+@media (max-width: 640px) {
+    .admin-demo-warning { margin: 14px 16px 0; flex-direction: column; gap: 4px; }
+}
