@@ -934,6 +934,20 @@ function getPortfolioStorage() {
 
 
     /*
+       Some earlier UI refreshes could leave repeated metadata entries.
+       Deduplicate by stable album ID for rendering while preserving the
+       first record and every distinct album. No stored photos are removed.
+    */
+    storage.albums = Array.from(
+        new Map(
+            storage.albums.map(function(album) {
+                return [album.id, album];
+            })
+        ).values()
+    );
+
+
+    /*
        Normalize file metadata.
     */
 

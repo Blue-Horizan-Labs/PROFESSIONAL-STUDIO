@@ -1847,7 +1847,7 @@ const RECENT_WORK_DB_NAME =
     "ProfessionalStudioDB";
 
 const RECENT_WORK_DB_VERSION =
-    1;
+    2;
 
 const RECENT_WORK_OBJECT_STORE =
     "recentWorkPhotos";
@@ -2364,7 +2364,16 @@ function getRecentWorkAlbums(){
        visible for backwards compatibility.
     */
 
-    return albums
+    const uniqueAlbums = Array.from(
+        new Map(
+            albums
+                .filter(album => album && album.id)
+                .map(album => [album.id, album])
+        ).values()
+    );
+
+
+    return uniqueAlbums
 
         .filter(
             album =>

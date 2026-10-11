@@ -3252,310 +3252,141 @@ function getAlbumImageUrl(album) {
 
 
 async function renderPortfolioRecentWork() {
+    const grid = document.getElementById("recentWorkPreview");
+    const emptyState = document.getElementById("recentWorkEmpty");
 
-    const grid =
-        document.getElementById(
-            "recentWorkPreview"
-        );
-
-
-    const emptyState =
-        document.getElementById(
-            "recentWorkEmpty"
-        );
-
-
-    if (
-        !grid ||
-        !emptyState
-    ) {
+    if (!grid || !emptyState) {
         return;
     }
 
-
-    const currentToken =
-        ++recentWorkRenderToken;
-
+    const currentToken = ++recentWorkRenderToken;
 
     cleanupRecentWorkObjectUrls();
 
-
     grid.replaceChildren();
+    emptyState.hidden = true;
 
-    emptyState.hidden =
-        true;
+    // Read the saved albums.
+    let albums = getRecentWorkAlbums();
 
-
-    const albums =
-        getRecentWorkAlbums()
-            .filter(
-                (album) =>
-                    album &&
-                    album.isPublic !== false
-            )
-            .slice(0, 6);
-
-
+    // Retry briefly in case the saved data is not immediately available.
     if (!albums.length) {
+        for (let attempt = 0; attempt < 5; attempt += 1) {
+            await new Promise(resolve => setTimeout(resolve, 300));
 
-        emptyState.hidden =
-            false;
-
-        return;
-    }
-
-
-    for (
-        const album
-        of albums
-    ) {
-
-        if (
-            currentToken !==
-            recentWorkRenderToken
-        ) {
-            return;
-        }
-
-
-        const card =
-            document.createElement(
-                "article"
-            );
-
-        card.className =
-            "work-card";
-
-
-        const albumId =
-            getAlbumId(album);
-
-        const title =
-            getAlbumTitle(album);
-
-        const description =
-            getAlbumDescription(album);
-
-        const imageUrl =
-            getAlbumImageUrl(album);
-
-        const imageId =
-            getAlbumImageId(album);
-
-
-        const link =
-            document.createElement(
-                "a"
-            );
-
-
-        link.href =
-            albumId
-                ? `gallery.html?album=${encodeURIComponent(
-                    albumId
-                )}`
-                : "gallery.html";
-
-
-        link.setAttribute(
-            "aria-label",
-            `View ${title}`
-        );
-
-
-        let imageElement =
-            null;
-
-
-        if (imageUrl) {
-
-            imageElement =
-                document.createElement(
-                    "img"
-                );
-
-
-            imageElement.src =
-                imageUrl;
-
-
-            imageElement.alt =
-                `${title} portfolio`;
-
-
-            imageElement.loading =
-                "lazy";
-
-
-            imageElement.decoding =
-                "async";
-
-        } else if (imageId) {
-
-            const imageRecord =
-                await getRecentWorkPhoto(
-                    imageId
-                );
-
-
-            if (
-                currentToken !==
-                recentWorkRenderToken
-            ) {
+            if (currentToken !== recentWorkRenderToken) {
                 return;
             }
 
+            albums = getRecentWorkAlbums();
 
-            if (
-                imageRecord?.blob
-                    instanceof Blob
-            ) {
+            if (albums.length) {
+                break;
+            }
+        }
+    }
 
-                const objectUrl =
-                    URL.createObjectURL(
-                        imageRecord.blob
-                    );
+    // Do not filter out uploaded albums based on isPublic.
+    // The portfolio should display saved albums.
+    albums = albums
+        .filter(album => album && typeof album === "object")
+        .slice(0, 6);
 
+    if (!albums.length) {
+        emptyState.hidden = false;
+        return;
+    }
 
-                recentWorkObjectUrls.push(
-                    objectUrl
-                );
+    for (const album of albums) {
+        if (currentToken !== recentWorkRenderToken) {
+            return;
+        }
 
+        const card = document.createElement("article");
+        card.className = "work-card";
 
-                imageElement =
-                    document.createElement(
-                        "img"
-                    );
+        const albumId = getAlbumId(album);
+        const title = getAlbumTitle(album);
+        const description = getAlbumDescription(album);
+        const imageUrl = getAlbumImageUrl(album);
+        const imageId = getAlbumImageId(album);
 
+        const link = document.createElement("a");
 
-                imageElement.src =
-                    objectUrl;
+        link.href = albumId
+            ? `gallery.html?album=${encodeURIComponent(albumId)}`
+            : "gallery.html";
 
+        link.setAttribute("aria-label", `View ${title}`);
 
-                imageElement.alt =
-                    `${title} portfolio`;
+        let imageElement = null;
 
+        if (imageUrl) {
+            imageElement = document.createElement("img");
+            imageElement.src = imageUrl;
+            imageElement.alt = `${title} portfolio`;
+            imageElement.loading = "lazy";
+            imageElement.decoding = "async";
+        } else if (imageId) {
+            const imageRecord = await getRecentWorkPhoto(imageId);
 
-                imageElement.loading =
-                    "lazy";
+            if (currentToken !== recentWorkRenderToken) {
+                return;
+            }
 
+            if (imageRecord?.blob instanceof Blob) {
+                const objectUrl = URL.createObjectURL(imageRecord.blob);
 
-                imageElement.decoding =
-                    "async";
+                recentWorkObjectUrls.push(objectUrl);
+
+                imageElement = document.createElement("img");
+                imageElement.src = objectUrl;
+                imageElement.alt = `${title} portfolio`;
+                imageElement.loading = "lazy";
+                imageElement.decoding = "async";
             }
         }
 
-
         if (imageElement) {
+            imageElement.addEventListener("error", () => {
+                const placeholder = document.createElement("div");
+                placeholder.className = "work-card-placeholder";
+                placeholder.innerHTML =
+                    '<i class="fa-regular fa-image" aria-hidden="true"></i>';
 
-            imageElement.addEventListener(
-                "error",
-                () => {
+                imageElement.replaceWith(placeholder);
+            }, { once: true });
 
-                    const placeholder =
-                        document.createElement(
-                            "div"
-                        );
-
-
-                    placeholder.className =
-                        "work-card-placeholder";
-
-
-                    placeholder.innerHTML =
-                        '<i class="fa-regular fa-image" aria-hidden="true"></i>';
-
-
-                    imageElement.replaceWith(
-                        placeholder
-                    );
-                },
-                {
-                    once: true
-                }
-            );
-
-
-            link.appendChild(
-                imageElement
-            );
-
+            link.appendChild(imageElement);
         } else {
-
-            const placeholder =
-                document.createElement(
-                    "div"
-                );
-
-
-            placeholder.className =
-                "work-card-placeholder";
-
-
+            const placeholder = document.createElement("div");
+            placeholder.className = "work-card-placeholder";
             placeholder.innerHTML =
                 '<i class="fa-regular fa-images" aria-hidden="true"></i>';
 
-
-            link.appendChild(
-                placeholder
-            );
+            link.appendChild(placeholder);
         }
 
+        const heading = document.createElement("h3");
+        heading.textContent = title;
 
-        const heading =
-            document.createElement(
-                "h3"
-            );
-
-
-        heading.textContent =
-            title;
-
-
-        const descriptionElement =
-            document.createElement(
-                "p"
-            );
-
-
+        const descriptionElement = document.createElement("p");
         descriptionElement.textContent =
-            description ||
-            "View this published portfolio collection.";
+            description || "View this portfolio collection.";
 
+        card.appendChild(link);
+        card.appendChild(heading);
+        card.appendChild(descriptionElement);
 
-        card.appendChild(
-            link
-        );
+        grid.appendChild(card);
 
-
-        card.appendChild(
-            heading
-        );
-
-
-        card.appendChild(
-            descriptionElement
-        );
-
-
-        grid.appendChild(
-            card
-        );
-
-
-        requestAnimationFrame(
-            () => {
-
-                card.classList.add(
-                    "visible"
-                );
-            }
-        );
+        requestAnimationFrame(() => {
+            card.classList.add("visible");
+        });
     }
 
-
-    emptyState.hidden =
-        grid.children.length === 0;
+    // Show the empty state only if no album cards were rendered.
+    emptyState.hidden = grid.children.length > 0;
 }
 
 

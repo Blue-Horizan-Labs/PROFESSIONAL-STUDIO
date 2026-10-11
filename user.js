@@ -3636,9 +3636,86 @@ function getGalleryCover(gallery) {
 }
 
 
-function renderDashboardRecentWork() {
+/* =========================================================
+   DASHBOARD RECENT WORK IMAGE STORAGE
+   Shares the same IndexedDB store as recentwork.js/gallery.html.
+========================================================= */
+var dashboardRecentWorkDatabasePromise = null;
+var dashboardRecentWorkObjectUrls = new Set();
+var dashboardRecentWorkRenderToken = 0;
+
+function openDashboardRecentWorkDatabase() {
+    if (dashboardRecentWorkDatabasePromise) {
+        return dashboardRecentWorkDatabasePromise;
+    }
+
+    dashboardRecentWorkDatabasePromise = new Promise(function(resolve, reject) {
+        if (!window.indexedDB) {
+            reject(new Error("IndexedDB is not supported by this browser."));
+            return;
+        }
+
+        var request = window.indexedDB.open("ProfessionalStudioDB", 2);
+        request.onupgradeneeded = function(event) {
+            var db = event.target.result;
+            if (!db.objectStoreNames.contains("recentWorkPhotos")) {
+                var store = db.createObjectStore("recentWorkPhotos", { keyPath: "id" });
+                store.createIndex("albumId", "albumId", { unique: false });
+            }
+        };
+        request.onsuccess = function() {
+            var db = request.result;
+            db.onversionchange = function() { db.close(); dashboardRecentWorkDatabasePromise = null; };
+            resolve(db);
+        };
+        request.onerror = function() {
+            dashboardRecentWorkDatabasePromise = null;
+            reject(request.error || new Error("Could not open Recent Work image storage."));
+        };
+        request.onblocked = function() {
+            console.warn("Recent Work image storage upgrade is blocked by another open tab.");
+        };
+    });
+
+    return dashboardRecentWorkDatabasePromise;
+}
+
+function getDashboardRecentWorkBlob(blobKey) {
+    if (!blobKey) return Promise.resolve(null);
+    return openDashboardRecentWorkDatabase().then(function(db) {
+        return new Promise(function(resolve, reject) {
+            var transaction;
+            try {
+                transaction = db.transaction("recentWorkPhotos", "readonly");
+            } catch (error) {
+                reject(error);
+                return;
+            }
+            var request = transaction.objectStore("recentWorkPhotos").get(blobKey);
+            request.onsuccess = function() {
+                var record = request.result;
+                resolve(record && record.blob instanceof Blob ? record.blob : null);
+            };
+            request.onerror = function() {
+                reject(request.error || new Error("Could not read a Recent Work image."));
+            };
+        });
+    });
+}
+
+function clearDashboardRecentWorkObjectUrls() {
+    dashboardRecentWorkObjectUrls.forEach(function(url) {
+        try { URL.revokeObjectURL(url); } catch (error) { /* already released */ }
+    });
+    dashboardRecentWorkObjectUrls.clear();
+}
+
+async function renderDashboardRecentWork() {
     var listElement = document.getElementById("dashboardRecentWorkList");
     if (!listElement) return;
+
+    var renderToken = ++dashboardRecentWorkRenderToken;
+    clearDashboardRecentWorkObjectUrls();
 
     var albumCountElement = document.getElementById("recentWorkAlbumCount");
     var photoCountElement = document.getElementById("recentWorkPhotoCount");
@@ -3659,11 +3736,17 @@ function renderDashboardRecentWork() {
     var albums = Array.isArray(storage.albums) ? storage.albums.filter(function(album) {
         return album && typeof album === "object" && album.id;
     }) : [];
+    // Keep one display card per stable album ID; do not mutate/delete saved records.
+    albums = Array.from(new Map(albums.map(function(album) { return [String(album.id), album]; })).values());
+
     var files = Array.isArray(storage.files) ? storage.files.filter(function(file) {
         return file && typeof file === "object" && file.albumId;
     }) : [];
-    var publicCount = albums.filter(function(album) { return album.isPublic !== false; }).length;
+    files = Array.from(new Map(files.filter(function(file) { return file.id; }).map(function(file) {
+        return [String(file.id), file];
+    })).values());
 
+    var publicCount = albums.filter(function(album) { return album.isPublic !== false; }).length;
     if (albumCountElement) albumCountElement.textContent = String(albums.length);
     if (photoCountElement) photoCountElement.textContent = String(files.length);
     if (publicCountElement) publicCountElement.textContent = String(publicCount);
@@ -3675,20 +3758,23 @@ function renderDashboardRecentWork() {
     }
     if (emptyElement) emptyElement.hidden = true;
 
-    albums.slice().sort(function(a, b) {
+    var recentAlbums = albums.slice().sort(function(a, b) {
         var aDate = safeDate(a.updatedAt || a.createdAt);
         var bDate = safeDate(b.updatedAt || b.createdAt);
         return (bDate ? bDate.getTime() : 0) - (aDate ? aDate.getTime() : 0);
-    }).slice(0, 3).forEach(function(album) {
-        var albumFiles = files.filter(function(file) { return file.albumId === album.id; });
+    }).slice(0, 3);
+
+    var cards = recentAlbums.map(function(album) {
+        var albumFiles = files.filter(function(file) { return String(file.albumId) === String(album.id); });
         var card = document.createElement("article");
         card.className = "gallery-card";
+        card.dataset.albumId = String(album.id);
 
         var imageArea = document.createElement("div");
         imageArea.className = "gallery-card-image";
         var placeholder = document.createElement("span");
         placeholder.className = "gallery-placeholder";
-        placeholder.textContent = "Recent Work Album";
+        placeholder.textContent = "Loading cover…";
         imageArea.appendChild(placeholder);
 
         var content = document.createElement("div");
@@ -3714,9 +3800,57 @@ function renderDashboardRecentWork() {
         content.append(title, meta, status, link);
         card.append(imageArea, content);
         listElement.appendChild(card);
-    });
-}
 
+        var coverFile = albumFiles.find(function(file) {
+            return String(file.id) === String(album.coverFileId || album.coverImageId || "");
+        }) || albumFiles[0] || null;
+
+        return { card: card, imageArea: imageArea, album: album, coverFile: coverFile, albumFiles: albumFiles };
+    });
+
+    await Promise.all(cards.map(async function(item) {
+        if (!item.coverFile) {
+            var noPhoto = item.imageArea.querySelector(".gallery-placeholder");
+            if (noPhoto) noPhoto.textContent = "No cover image";
+            return;
+        }
+
+        var blobKey = item.coverFile.blobKey || item.coverFile.id;
+        try {
+            var blob = await getDashboardRecentWorkBlob(blobKey);
+            if (renderToken !== dashboardRecentWorkRenderToken || !item.card.isConnected) return;
+            if (!blob) {
+                var missing = item.imageArea.querySelector(".gallery-placeholder");
+                if (missing) missing.textContent = "Cover unavailable";
+                return;
+            }
+
+            var imageUrl = URL.createObjectURL(blob);
+            dashboardRecentWorkObjectUrls.add(imageUrl);
+            var image = document.createElement("img");
+            image.src = imageUrl;
+            image.alt = String(item.album.name || "Recent Work album");
+            image.loading = "lazy";
+            image.onerror = function() {
+                if (dashboardRecentWorkObjectUrls.has(imageUrl)) {
+                    URL.revokeObjectURL(imageUrl);
+                    dashboardRecentWorkObjectUrls.delete(imageUrl);
+                }
+                image.remove();
+                var failed = item.imageArea.querySelector(".gallery-placeholder");
+                if (failed) failed.textContent = "Cover unavailable";
+            };
+            var oldPlaceholder = item.imageArea.querySelector(".gallery-placeholder");
+            if (oldPlaceholder) oldPlaceholder.replaceWith(image);
+            else item.imageArea.prepend(image);
+        } catch (error) {
+            console.warn("Could not load Dashboard Recent Work cover:", error);
+            if (renderToken !== dashboardRecentWorkRenderToken || !item.card.isConnected) return;
+            var failed = item.imageArea.querySelector(".gallery-placeholder");
+            if (failed) failed.textContent = "Cover unavailable";
+        }
+    }));
+}
 
 function renderDashboardGalleries() {
 
