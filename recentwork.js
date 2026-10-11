@@ -122,7 +122,7 @@ const DB_NAME =
     "ProfessionalStudioDB";
 
 const DB_VERSION =
-    1;
+    2;
 
 const PHOTO_STORE =
     "recentWorkPhotos";

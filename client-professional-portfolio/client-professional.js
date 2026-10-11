@@ -37,7 +37,7 @@ const RECENT_WORK_DB_NAME =
     "ProfessionalStudioDB";
 
 const RECENT_WORK_DB_VERSION =
-    1;
+    2;
 
 const RECENT_WORK_STORE_NAME =
     "recentWorkPhotos";
@@ -1273,7 +1273,7 @@ function loadClientServices(){
             : 0;
 
         const article = document.createElement("article");
-        article.className = "service-card";
+        article.className = "service-card is-visible";
 
         const content = document.createElement("div");
         content.className = "service-card-content";
@@ -1331,114 +1331,112 @@ function loadClientServices(){
    EQUIPMENT
 ========================================================= */
 
-function loadClientEquipment(){
+function normalizeClientEquipmentCategories(source) {
+    if (!Array.isArray(source)) return [];
 
-    const container =
-        document.getElementById(
-            "equipmentGrid"
-        );
+    const groups = [];
+    const groupByName = new Map();
 
-    if(!container){
-        return;
-    }
-
-
-    const equipment =
-        readLocalStorage(
-            STORAGE_KEYS.equipment,
-            []
-        );
-
-
-    container.innerHTML =
-        "";
-
-
-    if(!Array.isArray(equipment) ||
-       !equipment.length){
-
-        container.innerHTML =
-            `
-            <div class="empty-state">
-                <i class="fa-solid fa-camera-retro"></i>
-                <h3>Equipment details coming soon</h3>
-                <p>
-                    Equipment information will appear here.
-                </p>
-            </div>
-            `;
-
-        return;
-
-    }
-
-
-    equipment.forEach(
-        item => {
-
-            const category =
-                normalizeText(
-                    item.category ||
-                    item.type ||
-                    "Equipment"
-                );
-
-
-            const name =
-                normalizeText(
-                    item.name ||
-                    item.title ||
-                    "Photography Equipment"
-                );
-
-
-            const description =
-                normalizeText(
-                    item.description ||
-                    ""
-                );
-
-
-            const card =
-                document.createElement(
-                    "article"
-                );
-
-            card.className =
-                "equipment-card";
-
-
-            card.innerHTML =
-                `
-                <span class="equipment-category">
-                    ${escapeHtml(category)}
-                </span>
-
-                <h3>
-                    ${escapeHtml(name)}
-                </h3>
-
-                ${
-                    description
-                        ? `
-                            <p>
-                                ${escapeHtml(description)}
-                            </p>
-                        `
-                        : ""
-                }
-                `;
-
-
-            container.appendChild(
-                card
-            );
-
+    const getGroup = (name) => {
+        const cleanName = normalizeText(name) || "Equipment";
+        const key = cleanName.toLowerCase();
+        if (!groupByName.has(key)) {
+            const group = { name: cleanName, items: [] };
+            groupByName.set(key, group);
+            groups.push(group);
         }
-    );
+        return groupByName.get(key);
+    };
 
+    source.forEach((entry) => {
+        if (!entry || typeof entry !== "object") return;
+
+        const categoryName = normalizeText(
+            entry.name || entry.category || entry.title || entry.type
+        ) || "Equipment";
+
+        if (Array.isArray(entry.items)) {
+            const group = getGroup(categoryName);
+            entry.items.forEach((rawItem) => {
+                const itemName = normalizeText(
+                    typeof rawItem === "string"
+                        ? rawItem
+                        : rawItem?.name || rawItem?.title || rawItem?.model || rawItem?.value
+                );
+                if (!itemName) return;
+                const description = normalizeText(
+                    typeof rawItem === "object" && rawItem
+                        ? rawItem.description || rawItem.details || rawItem.notes
+                        : ""
+                );
+                group.items.push({ name: itemName, description });
+            });
+            return;
+        }
+
+        // Compatibility with older records that stored one equipment item per row.
+        const itemName = normalizeText(
+            entry.name || entry.title || entry.model || entry.equipmentName
+        );
+        if (!itemName) return;
+
+        const group = getGroup(entry.category || entry.type || "Equipment");
+        group.items.push({
+            name: itemName,
+            description: normalizeText(entry.description || entry.details || entry.notes)
+        });
+    });
+
+    return groups.filter((group) => group.name && group.items.length > 0);
 }
 
+
+function loadClientEquipment() {
+    const container = document.getElementById("equipmentGrid");
+    if (!container) return;
+
+    container.replaceChildren();
+    const source = readLocalStorage(STORAGE_KEYS.equipment, []);
+    const categories = normalizeClientEquipmentCategories(source);
+    const items = categories.flatMap((category) =>
+        category.items.map((item) => ({ ...item, category: category.name }))
+    );
+
+    if (!items.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+        const icon = document.createElement("i");
+        icon.className = "fa-solid fa-camera-retro";
+        icon.setAttribute("aria-hidden", "true");
+        const heading = document.createElement("h3");
+        heading.textContent = "Equipment details coming soon";
+        const message = document.createElement("p");
+        message.textContent = "Equipment information will appear here once it has been added.";
+        empty.append(icon, heading, message);
+        container.appendChild(empty);
+        return;
+    }
+
+    items.forEach((item) => {
+        const card = document.createElement("article");
+        card.className = "equipment-card is-visible";
+
+        const category = document.createElement("span");
+        category.className = "equipment-category";
+        category.textContent = item.category;
+
+        const title = document.createElement("h3");
+        title.textContent = item.name;
+
+        card.append(category, title);
+        if (item.description) {
+            const description = document.createElement("p");
+            description.textContent = item.description;
+            card.appendChild(description);
+        }
+        container.appendChild(card);
+    });
+}
 
 /* =========================================================
    HTML ESCAPE
@@ -1618,20 +1616,21 @@ async function getRecentWorkImage(
 }
 
 
+let professionalRecentWorkRenderToken = 0;
+
 async function renderPortfolioRecentWork(){
 
     const container = document.getElementById("recentWorkPreview");
     const emptyState = document.getElementById("recentWorkEmpty");
-
     if (!container) return;
 
-    container.replaceChildren();
+    // Prevent overlapping async renders (DOMContentLoaded, pageshow, and
+    // storage events can all fire close together) from appending duplicates.
+    const renderToken = ++professionalRecentWorkRenderToken;
 
     const saved = readLocalStorage(STORAGE_KEYS.portfolioStorage, []);
     let albums = [];
 
-    // Recent Work Management stores { albums: [], files: [], ... }.
-    // Keep compatibility with earlier array and recentWork formats.
     if (Array.isArray(saved)) {
         albums = saved;
     } else if (saved && typeof saved === "object" && Array.isArray(saved.albums)) {
@@ -1640,33 +1639,56 @@ async function renderPortfolioRecentWork(){
         albums = saved.recentWork;
     }
 
-    // Albums explicitly marked private must never be shown in the public portfolio.
-    const publicAlbums = albums
-        .filter(album => album && typeof album === "object" && album.isPublic !== false)
-        .slice(0, 6);
+    // Deduplicate records by stable album ID first, then by a normalized
+    // title/category/cover combination for older records without an ID.
+    const seenAlbums = new Set();
+    const publicAlbums = [];
+    for (const album of albums) {
+        if (!album || typeof album !== "object" || album.isPublic === false) continue;
+
+        const albumId = normalizeText(album.id || album.albumId || album.slug).toLowerCase();
+        const title = normalizeText(album.title || album.name || album.albumName || "Photography").toLowerCase();
+        const category = normalizeText(album.category || "Portfolio").toLowerCase();
+        const coverId = normalizeText(album.coverFileId || album.coverPhotoId || album.coverImageId || album.thumbnailId).toLowerCase();
+        const coverUrl = normalizeText(album.coverUrl || album.coverImage || album.thumbnail || album.imageUrl).toLowerCase();
+        const dedupeKey = albumId
+            ? `id:${albumId}`
+            : `fallback:${title}|${category}|${coverId || coverUrl}`;
+
+        if (seenAlbums.has(dedupeKey)) continue;
+        seenAlbums.add(dedupeKey);
+        publicAlbums.push(album);
+        if (publicAlbums.length >= 6) break;
+    }
 
     if (!publicAlbums.length) {
+        if (renderToken !== professionalRecentWorkRenderToken) return;
+        container.replaceChildren();
         if (emptyState) emptyState.hidden = false;
         return;
     }
 
-    if (emptyState) emptyState.hidden = true;
+    const fragment = document.createDocumentFragment();
 
     for (const album of publicAlbums) {
         let imageSource = getSafeImageSource(
             album.coverUrl || album.coverImage || album.thumbnail || album.imageUrl || ""
         );
 
-        const coverId = album.coverFileId || album.coverPhotoId;
+        const coverId = album.coverFileId || album.coverPhotoId || album.coverImageId || album.thumbnailId;
         if (!imageSource && coverId) {
             imageSource = await getRecentWorkImage(coverId);
         }
+
+        // A newer render started while this one was waiting for IndexedDB.
+        if (renderToken !== professionalRecentWorkRenderToken) return;
 
         const albumId = normalizeText(album.id || album.albumId || album.slug);
         const title = normalizeText(album.title || album.name || album.albumName) || "Photography";
         const category = normalizeText(album.category) || "Portfolio";
         const card = document.createElement("article");
         card.className = "recent-work-card";
+        card.dataset.albumKey = albumId || `${title}|${category}`;
 
         const link = document.createElement("a");
         link.className = "recent-work-link";
@@ -1696,11 +1718,13 @@ async function renderPortfolioRecentWork(){
         overlay.append(categoryLabel, heading);
         link.appendChild(overlay);
         card.appendChild(link);
-        container.appendChild(card);
+        fragment.appendChild(card);
     }
 
+    if (renderToken !== professionalRecentWorkRenderToken) return;
+    container.replaceChildren(fragment);
+    if (emptyState) emptyState.hidden = true;
 }
-
 
 /* =========================================================
    REVIEWS

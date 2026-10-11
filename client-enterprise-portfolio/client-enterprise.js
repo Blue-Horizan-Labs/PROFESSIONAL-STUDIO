@@ -15,7 +15,7 @@ const STORAGE_KEYS = Object.freeze({
 });
 
 const RECENT_WORK_DB_NAME = "ProfessionalStudioDB";
-const RECENT_WORK_DB_VERSION = 1;
+const RECENT_WORK_DB_VERSION = 2;
 const RECENT_WORK_STORE_NAME = "recentWorkPhotos";
 
 let recentWorkObjectUrls = [];
@@ -2328,240 +2328,123 @@ function loadClientServices() {
 ========================================================= */
 
 function getClientEquipment() {
-    const equipment =
-        readClientLocalStorage(
-            STORAGE_KEYS.equipment,
-            []
-        );
-
-    return Array.isArray(equipment)
-        ? equipment
-        : [];
+    const equipment = readClientLocalStorage(STORAGE_KEYS.equipment, []);
+    return Array.isArray(equipment) ? equipment : [];
 }
 
-
 function getEquipmentIcon(category) {
-    const value =
-        normalizeText(category)
-            .toLowerCase();
-
-    if (
-        value.includes("camera") ||
-        value.includes("body")
-    ) {
-        return "fa-camera";
-    }
-
-    if (
-        value.includes("lens") ||
-        value.includes("optics")
-    ) {
-        return "fa-camera-retro";
-    }
-
-    if (
-        value.includes("light") ||
-        value.includes("lighting")
-    ) {
-        return "fa-lightbulb";
-    }
-
-    if (
-        value.includes("audio") ||
-        value.includes("microphone")
-    ) {
-        return "fa-microphone";
-    }
-
-    if (value.includes("drone")) {
-        return "fa-helicopter";
-    }
-
-    if (
-        value.includes("tripod") ||
-        value.includes("support")
-    ) {
-        return "fa-photo-film";
-    }
-
+    const value = normalizeText(category).toLowerCase();
+    if (value.includes("camera") || value.includes("body")) return "fa-camera";
+    if (value.includes("lens") || value.includes("optics")) return "fa-camera-retro";
+    if (value.includes("light")) return "fa-lightbulb";
+    if (value.includes("audio") || value.includes("microphone")) return "fa-microphone";
+    if (value.includes("drone")) return "fa-helicopter";
+    if (value.includes("tripod") || value.includes("support")) return "fa-photo-film";
     return "fa-camera";
+}
+
+function normalizeClientEquipmentCategories(source) {
+    if (!Array.isArray(source)) return [];
+
+    const groups = [];
+    const groupByName = new Map();
+
+    const getGroup = (name) => {
+        const cleanName = normalizeText(name) || "Equipment";
+        const key = cleanName.toLowerCase();
+        if (!groupByName.has(key)) {
+            const group = { name: cleanName, items: [] };
+            groupByName.set(key, group);
+            groups.push(group);
+        }
+        return groupByName.get(key);
+    };
+
+    source.forEach((entry) => {
+        if (!entry || typeof entry !== "object") return;
+
+        const categoryName = normalizeText(
+            entry.name || entry.category || entry.title || entry.type
+        ) || "Equipment";
+
+        if (Array.isArray(entry.items)) {
+            const group = getGroup(categoryName);
+            entry.items.forEach((rawItem) => {
+                const itemName = normalizeText(
+                    typeof rawItem === "string"
+                        ? rawItem
+                        : rawItem?.name || rawItem?.title || rawItem?.model || rawItem?.value
+                );
+                if (!itemName) return;
+                const description = normalizeText(
+                    typeof rawItem === "object" && rawItem
+                        ? rawItem.description || rawItem.details || rawItem.notes
+                        : ""
+                );
+                group.items.push({ name: itemName, description });
+            });
+            return;
+        }
+
+        // Compatibility with older records that stored one equipment item per row.
+        const itemName = normalizeText(
+            entry.name || entry.title || entry.model || entry.equipmentName
+        );
+        if (!itemName) return;
+
+        const group = getGroup(entry.category || entry.type || "Equipment");
+        group.items.push({
+            name: itemName,
+            description: normalizeText(entry.description || entry.details || entry.notes)
+        });
+    });
+
+    return groups.filter((group) => group.name && group.items.length > 0);
 }
 
 
 function loadClientEquipment() {
-    const grid =
-        document.getElementById(
-            "equipmentGrid"
-        );
-
-    if (!grid) {
-        return;
-    }
+    const grid = document.getElementById("equipmentGrid");
+    if (!grid) return;
 
     grid.replaceChildren();
+    const categories = normalizeClientEquipmentCategories(getClientEquipment());
 
-    const equipment =
-        getClientEquipment();
-
-    const validCategories =
-        equipment.filter(
-            (category) => {
-                if (!category) {
-                    return false;
-                }
-
-                const name =
-                    normalizeText(
-                        category.name ||
-                        category.category ||
-                        category.title
-                    );
-
-                const items =
-                    Array.isArray(
-                        category.items
-                    )
-                        ? category.items
-                        : [];
-
-                return Boolean(
-                    name &&
-                    items.length
-                );
-            }
-        );
-
-    if (!validCategories.length) {
-        const empty =
-            document.createElement(
-                "div"
-            );
-
-        empty.className =
-            "equipment-empty-state";
-
-        empty.textContent =
-            "Equipment information will appear here once it has been added.";
-
-        grid.appendChild(
-            empty
-        );
-
+    if (!categories.length) {
+        const empty = document.createElement("div");
+        empty.className = "equipment-empty-state visible";
+        empty.textContent = "Equipment information will appear here once it has been added.";
+        grid.appendChild(empty);
         return;
     }
 
-    validCategories.forEach(
-        (category) => {
-            const card =
-                document.createElement(
-                    "article"
-                );
+    categories.forEach((category) => {
+        const card = document.createElement("article");
+        card.className = "equipment-category-card visible";
 
-            card.className =
-                "equipment-category-card";
+        const heading = document.createElement("div");
+        heading.className = "equipment-category-heading";
+        const icon = document.createElement("i");
+        icon.className = `fa-solid ${getEquipmentIcon(category.name)}`;
+        icon.setAttribute("aria-hidden", "true");
+        const title = document.createElement("h3");
+        title.textContent = category.name;
+        heading.append(icon, title);
+        card.appendChild(heading);
 
-            const heading =
-                document.createElement(
-                    "div"
-                );
-
-            heading.className =
-                "equipment-category-heading";
-
-            const icon =
-                document.createElement(
-                    "i"
-                );
-
-            icon.className =
-                `fa-solid ${getEquipmentIcon(
-                    category.name ||
-                    category.category ||
-                    category.title
-                )}`;
-
-            icon.setAttribute(
-                "aria-hidden",
-                "true"
-            );
-
-            const title =
-                document.createElement(
-                    "h3"
-                );
-
-            title.textContent =
-                normalizeText(
-                    category.name ||
-                    category.category ||
-                    category.title
-                );
-
-            heading.appendChild(icon);
-            heading.appendChild(title);
-
-            const list =
-                document.createElement(
-                    "ul"
-                );
-
-            list.className =
-                "equipment-items";
-
-            category.items.forEach(
-                (item) => {
-                    const itemText =
-                        typeof item ===
-                            "string"
-                            ? item
-                            : item?.name ||
-                              item?.title ||
-                              item?.model;
-
-                    const cleanItem =
-                        normalizeText(
-                            itemText
-                        );
-
-                    if (!cleanItem) {
-                        return;
-                    }
-
-                    const listItem =
-                        document.createElement(
-                            "li"
-                        );
-
-                    listItem.textContent =
-                        cleanItem;
-
-                    list.appendChild(
-                        listItem
-                    );
-                }
-            );
-
-            if (
-                !list.children.length
-            ) {
-                return;
-            }
-
-            card.appendChild(
-                heading
-            );
-
-            card.appendChild(
-                list
-            );
-
-            grid.appendChild(
-                card
-            );
-        }
-    );
+        const list = document.createElement("ul");
+        list.className = "equipment-items";
+        category.items.forEach((item) => {
+            const li = document.createElement("li");
+            li.textContent = item.description
+                ? `${item.name} · ${item.description}`
+                : item.name;
+            list.appendChild(li);
+        });
+        card.appendChild(list);
+        grid.appendChild(card);
+    });
 }
-
 
 /* =========================================================
    RECENT WORK / INDEXED DB
@@ -2587,6 +2470,16 @@ function openRecentWorkDatabase() {
                     RECENT_WORK_DB_NAME,
                     RECENT_WORK_DB_VERSION
                 );
+
+            // Create the store during an upgrade if no page has created it yet.
+            request.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains(RECENT_WORK_STORE_NAME)) {
+                    db.createObjectStore(RECENT_WORK_STORE_NAME, {
+                        keyPath: "id"
+                    });
+                }
+            };
 
             request.onerror = () => {
                 reject(
@@ -2760,7 +2653,12 @@ function getAlbumDescription(album) {
 
 
 function getAlbumImageId(album) {
+    /*
+     * Recent Work Management stores the selected album cover as
+     * coverFileId. Keep the legacy names for older saved albums.
+     */
     return normalizeText(
+        album?.coverFileId ||
         album?.coverPhotoId ||
         album?.coverImageId ||
         album?.thumbnailId
@@ -2831,8 +2729,9 @@ async function renderPortfolioRecentWork() {
 
     grid.replaceChildren();
 
-    emptyState.hidden =
-        true;
+    emptyState.hidden = true;
+    emptyState.setAttribute("aria-hidden", "true");
+    emptyState.style.display = "none";
 
     const albums =
         getRecentWorkAlbums()
@@ -2840,9 +2739,9 @@ async function renderPortfolioRecentWork() {
             .slice(0, 6);
 
     if (!albums.length) {
-        emptyState.hidden =
-            false;
-
+        emptyState.hidden = false;
+        emptyState.setAttribute("aria-hidden", "false");
+        emptyState.style.display = "";
         return;
     }
 
@@ -3047,8 +2946,18 @@ async function renderPortfolioRecentWork() {
         );
     }
 
-    emptyState.hidden =
-        grid.children.length === 0;
+    // The empty-state message must never appear alongside rendered work.
+    // Check for actual cards rather than only checking the source album list.
+    const hasRenderedWork =
+        grid.querySelector(".work-card") !== null;
+
+    emptyState.hidden = hasRenderedWork;
+    emptyState.setAttribute(
+        "aria-hidden",
+        hasRenderedWork ? "true" : "false"
+    );
+    emptyState.style.display =
+        hasRenderedWork ? "none" : "";
 }
 
 
