@@ -2552,26 +2552,26 @@
                          * and the pending account/session securely.
                          */
 
-                        setTimeout(
-                            function () {
+                        // setTimeout(
+                        //     function () {
 
-                                const verificationUrl =
-                                    new URL(
-                                        "/auth/email-verification.html",
-                                        window.location.origin
-                                    );
+                        //         const verificationUrl =
+                        //             new URL(
+                        //                 "/auth/email-verification.html",
+                        //                 window.location.origin
+                        //             );
 
-                                verificationUrl.searchParams.set(
-                                    "email",
-                                    payload.email
-                                );
+                        //         verificationUrl.searchParams.set(
+                        //             "email",
+                        //             payload.email
+                        //         );
 
-                                window.location.href =
-                                    verificationUrl.toString();
+                        //         window.location.href =
+                        //             verificationUrl.toString();
 
-                            },
-                            350
-                        );
+                        //     },
+                        //     350
+                        // );
 
 
                     } catch (error) {
