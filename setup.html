@@ -2459,14 +2459,10 @@ function showSuccess(){
 
 
 /* =========================================================
-   LEGACY COMPATIBILITY
+   Send data to server.
 ========================================================= */
-
-function saveLegacyProfile(profile){
-
-    return writeJSON(
-        LEGACY_PROFILE_KEY,
-        {
+async function sendProfileToServer(profile){
+        const user = {
 
             std_name:
                 profile.studioName,
@@ -2513,10 +2509,36 @@ function saveLegacyProfile(profile){
             updatedAt:
                 profile.updatedAt
 
-        }
-    );
+        };
 
-}
+        try {
+            fetch('/api/update_user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(user)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Profile saved on server:', data);
+                setTimeout(function(){
+                    window.location.href =
+                        PORTFOLIO_ROUTE;
+                }, 900);
+            })
+            .catch(error => {
+                console.error('Error saving profile on server:', error);
+                alert("Your profile was unable to be saved. Please check your internet connection and try again.");
+                window.reload();
+            });
+        } catch (error) {
+            console.error('Unexpected error:', error);
+        }
+
+    }
+
+
 
 
 /* =========================================================
@@ -2545,7 +2567,7 @@ if(form){
 
     form.addEventListener(
         "submit",
-        function(event){
+        async function(event){
 
             event.preventDefault();
 
@@ -2590,7 +2612,7 @@ if(form){
              * still depend on it.
              */
 
-            saveLegacyProfile(profile);
+            await sendProfileToServer(profile);
 
 
             /*
@@ -2659,12 +2681,12 @@ if(form){
              * then continue to the existing portfolio page.
              */
 
-            setTimeout(function(){
+            // setTimeout(function(){
 
-                window.location.href =
-                    PORTFOLIO_ROUTE;
+            //     window.location.href =
+            //         PORTFOLIO_ROUTE;
 
-            },900);
+            // },900);
 
         }
     );

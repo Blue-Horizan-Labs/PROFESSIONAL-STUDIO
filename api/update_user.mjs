@@ -13,7 +13,7 @@ export default async function updateUser(req, res) {
     const req_data = req.body;
     console.log("Request data:", req_data);
     const req_user = req_data;
-    if (!req_user || !req_user.email) {
+    if (!req_user) {
         res.status(400).json({ error: "Bad Request: Missing user data" });
         return;
     }
