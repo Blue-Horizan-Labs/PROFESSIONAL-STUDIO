@@ -1,93 +1,507 @@
 <!doctype html>
+
 <html lang="en">
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="theme-color" content="#fff">
-	<meta name="description" content="Join the waitlist for early access.">
-	<title>Join the Waitlist</title>
-	<style>
-		:root { color-scheme: light; --ink: #191919; --muted: #777; --line: #e9e9e9; }
-		* { box-sizing: border-box; }
-		body {
-			min-height: 100vh; margin: 0; display: grid; grid-template-rows: auto 1fr auto;
-			background: #fff; color: var(--ink);
-			font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-			-webkit-font-smoothing: antialiased;
-		}
-		.topbar, footer { width: min(100% - 48px, 1080px); margin: auto; }
-		.topbar { height: 78px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
-		.brand { display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; font-size: 13px; font-weight: 700; letter-spacing: .04em; }
-		.mark { width: 26px; height: 26px; display: grid; place-items: center; border: 1px solid; border-radius: 8px; letter-spacing: 0; }
-		.top-note { color: var(--muted); font-size: 12px; }
-		main { display: grid; place-items: center; padding: 64px 20px 78px; }
-		.content { width: min(100%, 480px); text-align: center; }
-		.eyebrow { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 23px; color: #555; font-size: 11px; font-weight: 650; letter-spacing: .12em; text-transform: uppercase; }
-		.eyebrow::before { width: 6px; height: 6px; border-radius: 50%; background: #69a47a; content: ""; }
-		h1 { margin: 0; font-size: clamp(44px, 9vw, 68px); font-weight: 550; letter-spacing: -.075em; line-height: .98; }
-		.intro { max-width: 370px; margin: 22px auto 32px; color: var(--muted); font-size: 15px; line-height: 1.7; }
-		form { padding: 7px; border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 8px 28px rgb(0 0 0 / 4%); }
-		.form-row { display: flex; gap: 7px; }
-		input { flex: 1; min-width: 0; height: 48px; padding: 0 14px; border: 0; border-radius: 9px; outline: none; color: var(--ink); font: inherit; font-size: 14px; }
-		input::placeholder { color: #a0a0a0; }
-		input:focus-visible { box-shadow: inset 0 0 0 2px #d7d7d7; }
-		button { flex: 0 0 auto; min-height: 48px; padding: 0 18px; border: 0; border-radius: 9px; background: #222; color: #fff; cursor: pointer; font: inherit; font-size: 13px; font-weight: 600; transition: background .2s, transform .2s; }
-		button:hover { background: #444; }
-		button:active { transform: scale(.98); }
-		button:focus-visible { outline: 3px solid #aaa; outline-offset: 2px; }
-		.note { min-height: 20px; margin: 12px 4px 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
-		.note.success { color: #287144; }
-		.proof { display: flex; align-items: center; justify-content: center; gap: 9px; margin-top: 36px; color: var(--muted); font-size: 12px; }
-		.avatars { display: flex; padding-left: 4px; }
-		.avatar { width: 23px; height: 23px; margin-left: -4px; display: grid; place-items: center; border: 2px solid #fff; border-radius: 50%; background: #f4f4f3; color: #555; font-size: 8px; font-weight: 700; }
-		footer { min-height: 66px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-top: 1px solid var(--line); color: #898989; font-size: 11px; }
-		.links { display: flex; gap: 20px; }
-		footer a { color: inherit; text-decoration: none; }
-		footer a:hover { color: var(--ink); }
-		.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
-		@media (max-width: 520px) {
-			.topbar, footer { width: calc(100% - 36px); }
-			.topbar { height: 68px; }
-			.top-note { font-size: 11px; }
-			main { padding: 58px 18px 68px; }
-			.intro { margin: 18px auto 26px; font-size: 14px; }
-			.form-row { flex-direction: column; }
-			button { width: 100%; }
-			.proof { margin-top: 30px; }
-			footer { min-height: 68px; font-size: 10px; }
-			.links { gap: 13px; }
-		}
-		@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: .01ms !important; } }
-	</style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="description" content="Join the Professional Studio waitlist. Get early access to a smarter way to manage your photography business, clients, bookings, and portfolio.">
+
+
+<title>Join the Waitlist | Professional Studio</title>
+
+<link
+    rel="icon"
+    type="image/png"
+    href="https://i.ibb.co/8g0LT3jZ/logo1-2.png"
+>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700;800&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        color-scheme: light;
+        --ink: #191919;
+        --muted: #777;
+        --line: #e9e9e9;
+        --accent: #222;
+        --success: #287144;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        min-height: 100vh;
+        margin: 0;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        background: #fff;
+        color: var(--ink);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system,
+            BlinkMacSystemFont, "Segoe UI", sans-serif;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .topbar,
+    footer {
+        width: min(100% - 48px, 1080px);
+        margin: auto;
+    }
+
+    .topbar {
+        min-height: 78px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        border-bottom: 1px solid var(--line);
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: inherit;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: .035em;
+    }
+
+    .brand img {
+        width: 30px;
+        height: 30px;
+        object-fit: contain;
+    }
+
+    .mark {
+        width: 30px;
+        height: 30px;
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--ink);
+        border-radius: 9px;
+        font-size: 12px;
+        letter-spacing: -.04em;
+    }
+
+    .top-note {
+        color: var(--muted);
+        font-size: 12px;
+    }
+
+    main {
+        display: grid;
+        place-items: center;
+        padding: 76px 20px 82px;
+    }
+
+    .content {
+        width: min(100%, 510px);
+        text-align: center;
+    }
+
+    .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 25px;
+        padding: 9px 13px;
+        border: 1px solid var(--line);
+        border-radius: 30px;
+        color: #555;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #69a47a;
+        content: "";
+    }
+
+    h1 {
+        margin: 0;
+        font-size: clamp(43px, 8vw, 70px);
+        font-weight: 600;
+        letter-spacing: -.075em;
+        line-height: 1.02;
+    }
+
+    h1 span {
+        color: #858585;
+    }
+
+    .intro {
+        max-width: 390px;
+        margin: 23px auto 30px;
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.8;
+    }
+
+    form {
+        padding: 7px;
+        border: 1px solid #e5e5e5;
+        border-radius: 14px;
+        background: #fff;
+        box-shadow: 0 8px 30px rgb(0 0 0 / 4%);
+    }
+
+    .form-row {
+        display: flex;
+        gap: 7px;
+    }
+
+    input {
+        flex: 1;
+        min-width: 0;
+        height: 49px;
+        padding: 0 14px;
+        border: 0;
+        border-radius: 9px;
+        outline: none;
+        background: transparent;
+        color: var(--ink);
+        font: inherit;
+        font-size: 13px;
+    }
+
+    input::placeholder {
+        color: #a0a0a0;
+    }
+
+    input:focus-visible {
+        box-shadow: inset 0 0 0 2px #d7d7d7;
+    }
+
+    button {
+        flex: 0 0 auto;
+        min-height: 49px;
+        padding: 0 17px;
+        border: 0;
+        border-radius: 9px;
+        background: var(--accent);
+        color: #fff;
+        cursor: pointer;
+        font: inherit;
+        font-size: 12px;
+        font-weight: 650;
+        transition: background .2s, transform .2s;
+    }
+
+    button:hover {
+        background: #444;
+    }
+
+    button:active {
+        transform: scale(.98);
+    }
+
+    button:focus-visible {
+        outline: 3px solid #aaa;
+        outline-offset: 3px;
+    }
+
+    button:disabled {
+        cursor: wait;
+        opacity: .7;
+    }
+
+    .note {
+        min-height: 20px;
+        margin: 12px 4px 0;
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.6;
+    }
+
+    .note.success {
+        color: var(--success);
+    }
+
+    .note.error {
+        color: #b42318;
+    }
+
+    .benefits {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px 19px;
+        margin-top: 30px;
+    }
+
+    .benefit {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: #656565;
+        font-size: 11px;
+    }
+
+    .check {
+        color: #398052;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .divider {
+        width: 38px;
+        height: 1px;
+        margin: 33px auto 20px;
+        background: #dedede;
+    }
+
+    .bottom-note {
+        max-width: 360px;
+        margin: 0 auto;
+        color: #8a8a8a;
+        font-size: 11px;
+        line-height: 1.8;
+    }
+
+    footer {
+        min-height: 68px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        border-top: 1px solid var(--line);
+        color: #898989;
+        font-size: 11px;
+    }
+
+    .links {
+        display: flex;
+        gap: 20px;
+    }
+
+    footer a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    footer a:hover {
+        color: var(--ink);
+    }
+
+    .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    @media (max-width: 520px) {
+        .topbar,
+        footer {
+            width: calc(100% - 36px);
+        }
+
+        .topbar {
+            min-height: 68px;
+        }
+
+        .brand {
+            gap: 8px;
+            font-size: 10px;
+        }
+
+        .brand img,
+        .mark {
+            width: 27px;
+            height: 27px;
+        }
+
+        .top-note {
+            max-width: 105px;
+            font-size: 10px;
+            text-align: right;
+        }
+
+        main {
+            padding: 62px 18px 68px;
+        }
+
+        .eyebrow {
+            margin-bottom: 22px;
+            font-size: 9px;
+        }
+
+        h1 {
+            font-size: clamp(43px, 11vw, 59px);
+        }
+
+        .intro {
+            margin: 19px auto 25px;
+            font-size: 13px;
+        }
+
+        .form-row {
+            flex-direction: column;
+        }
+
+        input {
+            width: 100%;
+            height: 47px;
+        }
+
+        button {
+            width: 100%;
+        }
+
+        .benefits {
+            gap: 12px 15px;
+            margin-top: 25px;
+        }
+
+        .benefit {
+            font-size: 10px;
+        }
+
+        .divider {
+            margin-top: 29px;
+        }
+
+        footer {
+            min-height: 70px;
+            font-size: 9px;
+        }
+
+        .links {
+            gap: 12px;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            scroll-behavior: auto !important;
+            transition-duration: .01ms !important;
+        }
+    }
+</style>
+
+
 </head>
+
 <body>
-	<header class="topbar">
-		<a class="brand" href="#" aria-label="Studio home"><span class="mark" aria-hidden="true">S</span><span>PROFESSIONAL STUDIO</span></a>
-		<span class="top-note">A little something is coming.</span>
-	</header>
-	<main>
-		<section class="content" aria-labelledby="page-title">
-			<span class="eyebrow">Coming soon</span>
-			<h1 id="page-title">Be first<br>to know.</h1>
-			<p class="intro">We’re building something special. Join the list for first access and a note when we’re ready.</p>
-			<form id="btn">
-				<div class="form-row">
-					<label class="sr-only" for="email">Your email address</label>
-					<input id="email" name="email" type="email" placeholder="Enter your email address" autocomplete="email" required>
-					<button type="submit">Join the waitlist <span aria-hidden="true">↗</span></button>
-				</div>
-			</form>
-			<p class="note" id="form-message" aria-live="polite">No spam, ever. Unsubscribe whenever you like.</p>
-			<div class="proof" aria-label="Join a growing community">
-				<div class="avatars" aria-hidden="true"><span class="avatar">A</span><span class="avatar">J</span><span class="avatar">M</span><span class="avatar">+</span></div>
-				<span>Join a growing community of early supporters</span>
-			</div>
-		</section>
-	</main>
-	<footer>
-		<span>© 2026 Professional Studio. All rights reserved.</span>
-		<nav class="links" aria-label="Footer links"><a href="mailto:hello@example.com">Contact</a><a href="#">Privacy</a></nav>
-	</footer>
-	<script src="waitlist.js"></script>
+
+
+<header class="topbar">
+    <a class="brand" href="https://professionalstudio.vercel.app" aria-label="Professional Studio home">
+        <img
+            src="https://i.ibb.co/8g0LT3jZ/logo1-2.png"
+            alt=""
+            onerror="this.hidden=true;this.nextElementSibling.hidden=false"
+        >
+        
+        <span>PROFESSIONAL STUDIO</span>
+    </a>
+
+    <span class="top-note">Your studio, simplified.</span>
+</header>
+
+<main>
+    <section class="content" aria-labelledby="page-title">
+
+        <span class="eyebrow">Early access · Coming soon</span>
+
+        <h1 id="page-title">
+            Your studio.<br>
+            <span>One smarter home.</span>
+        </h1>
+
+        <p class="intro">
+            Spend less time managing your photography business
+            and more time behind the camera. Get early access to
+            Professional Studio, built for photographers like you.
+        </p>
+
+        <form id="waitlist-form">
+            <div class="form-row">
+                <label class="sr-only" for="email">
+                    Your email address
+                </label>
+
+                <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="Enter your email address"
+                    autocomplete="email"
+                    aria-describedby="form-message"
+                    required
+                >
+
+                <button id="submit-button" type="submit">
+                    Join the waitlist <span aria-hidden="true">↗</span>
+                </button>
+            </div>
+        </form>
+
+        <p class="note" id="form-message" aria-live="polite">
+            Get updates about early access. No unnecessary emails.
+        </p>
+
+        <div class="benefits" aria-label="Platform highlights">
+            <span class="benefit">
+                <span class="check" aria-hidden="true">✓</span>
+                Your photography portfolio
+            </span>
+
+            <span class="benefit">
+                <span class="check" aria-hidden="true">✓</span>
+                Client and booking management
+            </span>
+
+            <span class="benefit">
+                <span class="check" aria-hidden="true">✓</span>
+                Studio business tools
+            </span>
+        </div>
+
+        <div class="divider" aria-hidden="true"></div>
+
+        <p class="bottom-note">
+            Made for photographers, freelancers, and studio owners
+            who want to spend less time on admin and more time
+            creating work that matters.
+        </p>
+
+    </section>
+</main>
+
+<footer>
+    <span>© 2026 Professional Studio. All rights reserved.</span>
+	<a href="https://bluehorizanlabs.vercel.app/">Powered by BlueHorizonLabs</a>
+
+    <nav class="links" aria-label="Footer links">
+        <a href="https://professionalstudio.vercel.app">Home</a>
+        <a href="mailto:hello@professionalstudio.com">Contact</a>
+    </nav>
+</footer>
+
+<script src="waitlist.js"></script>
+
 </body>
 </html>
