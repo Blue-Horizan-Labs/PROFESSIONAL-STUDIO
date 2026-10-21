@@ -3,6 +3,11 @@ window.addEventListener('DOMContentLoaded', () => {
         fetch('/api/dashboard-data')
         .then(response => response.json())
         .then(data => {
+            if (data.message === "Unauthorized") {
+                alert('You are not authorized to access this page. Please log in.');
+                window.location.href = '/login';
+                return;
+            }
             document.getElementById('name').textContent = data.name;
             document.getElementById('openPortfolioBtn').addEventListener('click', () => {
                 window.location.href = '/api/client?id='+data.link;
@@ -15,7 +20,8 @@ window.addEventListener('DOMContentLoaded', () => {
                 }, 2000);
             });
         });
-    }catch (error) {
-        console.error('Unexpected error:', error);
+    } catch (error) {
+        alert('Error fetching dashboard data. Please try again later.');
+        window.location.href = '/login';
     }
 });

@@ -53,6 +53,7 @@ export default async function updateUser(req, res) {
             insta_handle: req_user.insta_handle,
             facebook_handle: req_user.facebook_handle,
             yt_handle: req_user.yt_handle,
+            data: { template: 'default' }
         }).select();
         console.log('new entry created:', new_entry);
     } else {

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="Portfolio of Your Name, independent creative professional.">
+	<title>std_name</title>
+	<style>
+		:root{font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:#202720;background:#f8f9f6;font-synthesis:none;text-rendering:optimizeLegibility;--muted:#687169;--line:#e1e6df;--accent:#c9f477}
+		*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;line-height:1.6}a{color:inherit;text-decoration:none}.container{width:min(1080px,calc(100% - 48px));margin:auto}
+		header{border-bottom:1px solid var(--line)}nav{min-height:76px;display:flex;align-items:center;justify-content:space-between;gap:24px}.brand{font-weight:750;letter-spacing:-.04em}.links{display:flex;align-items:center;gap:28px;color:var(--muted);font-size:.92rem}.button{display:inline-block;padding:12px 22px;border-radius:30px;background:var(--accent);color:#202720;font-weight:700}.button:hover{background:#bce965}
+		.hero{padding:clamp(100px,17vw,180px) 0 145px}.eyebrow{margin:0 0 20px;color:var(--muted);font-size:.76rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase}h1{max-width:850px;margin:0;font-size:clamp(3.3rem,9vw,7rem);line-height:.98;letter-spacing:-.075em}.intro{max-width:500px;margin:26px 0 30px;color:var(--muted);font-size:1.1rem}
+		section{padding:80px 0;border-top:1px solid var(--line)}.row{display:grid;grid-template-columns:1fr 2fr;gap:48px}h2{margin:0;font-size:clamp(2rem,4vw,3rem);line-height:1.1;letter-spacing:-.06em}.copy{max-width:650px;color:var(--muted);font-size:1.05rem}.copy p{margin:0 0 16px}.contact{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:32px}.item{padding-top:16px;border-top:1px solid var(--line)}.label{display:block;margin-bottom:6px;color:var(--muted);font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}footer{padding:24px 0;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem}
+		@media(max-width:640px){.container{width:calc(100% - 36px)}nav{min-height:68px}.links{gap:16px;font-size:.85rem}.links .button{padding:9px 15px}.hero{padding:100px 0}.row{grid-template-columns:1fr;gap:20px}section{padding:64px 0}.contact{grid-template-columns:1fr;gap:18px}}
+	</style>
+</head>
+<body>
+	<header>
+		<nav class="container" aria-label="Main navigation">
+			<a class="brand" href="#home">std_name</a>
+			<div class="links"><a href="#about">About</a><a href="#contact">Contact</a><a class="button" href="/api/booking?id=decodedid">Book</a></div>
+		</nav>
+	</header>
+	<main>
+		<div class="container hero" id="home">
+			<p class="eyebrow">Independent creative professionals</p>
+			<h1>std_name</h1>
+			<p class="intro">std_tag</p>
+			<a class="button" href="/api/booking?id=decodedid">Book a Appointment</a>
+		</div>
+		<section id="about">
+			<div class="container row">
+				<h2>About me</h2>
+				<div class="copy"><p>about</p></div>
+			</div>
+		</section>
+		<section id="contact">
+			<div class="container row">
+				<h2>Let’s talk</h2>
+				<div class="copy">
+					<p>Have a project in mind? Get in touch. I’d love to hear from you.</p>
+					<div class="contact">
+						<div class="item"><span class="label">Phone</span><a href="tel:phone">phone</a></div>
+						<div class="item"><span class="label">Email</span><a href="mailto:email">email</a></div>
+						<div class="item"><span class="label">Address</span><span>std_address</span></div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</main>
+	<footer><div class="container">© 2026 std_name</div></footer>
+</body>
+</html>
