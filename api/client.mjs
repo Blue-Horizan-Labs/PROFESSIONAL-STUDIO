@@ -1,6 +1,7 @@
 // protfolio delivery with /user?id=<ID> route
 import { createClient } from '@supabase/supabase-js';
 import fs from 'fs';
+import path from 'path';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
@@ -33,7 +34,7 @@ export default async function handler(req, res) {
         const temp = user.data.template;
         if (temp){
             const substitute = ['std_name', 'full_name', 'std_tag', 'tagline', 'about', 'phone', 'email', 'std_address'];
-            let html  = fs.readFileSync(`templates/${temp}/${temp}.html`, 'utf8');
+            let html  = fs.readFileSync(path.join('templates', temp, `${temp}.html`), 'utf8');
             try {
                 substitute.forEach((sub) => {
                     if (user[sub] && user[sub] !== '') {
