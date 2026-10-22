@@ -34,7 +34,7 @@ export default async function handler(req, res) {
         const temp = user.data.template;
         if (temp){
             const substitute = ['std_name', 'full_name', 'std_tag', 'tagline', 'about', 'phone', 'email', 'std_address'];
-            let html  = fs.readFileSync(path.join('templates', temp, `${temp}.html`), 'utf8');
+            let html  = fs.readFileSync(path.join(process.cwd(), 'templates', temp, `${temp}.html`), 'utf8');
             try {
                 substitute.forEach((sub) => {
                     if (user[sub] && user[sub] !== '') {
@@ -46,7 +46,7 @@ export default async function handler(req, res) {
                 });
             } catch (error) {
                 console.error('Error substituting values in HTML:', error);
-                res.status(500).json({ error: 'Internal server error' });
+                res.status(500).json({ error: error.message || 'Internal server error' });
                 return;
             }
             html = html.replaceAll('decodedid', id);
@@ -58,6 +58,6 @@ export default async function handler(req, res) {
         res.status(200).json({ user });
     } catch (error) {
         console.error('Error fetching user:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: error.message || 'Internal server error' });
     }
 }
