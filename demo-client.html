@@ -1,52 +1,233 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Private Gallery | Professional Studio</title>
+    <title>Private Gallery | Professional Studio</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-:root{
-    --bg:#f8f7f4;
-    --surface:#ffffff;
-    --surface-soft:#f3f1ed;
-    --text:#171717;
-    --muted:#77736c;
-    --border:#e5e1da;
-    --accent:#171717;
-    --shadow:0 10px 35px rgba(0,0,0,.07);
+html {
+    scroll-behavior: smooth;
 }
 
-body{
-    font-family:"Inter",sans-serif;
-    background:var(--bg);
-    color:var(--text);
-    line-height:1.5;
+body {
+    font-family: "Inter", Arial, sans-serif;
+    background: #f7f7f7;
+    color: #111;
+    line-height: 1.6;
+    overflow-x: hidden;
 }
 
 button,
-input{
-    font:inherit;
+input,
+textarea {
+    font: inherit;
 }
 
-button{
-    cursor:pointer;
+button {
+    cursor: pointer;
 }
 
-img{
-    display:block;
-    max-width:100%;
+button:disabled {
+    cursor: not-allowed;
+    opacity: .55;
+}
+
+.hidden {
+    display: none !important;
+}
+
+
+/* =========================================================
+   TYPOGRAPHY
+========================================================= */
+
+.eyebrow {
+    display: inline-block;
+    color: #888;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1.7px;
+}
+
+
+/* =========================================================
+   SCREENS
+========================================================= */
+
+.screen {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+}
+
+.password-screen,
+.message-screen {
+    background: #f7f7f7;
+}
+
+
+/* =========================================================
+   ACCESS CARD
+========================================================= */
+
+.access-card,
+.message-card {
+    width: min(480px, 100%);
+    padding: 48px;
+    background: #fff;
+    border: 1px solid #e2e2e2;
+    border-radius: 18px;
+    text-align: center;
+    box-shadow: 0 20px 55px rgba(0, 0, 0, .06);
+}
+
+.access-mark {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 24px;
+    border-radius: 12px;
+    background: #111;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.access-card h1,
+.message-card h1 {
+    margin-top: 12px;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 40px;
+    font-weight: 600;
+    line-height: 1.1;
+}
+
+.access-card > p,
+.message-card > p {
+    margin-top: 14px;
+    color: #777;
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+
+/* =========================================================
+   PASSWORD FORM
+========================================================= */
+
+.access-form {
+    margin-top: 30px;
+    text-align: left;
+}
+
+.access-form label {
+    display: block;
+    margin-bottom: 7px;
+    color: #444;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.access-form input {
+    width: 100%;
+    height: 48px;
+    padding: 0 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    outline: 0;
+    background: #fff;
+}
+
+.access-form input:focus,
+.note-card textarea:focus {
+    border-color: #111;
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.primary-btn,
+.secondary-btn {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 16px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    transition: .2s ease;
+}
+
+.primary-btn {
+    border: 1px solid #111;
+    background: #111;
+    color: #fff;
+}
+
+.primary-btn:hover {
+    background: #2a2a2a;
+}
+
+.secondary-btn {
+    border: 1px solid #ddd;
+    background: #fff;
+    color: #111;
+}
+
+.secondary-btn:hover {
+    background: #f3f3f3;
+}
+
+.access-form .primary-btn {
+    width: 100%;
+    margin-top: 12px;
+}
+
+.access-error {
+    margin-top: 10px;
+    color: #b11;
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+.message-icon {
+    width: 58px;
+    height: 58px;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 22px;
+    border: 1px solid #ddd;
+    border-radius: 50%;
+    color: #777;
+    font-size: 23px;
 }
 
 
@@ -54,88 +235,47 @@ img{
    HEADER
 ========================================================= */
 
-.site-header{
-    height:76px;
-    background:rgba(255,255,255,.95);
-    border-bottom:1px solid var(--border);
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:0 42px;
-    position:sticky;
-    top:0;
-    z-index:100;
-    backdrop-filter:blur(12px);
+.gallery-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255, 255, 255, .96);
+    border-bottom: 1px solid #e6e6e6;
+    backdrop-filter: blur(14px);
 }
 
-.brand{
-    display:flex;
-    align-items:center;
-    gap:13px;
+.header-inner {
+    width: min(1400px, 92%);
+    min-height: 76px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
 }
 
-.brand-mark{
-    width:38px;
-    height:38px;
-    border-radius:10px;
-    background:#171717;
-    color:#fff;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-family:"Playfair Display",serif;
-    font-size:18px;
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
 }
 
-.brand-text strong{
-    display:block;
-    font-size:14px;
-    font-weight:700;
+.brand-mark {
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 9px;
+    background: #111;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
 }
 
-.brand-text span{
-    display:block;
-    font-size:11px;
-    color:var(--muted);
-    margin-top:1px;
-}
-
-.header-right{
-    display:flex;
-    align-items:center;
-    gap:18px;
-}
-
-.private-label{
-    font-size:12px;
-    color:var(--muted);
-}
-
-.btn{
-    border:0;
-    border-radius:9px;
-    padding:11px 17px;
-    font-size:13px;
-    font-weight:600;
-    transition:.2s ease;
-}
-
-.btn-dark{
-    background:#171717;
-    color:#fff;
-}
-
-.btn-dark:hover{
-    background:#333;
-}
-
-.btn-light{
-    background:#f1efeb;
-    color:#222;
-}
-
-.btn-light:hover{
-    background:#e7e4df;
+.brand strong {
+    display: block;
+    margin-top: 1px;
+    font-size: 13px;
 }
 
 
@@ -143,166 +283,47 @@ img{
    HERO
 ========================================================= */
 
-.hero{
-    padding:72px 30px 54px;
-    text-align:center;
-    max-width:1050px;
-    margin:auto;
+.hero {
+    background: #fff;
+    border-bottom: 1px solid #e5e5e5;
 }
 
-.hero-kicker{
-    font-size:11px;
-    text-transform:uppercase;
-    letter-spacing:2px;
-    color:var(--muted);
-    margin-bottom:17px;
+.hero-inner {
+    width: min(1200px, 92%);
+    margin: auto;
+    padding: 80px 0 72px;
 }
 
-.hero h1{
-    font-family:"Playfair Display",serif;
-    font-size:clamp(38px,6vw,67px);
-    font-weight:500;
-    line-height:1.05;
-    margin-bottom:18px;
+.hero h1 {
+    max-width: 900px;
+    margin-top: 12px;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: clamp(44px, 7vw, 78px);
+    font-weight: 600;
+    line-height: .98;
+    letter-spacing: -2px;
 }
 
-.hero-subtitle{
-    color:var(--muted);
-    max-width:600px;
-    margin:auto;
-    font-size:15px;
+.hero p {
+    max-width: 650px;
+    margin-top: 18px;
+    color: #707070;
+    font-size: 14px;
 }
 
-.hero-meta{
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    flex-wrap:wrap;
-    gap:8px 16px;
-    margin-top:22px;
-    font-size:12px;
-    color:var(--muted);
+.hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin-top: 24px;
+    color: #777;
+    font-size: 10px;
+    font-weight: 700;
 }
 
-.meta-dot{
-    width:4px;
-    height:4px;
-    background:#aaa;
-    border-radius:50%;
-}
-
-
-/* =========================================================
-   MAIN
-========================================================= */
-
-.main{
-    max-width:1420px;
-    margin:auto;
-    padding:0 30px 70px;
-}
-
-
-/* =========================================================
-   WEDDING ALBUM SELECTION
-========================================================= */
-
-.selection-box{
-    background:#fff;
-    border:1px solid var(--border);
-    border-radius:16px;
-    padding:25px 27px;
-    margin-bottom:32px;
-    box-shadow:var(--shadow);
-}
-
-.selection-top{
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-    gap:20px;
-}
-
-.selection-title{
-    font-family:"Playfair Display",serif;
-    font-size:24px;
-}
-
-.selection-description{
-    font-size:13px;
-    color:var(--muted);
-    margin-top:5px;
-}
-
-.selection-info{
-    text-align:right;
-    font-size:12px;
-    color:var(--muted);
-}
-
-.selection-counter{
-    font-weight:700;
-    color:#171717;
-    font-size:15px;
-}
-
-.selection-actions{
-    display:flex;
-    gap:10px;
-    margin-top:20px;
-}
-
-
-/* =========================================================
-   GALLERY LAYOUT
-========================================================= */
-
-.gallery-layout{
-    display:grid;
-    grid-template-columns:220px minmax(0,1fr);
-    gap:38px;
-}
-
-.sidebar{
-    position:sticky;
-    top:105px;
-    align-self:start;
-}
-
-.sidebar-title{
-    font-size:11px;
-    text-transform:uppercase;
-    letter-spacing:1.5px;
-    color:var(--muted);
-    margin-bottom:13px;
-}
-
-.section-list{
-    display:flex;
-    flex-direction:column;
-    gap:4px;
-}
-
-.section-button{
-    width:100%;
-    border:0;
-    background:transparent;
-    text-align:left;
-    padding:11px 13px;
-    border-radius:8px;
-    color:#666;
-    font-size:13px;
-    transition:.2s ease;
-}
-
-.section-button:hover{
-    background:#efede9;
-    color:#171717;
-}
-
-.section-button.active{
-    background:#171717;
-    color:#fff;
+.hero-meta span + span {
+    padding-left: 18px;
+    border-left: 1px solid #ddd;
 }
 
 
@@ -310,91 +331,285 @@ img{
    GALLERY CONTENT
 ========================================================= */
 
-.gallery-toolbar{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:19px;
-    gap:20px;
+.gallery-content {
+    width: min(1400px, 92%);
+    margin: auto;
+    padding: 55px 0 90px;
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 45px;
 }
 
-.gallery-title{
-    font-family:"Playfair Display",serif;
-    font-size:28px;
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.sections-sidebar {
+    align-self: start;
+    position: sticky;
+    top: 105px;
 }
 
-.gallery-count{
-    font-size:12px;
-    color:var(--muted);
+.sidebar-heading strong {
+    display: block;
+    margin-top: 7px;
+    font-size: 14px;
 }
 
-.media-grid{
-    display:grid;
-    grid-template-columns:repeat(3,minmax(0,1fr));
-    gap:14px;
+#sectionsList {
+    margin-top: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
-.media-card{
-    position:relative;
-    overflow:hidden;
-    border-radius:10px;
-    background:#ddd;
-    aspect-ratio:4/3;
-    cursor:pointer;
+.section-button {
+    width: 100%;
+    padding: 11px 12px;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: #777;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
 }
 
-.media-card img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    transition:transform .45s ease;
+.section-button:hover {
+    background: #ededed;
+    color: #111;
 }
 
-.media-card:hover img{
-    transform:scale(1.04);
+.section-button.active {
+    background: #111;
+    color: #fff;
 }
 
-.media-overlay{
-    position:absolute;
-    inset:0;
-    background:linear-gradient(
-        to bottom,
-        rgba(0,0,0,.15),
-        transparent 35%,
-        rgba(0,0,0,.35)
+
+/* =========================================================
+   MEDIA TOOLBAR
+========================================================= */
+
+.media-toolbar {
+    min-height: 54px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 22px;
+}
+
+.media-toolbar h2 {
+    margin-top: 5px;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1.1;
+}
+
+.media-count {
+    color: #888;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   MEDIA GRID
+========================================================= */
+
+.media-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.media-card {
+    position: relative;
+    overflow: hidden;
+    min-height: 220px;
+    aspect-ratio: 1 / 1;
+    background: #e8e8e8;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.media-card img,
+.media-card video {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.media-card video {
+    background: #111;
+}
+
+.media-card-overlay {
+    position: absolute;
+    inset: auto 0 0 0;
+    padding: 38px 10px 10px;
+    background: linear-gradient(
+        transparent,
+        rgba(0, 0, 0, .75)
     );
-    opacity:0;
-    transition:.2s ease;
+    color: #fff;
+    pointer-events: none;
 }
 
-.media-card:hover .media-overlay{
-    opacity:1;
+.media-card-name {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 9px;
 }
 
-.media-select{
-    position:absolute;
-    top:12px;
-    right:12px;
-    width:24px;
-    height:24px;
-    border:1px solid rgba(255,255,255,.8);
-    background:rgba(0,0,0,.25);
-    border-radius:50%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:#fff;
-    font-size:13px;
-    z-index:2;
+.media-type {
+    display: block;
+    margin-top: 2px;
+    font-size: 8px;
+    opacity: .75;
 }
 
-.media-card.selected{
-    outline:3px solid #171717;
-    outline-offset:-3px;
+
+/* =========================================================
+   WEDDING ALBUM SELECTION
+========================================================= */
+
+.select-media-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+
+    border: 1px solid rgba(255, 255, 255, .8);
+    border-radius: 50px;
+
+    background: rgba(17, 17, 17, .78);
+    color: #fff;
+
+    font-size: 11px;
+    font-weight: 800;
 }
 
-.media-card.selected .media-select{
-    background:#171717;
+.media-card.selected {
+    outline: 3px solid #111;
+    outline-offset: -3px;
+}
+
+.media-card.selected .select-media-btn {
+    background: #fff;
+    color: #111;
+}
+
+.media-card.selected::after {
+    content: "SELECTED FOR WEDDING ALBUM";
+
+    position: absolute;
+    left: 10px;
+    top: 10px;
+
+    padding: 5px 7px;
+
+    border-radius: 4px;
+
+    background: #111;
+    color: #fff;
+
+    font-size: 7px;
+    font-weight: 800;
+    letter-spacing: .7px;
+}
+
+
+/* =========================================================
+   EMPTY MEDIA
+========================================================= */
+
+.media-empty {
+    padding: 80px 25px;
+    text-align: center;
+    background: #fff;
+    border: 1px dashed #d5d5d5;
+    border-radius: 14px;
+}
+
+.media-empty .message-icon {
+    margin-bottom: 14px;
+}
+
+.media-empty h3 {
+    font-size: 15px;
+}
+
+.media-empty p {
+    margin-top: 7px;
+    color: #777;
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   SELECTION PANEL
+========================================================= */
+
+.selection-panel {
+    width: min(1400px, 92%);
+    margin: 28px auto 0;
+    padding: 24px;
+
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1fr)
+        auto
+        auto;
+
+    align-items: center;
+    gap: 25px;
+
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 14px;
+}
+
+.selection-panel h2 {
+    margin-top: 5px;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 24px;
+    line-height: 1.1;
+}
+
+.selection-panel p {
+    margin-top: 6px;
+    color: #777;
+    font-size: 11px;
+}
+
+.selection-status {
+    min-width: 110px;
+    text-align: center;
+}
+
+.selection-status strong {
+    display: block;
+    font-size: 22px;
+}
+
+.selection-status > span {
+    color: #888;
+    font-size: 9px;
+}
+
+.selection-actions {
+    display: flex;
+    gap: 8px;
 }
 
 
@@ -402,26 +617,35 @@ img{
    CLIENT NOTE
 ========================================================= */
 
-.client-note{
-    margin-top:38px;
-    background:#fff;
-    border:1px solid var(--border);
-    border-radius:14px;
-    padding:24px;
+.client-note-section {
+    width: min(1400px, 92%);
+    margin: -50px auto 60px;
 }
 
-.note-label{
-    font-size:11px;
-    text-transform:uppercase;
-    letter-spacing:1.5px;
-    color:var(--muted);
-    margin-bottom:9px;
+.note-card {
+    padding: 25px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 14px;
 }
 
-.note-text{
-    font-family:"Playfair Display",serif;
-    font-size:20px;
-    line-height:1.5;
+.note-card h2 {
+    margin-top: 5px;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 24px;
+}
+
+.note-card textarea {
+    width: 100%;
+    margin-top: 18px;
+    padding: 13px;
+    resize: vertical;
+
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    outline: 0;
+
+    font-size: 12px;
 }
 
 
@@ -429,19 +653,12 @@ img{
    FOOTER
 ========================================================= */
 
-.site-footer{
-    border-top:1px solid var(--border);
-    padding:28px 30px;
-    color:var(--muted);
-    font-size:11px;
-}
-
-.footer-inner{
-    max-width:1420px;
-    margin:auto;
-    display:flex;
-    justify-content:space-between;
-    gap:20px;
+.gallery-footer {
+    padding: 28px;
+    text-align: center;
+    color: #999;
+    border-top: 1px solid #e3e3e3;
+    font-size: 9px;
 }
 
 
@@ -449,67 +666,134 @@ img{
    VIEWER
 ========================================================= */
 
-.viewer{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.96);
-    z-index:1000;
-    display:none;
-    align-items:center;
-    justify-content:center;
+.viewer {
+    position: fixed;
+    inset: 0;
+    z-index: 5000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
 }
 
-.viewer.open{
-    display:flex;
+.viewer-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, .88);
 }
 
-.viewer-image{
-    max-width:92vw;
-    max-height:88vh;
-    object-fit:contain;
+.viewer-dialog {
+    position: relative;
+    z-index: 1;
+
+    width: min(1200px, 100%);
+    height: min(88vh, 900px);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.viewer-close,
-.viewer-prev,
-.viewer-next{
-    position:absolute;
-    width:44px;
-    height:44px;
-    border:1px solid rgba(255,255,255,.2);
-    border-radius:50%;
-    background:rgba(255,255,255,.08);
-    color:#fff;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:22px;
-    cursor:pointer;
+.viewer-media-wrap {
+    width: min(
+        900px,
+        calc(100% - 110px)
+    );
+
+    height: calc(100% - 75px);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.viewer-close{
-    top:24px;
-    right:24px;
+.viewer-media-wrap img,
+.viewer-media-wrap video {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
 }
 
-.viewer-prev{
-    left:25px;
-    top:50%;
-    transform:translateY(-50%);
+.viewer-close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 3;
+
+    width: 42px;
+    height: 42px;
+
+    border: 1px solid rgba(255, 255, 255, .2);
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, .08);
+    color: #fff;
+
+    font-size: 25px;
 }
 
-.viewer-next{
-    right:25px;
-    top:50%;
-    transform:translateY(-50%);
+.viewer-nav {
+    position: absolute;
+    top: 50%;
+    z-index: 3;
+
+    width: 48px;
+    height: 48px;
+
+    border: 0;
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, .12);
+    color: #fff;
+
+    font-size: 34px;
+
+    transform: translateY(-50%);
 }
 
-.viewer-counter{
-    position:absolute;
-    bottom:24px;
-    left:50%;
-    transform:translateX(-50%);
-    color:#fff;
-    font-size:12px;
+.viewer-prev {
+    left: 8px;
+}
+
+.viewer-next {
+    right: 8px;
+}
+
+.viewer-footer {
+    position: absolute;
+    left: 55px;
+    right: 55px;
+    bottom: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    color: #fff;
+}
+
+.viewer-footer strong,
+.viewer-footer span {
+    display: block;
+}
+
+.viewer-footer strong {
+    max-width: 500px;
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    font-size: 11px;
+}
+
+.viewer-footer span {
+    margin-top: 2px;
+    color: #aaa;
+    font-size: 9px;
 }
 
 
@@ -517,1144 +801,742 @@ img{
    TOAST
 ========================================================= */
 
-.toast{
-    position:fixed;
-    bottom:28px;
-    left:50%;
-    transform:translate(-50%,20px);
-    background:#171717;
-    color:#fff;
-    padding:12px 18px;
-    border-radius:8px;
-    font-size:12px;
-    opacity:0;
-    pointer-events:none;
-    transition:.25s ease;
-    z-index:2000;
+.toast {
+    position: fixed;
+    left: 50%;
+    bottom: 25px;
+    z-index: 7000;
+
+    max-width: min(
+        440px,
+        calc(100% - 30px)
+    );
+
+    padding: 12px 16px;
+
+    border-radius: 8px;
+
+    background: #111;
+    color: #fff;
+
+    font-size: 11px;
+
+    transform:
+        translate(-50%, 20px);
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transition: .25s ease;
 }
 
-.toast.show{
-    opacity:1;
-    transform:translate(-50%,0);
+.toast.show {
+    transform:
+        translate(-50%, 0);
+
+    opacity: 1;
 }
 
 
 /* =========================================================
-   RESPONSIVE
+   TABLET
 ========================================================= */
 
-@media(max-width:900px){
+@media (max-width: 900px) {
 
-    .site-header{
-        padding:0 20px;
+    .gallery-content {
+        grid-template-columns: 1fr;
+        gap: 25px;
     }
 
-    .private-label{
-        display:none;
+    .sections-sidebar {
+        position: static;
     }
 
-    .main{
-        padding-left:20px;
-        padding-right:20px;
+    #sectionsList {
+        flex-direction: row;
+        overflow-x: auto;
+        padding-bottom: 4px;
     }
 
-    .gallery-layout{
-        grid-template-columns:1fr;
-        gap:25px;
+    .section-button {
+        width: auto;
+        flex: 0 0 auto;
     }
 
-    .sidebar{
-        position:static;
+    .selection-panel {
+        grid-template-columns: 1fr;
     }
 
-    .section-list{
-        flex-direction:row;
-        overflow-x:auto;
-        padding-bottom:4px;
+    .selection-status {
+        text-align: left;
     }
 
-    .section-button{
-        white-space:nowrap;
-        width:auto;
+    .selection-actions {
+        width: 100%;
     }
 
-    .media-grid{
-        grid-template-columns:repeat(2,minmax(0,1fr));
+    .selection-actions button {
+        flex: 1;
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 650px) {
+
+    .header-inner,
+    .hero-inner,
+    .gallery-content,
+    .selection-panel,
+    .client-note-section {
+        width: min(94%, 1400px);
+    }
+
+    .header-actions .secondary-btn {
+        padding: 0 11px;
+    }
+
+    .hero-inner {
+        padding: 55px 0 48px;
+    }
+
+    .hero h1 {
+        font-size: 48px;
+    }
+
+    .media-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 8px;
+    }
+
+    .media-card {
+        min-height: 0;
+    }
+
+    .selection-panel {
+        padding: 18px;
+    }
+
+    .access-card,
+    .message-card {
+        padding: 35px 24px;
+    }
+
+    .viewer-media-wrap {
+        width: calc(100% - 40px);
+        height: calc(100% - 100px);
+    }
+
+    .viewer-nav {
+        width: 38px;
+        height: 38px;
+        font-size: 27px;
+    }
+
+    .viewer-prev {
+        left: 0;
+    }
+
+    .viewer-next {
+        right: 0;
+    }
+
+    .viewer-footer {
+        left: 20px;
+        right: 20px;
+    }
+
+    .viewer-footer .secondary-btn {
+        min-width: 90px;
     }
 }
 
-
-@media(max-width:600px){
-
-    .site-header{
-        height:66px;
+/* =========================================================
+   MOBILE THUMBNAIL ALIGNMENT FIX
+   Only affects the gallery grid on small screens.
+========================================================= */
+@media (max-width: 650px) {
+    .media-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: start;
     }
 
-    .brand-text{
-        display:none;
+    .media-card {
+        width: 100%;
+        min-width: 0;
+        min-height: 0;
+        aspect-ratio: 1 / 1;
+        overflow: hidden;
     }
 
-    .hero{
-        padding:50px 20px 38px;
-    }
-
-    .hero h1{
-        font-size:42px;
-    }
-
-    .hero-meta{
-        flex-direction:column;
-    }
-
-    .meta-dot{
-        display:none;
-    }
-
-    .main{
-        padding:0 15px 50px;
-    }
-
-    .selection-box{
-        padding:20px;
-    }
-
-    .selection-top{
-        flex-direction:column;
-    }
-
-    .selection-info{
-        text-align:left;
-    }
-
-    .selection-actions{
-        flex-direction:column;
-    }
-
-    .selection-actions .btn{
-        width:100%;
-    }
-
-    .gallery-toolbar{
-        align-items:flex-start;
-        flex-direction:column;
-        gap:5px;
-    }
-
-    .media-grid{
-        grid-template-columns:1fr;
-        gap:10px;
-    }
-
-    .client-note{
-        padding:20px;
-    }
-
-    .footer-inner{
-        flex-direction:column;
-    }
-
-    .viewer-prev{
-        left:10px;
-    }
-
-    .viewer-next{
-        right:10px;
+    .media-card img,
+    .media-card video {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
     }
 }
+
+@media (max-width: 380px) {
+    .media-grid {
+        gap: 6px;
+    }
+}
+
 </style>
+
+<style>
+.demo-banner{position:sticky;top:0;z-index:9999;background:#171717;color:#fff;text-align:center;padding:9px 12px;font:600 11px/1.4 Arial,sans-serif;letter-spacing:.04em}
+@media(max-width:650px){.media-grid{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}.media-card{width:100%;min-width:0;min-height:0;aspect-ratio:1/1;overflow:hidden}.media-card img,.media-card video{display:block;width:100%;height:100%;object-fit:cover;object-position:center}}
+@media(max-width:380px){.media-grid{gap:6px}}
+</style>
+
 </head>
 
-
 <body>
+<div class="demo-banner">DEMO PREVIEW · SAMPLE PHOTOS · NOT CONNECTED TO LIVE GALLERY DATA</div>
 
-<!-- =========================================================
-     HEADER
-========================================================= -->
+    <!-- PASSWORD SCREEN -->
+    <section
+        class="screen password-screen hidden"
+        id="passwordScreen"
+    >
+        <div class="access-card">
 
-<header class="site-header">
+            <div class="access-mark">
+                PS
+            </div>
 
-    <div class="brand">
+            <span class="eyebrow">
+                PRIVATE CLIENT GALLERY
+            </span>
 
-        <div class="brand-mark">
-            PS
+            <h1 id="passwordGalleryName">
+                Private Gallery
+            </h1>
+
+            <p>
+                This gallery is password protected.
+                Enter the password provided by your photographer.
+            </p>
+
+            <form
+                id="passwordForm"
+                class="access-form"
+            >
+
+                <label for="galleryPasswordInput">
+                    Gallery password
+                </label>
+
+                <input
+                    id="galleryPasswordInput"
+                    type="password"
+                    autocomplete="current-password"
+                    placeholder="Enter password"
+                    required
+                >
+
+                <button
+                    type="submit"
+                    class="primary-btn"
+                >
+                    Open Gallery
+                </button>
+
+                <p
+                    class="access-error hidden"
+                    id="passwordError"
+                >
+                    Incorrect password. Please try again.
+                </p>
+
+            </form>
+
         </div>
+    </section>
 
-        <div class="brand-text">
-            <strong>Professional Studio</strong>
-            <span>Private Gallery</span>
+
+    <!-- NOT FOUND -->
+    <section
+        class="screen message-screen hidden"
+        id="notFoundScreen"
+    >
+        <div class="message-card">
+
+            <div class="message-icon">
+                ○
+            </div>
+
+            <span class="eyebrow">
+                PRIVATE GALLERY
+            </span>
+
+            <h1>
+                Gallery not found.
+            </h1>
+
+            <p>
+                This private gallery link is invalid
+                or the gallery is no longer available.
+            </p>
+
         </div>
-
-    </div>
-
-
-    <div class="header-right">
-
-        <span class="private-label">
-            Private Client Gallery
-        </span>
-
-        <button class="btn btn-dark" id="downloadGallery">
-            Download Gallery
-        </button>
-
-    </div>
-
-</header>
+    </section>
 
 
-<!-- =========================================================
-     HERO
-========================================================= -->
+    <!-- EXPIRED -->
+    <section
+        class="screen message-screen hidden"
+        id="expiredScreen"
+    >
+        <div class="message-card">
 
-<section class="hero">
+            <div class="message-icon">
+                ×
+            </div>
 
-    <div class="hero-kicker">
-        Private Gallery
-    </div>
+            <span class="eyebrow">
+                ACCESS PERIOD ENDED
+            </span>
 
-    <h1>
-        Aarav &amp; Ananya
-    </h1>
+            <h1>
+                This gallery has expired.
+            </h1>
 
-    <p class="hero-subtitle">
-        Your wedding photographs and videos are ready to view.
-    </p>
+            <p>
+                The access period for this private gallery
+                has ended. Please contact your photographer
+                if you need access again.
+            </p>
 
-    <div class="hero-meta">
-
-        <span>
-            For Aarav &amp; Ananya
-        </span>
-
-        <span class="meta-dot"></span>
-
-        <span>
-            Available until 30 Oct 2026
-        </span>
-
-        <span class="meta-dot"></span>
-
-        <span>
-            28 days left
-        </span>
-
-    </div>
-
-</section>
+        </div>
+    </section>
 
 
-<!-- =========================================================
-     MAIN
-========================================================= -->
+    <!-- GALLERY APP -->
+    <main
+        class="gallery-app hidden"
+        id="galleryApp"
+    >
 
-<main class="main">
+        <!-- HEADER -->
+        <header class="gallery-header">
+
+            <div class="header-inner">
+
+                <div class="brand">
+
+                    <span class="brand-mark">
+                        PS
+                    </span>
+
+                    <div>
+
+                        <span class="eyebrow">
+                            PROFESSIONAL STUDIO
+                        </span>
+
+                        <strong>
+                            Private Gallery
+                        </strong>
+
+                    </div>
+
+                </div>
 
 
-    <!-- WEDDING ALBUM SELECTION -->
+                <div class="header-actions">
 
-    <section class="selection-box">
+                    <button
+                        type="button"
+                        class="secondary-btn hidden"
+                        id="downloadGalleryBtn"
+                    >
+                        <span>↓</span>
+                        Download Gallery
+                    </button>
 
-        <div class="selection-top">
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- HERO -->
+        <section class="hero">
+
+            <div class="hero-inner">
+
+                <span class="eyebrow">
+                    YOUR PRIVATE GALLERY
+                </span>
+
+                <h1 id="galleryTitle">
+                    Gallery
+                </h1>
+
+                <p id="galleryDescription">
+                    Your photographs and videos are ready.
+                </p>
+
+                <div class="hero-meta">
+
+                    <span id="galleryClientName"></span>
+
+                    <span id="galleryExpiry"></span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- WEDDING ALBUM SELECTION -->
+        <section
+            class="selection-panel hidden"
+            id="selectionPanel"
+        >
 
             <div>
 
-                <h2 class="selection-title">
-                    Wedding Album Selection
+                <span class="eyebrow">
+                    WEDDING ALBUM
+                </span>
+
+                <h2>
+                    Select photos for your album.
                 </h2>
 
-                <p class="selection-description">
-                    Select the photographs you would like included in your wedding album.
+                <p id="selectionDescription">
+                    Choose the photographs you want
+                    included in your physical album.
                 </p>
 
             </div>
 
 
-            <div class="selection-info">
+            <div class="selection-status">
 
-                <div class="selection-counter">
-                    <span id="selectionCount">0</span> / 20
-                </div>
+                <strong>
 
-                <div>
-                    photographs selected
-                </div>
+                    <span id="selectionCount">
+                        0
+                    </span>
+
+                    <span id="selectionLimit"></span>
+
+                </strong>
+
+                <span>
+                    photos selected
+                </span>
 
             </div>
 
-        </div>
 
-
-        <div class="selection-actions">
-
-            <button
-                class="btn btn-dark"
-                id="submitSelection"
-            >
-                Submit Selection
-            </button>
-
-            <button
-                class="btn btn-light"
-                id="clearSelection"
-            >
-                Clear Selection
-            </button>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- GALLERY -->
-
-    <section class="gallery-layout">
-
-
-        <!-- SIDEBAR -->
-
-        <aside class="sidebar">
-
-            <div class="sidebar-title">
-                Gallery Sections
-            </div>
-
-            <div class="section-list" id="sectionList">
+            <div class="selection-actions">
 
                 <button
-                    class="section-button active"
-                    data-section="all"
+                    type="button"
+                    class="secondary-btn"
+                    id="clearSelectionBtn"
                 >
-                    All Media
+                    Clear Selection
                 </button>
 
                 <button
-                    class="section-button"
-                    data-section="ceremony"
+                    type="button"
+                    class="primary-btn"
+                    id="submitSelectionBtn"
                 >
-                    Ceremony
-                </button>
-
-                <button
-                    class="section-button"
-                    data-section="couple"
-                >
-                    Couple Portraits
-                </button>
-
-                <button
-                    class="section-button"
-                    data-section="reception"
-                >
-                    Reception
-                </button>
-
-                <button
-                    class="section-button"
-                    data-section="family"
-                >
-                    Family
-                </button>
-
-                <button
-                    class="section-button"
-                    data-section="details"
-                >
-                    Details
+                    Submit Selection
                 </button>
 
             </div>
 
-        </aside>
-
+        </section>
 
 
         <!-- GALLERY CONTENT -->
+        <section class="gallery-content">
 
-        <div class="gallery-content">
+            <!-- SECTIONS -->
+            <aside class="sections-sidebar">
 
-            <div class="gallery-toolbar">
+                <div class="sidebar-heading">
 
-                <div>
+                    <span class="eyebrow">
+                        SECTIONS
+                    </span>
 
-                    <h2
-                        class="gallery-title"
-                        id="galleryTitle"
-                    >
-                        All Media
-                    </h2>
-
-                    <div
-                        class="gallery-count"
-                        id="galleryCount"
-                    >
-                        12 photographs
-                    </div>
+                    <strong>
+                        Your gallery
+                    </strong>
 
                 </div>
+
+                <div id="sectionsList"></div>
+
+            </aside>
+
+
+            <!-- MEDIA -->
+            <section class="media-area">
+
+                <div class="media-toolbar">
+
+                    <div>
+
+                        <span
+                            class="eyebrow"
+                            id="activeSectionEyebrow"
+                        >
+                            GALLERY
+                        </span>
+
+                        <h2 id="activeSectionTitle">
+                            All photos
+                        </h2>
+
+                    </div>
+
+                    <span
+                        class="media-count"
+                        id="mediaCount"
+                    >
+                        0 items
+                    </span>
+
+                </div>
+
+
+                <div
+                    class="media-grid"
+                    id="mediaGrid"
+                ></div>
+
+
+                <div
+                    class="media-empty hidden"
+                    id="mediaEmpty"
+                >
+
+                    <div class="message-icon">
+                        □
+                    </div>
+
+                    <h3>
+                        No media here yet.
+                    </h3>
+
+                    <p>
+                        Your photographer has not
+                        added content to this section.
+                    </p>
+
+                </div>
+
+            </section>
+
+        </section>
+
+
+        <!-- CLIENT NOTE -->
+        <section
+            class="client-note-section hidden"
+            id="clientNoteSection"
+        >
+
+            <div class="note-card">
+
+                <span class="eyebrow">
+                    MESSAGE TO PHOTOGRAPHER
+                </span>
+
+                <h2>
+                    Add a note with your selection.
+                </h2>
+
+                <textarea
+                    id="generalComment"
+                    rows="4"
+                    maxlength="1000"
+                    placeholder="Optional message for your photographer..."
+                ></textarea>
 
             </div>
 
+        </section>
+
+
+        <!-- FOOTER -->
+        <footer class="gallery-footer">
+
+            <span>
+                Private gallery powered by Professional Studio
+            </span>
+
+        </footer>
+
+    </main>
+
+
+    <!-- MEDIA VIEWER -->
+    <div
+        class="viewer hidden"
+        id="viewer"
+    >
+
+        <div
+            class="viewer-backdrop"
+            id="viewerBackdrop"
+        ></div>
+
+
+        <div class="viewer-dialog">
+
+            <button
+                type="button"
+                class="viewer-close"
+                id="viewerClose"
+                aria-label="Close"
+            >
+                ×
+            </button>
+
+
+            <button
+                type="button"
+                class="viewer-nav viewer-prev"
+                id="viewerPrev"
+                aria-label="Previous"
+            >
+                ‹
+            </button>
+
 
             <div
-                class="media-grid"
-                id="mediaGrid"
+                class="viewer-media-wrap"
+                id="viewerMediaWrap"
             ></div>
 
 
-            <!-- CLIENT NOTE -->
+            <button
+                type="button"
+                class="viewer-nav viewer-next"
+                id="viewerNext"
+                aria-label="Next"
+            >
+                ›
+            </button>
 
-            <div class="client-note">
 
-                <div class="note-label">
-                    Note from your photographer
+            <div class="viewer-footer">
+
+                <div>
+
+                    <strong id="viewerTitle">
+                        Media
+                    </strong>
+
+                    <span id="viewerPosition"></span>
+
                 </div>
 
-                <div class="note-text">
-                    Thank you for trusting us with your special day. We hope these photographs bring back every little moment.
-                </div>
+
+                <button
+                    type="button"
+                    class="secondary-btn hidden"
+                    id="viewerDownloadBtn"
+                >
+                    ↓ Download
+                </button>
 
             </div>
 
         </div>
 
-    </section>
-
-</main>
-
-
-<!-- =========================================================
-     FOOTER
-========================================================= -->
-
-<footer class="site-footer">
-
-    <div class="footer-inner">
-
-        <span>
-            © 2026 Professional Studio
-        </span>
-
-        <span>
-            Private gallery powered by Professional Studio
-        </span>
-
     </div>
 
-</footer>
 
-
-<!-- =========================================================
-     MEDIA VIEWER
-========================================================= -->
-
-<div
-    class="viewer"
-    id="viewer"
->
-
-    <button
-        class="viewer-close"
-        id="viewerClose"
-        aria-label="Close"
-    >
-        ×
-    </button>
-
-
-    <button
-        class="viewer-prev"
-        id="viewerPrev"
-        aria-label="Previous"
-    >
-        ‹
-    </button>
-
-
-    <img
-        class="viewer-image"
-        id="viewerImage"
-        src=""
-        alt="Gallery image"
-    >
-
-
-    <button
-        class="viewer-next"
-        id="viewerNext"
-        aria-label="Next"
-    >
-        ›
-    </button>
-
-
+    <!-- TOAST -->
     <div
-        class="viewer-counter"
-        id="viewerCounter"
-    >
-        1 / 12
-    </div>
-
-</div>
-
-
-<!-- =========================================================
-     TOAST
-========================================================= -->
-
-<div
-    class="toast"
-    id="toast"
-></div>
-
-
-
-<script>
-
-/* ============================================================
-   CLIENT GALLERY VISUAL PREVIEW
-   ------------------------------------------------------------
-   This is a standalone visual version of the client-facing
-   gallery. It does not use localStorage, IndexedDB,
-   authentication, or real downloads.
-============================================================ */
-
-
-/* ============================================================
-   DEMO MEDIA
-============================================================ */
-
-const media = [
-
-    {
-        id:"1",
-        section:"ceremony",
-        image:"https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1400&q=85"
-    },
-
-    {
-        id:"2",
-        section:"ceremony",
-        image:"https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1400&q=85"
-    },
-
-    {
-        id:"3",
-        section:"couple",
-        image:"https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1400&q=85"
-    },
-
-    {
-        id:"4",
-        section:"couple",
-        image:"https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=1400&q=85"
-    },
-
-    {
-        id:"5",
-        section:"reception",
-        image:"https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1400&q=85"
-    },
-
-    {
-        id:"6",
-        section:"reception",
-        image:"https://images.unsplash.com/photo-1507504031003-b417219a0fde?auto=format&fit=crop&w=1400&q=85"
-    },
-
-    {
-        id:"7",
-        section:"family",
-        image:"https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1400&q=85"
-    },
-
-    {
-        id:"8",
-        section:"family",
-        image:"https://images.unsplash.com/photo-1537633552985-df8429e8048b?auto=format&fit=crop&w=1400&q=85"
-    },
-
-    {
-        id:"9",
-        section:"details",
-        image:"https://images.unsplash.com/photo-1519657337289-077653f724ed?auto=format&fit=crop&w=1400&q=85"
-    },
-
-    {
-        id:"10",
-        section:"details",
-        image:"https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1400&q=85"
-    },
-
-    {
-        id:"11",
-        section:"couple",
-        image:"https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=1400&q=85"
-    },
-
-    {
-        id:"12",
-        section:"reception",
-        image:"https://images.unsplash.com/photo-1478146896981-b80fe463b330?auto=format&fit=crop&w=1400&q=85"
-    }
-
-];
-
-
-/* ============================================================
-   STATE
-============================================================ */
-
-let activeSection = "all";
-
-let selectedMedia = new Set();
-
-let viewerIndex = 0;
-
-let visibleMedia = [...media];
-
-
-/* ============================================================
-   DOM
-============================================================ */
-
-const mediaGrid =
-    document.getElementById("mediaGrid");
-
-const sectionButtons =
-    document.querySelectorAll(".section-button");
-
-const galleryTitle =
-    document.getElementById("galleryTitle");
-
-const galleryCount =
-    document.getElementById("galleryCount");
-
-const selectionCount =
-    document.getElementById("selectionCount");
-
-const submitSelection =
-    document.getElementById("submitSelection");
-
-const clearSelection =
-    document.getElementById("clearSelection");
-
-const downloadGallery =
-    document.getElementById("downloadGallery");
-
-const viewer =
-    document.getElementById("viewer");
-
-const viewerImage =
-    document.getElementById("viewerImage");
-
-const viewerCounter =
-    document.getElementById("viewerCounter");
-
-const viewerClose =
-    document.getElementById("viewerClose");
-
-const viewerPrev =
-    document.getElementById("viewerPrev");
-
-const viewerNext =
-    document.getElementById("viewerNext");
-
-const toast =
-    document.getElementById("toast");
-
-
-/* ============================================================
-   SECTION LABELS
-============================================================ */
-
-const sectionLabels = {
-
-    all:"All Media",
-
-    ceremony:"Ceremony",
-
-    couple:"Couple Portraits",
-
-    reception:"Reception",
-
-    family:"Family",
-
-    details:"Details"
-
-};
-
-
-/* ============================================================
-   RENDER GALLERY
-============================================================ */
-
-function renderGallery(){
-
-    visibleMedia =
-        activeSection === "all"
-            ? [...media]
-            : media.filter(
-                item =>
-                    item.section === activeSection
-            );
-
-
-    galleryTitle.textContent =
-        sectionLabels[activeSection];
-
-
-    galleryCount.textContent =
-        `${visibleMedia.length} photographs`;
-
-
-    mediaGrid.innerHTML = "";
-
-
-    visibleMedia.forEach(
-        (item,index) => {
-
-            const card =
-                document.createElement("div");
-
-            card.className =
-                "media-card";
-
-
-            if(
-                selectedMedia.has(item.id)
-            ){
-
-                card.classList.add(
-                    "selected"
-                );
-
-            }
-
-
-            card.innerHTML = `
-
-                <img
-                    src="${item.image}"
-                    alt="Wedding photograph"
-                    loading="lazy"
-                >
-
-                <div class="media-overlay"></div>
-
-                <button
-                    class="media-select"
-                    type="button"
-                    aria-label="Select photograph"
-                >
-                    ${selectedMedia.has(item.id) ? "✓" : ""}
-                </button>
-
-            `;
-
-
-            const selectButton =
-                card.querySelector(
-                    ".media-select"
-                );
-
-
-            selectButton.addEventListener(
-                "click",
-                event => {
-
-                    event.stopPropagation();
-
-                    toggleSelection(item.id);
-
-                }
-            );
-
-
-            card.addEventListener(
-                "click",
-                () => {
-
-                    openViewer(index);
-
-                }
-            );
-
-
-            mediaGrid.appendChild(card);
-
-        }
-    );
-
-}
-
-
-/* ============================================================
-   SELECTION
-============================================================ */
-
-function toggleSelection(id){
-
-    if(
-        selectedMedia.has(id)
-    ){
-
-        selectedMedia.delete(id);
-
-    }else{
-
-        if(
-            selectedMedia.size >= 20
-        ){
-
-            showToast(
-                "You can select up to 20 photographs."
-            );
-
-            return;
-
-        }
-
-        selectedMedia.add(id);
-
-    }
-
-
-    updateSelectionCount();
-
-    renderGallery();
-
-}
-
-
-function updateSelectionCount(){
-
-    selectionCount.textContent =
-        selectedMedia.size;
-
-}
-
-
-clearSelection.addEventListener(
-    "click",
-    () => {
-
-        selectedMedia.clear();
-
-        updateSelectionCount();
-
-        renderGallery();
-
-        showToast(
-            "Selection cleared."
-        );
-
-    }
-);
-
-
-submitSelection.addEventListener(
-    "click",
-    () => {
-
-        if(
-            selectedMedia.size === 0
-        ){
-
-            showToast(
-                "Please select at least one photograph."
-            );
-
-            return;
-
-        }
-
-
-        showToast(
-            `${selectedMedia.size} photographs selected for your album.`
-        );
-
-    }
-);
-
-
-/* ============================================================
-   SECTION FILTERING
-============================================================ */
-
-sectionButtons.forEach(
-    button => {
-
-        button.addEventListener(
-            "click",
-            () => {
-
-                sectionButtons.forEach(
-                    item =>
-                        item.classList.remove(
-                            "active"
-                        )
-                );
-
-
-                button.classList.add(
-                    "active"
-                );
-
-
-                activeSection =
-                    button.dataset.section;
-
-
-                renderGallery();
-
-            }
-        );
-
-    }
-);
-
-
-/* ============================================================
-   VIEWER
-============================================================ */
-
-function openViewer(index){
-
-    viewerIndex = index;
-
-    updateViewer();
-
-    viewer.classList.add(
-        "open"
-    );
-
-    document.body.style.overflow =
-        "hidden";
-
-}
-
-
-function updateViewer(){
-
-    const item =
-        visibleMedia[viewerIndex];
-
-
-    if(!item){
-        return;
-    }
-
-
-    viewerImage.src =
-        item.image;
-
-
-    viewerCounter.textContent =
-        `${viewerIndex + 1} / ${visibleMedia.length}`;
-
-}
-
-
-function closeViewer(){
-
-    viewer.classList.remove(
-        "open"
-    );
-
-    document.body.style.overflow =
-        "";
-
-}
-
-
-viewerClose.addEventListener(
-    "click",
-    closeViewer
-);
-
-
-viewer.addEventListener(
-    "click",
-    event => {
-
-        if(
-            event.target === viewer
-        ){
-
-            closeViewer();
-
-        }
-
-    }
-);
-
-
-viewerPrev.addEventListener(
-    "click",
-    event => {
-
-        event.stopPropagation();
-
-        if(
-            visibleMedia.length === 0
-        ){
-            return;
-        }
-
-
-        viewerIndex =
-            (
-                viewerIndex -
-                1 +
-                visibleMedia.length
-            ) %
-            visibleMedia.length;
-
-
-        updateViewer();
-
-    }
-);
-
-
-viewerNext.addEventListener(
-    "click",
-    event => {
-
-        event.stopPropagation();
-
-        if(
-            visibleMedia.length === 0
-        ){
-            return;
-        }
-
-
-        viewerIndex =
-            (
-                viewerIndex +
-                1
-            ) %
-            visibleMedia.length;
-
-
-        updateViewer();
-
-    }
-);
-
-
-/* ============================================================
-   KEYBOARD CONTROLS
-============================================================ */
-
-document.addEventListener(
-    "keydown",
-    event => {
-
-        if(
-            !viewer.classList.contains(
-                "open"
-            )
-        ){
-            return;
-        }
-
-
-        if(
-            event.key === "Escape"
-        ){
-
-            closeViewer();
-
-        }
-
-
-        if(
-            event.key === "ArrowLeft"
-        ){
-
-            viewerPrev.click();
-
-        }
-
-
-        if(
-            event.key === "ArrowRight"
-        ){
-
-            viewerNext.click();
-
-        }
-
-    }
-);
-
-
-/* ============================================================
-   DOWNLOAD DEMO
-============================================================ */
-
-downloadGallery.addEventListener(
-    "click",
-    () => {
-
-        showToast(
-            "Demo mode: gallery download would start here."
-        );
-
-    }
-);
-
-
-/* ============================================================
-   TOAST
-============================================================ */
-
-let toastTimer;
-
-
-function showToast(message){
-
-    toast.textContent =
-        message;
-
-
-    toast.classList.add(
-        "show"
-    );
-
-
-    clearTimeout(
-        toastTimer
-    );
-
-
-    toastTimer =
-        setTimeout(
-            () => {
-
-                toast.classList.remove(
-                    "show"
-                );
-
-            },
-            2600
-        );
-
-}
-
-
-/* ============================================================
-   INITIAL RENDER
-============================================================ */
-
-renderGallery();
-
-updateSelectionCount();
-
-</script>
+        class="toast"
+        id="toast"
+    ></div>
+
+
+    <!-- ZIP GENERATION FOR FRONTEND PROTOTYPE -->
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"
+    ></script>
+
+    <script>
+    // Visual-only demo data. This does not modify the production gallery JS.
+    (() => {
+      const gallery = document.getElementById('galleryApp');
+      const sectionsList = document.getElementById('sectionsList');
+      const grid = document.getElementById('mediaGrid');
+      const viewer = document.getElementById('viewer');
+      const viewerWrap = document.getElementById('viewerMediaWrap');
+      const photos = [
+        {name:'Golden Hour', section:'Wedding Day', url:'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=85'},
+        {name:'The Ceremony', section:'Wedding Day', url:'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1200&q=85'},
+        {name:'A Quiet Moment', section:'Wedding Day', url:'https://images.unsplash.com/photo-1537633552985-df8429e8048b?auto=format&fit=crop&w=1200&q=85'},
+        {name:'The Details', section:'Portraits', url:'https://images.unsplash.com/photo-1523438885200-e635ba2c371e?auto=format&fit=crop&w=1200&q=85'},
+        {name:'Together', section:'Portraits', url:'https://images.unsplash.com/photo-1529636798458-92182e662485?auto=format&fit=crop&w=1200&q=85'},
+        {name:'The First Dance', section:'Reception', url:'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=1200&q=85'},
+        {name:'Celebration', section:'Reception', url:'https://images.unsplash.com/photo-1507504031003-b417219a0 ainda?auto=format&fit=crop&w=1200&q=85'},
+        {name:'Just Married', section:'Portraits', url:'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=1200&q=85'},
+        {name:'The Happy Couple', section:'Wedding Day', url:'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=1200&q=85'}
+      ];
+      // Correct a demo URL typo defensively; images are remote sample photos.
+      photos[6].url='https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1200&q=85';
+      let active='All photos', current=0;
+      const sections=['All photos','Wedding Day','Portraits','Reception'];
+      document.getElementById('galleryTitle').textContent='Ava & Noah';
+      document.getElementById('galleryDescription').textContent='A collection of your favourite moments, thoughtfully captured and shared with you.';
+      document.getElementById('galleryClientName').textContent='CLIENT: AVA & NOAH';
+      document.getElementById('galleryExpiry').textContent='PRIVATE GALLERY  •  DEMO';
+      gallery.classList.remove('hidden');
+      document.getElementById('notFoundScreen').classList.add('hidden');
+      sectionsList.innerHTML=sections.map((name,i)=>`<button type="button" class="section-button ${i===0?'active':''}" data-section="${name}">${name}</button>`).join('');
+      function render(){
+        const items=active==='All photos'?photos:photos.filter(p=>p.section===active);
+        document.getElementById('activeSectionTitle').textContent=active;
+        document.getElementById('activeSectionEyebrow').textContent='GALLERY';
+        document.getElementById('mediaCount').textContent=`${items.length} photos`;
+        document.getElementById('mediaEmpty').classList.toggle('hidden',items.length>0);
+        grid.innerHTML=items.map((p,i)=>`<article class="media-card" data-photo="${photos.indexOf(p)}" tabindex="0" aria-label="Open ${p.name}"><img loading="lazy" src="${p.url}" alt="${p.name}"><div class="media-card-overlay"><span class="media-card-name">${p.name}</span><span class="media-type">PHOTO</span></div></article>`).join('');
+        grid.querySelectorAll('.media-card').forEach(card=>{card.addEventListener('click',()=>openViewer(Number(card.dataset.photo)));card.addEventListener('keydown',e=>{if(e.key==='Enter')openViewer(Number(card.dataset.photo));});});
+        sectionsList.querySelectorAll('.section-button').forEach(b=>b.classList.toggle('active',b.dataset.section===active));
+      }
+      function openViewer(index){current=index;const p=photos[current];viewerWrap.innerHTML=`<img src="${p.url}" alt="${p.name}" style="max-width:100%;max-height:75vh;object-fit:contain;display:block;margin:auto">`;document.getElementById('viewerTitle').textContent=p.name;document.getElementById('viewerPosition').textContent=`${current+1} / ${photos.length}`;viewer.classList.remove('hidden');document.body.style.overflow='hidden';}
+      function closeViewer(){viewer.classList.add('hidden');document.body.style.overflow='';}
+      function move(step){openViewer((current+step+photos.length)%photos.length);}
+      sectionsList.addEventListener('click',e=>{const b=e.target.closest('.section-button');if(!b)return;active=b.dataset.section;render();});
+      document.getElementById('viewerClose').addEventListener('click',closeViewer);
+      document.getElementById('viewerBackdrop').addEventListener('click',closeViewer);
+      document.getElementById('viewerPrev').addEventListener('click',()=>move(-1));
+      document.getElementById('viewerNext').addEventListener('click',()=>move(1));
+      document.addEventListener('keydown',e=>{if(viewer.classList.contains('hidden'))return;if(e.key==='Escape')closeViewer();if(e.key==='ArrowLeft')move(-1);if(e.key==='ArrowRight')move(1);});
+      const download=document.getElementById('downloadGalleryBtn'); download.classList.remove('hidden'); download.addEventListener('click',()=>toast('Demo preview only: downloads are not connected.'));
+      function toast(message){const t=document.getElementById('toast');t.textContent=message;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+      render();
+    })();
+    </script>
 
 </body>
 </html>
