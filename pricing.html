@@ -21,9 +21,9 @@
     <style>
         :root {
             --ink: #111;
-            --muted: #696875;
-            --purple: #7c3aed;
-            --purple-dark: #6425d8;
+            --muted:#259c51;
+            --purple:#379928;
+            --purple-dark:#19b964;
             --lilac: #f4efff;
             --line: #eceaf0;
             --paper: #fff;
@@ -136,7 +136,7 @@
             padding: 7px 13px;
             border: 1px solid #e7d9ff;
             background: #fbf8ff;
-            color: #7040c9;
+            color: #aa2abe;
             border-radius: 99px;
             font-size: 11px;
             font-weight: 600;
@@ -595,79 +595,101 @@
 <body>
     <header class="wrap nav">
         <a class="brand" href="https://professionalstudio.vercel.app/">
-            <span class="brand-mark">
-                ▣
-            </span>
+            <span class="brand-mark">▣</span>
             Professional Studio
         </a>
-        <nav class="navlinks" aria-label="Main navigation"><a href="#plans">Pricing</a><a href="#compare">Compare
-                plans</a><a href="#faq">FAQ</a><a class="nav-cta"
-                href="/auth/signup.html?plan=starter">Start free</a></nav>
+        <nav class="navlinks" aria-label="Main navigation">
+            <a href="#plans">Pricing</a>
+            <a href="#compare">Compare plans</a>
+            <a href="#faq">FAQ</a>
+            <a class="nav-cta" href="/auth/signup.html?plan=starter">Start free</a>
+        </nav>
     </header>
     <main>
-        <section class="hero wrap"><span class="eyebrow"><span class="spark">✦</span> SUBSCRIPTION &amp; PRICING</span>
+        <section class="hero wrap">
+            <span class="eyebrow"><span class="spark">✦</span> SUBSCRIPTION &amp; PRICING</span>
             <h1>Simple pricing for <span class="accent">every photographer.</span></h1>
-            <p>Start free and upgrade as your photography business grows. Your portfolio, bookings and client galleries
-                work together in one place.</p>
-            <div class="trial-note"><span>✓</span> Transparent monthly plans. Choose the plan that fits your studio.</div>
+            <p>
+                Start free and upgrade as your photography business grows. Your portfolio, bookings and client galleries
+                work together in one place.
+            </p>
+            <div class="trial-note">
+                <span>✓</span>
+                Transparent monthly plans. Choose the plan that fits your studio.
+            </div>
         </section>
         <section class="wrap plans" id="plans" aria-label="Monthly plans">
-            <article class="plan" data-plan="starter">
+            <article class="plan featured" data-plan="starter">
+                <span class="popular">RECOMMENDED</span>
                 <h2>Starter</h2>
                 <div class="plan-desc">Everything you need to put your photography business online.</div>
-                <div class="price"><strong data-plan-price="starter">₹499</strong><span>/ month</span></div>
+                <div class="price">
+                    <strong data-plan-price="starter">₹499</strong>
+                    <span>/ month</span>
+                </div>
                 <div class="billing">Perfect for beginners</div>
-                <hr><a class="button-plan" href="/auth/signup.html?plan=starter">Get started
-                    free <span aria-hidden="true">&nbsp;→</span></a>
+                <hr>
+                <a class="button-plan" href="/auth/signup.html?plan=starter">
+                    Get started free <span aria-hidden="true">&nbsp;→</span>
+                </a>
                 <div class="includes">Included in Starter</div>
                 <ul class="features">
-                    <li><span class="check">✓</span>
-                        <span>Personal portfolio</span></li>
-                    <li>
-                        <span class="check">✓</span><span>Online booking</span></li>
-                    <li>
-                        <span class="check">✓</span><span>Client gallery</span></li>
-                    <li>
-                        <span class="check">✓</span><span>500 MB storage for recent work</span></li>
-                    <li>
-                        <span class="check">✓</span><span>Services and pricing showcase</span></li>
-                    <li>
-                        <span class="check">✓</span><span>Equipment preview</span></li>
+                    <li><span class="check">✓</span><span>Personal portfolio</span></li>
+                    <li><span class="check">✓</span><span>Online booking</span></li>
+                    <li><span class="check">✓</span><span>Client gallery</span></li>
+                    <li><span class="check">✓</span><span>500 MB storage for recent work</span></li>
+                    <li><span class="check">✓</span><span>Services and pricing showcase</span></li>
+                    <li><span class="check">✓</span><span>Equipment preview</span></li>
                 </ul>
                 <div class="plan-foot">A polished place to showcase your work.</div>
             </article>
-            <article class="plan featured" data-plan="professional"><span class="popular">MOST POPULAR</span>
+            <article class="plan" data-plan="professional">
+                
                 <h2>Professional</h2>
                 <div class="plan-desc">More visibility and flexibility for a growing studio.</div>
-                <div class="price"><strong data-plan-price="professional">₹1,499</strong><span>/ month</span></div>
+                <div class="price">
+                    <strong data-plan-price="professional">₹1,499</strong>
+                    <span>/ month</span>
+                </div>
                 <div class="billing">Everything in Starter, plus</div>
-                <hr><a class="button-plan" href="/auth/signup.html?plan=professional">Start your free
-                    trial <span aria-hidden="true">&nbsp;→</span></a>
+                <hr>
+                <a class="button-plan" href="/auth/signup.html?plan=professional">
+                    Start your free trial <span aria-hidden="true">&nbsp;→</span>
+                </a>
                 <div class="includes">Grow your studio</div>
                 <ul class="features">
                     <li><span class="check">✓</span><span>Basic SEO</span></li>
                     <li><span class="check">✓</span><span>2 GB storage for recent work</span></li>
                     <li><span class="check">✓</span><span>2 theme options</span></li>
                     <li><span class="check">✓</span><span>Call support for profile setup</span></li>
-                    <li><span class="check">◷</span><span>AI assistant support <span
-                                class="upcoming">(upcoming)</span></span></li>
+                    <li>
+                        <span class="check">◷</span>
+                        <span>AI assistant support <span class="upcoming">(upcoming)</span></span>
+                    </li>
                 </ul>
                 <div class="plan-foot">More ways to make your studio your own.</div>
             </article>
             <article class="plan" data-plan="enterprise">
                 <h2>Enterprise</h2>
                 <div class="plan-desc">More capacity and hands-on help for your next stage.</div>
-                <div class="price"><strong data-plan-price="enterprise">₹2,999</strong><span>/ month</span></div>
+                <div class="price">
+                    <strong data-plan-price="enterprise">₹2,999</strong>
+                    <span>/ month</span>
+                </div>
                 <div class="billing">Everything in Professional, plus</div>
-                <hr><a class="button-plan" href="/auth/signup.html?plan=enterprise">Start your free
-                    trial <span aria-hidden="true">&nbsp;→</span></a>
+                <hr>
+                <a class="button-plan" href="/auth/signup.html?plan=enterprise">
+                    Start your free trial <span aria-hidden="true">&nbsp;→</span>
+                </a>
                 <div class="includes">Stand out and scale</div>
                 <ul class="features">
                     <li><span class="check">✓</span><span>Premium SEO</span></li>
                     <li><span class="check">✓</span><span>10 GB storage for recent work</span></li>
                     <li><span class="check">✓</span><span>5 theme options</span></li>
                     <li><span class="check">✓</span><span>Early access to new features</span></li>
-                    <li><span class="check">✓</span><span>On-location or video-call support for profile setup</span>
+                    <li>
+                        <span class="check">✓</span>
+                        <span>On-location or video-call support for profile setup</span>
                     </li>
                 </ul>
                 <div class="plan-foot">Personal setup support for your photography business.</div>
@@ -777,19 +799,24 @@
                 </div>
             </div>
         </section>
-        <section class="bottom wrap"><span class="eyebrow"><span class="spark">✦</span> START TODAY</span>
+        <section class="bottom wrap">
+            <span class="eyebrow"><span class="spark">✦</span> START TODAY</span>
             <h2>Build your professional photography website.</h2>
-            <p>Showcase your work, manage bookings and share client galleries from one studio.</p><a class="button"
-                href="/auth/signup.html?plan=starter">Get started free <span
-                    aria-hidden="true">&nbsp;→</span></a>
+            <p>Showcase your work, manage bookings and share client galleries from one studio.</p>
+            <a class="button" href="/auth/signup.html?plan=starter">
+                Get started free <span aria-hidden="true">&nbsp;→</span>
+            </a>
         </section>
     </main>
     <footer class="footer">
-        <div class="wrap"><span>© 2026 Professional Studio. All Rights Reserved.</span>
-            <nav class="footer-links" aria-label="Footer"><a href="https://professionalstudio.vercel.app/">Home</a><a
-                    href="https://professionalstudio.vercel.app/contact.html">Contact</a><a
-                    href="https://professionalstudio.vercel.app/privacy.html">Privacy</a><a
-                    href="https://professionalstudio.vercel.app/terms.html">Terms</a></nav>
+        <div class="wrap">
+            <span>© 2026 Professional Studio. All Rights Reserved.</span>
+            <nav class="footer-links" aria-label="Footer">
+                <a href="https://professionalstudio.vercel.app/">Home</a>
+                <a href="https://professionalstudio.vercel.app/contact.html">Contact</a>
+                <a href="https://professionalstudio.vercel.app/privacy.html">Privacy</a>
+                <a href="https://professionalstudio.vercel.app/terms.html">Terms</a>
+            </nav>
         </div>
     </footer>
     <script src="plan-catalog.js"></script>
