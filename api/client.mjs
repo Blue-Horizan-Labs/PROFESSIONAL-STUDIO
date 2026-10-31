@@ -49,7 +49,7 @@ export default async function handler(req, res) {
                 res.status(500).json({ error: error.message || 'Internal server error' });
                 return;
             }
-            html = html.replaceAll('decodedid', id);
+            html = html.replaceAll('std_id', user.id);
             res.status(200).send(html);
             return;
         } 

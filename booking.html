@@ -3,485 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Book Session | Professional Studio</title>
-
+    <meta name="theme-color" content="#111111">
+    <meta
+        name="description"
+        content="Request a photography service booking."
+    >
+    <title>Request a Booking | Professional Studio</title>
     <link
         rel="icon"
         type="image/png"
         href="https://i.ibb.co/8g0LT3jZ/logo1-2.png"
     >
-
-    <meta name="theme-color" content="#111111">
-    <meta
-        name="description"
-        content="Book a photography session with Professional Studio"
-    >
-
     <link rel="stylesheet" href="booking.css">
-
-    <!-- FLATPICKR -->
     <link
         rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
     >
 </head>
-
 <body>
-
-    <!-- =========================================================
-         BOOKING HEADER
-    ========================================================== -->
-
     <header class="booking-header">
         <div class="booking-header-inner">
-
-            <a href="service.html" class="brand">
-                Professional Studio
-            </a>
-
-            <span class="header-title">
-                Booking
-            </span>
-
+            <a href="index.html" class="brand">Professional Studio</a>
+            <span class="header-title">Booking Request</span>
         </div>
     </header>
 
-
-    <!-- =========================================================
-         MAIN
-    ========================================================== -->
-
     <main class="booking-section">
-
         <div class="container">
-
-            <!-- BACK -->
-            <a href="#" id="backToService" class="back-link">
-                ← Back to Service
+            <a href="service.html" id="backToService" class="back-link">
+                &larr; Back to Services
             </a>
 
-
-            <!-- TITLE -->
             <div class="booking-intro">
-
-                <p class="eyebrow">
-                    BOOK YOUR SESSION
-                </p>
-
-                <h1>
-                    Book Your Session
-                </h1>
-
-                <p>
-                    Complete the details below to send your booking request.
-                </p>
-
+                <p class="eyebrow">BOOK YOUR SESSION</p>
+                <h1>Request a Booking</h1>
+                <p>Share your details and preferred event dates with the studio.</p>
             </div>
 
-
-            <!-- =====================================================
-                 SELECTED SERVICE / PACKAGE
-            ====================================================== -->
-
-            <section class="selected-package-section">
-
-                <div
-                    id="selectedPackageCard"
-                    class="selected-package-card"
-                >
-
-                    <div class="package-loading">
-                        Loading selected package...
-                    </div>
-
-                </div>
-
+            <section
+                id="serviceSummary"
+                class="service-summary"
+                aria-live="polite"
+            >
+                <p>Loading selected service…</p>
             </section>
 
-
-            <!-- =====================================================
-                 BOOKING FORM
-            ====================================================== -->
-
-            <form id="bookingForm" novalidate>
-
-
-                <!-- =================================================
-                     CLIENT DETAILS
-                ================================================== -->
-
-                <section class="form-section">
-
-                    <div class="section-heading">
-
-                        <span class="section-number">
-                            01
-                        </span>
-
-                        <div>
-
-                            <h2>
-                                Client Details
-                            </h2>
-
-                            <p>
-                                Tell us how we can contact you.
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="form-grid">
-
-                        <div class="form-group form-group-full">
-
-                            <label for="fullName">
-                                Full Name
-                            </label>
-
-                            <input
-                                type="text"
-                                id="fullName"
-                                name="fullName"
-                                placeholder="Enter your full name"
-                                autocomplete="name"
-                                required
-                            >
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label for="email">
-                                Email Address
-                            </label>
-
-                            <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                placeholder="you@example.com"
-                                autocomplete="email"
-                                required
-                            >
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label for="phone">
-                                Phone Number
-                            </label>
-
-                            <input
-                                type="tel"
-                                id="phone"
-                                name="phone"
-                                placeholder="Enter your phone number"
-                                autocomplete="tel"
-                                required
-                            >
-
-                        </div>
-
-                    </div>
-
-                </section>
-
-
-                <!-- =================================================
-                     SESSION DETAILS
-                ================================================== -->
-
-                <section class="form-section">
-
-                    <div class="section-heading">
-
-                        <span class="section-number">
-                            02
-                        </span>
-
-                        <div>
-
-                            <h2>
-                                Session Details
-                            </h2>
-
-                            <p>
-                                Choose your dates, times and location.
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- GUEST COUNT -->
-
-                    <div class="form-group guest-count-group">
-
-                        <label for="guestCount">
-                            Approx. Guest Count
-                        </label>
-
-                        <p class="field-help">
-                            Tell us roughly how many people will attend the session or event.
-                        </p>
-
-                        <input
-                            type="number"
-                            id="guestCount"
-                            name="guestCount"
-                            min="1"
-                            max="10000"
-                            step="1"
-                            inputmode="numeric"
-                            placeholder="e.g. 50"
-                            autocomplete="off"
-                        >
-
-                    </div>
-
-
-                    <!-- DATES -->
-
+            <form id="bookingForm">
+                <div class="form-grid">
                     <div class="form-group">
-
-                        <label for="multiDate">
-                            Event Dates
-                        </label>
-
-                        <p class="field-help">
-                            Select one or multiple dates for your session.
-                        </p>
-
+                        <label for="fullName">Full Name</label>
                         <input
                             type="text"
-                            id="multiDate"
-                            name="eventDates"
-                            placeholder="Select event dates"
-                            autocomplete="off"
+                            id="fullName"
+                            name="name"
+                            autocomplete="name"
+                            maxlength="120"
                             required
                         >
-
                     </div>
-
-
-                    <!-- DATE / TIME ROWS -->
-
-                    <div
-                        id="dateTimeContainer"
-                        class="date-time-container"
-                    ></div>
-
-
-                    <!-- TOTAL HOURS -->
-
-                    <div class="total-hours-card">
-
-                        <span>
-                            Total Combined Hours
-                        </span>
-
-                        <strong id="totalHours">
-                            0
-                        </strong>
-
-                    </div>
-
-
-                    <!-- LOCATION -->
-
-                    <div class="form-group location-group">
-
-                        <label for="location">
-                            Location
-                        </label>
-
-                        <p class="field-help">
-                            Enter the location where the photography session
-                            will take place, or use your current GPS location.
-                        </p>
-
-                        <div class="location-input-wrap">
-
-                            <input
-                                type="text"
-                                id="location"
-                                name="location"
-                                placeholder="Enter event or session location"
-                                autocomplete="street-address"
-                                required
-                            >
-
-                            <button
-                                type="button"
-                                id="useCurrentLocationBtn"
-                                class="location-gps-btn"
-                            >
-                                <span aria-hidden="true">
-                                    ⌖
-                                </span>
-
-                                <span>
-                                    Use Current Location
-                                </span>
-                            </button>
-
-                        </div>
-
-                        <p
-                            id="locationStatus"
-                            class="location-status"
-                            role="status"
-                            aria-live="polite"
-                        ></p>
-
-                    </div>
-
-
-                    <!-- NOTES -->
 
                     <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            autocomplete="email"
+                            maxlength="254"
+                            required
+                        >
+                    </div>
 
-                        <label for="message">
-                            Additional Notes
-                        </label>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input
+                            type="tel"
+                            id="phone"
+                            name="phone"
+                            autocomplete="tel"
+                            maxlength="40"
+                            required
+                        >
+                    </div>
 
+                    <div class="form-group">
+                        <label for="eventDates">Event Dates</label>
+                        <input
+                            type="text"
+                            id="eventDates"
+                            name="dates"
+                            placeholder="Select one or more dates"
+                            autocomplete="off"
+                            required
+                            aria-describedby="dateAvailability"
+                        >
+                        <p id="dateAvailability" class="field-help" role="status">
+                            Checking date availability…
+                        </p>
+                    </div>
+
+                    <div class="form-group form-group-full">
+                        <label for="location">Location</label>
+                        <input
+                            type="text"
+                            id="location"
+                            name="location"
+                            autocomplete="street-address"
+                            maxlength="300"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group form-group-full">
+                        <label for="notes">Notes <span>(optional)</span></label>
                         <textarea
-                            id="message"
-                            name="message"
-                            rows="5"
-                            placeholder="Tell us anything important about your session, event or requirements."
+                            id="notes"
+                            name="notes"
+                            rows="4"
+                            maxlength="2000"
                         ></textarea>
-
                     </div>
+                </div>
 
+                <p id="formMessage" class="form-message" role="alert" hidden></p>
+
+                <section class="booking-summary" aria-label="Service payment summary">
+                    <h2>Payment Summary</h2>
+                    <div class="summary-row">
+                        <span id="summaryServiceName">Selected service</span>
+                        <strong id="summaryAmount">—</strong>
+                    </div>
+                    <div class="summary-row">
+                        <span>Advanced to pay</span>
+                        <strong id="summaryAdvanced">—</strong>
+                    </div>
                 </section>
 
-
-                <!-- =================================================
-                     BOOKING SUMMARY
-                ================================================== -->
-
-                <section class="booking-summary">
-
-                    <div class="summary-row">
-
-                        <span>
-                            Service
-                        </span>
-
-                        <strong id="summaryService">
-                            —
-                        </strong>
-
-                    </div>
-
-
-                    <div class="summary-row">
-
-                        <span>
-                            Package
-                        </span>
-
-                        <strong id="summaryPackage">
-                            —
-                        </strong>
-
-                    </div>
-
-
-                    <div class="summary-divider"></div>
-
-
-                    <div class="summary-total">
-
-                        <span>
-                            Total
-                        </span>
-
-                        <strong id="summaryPrice">
-                            —
-                        </strong>
-
-                    </div>
-
-                </section>
-
-
-                <!-- =================================================
-                     HONEYPOT
-                ================================================== -->
-
-                <input
-                    type="text"
-                    id="website"
-                    name="website"
-                    tabindex="-1"
-                    autocomplete="off"
-                    class="honeypot"
-                >
-
-
-                <!-- =================================================
-                     SUBMIT
-                ================================================== -->
-
-                <button
-                    type="submit"
-                    id="submitBtn"
-                    class="submit-btn"
-                >
+                <button type="submit" id="submitBtn" class="submit-btn" disabled>
                     Submit Booking Request
                 </button>
-
-
                 <p class="booking-note">
-                    Your request will be marked as pending until the
-                    photographer confirms availability.
+                    Your requested dates are subject to studio confirmation.
                 </p>
-
             </form>
-
         </div>
-
     </main>
-
-
-    <!-- =========================================================
-         SUCCESS MESSAGE
-    ========================================================== -->
 
     <div
         id="successPopup"
         class="success-popup"
         role="status"
         aria-live="polite"
-    >
-        Booking request submitted successfully.
-    </div>
-
-
-    <!-- =========================================================
-         FOOTER
-    ========================================================== -->
+        hidden
+    ></div>
 
     <footer class="booking-footer">
-
+        <p>© 2026 Professional Studio. All rights reserved.</p>
         <p>
-            © 2026 Professional Studio. All rights reserved.
-        </p>
-
-        <p>
-
             Powered by
-
             <a
                 href="https://bluehorizanlabs.vercel.app/"
                 target="_blank"
@@ -489,19 +168,10 @@
             >
                 Bluehorizanlabs
             </a>
-
         </p>
-
     </footer>
 
-
-    <!-- =========================================================
-         FLATPICKR
-    ========================================================== -->
-
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
     <script src="booking.js"></script>
-
 </body>
 </html>

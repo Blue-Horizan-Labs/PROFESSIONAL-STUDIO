@@ -2,840 +2,155 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <meta
-        name="description"
-        content="Manage photography services and packages"
-    >
-
-    <meta
-        name="theme-color"
-        content="#111111"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Manage photography services">
+    <meta name="theme-color" content="#111111">
     <title>Manage Services | Professional Studio</title>
-
-    <link
-        rel="icon"
-        type="image/png"
-        href="https://i.ibb.co/8g0LT3jZ/logo1-2.png"
-    >
-
+    <link rel="icon" type="image/png" href="https://i.ibb.co/8g0LT3jZ/logo1-2.png">
     <link rel="stylesheet" href="serviceMng.css">
 </head>
-
 <body>
-
     <header class="navbar">
-
-        <div class="logo">
-            Professional Studio
-        </div>
-
+        <div class="logo">Professional Studio</div>
         <nav aria-label="Main navigation">
             <a href="user.html">Dashboard</a>
-
-            <a
-                href="serviceMng.html"
-                class="active"
-                aria-current="page"
-            >
-                Services
-            </a>
-
+            <a href="serviceMng.html" class="active" aria-current="page">Services</a>
             <a href="client.html">Portfolio</a>
-
             <a href="bookingMng.html">Bookings</a>
         </nav>
-
     </header>
 
-
     <main class="page">
-
         <div class="page-container">
-
-            <section id="servicesView" class="view">
-
-                <div class="page-header">
-
-                    <div class="page-header-content">
-
-                        <div class="breadcrumb">
-                            <a href="user.html">Dashboard</a>
-                            <span>/</span>
-                            <span>Services</span>
-                        </div>
-
-                        <h1>Services &amp; Packages</h1>
-
-                        <p>
-                            Manage the photography services and packages
-                            you offer to your clients.
-                        </p>
-
+            <section class="page-header">
+                <div class="page-header-content">
+                    <div class="breadcrumb">
+                        <a href="user.html">Dashboard</a>
+                        <span>/</span>
+                        <span>Services</span>
                     </div>
-
-                    <button
-                        type="button"
-                        class="btn btn-primary"
-                        id="addServiceBtn"
-                    >
-                        + Add New Service
-                    </button>
-
+                    <h1>Services</h1>
+                    <p>Add services you offer and manage the services clients can see.</p>
                 </div>
-
-
-                <section class="services-section">
-
-                    <div class="section-heading">
-
-                        <div>
-
-                            <h2>Your Services</h2>
-
-                            <p>
-                                <span id="serviceCount">0</span>
-                                services
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="service-filters" id="serviceFilters" hidden>
-                        <div class="service-filter-field">
-                            <label for="serviceSearch">Search services</label>
-                            <input id="serviceSearch" type="search" maxlength="100" autocomplete="off" placeholder="Search name, description or category">
-                        </div>
-                        <div class="service-filter-field">
-                            <label for="serviceCategoryFilter">Category</label>
-                            <select id="serviceCategoryFilter">
-                                <option value="">All categories</option>
-                            </select>
-                        </div>
-                        <p class="service-filter-count" id="serviceFilterCount" role="status" aria-live="polite"></p>
-                    </div>
-
-                    <div
-                        class="services-list"
-                        id="servicesList"
-                    ></div>
-
-                    <div class="empty-state filtered-empty-state" id="filteredEmptyState" hidden>
-                        <h3>No matching services</h3>
-                        <p>Try another search term or choose a different category.</p>
-                        <button type="button" class="btn btn-secondary" id="clearServiceFiltersBtn">Clear filters</button>
-                    </div>
-
-
-                    <div
-                        class="empty-state"
-                        id="emptyState"
-                        hidden
-                    >
-
-                        <div class="empty-icon">
-                            +
-                        </div>
-
-                        <h3>No services yet</h3>
-
-                        <p>
-                            Add your first photography service
-                            to start creating packages.
-                        </p>
-
-                        <button
-                            type="button"
-                            class="btn btn-primary"
-                            id="emptyAddServiceBtn"
-                        >
-                            Add Your First Service
-                        </button>
-
-                    </div>
-
-                </section>
-
             </section>
 
-
-            <section
-                id="editorView"
-                class="view editor-view"
-                hidden
-            >
-
-                <div class="editor-header">
-
-                    <div>
-
-                        <div class="breadcrumb">
-
-                            <button
-                                type="button"
-                                class="breadcrumb-back"
-                                id="backBtn"
-                            >
-                                ← Services
-                            </button>
-
-                            <span>/</span>
-
-                            <span id="editorBreadcrumb">
-                                Service
-                            </span>
-
-                        </div>
-
-                        <h1 id="editorTitle">
-                            Edit Service
-                        </h1>
-
-                        <p id="editorSubtitle">
-                            Update the information your clients will see.
-                        </p>
-
-                    </div>
-
-                    <div
-                        class="status-indicator"
-                        id="statusIndicator"
-                        role="button"
-                        tabindex="0"
-                        title="Click to change service status"
-                        aria-label="Change service status"
-                    ></div>
-
+            <section class="editor-section" aria-labelledby="addServiceHeading">
+                <div class="section-title">
+                    <h2 id="addServiceHeading">Add a service</h2>
+                    <p>Enter the service details below.</p>
                 </div>
 
-
-                <section class="editor-section">
-
-                    <div class="section-title">
-
-                        <h2>Service Information</h2>
-
-                        <p>
-                            Basic information about this photography service.
-                        </p>
-
+                <form id="serviceForm" class="form-card">
+                    <div class="form-group full-width">
+                        <label for="serviceName">Service Name</label>
+                        <input
+                            type="text"
+                            id="serviceName"
+                            name="service_name"
+                            placeholder="e.g. Wedding Photography"
+                            maxlength="100"
+                            required
+                        >
                     </div>
 
+                    <div class="form-group full-width">
+                        <label for="serviceDescription">Description</label>
+                        <textarea
+                            id="serviceDescription"
+                            name="description"
+                            rows="4"
+                            maxlength="500"
+                            placeholder="Describe what this service includes..."
+                        ></textarea>
+                    </div>
 
-                    <div class="form-card">
-
-                        <div class="form-group full-width">
-
-                            <label for="serviceName">
-                                Service Name
-                            </label>
-
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="serviceAmount">Amount</label>
                             <input
-                                type="text"
-                                id="serviceName"
-                                placeholder="e.g. Wedding Photography"
-                                maxlength="100"
+                                type="number"
+                                id="serviceAmount"
+                                name="amount"
+                                placeholder="e.g. 500"
+                                min="0.01"
+                                max="100000000"
+                                step="0.01"
+                                inputmode="decimal"
+                                required
                             >
-
                         </div>
 
-
-                        <div class="form-group full-width">
-
-                            <label for="serviceDescription">
-                                Description
-                            </label>
-
-                            <textarea
-                                id="serviceDescription"
-                                rows="5"
-                                maxlength="500"
-                                placeholder="Describe what this service includes..."
-                            ></textarea>
-
-                            <span class="field-hint">
-                                Keep this clear and easy for clients to understand.
-                            </span>
-
+                        <div class="form-group">
+                            <label for="advancedAmount">Advanced Amount</label>
+                            <input
+                                type="number"
+                                id="advancedAmount"
+                                name="advanced_amount"
+                                placeholder="Optional"
+                                min="0"
+                                max="100000000"
+                                step="0.01"
+                                inputmode="decimal"
+                            >
                         </div>
-
-
-                        <div class="form-grid">
-
-                            <div class="form-group">
-                                <label for="serviceCategory">Category</label>
-                                <input type="text" id="serviceCategory" maxlength="60" autocomplete="off" placeholder="e.g. Wedding, Portrait, Event">
-                                <span class="field-hint">Helps clients understand and filter your services.</span>
-                            </div>
-
-                            <div class="form-group">
-
-                                <label for="coverageDuration">
-                                    Coverage
-                                </label>
-
-                                <input
-                                    type="text"
-                                    id="coverageDuration"
-                                    maxlength="80"
-                                    placeholder="e.g. 8 hours"
-                                >
-
-                            </div>
-
-
-                            <div class="form-group">
-
-                                <label for="deliveryTime">
-                                    Delivery
-                                </label>
-
-                                <input
-                                    type="text"
-                                    id="deliveryTime"
-                                    maxlength="80"
-                                    placeholder="e.g. 14 days"
-                                >
-
-                            </div>
-
-
-                            <div class="form-group">
-
-                                <label for="coverageType">
-                                    Location / Coverage Type
-                                </label>
-
-                                <input
-                                    type="text"
-                                    id="coverageType"
-                                    maxlength="80"
-                                    placeholder="e.g. Studio / On-location"
-                                >
-
-                            </div>
-
-                        </div>
-
                     </div>
 
-                </section>
-
-
-                <section class="editor-section">
-
-                    <div class="section-title package-section-heading">
-
-                        <div>
-
-                            <h2>Your Packages</h2>
-
-                            <p>
-                                Create the packages clients can choose from.
-                            </p>
-
-                        </div>
-
-                        <button
-                            type="button"
-                            class="btn btn-secondary"
-                            id="addPackageBtn"
-                        >
-                            + Add Package
+                    <div class="editor-actions">
+                        <button type="submit" class="btn btn-primary" id="saveServiceBtn">
+                            Add Service
                         </button>
-
                     </div>
-
-
-                    <div
-                        class="packages-list"
-                        id="packagesList"
-                    ></div>
-
-
-                    <div
-                        class="package-empty"
-                        id="packageEmpty"
-                        hidden
-                    >
-                        No packages added yet.
-                    </div>
-
-                </section>
-
-
-                <section
-                    class="package-editor-section"
-                    id="packageEditorSection"
-                    hidden
-                >
-
-                    <div class="package-editor-header">
-
-                        <div>
-
-                            <span class="small-label">
-                                PACKAGE
-                            </span>
-
-                            <h2 id="packageEditorTitle">
-                                Edit Package
-                            </h2>
-
-                        </div>
-
-                        <button
-                            type="button"
-                            class="close-editor"
-                            id="closePackageEditorBtn"
-                            aria-label="Close package editor"
-                        >
-                            ×
-                        </button>
-
-                    </div>
-
-
-                    <div class="form-card">
-
-                        <div class="form-grid">
-
-                            <div class="form-group">
-
-                                <label for="packageName">
-                                    Package Name
-                                </label>
-
-                                <input
-                                    type="text"
-                                    id="packageName"
-                                    placeholder="e.g. Premium"
-                                    maxlength="100"
-                                >
-
-                            </div>
-
-
-                            <div class="form-group">
-
-                                <label for="packagePrice">
-                                    Price
-                                </label>
-
-                                <div class="input-prefix">
-
-                                    <span>₹</span>
-
-                                    <input
-                                        type="number"
-                                        id="packagePrice"
-                                        min="1"
-                                        max="100000000"
-                                        step="0.01"
-                                        inputmode="decimal"
-                                        placeholder="45000"
-                                    >
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="form-group">
-
-                                <label for="packageCoverage">
-                                    Coverage
-                                </label>
-
-                                <input
-                                    type="text"
-                                    id="packageCoverage"
-                                    maxlength="100"
-                                    placeholder="e.g. 8 hours"
-                                >
-
-                            </div>
-
-
-                            <div class="form-group">
-
-                                <label for="packagePhotos">
-                                    Edited Photos
-                                </label>
-
-                                <input
-                                    type="text"
-                                    id="packagePhotos"
-                                    maxlength="100"
-                                    placeholder="e.g. 350 photos"
-                                >
-
-                            </div>
-
-
-                            <div class="form-group">
-
-                                <label for="packageDelivery">
-                                    Delivery Time
-                                </label>
-
-                                <input
-                                    type="text"
-                                    id="packageDelivery"
-                                    maxlength="100"
-                                    placeholder="e.g. 12 days"
-                                >
-
-                            </div>
-
-
-                            <div class="form-group">
-
-                                <label for="packageAlbum">
-                                    Album
-                                </label>
-
-                                <input
-                                    type="text"
-                                    id="packageAlbum"
-                                    maxlength="120"
-                                    placeholder="e.g. Included / ₹5000"
-                                    maxlength="100"
-                                >
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="form-group full-width">
-
-                            <label for="packageDescription">
-                                Package Description
-                            </label>
-
-                            <textarea
-                                id="packageDescription"
-                                rows="4"
-                                maxlength="400"
-                                placeholder="Describe what makes this package different..."
-                            ></textarea>
-
-                        </div>
-
-
-                        <div class="payment-plan-editor">
-
-                            <div class="payment-plan-heading">
-
-                                <div>
-
-                                    <span class="small-label">
-                                        PAYMENT PLAN
-                                    </span>
-
-                                    <h3>
-                                        How clients pay for this package
-                                    </h3>
-
-                                    <p>
-                                        Set the default payment structure
-                                        used when this package is booked.
-                                    </p>
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="form-group full-width payment-plan-type-group">
-
-                                <label for="paymentPlanType">
-                                    Payment Type
-                                </label>
-
-                                <select id="paymentPlanType">
-
-                                    <option value="full">
-                                        Full Payment
-                                    </option>
-
-                                    <option value="advance">
-                                        Advance Payment
-                                    </option>
-
-                                    <option value="installments">
-                                        Custom Installments
-                                    </option>
-
-                                </select>
-
-                            </div>
-
-
-                            <div
-                                id="advancePaymentFields"
-                                class="payment-plan-fields"
-                                hidden
-                            >
-
-                                <div class="form-grid">
-
-                                    <div class="form-group">
-
-                                        <label for="advancePaymentType">
-                                            Advance Type
-                                        </label>
-
-                                        <select id="advancePaymentType">
-
-                                            <option value="percentage">
-                                                Percentage
-                                            </option>
-
-                                            <option value="fixed">
-                                                Fixed Amount
-                                            </option>
-
-                                        </select>
-
-                                    </div>
-
-
-                                    <div class="form-group">
-
-                                        <label for="advancePaymentValue">
-                                            Advance Amount
-                                        </label>
-
-                                        <div
-                                            class="input-prefix"
-                                            id="advancePaymentInputWrap"
-                                        >
-
-                                            <span id="advancePaymentPrefix">
-                                                %
-                                            </span>
-
-                                            <input
-                                                type="number"
-                                                id="advancePaymentValue"
-                                                min="0"
-                                                step="1"
-                                                placeholder="25"
-                                            >
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-
-                                <span class="field-hint">
-                                    The remaining balance will be due later
-                                    and can be tracked through Billing.
-                                </span>
-
-                            </div>
-
-
-                            <div
-                                id="installmentPaymentFields"
-                                class="payment-plan-fields"
-                                hidden
-                            >
-
-                                <div
-                                    class="installment-list"
-                                    id="installmentList"
-                                ></div>
-
-
-                                <div class="installment-footer">
-
-                                    <button
-                                        type="button"
-                                        class="btn btn-secondary"
-                                        id="addInstallmentBtn"
-                                    >
-                                        + Add Payment Stage
-                                    </button>
-
-                                    <div
-                                        class="installment-total"
-                                        id="installmentTotal"
-                                    >
-                                        Total: ₹0 / ₹0
-                                    </div>
-
-                                </div>
-
-
-                                <span class="field-hint">
-                                    Use a mix of percentage and fixed amounts
-                                    if needed. Payment stages must add up
-                                    exactly to the package price.
-                                </span>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="package-editor-actions">
-
-                            <button
-                                type="button"
-                                class="btn btn-secondary"
-                                id="cancelPackageBtn"
-                            >
-                                Cancel
-                            </button>
-
-                            <button
-                                type="button"
-                                class="btn btn-primary"
-                                id="savePackageBtn"
-                            >
-                                Save Package
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </section>
-
-
-                <section class="editor-actions">
-
-                    <button
-                        type="button"
-                        class="delete-button"
-                        id="deleteServiceBtn"
-                    >
-                        Delete Service
-                    </button>
-
-
-                    <div class="editor-actions-right">
-
-                        <button
-                            type="button"
-                            class="btn btn-secondary"
-                            id="cancelServiceBtn"
-                        >
-                            Cancel
-                        </button>
-
-                        <button
-                            type="button"
-                            class="btn btn-primary"
-                            id="saveServiceBtn"
-                        >
-                            Save Changes
-                        </button>
-
-                    </div>
-
-                </section>
-
+                </form>
             </section>
 
+            <section class="services-section" aria-labelledby="servicesHeading">
+                <div class="section-heading">
+                    <div>
+                        <h2 id="servicesHeading">All Services</h2>
+                        <p><span id="serviceCount">0</span> services</p>
+                    </div>
+                    <button type="button" class="btn btn-secondary" id="refreshServicesBtn">
+                        Refresh
+                    </button>
+                </div>
+                <p id="listStatus" role="status" aria-live="polite">Loading services…</p>
+                <div class="services-list" id="servicesList" aria-live="polite"></div>
+            </section>
         </div>
-
     </main>
 
-
-    <div
-        class="dialog-overlay"
-        id="deleteDialog"
-        hidden
-    >
-
+    <div class="dialog-overlay" id="deleteDialog" hidden>
         <div
             class="dialog"
             role="dialog"
             aria-modal="true"
             aria-labelledby="deleteDialogTitle"
         >
-
-            <h2 id="deleteDialogTitle">
-                Delete Service?
-            </h2>
-
-            <p>
-                This will permanently remove this service and
-                its packages. This action cannot be undone.
-            </p>
-
+            <h2 id="deleteDialogTitle">Delete service?</h2>
+            <p>This action cannot be undone.</p>
             <div class="dialog-actions">
-
-                <button
-                    type="button"
-                    class="btn btn-secondary"
-                    id="cancelDeleteBtn"
-                >
+                <button type="button" class="btn btn-secondary" id="cancelDeleteBtn">
                     Cancel
                 </button>
-
-                <button
-                    type="button"
-                    class="btn btn-danger"
-                    id="confirmDeleteBtn"
-                >
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
                     Delete Service
                 </button>
-
             </div>
-
         </div>
-
     </div>
 
-
-    <div
-        class="notification"
-        id="notification"
-        role="status"
-        aria-live="polite"
-    ></div>
-
+    <div class="notification" id="notification" role="status" aria-live="polite"></div>
 
     <footer class="footer-bottom">
-
+        <p>© 2026 Professional Studio. All rights reserved.</p>
         <p>
-            © 2026 Professional Studio. All rights reserved.
-        </p>
-
-        <p>
-
             Powered by
-
-            <a
-                href="https://bluehorizanlabs.vercel.app/"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
+            <a href="https://bluehorizanlabs.vercel.app/" target="_blank" rel="noopener noreferrer">
                 Bluehorizanlabs
             </a>
-
         </p>
-
     </footer>
 
-
     <script src="serviceMng.js"></script>
-
 </body>
 </html>

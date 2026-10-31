@@ -24,4 +24,24 @@ window.addEventListener('DOMContentLoaded', () => {
         alert('Error fetching dashboard data. Please try again later.');
         window.location.href = '/login';
     }
+
+    try {
+        fetch('/api/appointments')
+        .then(response => response.json())
+        .then(data => {
+            data.appointments.forEach(appointment => {
+                const appointmentDiv = document.createElement('tr');
+                appointmentDiv.innerHTML = `
+                    <td>${appointment.client.name}</td>
+                    <td>${appointment.date}</td>
+                    
+                `;
+                document.getElementById('bookingTable').appendChild(appointmentDiv);
+            });
+        })
+    } catch (error) {
+        alert('Error fetching appointments. Please try again later.', error);
+    }
+
 });
+
