@@ -182,7 +182,7 @@
         <div class="stat-card">
 
             <p>
-                Active Services
+                Services Listed
             </p>
 
             <h2 id="activeServicesCounter">
@@ -190,7 +190,7 @@
             </h2>
 
             <span class="stat-note">
-                Currently available
+                Available to clients
             </span>
 
         </div>
@@ -199,7 +199,7 @@
         <div class="stat-card">
 
             <p>
-                Revenue
+                Confirmed Booking Value
             </p>
 
             <h2 id="dashboardRevenue">
@@ -207,7 +207,7 @@
             </h2>
 
             <span class="stat-note">
-                From recorded bookings
+                Accepted, confirmed, and completed
             </span>
 
         </div>
@@ -792,29 +792,16 @@
             </h2>
 
             <p>
-                A quick snapshot of your photography
-                business activity.
+                Booking activity and service performance from your studio data.
             </p>
 
         </div>
 
     </div>
 
+    <p id="analyticsStatus" class="analytics-status" role="status" aria-live="polite"></p>
 
     <div class="analytics-grid">
-
-        <div class="analytics-card">
-
-            <span>
-                Portfolio Views
-            </span>
-
-            <strong id="portfolioViews">
-                0
-            </strong>
-
-        </div>
-
 
         <div class="analytics-card">
 
@@ -832,11 +819,11 @@
         <div class="analytics-card">
 
             <span>
-                Total Revenue
+                Pending Requests
             </span>
 
-            <strong id="totalRevenue">
-                ₹0
+            <strong id="pendingBookingsAnalytics">
+                0
             </strong>
 
         </div>
@@ -845,14 +832,54 @@
         <div class="analytics-card">
 
             <span>
-                Albums
+                Confirmed Bookings
             </span>
 
-            <strong id="totalAlbums">
+            <strong id="confirmedBookingsAnalytics">
                 0
             </strong>
 
         </div>
+
+
+        <div class="analytics-card">
+
+            <span>
+                Confirmed Booking Value
+            </span>
+
+            <strong id="totalRevenue">
+                ₹0
+            </strong>
+
+        </div>
+        </div>
+
+        <div class="analytics-card">
+
+            <span>
+                Completed Bookings
+            </span>
+
+            <strong id="completedBookingsAnalytics">
+                0
+            </strong>
+
+        </div>
+
+
+        <div class="analytics-card">
+
+            <span>
+                Bookings This Month
+            </span>
+
+            <strong id="bookingsThisMonth">
+                0
+            </strong>
+
+        </div>
+
 
     </div>
 
@@ -862,11 +889,11 @@
         <div>
 
             <h3>
-                Recent Activity
+                Booking Trend
             </h3>
 
             <p>
-                Activity visualization for your dashboard.
+                Requests received by event date over the last six months.
             </p>
 
         </div>
@@ -875,7 +902,8 @@
         <div
             class="chart-placeholder"
             id="activityChart"
-            aria-label="Recent activity chart"
+            role="img"
+            aria-label="Booking trend over the last six months"
         ></div>
 
     </div>

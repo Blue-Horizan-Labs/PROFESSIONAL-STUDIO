@@ -1100,14 +1100,14 @@ section {
 
 .pricing-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 35px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 22px;
     align-items: stretch;
 }
 
 .pricing-card {
     position: relative;
-    padding: 45px 35px;
+    padding: 38px 22px;
     text-align: center;
 }
 

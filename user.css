@@ -1371,7 +1371,7 @@ textarea:focus-visible {
 .analytics-grid {
     display: grid;
     grid-template-columns:
-        repeat(4, minmax(0, 1fr));
+        repeat(3, minmax(0, 1fr));
     gap: 16px;
     margin-bottom: 18px;
 }
@@ -1439,6 +1439,33 @@ textarea:focus-visible {
     min-height: 10px;
     border-radius: 5px 5px 0 0;
     background: #111;
+}
+
+.analytics-status {
+    margin: -12px 0 18px;
+    color: #777;
+    font-size: 13px;
+}
+
+.chart-month {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    height: 165px;
+    min-width: 0;
+}
+
+.chart-count,
+.chart-label {
+    color: #777;
+    font-size: 11px;
+}
+
+.chart-label {
+    color: #444;
 }
 
 

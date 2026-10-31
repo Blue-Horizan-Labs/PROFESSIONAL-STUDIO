@@ -268,6 +268,7 @@ export default async function handler(req, res) {
                 phone: phone.trim()
             },
             service: serviceIdValue,
+            service_name: service.name,
             date,
             time: null,
             location: location.trim(),
