@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#111111">
+
+  <title>Referrer Dashboard | Professional Studio</title>
+   <link
+        rel="icon"
+        type="image/png"
+        href="https://i.ibb.co/8g0LT3jZ/logo1-2.png"
+    >
+
+  <link rel="stylesheet" href="referrer.css">
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header class="topbar">
+
+    <a class="brand" href="https://professionalstudio.vercel.app/">
+
+      <span>Professional Studio</span>
+    </a>
+
+    <nav class="nav-right">
+      <a class="nav-link" href="#partnerGuide">Partner Guide</a>
+      <a class="nav-link" href="/help.html">Help</a>
+      <a class="nav-link" href="/contact.html">Contact</a>
+     
+    </nav>
+
+  </header>
+
+
+  <main class="wrap">
+
+    <!-- PAGE HEADING -->
+    <section class="page-heading">
+
+      <div>
+        <p class="eyebrow">Referrer workspace</p>
+
+        <h1>Welcome back, Aarav</h1>
+
+        <p class="sub">
+          Track your referrals, monitor commissions, and see your rewards.
+        </p>
+      </div>
+
+      <div class="period">
+        Overview <span>·</span> All time
+      </div>
+
+    </section>
+
+
+    <!-- STATISTICS -->
+    <section class="stats">
+
+      <article class="card stat">
+        <div class="stat-top">
+          <span class="stat-label">Total earnings</span>
+          <span class="icon">₹</span>
+        </div>
+
+        <div class="stat-value">₹5,396.40</div>
+        <div class="stat-note">Your total referral rewards</div>
+      </article>
+
+
+      <article class="card stat">
+        <div class="stat-top">
+          <span class="stat-label">Total referrals</span>
+          <span class="icon">♧</span>
+        </div>
+
+        <div class="stat-value">24</div>
+        <div class="stat-note">People who joined with your code</div>
+      </article>
+
+
+      <article class="card stat">
+        <div class="stat-top">
+          <span class="stat-label">Successful referrals</span>
+          <span class="icon">✓</span>
+        </div>
+
+        <div class="stat-value">17</div>
+        <div class="stat-note">Referrals that qualified for rewards</div>
+      </article>
+
+
+      <article class="card stat">
+        <div class="stat-top">
+          <span class="stat-label">Pending referrals</span>
+          <span class="icon">◷</span>
+        </div>
+
+        <div class="stat-value">7</div>
+        <div class="stat-note">Waiting for confirmation</div>
+      </article>
+
+    </section>
+
+
+    <!-- PROFILE -->
+    <section class="card profile">
+
+      <div class="profile-left">
+
+        <div class="profile-avatar">AR</div>
+
+        <div>
+          <div class="profile-name">Aarav Rathod</div>
+
+          <div class="profile-meta">
+            Referrer account · aarav@example.com
+          </div>
+        </div>
+
+      </div>
+
+      <div class="ref-code">
+        Your referral code
+        <strong>AARAV24</strong>
+      </div>
+
+    </section>
+
+
+    <!-- EARNINGS SUMMARY -->
+    <section class="content-section">
+
+      <div class="section-head">
+        <div>
+          <h2>Earnings summary</h2>
+          <p>A breakdown of your referral rewards.</p>
+        </div>
+      </div>
+
+
+      <div class="earnings">
+
+        <article class="card earning-box primary">
+          <div class="label">Total earned</div>
+          <div class="amount">₹8,500</div>
+        </article>
+
+
+        <article class="card earning-box">
+          <div class="label">Pending commission</div>
+          <div class="amount">₹1,797.00</div>
+        </article>
+
+
+        <article class="card earning-box">
+          <div class="label">Already paid</div>
+          <div class="amount">₹3,599.40</div>
+        </article>
+
+
+        <article class="card earning-box">
+          <div class="label">Support-session rewards</div>
+          <div class="amount">₹—</div>
+
+          <div class="stat-note">
+            Fixed amount per eligible setup-support session
+          </div>
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <!-- REFERRAL TABLE -->
+    <section class="content-section">
+
+      <div class="section-head">
+        <div>
+          <h2>Your referrals</h2>
+          <p>People who signed up using your referral code.</p>
+        </div>
+      </div>
+
+
+      <div class="card table-card">
+
+        <div class="table-toolbar">
+
+          <div class="table-title">
+            Referral activity
+            <span class="count">(24)</span>
+          </div>
+
+          <input
+            class="search"
+            id="searchInput"
+            type="search"
+            placeholder="Search by name..."
+            aria-label="Search referrals"
+          >
+
+        </div>
+
+
+        <div class="table-scroll">
+
+          <table>
+
+            <thead>
+              <tr>
+                <th>Referred photographer</th>
+                <th>Plan</th>
+                <th>Status</th>
+                <th>Your commission</th>
+              </tr>
+            </thead>
+
+
+            <tbody id="referralRows">
+
+              <tr>
+                <td>
+                  <div class="person">
+                    <span class="person-dot">RK</span>
+                    Rahul Kumar
+                  </div>
+                </td>
+
+                <td>Professional</td>
+
+                <td>
+                  <span class="status success">
+                    Commission earned
+                  </span>
+                </td>
+
+                <td class="amount-cell">₹899.40</td>
+              </tr>
+
+
+              <tr>
+                <td>
+                  <div class="person">
+                    <span class="person-dot">SP</span>
+                    Simran Patel
+                  </div>
+                </td>
+
+                <td>Starter</td>
+
+                <td>
+                  <span class="status pending">
+                    Awaiting payment
+                  </span>
+                </td>
+
+                <td class="amount-cell">₹0</td>
+              </tr>
+
+
+              <tr>
+                <td>
+                  <div class="person">
+                    <span class="person-dot">AM</span>
+                    Aditya Mehta
+                  </div>
+                </td>
+
+                <td>Enterprise</td>
+
+                <td>
+                  <span class="status success">
+                    Commission earned
+                  </span>
+                </td>
+
+                <td class="amount-cell">₹1,799.40</td>
+              </tr>
+
+
+              <tr>
+                <td>
+                  <div class="person">
+                    <span class="person-dot">PS</span>
+                    Priya Shah
+                  </div>
+                </td>
+
+                <td>Starter</td>
+
+                <td>
+                  <span class="status success">
+                    Commission earned
+                  </span>
+                </td>
+
+                <td class="amount-cell">₹299.40</td>
+              </tr>
+
+
+              <tr>
+                <td>
+                  <div class="person">
+                    <span class="person-dot">VN</span>
+                    Vikram Nair
+                  </div>
+                </td>
+
+                <td>Professional</td>
+
+                <td>
+                  <span class="status pending">
+                    Awaiting payment
+                  </span>
+                </td>
+
+                <td class="amount-cell">₹0</td>
+              </tr>
+
+
+              <tr>
+                <td>
+                  <div class="person">
+                    <span class="person-dot">AS</span>
+                    Ananya Singh
+                  </div>
+                </td>
+
+                <td>Professional</td>
+
+                <td>
+                  <span class="status success">
+                    Commission earned
+                  </span>
+                </td>
+
+                <td class="amount-cell">₹899.40</td>
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+
+        <div class="empty" id="emptyState">
+          No referrals match that name.
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- REFERRAL PARTNER GUIDE -->
+    <section class="partner-guide content-section" id="partnerGuide">
+
+      <div class="section-head">
+        <div>
+          <h2>Referral partner guide</h2>
+
+          <p>
+            Follow these steps to refer photographers and earn rewards.
+          </p>
+        </div>
+      </div>
+
+
+      <!-- INTRODUCTION -->
+      <div class="guide-intro">
+
+        <span class="guide-intro-mark">i</span>
+
+        <p>
+          Your referral journey is simple. Share your code, help the
+          photographer get started, and receive eligible rewards after
+          their payment is verified.
+        </p>
+
+      </div>
+
+
+      <!-- STEP-BY-STEP INSTRUCTIONS -->
+      <div class="steps-list">
+
+
+        <!-- STEP 1 -->
+        <article class="card step-card">
+
+          <div class="step-number">01</div>
+
+          <div class="step-content">
+
+            <span class="step-label">
+              STEP 1 · SHARE YOUR CODE
+            </span>
+
+            <h3>Invite a photographer</h3>
+
+            <p>
+              Share your unique referral code with photographers who may
+              benefit from Professional Studio. They must use your valid
+              code when signing up.
+            </p>
+
+            <div class="step-detail">
+              <strong>Photographer benefit:</strong>
+              One month of free access after signing up with a valid
+              referral code.
+            </div>
+
+          </div>
+
+        </article>
+
+
+        <!-- STEP 2 -->
+        <article class="card step-card">
+
+          <div class="step-number">02</div>
+
+          <div class="step-content">
+
+            <span class="step-label">
+              STEP 2 · THEY CHOOSE A PLAN
+            </span>
+
+            <h3>Help them get started</h3>
+
+            <p>
+              The referred photographer can explore the platform during
+              the free-access period. After that period ends, they must
+              select and pay for a plan to continue using the account.
+            </p>
+
+          </div>
+
+        </article>
+
+
+        <!-- STEP 3 -->
+        <article class="card step-card">
+
+          <div class="step-number">03</div>
+
+          <div class="step-content">
+
+            <span class="step-label">
+              STEP 3 · PAYMENT IS VERIFIED
+            </span>
+
+            <h3>Earn your subscription commission</h3>
+
+            <p>
+              You receive 60% of the photographer's first eligible paid
+              subscription. The commission is counted only after the
+              payment has been completed and verified.
+            </p>
+
+          </div>
+
+        </article>
+
+
+        <!-- STEP 4 -->
+        <article class="card step-card">
+
+          <div class="step-number">04</div>
+
+          <div class="step-content">
+
+            <span class="step-label">
+              STEP 4 · SUPPORT THE PHOTOGRAPHER
+            </span>
+
+            <h3>Earn additional support rewards</h3>
+
+            <p>
+              You can also provide eligible account-setup assistance by
+              call or on-location support. Each approved support session
+              earns an additional fixed reward.
+            </p>
+
+          </div>
+
+        </article>
+
+
+        <!-- STEP 5 -->
+        <article class="card step-card">
+
+          <div class="step-number">05</div>
+
+          <div class="step-content">
+
+            <span class="step-label">
+              STEP 5 · TRACK YOUR REWARDS
+            </span>
+
+            <h3>Monitor your referral activity</h3>
+
+            <p>
+              Use the dashboard to check referral statuses, earned
+              commissions, pending payments, and support-session rewards.
+            </p>
+
+          </div>
+
+        </article>
+
+      </div>
+
+
+      <!-- COMMISSION RULES -->
+      <div class="card rules-card">
+
+        <div class="rules-heading">
+
+          <p class="eyebrow">Please read carefully</p>
+
+          <h3>Commission rules & conditions</h3>
+
+          <p class="rules-intro">
+            These conditions explain when a referral reward is eligible
+            and how it is calculated.
+          </p>
+
+        </div>
+
+
+        <ol class="rules-list">
+
+          <li>
+
+            <strong>One-time subscription commission</strong>
+
+            <span>
+              Commission applies to the first eligible paid subscription
+              only. Future renewals do not generate recurring referral
+              earnings.
+            </span>
+
+          </li>
+
+
+          <li>
+
+            <strong>Upgrade eligibility</strong>
+
+            <span>
+              An upward plan upgrade may qualify when it follows the
+              defined plan order and meets the referral terms.
+            </span>
+
+          </li>
+
+
+          <li>
+
+            <strong>No downgrade commission</strong>
+
+            <span>
+              Moving to a lower-priced plan does not create an additional
+              referral commission.
+            </span>
+
+          </li>
+
+
+          <li>
+
+            <strong>One month of free access</strong>
+
+            <span>
+              A valid referral code gives the new photographer one month
+              of free access. After the free period, the account is frozen
+              until they select and pay for a plan.
+            </span>
+
+          </li>
+
+
+          <li>
+
+            <strong>Commission verification</strong>
+
+            <span>
+              Commission is recorded only after the first eligible
+              subscription payment is completed and verified.
+            </span>
+
+          </li>
+
+
+          <li>
+
+            <strong>Support-session rewards</strong>
+
+            <span>
+              Additional support rewards are paid only for eligible
+              setup-support sessions that have been completed and approved.
+            </span>
+
+          </li>
+
+        </ol>
+
+
+        <p class="guide-note">
+          The amounts shown in this demo are illustrative. Actual
+          commissions and support-session rewards are calculated
+          according to the approved referral terms and verified
+          account activity.
+        </p>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+
+    <div class="footer-main">
+
+
+      <!-- PROFESSIONAL STUDIO -->
+      <div class="footer-brand-block">
+
+        <div class="footer-logo">PS</div>
+
+        <h2>Professional Studio</h2>
+
+        <p>
+          Capturing timeless memories through creative photography.
+        </p>
+
+      </div>
+
+
+      <!-- PARENT COMPANY -->
+      <div class="footer-company-block">
+
+        <span class="footer-label">A product by</span>
+
+        <h3>Bluehorizanlabs</h3>
+
+        <p>
+          Technology and digital solutions powering better
+          creative workflows.
+        </p>
+
+        <a
+          class="footer-company-link"
+          href="https://bluehorizanlabs.vercel.app/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Visit parent company ↗
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <!-- FOOTER BOTTOM -->
+    <div class="footer-bottom">
+
+      <span>
+        © 2026
+        <a href="https://professionalstudio.vercel.app/">
+          Professional Studio
+        </a>.
+        All Rights Reserved.
+      </span>
+
+      <span class="powered-by">
+        Powered by
+        <a href="https://bluehorizanlabs.vercel.app/">
+          Bluehorizanlabs
+        </a>
+      </span>
+
+    </div>
+
+  </footer>
+
+
+  <!-- JAVASCRIPT -->
+  <script src="referrer.js"></script>
+
+</body>
+</html>
