@@ -15,7 +15,7 @@ export default async function handler(req, res) {
   });
 
   if (error) {
-    console.log('Error during login:');
+    console.log('Error during login:', error.message);
     return res.status(401).json({ message: 'Invalid email or password.' });
   }
   if (data){

@@ -2,15 +2,29 @@
 
 const appointmentsBody = document.getElementById("bookingTable");
 const bookingEmptyState = document.getElementById("bookingEmptyState");
-const bookingSearch = document.getElementById("searchBooking");
 const analyticsStatus = document.getElementById("analyticsStatus");
+const serviceGrid = document.getElementById("serviceGrid");
 
 let appointments = [];
 let services = [];
 
-async function getJson(url) {
-    const response = await fetch(url);
-    const data = await response.json();
+async function getJson(url, options = {}) {
+    const response = await fetch(url, options);
+    let data = null;
+
+    const contentType = response.headers.get("content-type") || "";
+    if (contentType.includes("application/json")) {
+        data = await response.json();
+    } else {
+        const text = await response.text();
+        if (text) {
+            try {
+                data = JSON.parse(text);
+            } catch {
+                data = { message: text };
+            }
+        }
+    }
 
     if (!response.ok) {
         const error = new Error(
@@ -24,7 +38,7 @@ async function getJson(url) {
 }
 
 function handleUnauthorized(error) {
-    if (error.status === 401) {
+    if (error?.status === 401) {
         window.location.href = "/login";
         return true;
     }
@@ -40,12 +54,13 @@ function localDateKey(date = new Date()) {
 }
 
 function getAppointmentDate(appointment) {
-    const date = appointment?.date;
+    const date = appointment?.date ?? appointment?.booking_date ?? "";
     return typeof date === "string" ? date.slice(0, 10) : "";
 }
 
 function normalizeStatus(appointment) {
-    return String(appointment?.status || "").trim().toLowerCase();
+    const status = appointment?.status ?? appointment?.booking_status ?? "";
+    return String(status).trim().toLowerCase();
 }
 
 function isCancelled(appointment) {
@@ -61,17 +76,22 @@ function isConfirmed(appointment) {
 }
 
 function formatCurrency(value) {
+    const amount = Number(value);
+    if (!Number.isFinite(amount)) {
+        return "₹0";
+    }
+
     return new Intl.NumberFormat("en-IN", {
         style: "currency",
         currency: "INR",
         maximumFractionDigits: 0
-    }).format(value);
+    }).format(amount);
 }
 
 function setText(id, value) {
     const element = document.getElementById(id);
     if (element) {
-        element.textContent = String(value);
+        element.textContent = String(value ?? "");
     }
 }
 
@@ -90,58 +110,121 @@ function getServiceName(appointment) {
     );
 }
 
-function renderAppointments() {
-    const searchTerm = bookingSearch.value.trim().toLowerCase();
-    const upcoming = appointments
-        .filter((appointment) => {
-            const date = getAppointmentDate(appointment);
-            return date >= localDateKey() && !isCancelled(appointment);
-        })
-        .sort((left, right) =>
-            getAppointmentDate(left).localeCompare(getAppointmentDate(right))
-        )
-        .filter((appointment) => {
-            const client =
-                typeof appointment.client === "object"
-                    ? appointment.client?.name
-                    : appointment.client;
-            const searchable = [
-                client,
-                getServiceName(appointment),
-                getAppointmentDate(appointment),
-                appointment.status
-            ]
-                .filter(Boolean)
-                .join(" ")
-                .toLowerCase();
-            return searchable.includes(searchTerm);
-        });
+function formatDate(dateString) {
+    if (!dateString) {
+        return "—";
+    }
+
+    const date = new Date(dateString);
+    if (Number.isNaN(date.getTime())) {
+        return dateString;
+    }
+
+    return date.toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+    });
+}
+
+function renderBookingsTable() {
+    if (!appointmentsBody || !bookingEmptyState) {
+        return;
+    }
 
     appointmentsBody.replaceChildren();
 
-    upcoming.forEach((appointment) => {
-        const row = document.createElement("tr");
-        const clientCell = document.createElement("td");
-        const serviceCell = document.createElement("td");
-        const dateCell = document.createElement("td");
-        const statusCell = document.createElement("td");
+    if (appointments.length === 0) {
+        bookingEmptyState.hidden = false;
+        return;
+    }
 
+    bookingEmptyState.hidden = true;
+
+    const rows = [...appointments]
+        .filter((appointment) => appointment && typeof appointment === "object")
+        .sort((a, b) => {
+            const first = new Date(getAppointmentDate(a) || 0).getTime();
+            const second = new Date(getAppointmentDate(b) || 0).getTime();
+            return first - second;
+        })
+        .slice(0, 5);
+
+    rows.forEach((appointment) => {
+        const row = document.createElement("tr");
+
+        const clientCell = document.createElement("td");
         clientCell.textContent =
-            typeof appointment.client === "object"
-                ? appointment.client?.name || "Unknown client"
-                : appointment.client || appointment.name || "Unknown client";
+            appointment.client_name ||
+            appointment.name ||
+            appointment.email ||
+            "Client";
+
+        const serviceCell = document.createElement("td");
         serviceCell.textContent = getServiceName(appointment);
-        dateCell.textContent = getAppointmentDate(appointment) || "—";
-        statusCell.textContent = appointment.status || "Pending";
+
+        const dateCell = document.createElement("td");
+        dateCell.textContent = formatDate(getAppointmentDate(appointment));
+
+        const statusCell = document.createElement("td");
+        const status = document.createElement("span");
+        const normalizedStatus = normalizeStatus(appointment);
+        status.className = "booking-status";
+        status.textContent = normalizedStatus || "Pending";
+        statusCell.appendChild(status);
+
         row.append(clientCell, serviceCell, dateCell, statusCell);
         appointmentsBody.appendChild(row);
     });
+}
 
-    bookingEmptyState.hidden = upcoming.length > 0;
+function renderServices() {
+    if (!serviceGrid) {
+        return;
+    }
+
+    serviceGrid.replaceChildren();
+
+    if (services.length === 0) {
+        const empty = document.createElement("p");
+        empty.className = "empty-state";
+        empty.textContent = "No services available yet.";
+        serviceGrid.appendChild(empty);
+        return;
+    }
+
+    services.forEach((service) => {
+        const card = document.createElement("article");
+        card.className = "service-card";
+
+        const title = document.createElement("h3");
+        title.textContent =
+            service.service_name ||
+            service.serviceName ||
+            service.name ||
+            "Untitled service";
+
+        const description = document.createElement("p");
+        description.textContent =
+            service.description ||
+            service.service_description ||
+            "No description added yet.";
+
+        const amount = document.createElement("span");
+        amount.className = "service-amount";
+        amount.textContent = formatCurrency(service.amount ?? 0);
+
+        card.append(title, description, amount);
+        serviceGrid.appendChild(card);
+    });
 }
 
 function renderMonthlyTrend() {
     const chart = document.getElementById("activityChart");
+    if (!chart) {
+        return;
+    }
+
     chart.replaceChildren();
 
     const now = new Date();
@@ -175,10 +258,7 @@ function renderMonthlyTrend() {
         const bar = document.createElement("span");
         bar.className = "chart-bar";
         bar.style.height = `${Math.max(10, (month.count / maxCount) * 125)}px`;
-        bar.setAttribute(
-            "aria-label",
-            `${month.label}: ${month.count} bookings`
-        );
+        bar.setAttribute("aria-label", `${month.label}: ${month.count} bookings`);
 
         const label = document.createElement("span");
         label.className = "chart-label";
@@ -203,13 +283,14 @@ function renderAnalytics() {
         const amount = Number(appointment.amount);
         return Number.isFinite(amount) && amount > 0 ? total + amount : total;
     }, 0);
-    const todayCount = appointments.filter(
-        (appointment) =>
-            getAppointmentDate(appointment) === today && !isCancelled(appointment)
-    ).length;
-    const thisMonthCount = appointments.filter(
-        (appointment) => getAppointmentDate(appointment).slice(0, 7) === currentMonth
-    ).length;
+    const todayCount = appointments.filter((appointment) => {
+        const date = getAppointmentDate(appointment);
+        return date === today && !isCancelled(appointment);
+    }).length;
+    const thisMonthCount = appointments.filter((appointment) => {
+        const date = getAppointmentDate(appointment);
+        return date && date.slice(0, 7) === currentMonth;
+    }).length;
 
     setText("todayBookingsCounter", todayCount);
     setText("activeServicesCounter", services.length);
@@ -222,30 +303,32 @@ function renderAnalytics() {
     setText("bookingsThisMonth", thisMonthCount);
 
     renderMonthlyTrend();
-    renderAppointments();
 }
 
 async function loadProfile() {
     try {
         const data = await getJson("/api/dashboard-data");
-        if (data.message === "Unauthorized") {
+        if (data?.message === "Unauthorized") {
             window.location.href = "/login";
             return;
         }
 
-        setText("name", data.name || "Photographer");
+        setText("name", data?.name || "Photographer");
 
-        document.getElementById("openPortfolioBtn").addEventListener("click", () => {
-            window.location.href = `/api/client?id=${encodeURIComponent(data.link)}`;
-        });
+        const openPortfolioButton = document.getElementById("openPortfolioBtn");
+        if (openPortfolioButton) {
+            openPortfolioButton.addEventListener("click", () => {
+                window.location.href = `/api/client?id=${encodeURIComponent(data?.link || "")}`;
+            });
+        }
 
-        document.getElementById("copyProfileBtn").addEventListener(
-            "click",
-            async (event) => {
+        const copyProfileButton = document.getElementById("copyProfileBtn");
+        if (copyProfileButton) {
+            copyProfileButton.addEventListener("click", async (event) => {
                 const button = event.currentTarget;
                 try {
                     await navigator.clipboard.writeText(
-                        `${window.location.origin}/api/client?id=${encodeURIComponent(data.link)}`
+                        `${window.location.origin}/api/client?id=${encodeURIComponent(data?.link || "")}`
                     );
                     button.textContent = "Copied!";
                     window.setTimeout(() => {
@@ -253,14 +336,16 @@ async function loadProfile() {
                     }, 2000);
                 } catch (error) {
                     console.error("Unable to copy profile link:", error);
-                    analyticsStatus.textContent =
-                        "Could not copy the profile link. Check clipboard permissions.";
+                    if (analyticsStatus) {
+                        analyticsStatus.textContent =
+                            "Could not copy the profile link. Check clipboard permissions.";
+                    }
                 }
-            }
-        );
+            });
+        }
     } catch (error) {
         console.error("Unable to load dashboard profile:", error);
-        if (!handleUnauthorized(error)) {
+        if (!handleUnauthorized(error) && analyticsStatus) {
             analyticsStatus.textContent =
                 "Unable to load your dashboard profile. Refresh to try again.";
         }
@@ -274,35 +359,54 @@ async function loadBusinessAnalytics() {
             getJson("/api/list_service")
         ]);
 
-        if (!Array.isArray(appointmentData.appointments)) {
-            throw new Error("The appointments response is invalid.");
-        }
+        const normalizedAppointments = Array.isArray(appointmentData?.appointments)
+            ? appointmentData.appointments.filter(
+                  (appointment) => appointment && typeof appointment === "object"
+              )
+            : [];
+
         if (!Array.isArray(serviceData)) {
             throw new Error("The services response is invalid.");
         }
 
-        appointments = appointmentData.appointments;
+        appointments = normalizedAppointments;
         services = serviceData;
+
+        renderBookingsTable();
+        renderServices();
         renderAnalytics();
-        analyticsStatus.textContent = "";
+
+        if (analyticsStatus) {
+            analyticsStatus.textContent = "";
+        }
     } catch (error) {
         console.error("Unable to load dashboard analytics:", error);
         if (handleUnauthorized(error)) {
             return;
         }
 
-        analyticsStatus.textContent =
-            "Unable to load booking analytics. Refresh the page to try again.";
-        bookingEmptyState.hidden = false;
-        bookingEmptyState.querySelector("h3").textContent =
-            "Bookings could not be loaded";
-        bookingEmptyState.querySelector("p").textContent =
-            "Please refresh the page and try again.";
+        appointments = [];
+        services = [];
+        renderBookingsTable();
+        renderServices();
+        renderAnalytics();
+
+        if (analyticsStatus) {
+            analyticsStatus.textContent =
+                "Unable to load booking analytics. Refresh the page to try again.";
+        }
+
+        if (bookingEmptyState) {
+            bookingEmptyState.hidden = false;
+            bookingEmptyState.querySelector("h3").textContent =
+                "Bookings could not be loaded";
+            bookingEmptyState.querySelector("p").textContent =
+                "Please refresh the page and try again.";
+        }
     }
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-    bookingSearch.addEventListener("input", renderAppointments);
     loadProfile();
     loadBusinessAnalytics();
 });

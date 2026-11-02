@@ -2,7 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 
 export default async function handler(req, res) {
 
-    const { email, password } = req.body;
+    const { email, password, referralCode } = req.body;
 
     // Validate the input
 
@@ -11,7 +11,7 @@ export default async function handler(req, res) {
         return res.status(400).json({ message: 'Email and password are required.' });
 
     }
-
+    console.log('Received signup request:', { email, referralCode });
     const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
     const { data, error } = await supabase.auth.signUp({

@@ -21,6 +21,7 @@
     "@supabase/supabase-js": "^2.111.0",
     "fs": "^0.0.1-security",
     "path": "^0.12.7",
+    "razorpay": "^2.9.8",
     "resend": "^6.35.0"
   }
 }

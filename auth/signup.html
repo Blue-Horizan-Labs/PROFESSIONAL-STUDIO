@@ -1852,71 +1852,80 @@
                PASSWORD TOGGLE
                ====================================== */
 
-            document
-                .querySelectorAll(".password-toggle")
-                .forEach((toggle) => {
+            function initializePasswordToggles() {
 
-                    toggle.addEventListener(
-                        "click",
-                        function () {
+                document
+                    .querySelectorAll(".password-toggle")
+                    .forEach((toggle) => {
 
-                            const targetId =
-                                toggle.dataset.target;
+                        renderPasswordIcon(
+                            toggle,
+                            false
+                        );
 
-                            const input =
-                                document.getElementById(
-                                    targetId
+                        toggle.addEventListener(
+                            "click",
+                            function () {
+
+                                const targetId =
+                                    toggle.dataset.target;
+
+                                const input =
+                                    document.getElementById(
+                                        targetId
+                                    );
+
+
+                                if (!input) {
+                                    return;
+                                }
+
+
+                                const isHidden =
+                                    input.type === "password";
+
+
+                                input.type =
+                                    isHidden
+                                        ? "text"
+                                        : "password";
+
+
+                                toggle.setAttribute(
+                                    "aria-label",
+                                    isHidden
+                                        ? "Hide password"
+                                        : "Show password"
                                 );
 
 
-                            if (!input) {
-                                return;
+                                toggle.setAttribute(
+                                    "title",
+                                    isHidden
+                                        ? "Hide password"
+                                        : "Show password"
+                                );
+
+
+                                toggle.setAttribute(
+                                    "aria-pressed",
+                                    isHidden
+                                        ? "true"
+                                        : "false"
+                                );
+
+
+                                renderPasswordIcon(
+                                    toggle,
+                                    isHidden
+                                );
+
                             }
+                        );
 
+                    });
 
-                            const isHidden =
-                                input.type === "password";
-
-
-                            input.type =
-                                isHidden
-                                    ? "text"
-                                    : "password";
-
-
-                            toggle.setAttribute(
-                                "aria-label",
-                                isHidden
-                                    ? "Hide password"
-                                    : "Show password"
-                            );
-
-
-                            toggle.setAttribute(
-                                "title",
-                                isHidden
-                                    ? "Hide password"
-                                    : "Show password"
-                            );
-
-
-                            toggle.setAttribute(
-                                "aria-pressed",
-                                isHidden
-                                    ? "true"
-                                    : "false"
-                            );
-
-
-                            renderPasswordIcon(
-                                toggle,
-                                isHidden
-                            );
-
-                        }
-                    );
-
-                });
+            }
 
 
             /* =====================================
@@ -2543,39 +2552,14 @@
                             "success"
                         );
 
+                        setLoading(false);
 
-                        /*
-                         * Email verification must happen before
-                         * the user continues to workspace setup.
-                         * Pass the email as a display/lookup hint;
-                         * the backend must still validate the code
-                         * and the pending account/session securely.
-                         */
-
-                        // setTimeout(
-                        //     function () {
-
-                        //         const verificationUrl =
-                        //             new URL(
-                        //                 "/auth/email-verification.html",
-                        //                 window.location.origin
-                        //             );
-
-                        //         verificationUrl.searchParams.set(
-                        //             "email",
-                        //             payload.email
-                        //         );
-
-
-
-                               setTimeout(()=>{
-                                window.location.href = "/setup.html";
-                               }, 350);
-
-                        //     },
-                        //     350
-                        // );
-
+                        window.setTimeout(
+                            function () {
+                                window.location.href = "/plan-selection";
+                            },
+                            350
+                        );
 
                     } catch (error) {
 
@@ -2610,19 +2594,7 @@
                INITIALIZE
                ====================================== */
 
-            document
-                .querySelectorAll(
-                    ".password-toggle"
-                )
-                .forEach((toggle) => {
-
-                    renderPasswordIcon(
-                        toggle,
-                        false
-                    );
-
-                });
-
+            initializePasswordToggles();
 
             updatePasswordStrength();
 

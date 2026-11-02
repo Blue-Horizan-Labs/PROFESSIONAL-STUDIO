@@ -16,7 +16,7 @@
     var price = card.querySelector("[data-plan-price]");
     if (price) price.textContent = money(plan.price);
     var button = card.querySelector(".button-plan");
-    if (button) button.href = "/auth/signup.html?plan=" + encodeURIComponent(id);
+    if (button) button.href = "/plan-selection.html?plan=" + encodeURIComponent(id);
   });
   // Keep general signup calls on a known default plan, without overriding plan-card selections.
   document.querySelectorAll('a[href*="signup.html"]:not(.button-plan)').forEach(function (link) {
